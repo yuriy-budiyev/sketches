@@ -92,6 +92,22 @@ dependencyResolutionManagement {
                 "androidx.core",
                 "core-ktx"
             ).versionRef("androidx.core")
+
+            version(
+                "androidx.appcompat",
+                "1.6.1"
+            )
+            library(
+                "androidx.appcompat",
+                "androidx.appcompat",
+                "appcompat"
+            ).versionRef("androidx.appcompat")
+            library(
+                "androidx.appcompat.resources",
+                "androidx.appcompat",
+                "appcompat-resources"
+            ).versionRef("androidx.appcompat")
+
             version(
                 "androidx.compose.ui",
                 "1.5.4"
@@ -126,6 +142,7 @@ dependencyResolutionManagement {
                 "androidx.compose.ui",
                 "ui-tooling-preview"
             ).versionRef("androidx.compose.ui")
+
             version(
                 "androidx.compose.material3",
                 "1.1.2"
@@ -135,6 +152,13 @@ dependencyResolutionManagement {
                 "androidx.compose.material3",
                 "material3"
             ).versionRef("androidx.compose.material3")
+            library(
+                "androidx.compose.material3.wsc",
+                "androidx.compose.material3",
+                "material3-window-size-class"
+            ).versionRef("androidx.compose.material3")
+
+
         }
     }
 }
