@@ -142,6 +142,11 @@ dependencyResolutionManagement {
                 "androidx.compose.ui",
                 "ui-tooling-preview"
             ).versionRef("androidx.compose.ui")
+            library(
+                "androidx.compose.ui.test.junit",
+                "androidx.compose.ui",
+                "ui-test-junit4"
+            ).versionRef("androidx.compose.ui")
 
             version(
                 "androidx.compose.material3",
@@ -262,6 +267,27 @@ dependencyResolutionManagement {
                 "androidx.lifecycle",
                 "lifecycle-viewmodel-ktx"
             ).versionRef("androidx.lifecycle")
+
+            version(
+                "androidx.test.junit",
+                "1.1.5"
+            )
+            library(
+                "androidx.test.junit",
+                "androidx.test.ext",
+                "junit"
+            ).versionRef("androidx.test.junit")
+
+            version(
+                "androidx.test.espresso",
+                "3.5.1"
+            )
+            library(
+                "androidx.test.espresso",
+                "androidx.test.espresso",
+                "espresso-core"
+            ).versionRef("androidx.test.espresso")
+
             bundle(
                 "androidx",
                 listOf(
@@ -307,6 +333,17 @@ dependencyResolutionManagement {
                 )
             )
 
+            // OkHttp
+            version(
+                "okhttp",
+                "4.11.0"
+            )
+            library(
+                "okhttp",
+                "com.squareup.okhttp3",
+                "okhttp"
+            ).versionRef("okhttp")
+
             // Glide
             version(
                 "glide",
@@ -318,7 +355,7 @@ dependencyResolutionManagement {
                 "glide"
             ).versionRef("glide")
             library(
-                "glide.okhttp3",
+                "glide.okhttp",
                 "com.github.bumptech.glide",
                 "okhttp3-integration"
             ).versionRef("glide")
@@ -327,6 +364,7 @@ dependencyResolutionManagement {
                 "com.github.bumptech.glide",
                 "ksp"
             ).versionRef("glide")
+
             version(
                 "glide.compose",
                 "1.0.0-beta01"
@@ -336,14 +374,25 @@ dependencyResolutionManagement {
                 "com.github.bumptech.glide",
                 "compose"
             ).versionRef("glide.compose")
+
             bundle(
                 "glide",
                 listOf(
                     "glide",
-                    "glide.okhttp3",
+                    "glide.okhttp",
                     "glide.compose"
                 )
             )
+
+            version(
+                "junit",
+                "4.13.2"
+            )
+            library(
+                "junit",
+                "junit",
+                "junit"
+            ).versionRef("junit")
         }
     }
 }
