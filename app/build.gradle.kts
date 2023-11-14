@@ -59,7 +59,8 @@ dependencies {
 
     implementation(sketches.bundles.kotlin)
     implementation(sketches.bundles.androidx)
-    debugImplementation(sketches.bundles.androidx.debug)
+    implementation(sketches.bundles.androidx.compose)
+    debugImplementation(sketches.bundles.androidx.compose.debug)
 
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("com.github.bumptech.glide:glide:5.0.0-rc01")

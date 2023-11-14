@@ -279,17 +279,8 @@ dependencyResolutionManagement {
                     "androidx.core.ktx",
                     "androidx.annotation",
                     "androidx.annotation.jvm",
-                    "androidx.compose.bom",
-                    "androidx.compose.ui",
-                    "androidx.compose.ui.geometry",
-                    "androidx.compose.ui.graphics",
-                    "androidx.compose.material3",
-                    "androidx.compose.material3.wsc",
                     "androidx.appcompat",
                     "androidx.appcompat.resources",
-                    "androidx.activity",
-                    "androidx.activity.compose",
-                    "androidx.activity.ktx",
                     "androidx.fragment",
                     "androidx.fragment.ktx",
                     "androidx.lifecycle.runtime",
@@ -305,7 +296,21 @@ dependencyResolutionManagement {
                 )
             )
             bundle(
-                "androidx.debug",
+                "androidx.compose",
+                listOf(
+                    "androidx.compose.bom",
+                    "androidx.compose.ui",
+                    "androidx.compose.ui.geometry",
+                    "androidx.compose.ui.graphics",
+                    "androidx.compose.material3",
+                    "androidx.compose.material3.wsc",
+                    "androidx.activity",
+                    "androidx.activity.compose",
+                    "androidx.activity.ktx"
+                )
+            )
+            bundle(
+                "androidx.compose.debug",
                 listOf(
                     "androidx.compose.ui.tooling",
                     "androidx.compose.ui.tooling.data",
