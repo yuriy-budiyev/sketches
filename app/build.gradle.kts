@@ -1,7 +1,7 @@
 plugins {
-    alias(scratches.plugins.android.application)
-    alias(scratches.plugins.kotlin)
-    alias(scratches.plugins.ksp)
+    alias(sketches.plugins.android.application)
+    alias(sketches.plugins.kotlin)
+    alias(sketches.plugins.ksp)
 }
 
 android {
@@ -42,7 +42,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = scratches.versions.androidx.compose.ui.get()
+        kotlinCompilerExtensionVersion = sketches.versions.androidx.compose.ui.get()
     }
     packaging {
         resources {
@@ -72,7 +72,7 @@ dependencies {
     implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
     ksp("com.github.bumptech.glide:ksp:5.0.0-rc01")
 
-    implementation(scratches.bundles.kotlin)
+    implementation(sketches.bundles.kotlin)
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

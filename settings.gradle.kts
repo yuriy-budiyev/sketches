@@ -15,7 +15,7 @@ dependencyResolutionManagement {
     versionCatalogs {
 
         // App (project-level) version catalog
-        create("scratches") {
+        create("sketches") {
 
             // Plugins and SDK
             version(
