@@ -94,19 +94,19 @@ dependencyResolutionManagement {
             ).versionRef("androidx.core")
 
             version(
-                "androidx.appcompat",
-                "1.6.1"
+                "androidx.annotation",
+                "1.7.0"
             )
             library(
-                "androidx.appcompat",
-                "androidx.appcompat",
-                "appcompat"
-            ).versionRef("androidx.appcompat")
+                "androidx.annotation",
+                "androidx.annotation",
+                "annotation"
+            ).versionRef("androidx.annotation")
             library(
-                "androidx.appcompat.resources",
+                "androidx.annotation.jvm",
                 "androidx.appcompat",
-                "appcompat-resources"
-            ).versionRef("androidx.appcompat")
+                "annotation-jvm"
+            ).versionRef("androidx.annotation")
 
             version(
                 "androidx.compose.ui",
@@ -158,7 +158,55 @@ dependencyResolutionManagement {
                 "material3-window-size-class"
             ).versionRef("androidx.compose.material3")
 
+            version(
+                "androidx.appcompat",
+                "1.6.1"
+            )
+            library(
+                "androidx.appcompat",
+                "androidx.appcompat",
+                "appcompat"
+            ).versionRef("androidx.appcompat")
+            library(
+                "androidx.appcompat.resources",
+                "androidx.appcompat",
+                "appcompat-resources"
+            ).versionRef("androidx.appcompat")
 
+            version(
+                "androidx.activity",
+                "1.8.0"
+            )
+            library(
+                "androidx.activity",
+                "androidx.activity",
+                "activity"
+            ).versionRef("androidx.activity")
+            library(
+                "androidx.activity.compose",
+                "androidx.activity",
+                "activity-compose"
+            ).versionRef("androidx.activity")
+            library(
+                "androidx.activity.ktx",
+                "androidx.activity",
+                "activity-ktx"
+            ).versionRef("androidx.activity")
+
+            version(
+                "androidx.fragment",
+                "1.6.2"
+            )
+            library(
+                "androidx.fragment",
+                "androidx.fragment",
+                "fragment"
+            ).versionRef("androidx.fragment")
+            library(
+                "androidx.fragment.ktx",
+                "androidx.fragment",
+                "fragment-ktx"
+            ).versionRef("androidx.fragment")
         }
     }
 }
