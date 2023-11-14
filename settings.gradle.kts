@@ -306,6 +306,40 @@ dependencyResolutionManagement {
                     "androidx.compose.ui.tooling.preview"
                 )
             )
+
+            // Glide
+            version(
+                "glide",
+                "5.0.0-rc01"
+            )
+            library(
+                "glide",
+                "com.github.bumptech.glide",
+                "glide"
+            ).versionRef("glide")
+            library(
+                "glide.okhttp3",
+                "com.github.bumptech.glide",
+                "okhttp3-integration"
+            ).versionRef("glide")
+            library(
+                "glide.compose",
+                "com.github.bumptech.glide",
+                "compose"
+            ).versionRef("glide")
+            library(
+                "glide.ksp",
+                "com.github.bumptech.glide",
+                "ksp"
+            ).versionRef("glide")
+            bundle(
+                "glide",
+                listOf(
+                    "glide",
+                    "glide.okhttp3",
+                    "glide.compose"
+                )
+            )
         }
     }
 }

@@ -60,13 +60,12 @@ dependencies {
     implementation(sketches.bundles.kotlin)
     implementation(sketches.bundles.androidx)
     implementation(sketches.bundles.androidx.compose)
+    implementation(sketches.bundles.glide)
+    ksp(sketches.glide.ksp)
+
     debugImplementation(sketches.bundles.androidx.compose.debug)
 
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
-    implementation("com.github.bumptech.glide:glide:5.0.0-rc01")
-    implementation("com.github.bumptech.glide:okhttp3-integration:5.0.0-rc01")
-    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
-    ksp("com.github.bumptech.glide:ksp:5.0.0-rc01")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
