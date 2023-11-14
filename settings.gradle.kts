@@ -13,7 +13,11 @@ dependencyResolutionManagement {
         mavenCentral()
     }
     versionCatalogs {
+
+        // App (project-level) version catalog
         create("scratches") {
+
+            // Versions
             version(
                 "android.application",
                 "8.1.3"
@@ -30,6 +34,8 @@ dependencyResolutionManagement {
                 "kotlin.ksp",
                 "1.9.20-1.0.14"
             )
+
+            // Plugins
             plugin(
                 "android.application",
                 "com.android.application"
@@ -42,6 +48,9 @@ dependencyResolutionManagement {
                 "ksp",
                 "com.google.devtools.ksp"
             ).versionRef("kotlin.ksp")
+
+            // Libraries
+            // Kotlin
             library(
                 "kotlin.stdlib",
                 "org.jetbrains.kotlin",
@@ -62,6 +71,15 @@ dependencyResolutionManagement {
                 "org.jetbrains.kotlinx",
                 "kotlinx-coroutines-android"
             ).versionRef("kotlin.coroutines")
+            bundle(
+                "kotlin",
+                listOf(
+                    "kotlin.stdlib",
+                    "kotlin.reflect",
+                    "kotlin.coroutines.core",
+                    "kotlin.coroutines.android"
+                )
+            )
         }
     }
 }

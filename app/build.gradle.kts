@@ -72,10 +72,7 @@ dependencies {
     implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
     ksp("com.github.bumptech.glide:ksp:5.0.0-rc01")
 
-    implementation(scratches.kotlin.stdlib)
-    implementation(scratches.kotlin.reflect)
-    implementation(scratches.kotlin.coroutines.core)
-    implementation(scratches.kotlin.coroutines.android)
+    implementation(scratches.bundles.kotlin)
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
