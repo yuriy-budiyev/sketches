@@ -109,63 +109,59 @@ dependencyResolutionManagement {
             ).versionRef("androidx.annotation")
 
             version(
-                "androidx.compose",
-                "2023.10.01"
-            )
-            version(
-                "androidx.compose.compiler",
+                "androidx.compose.ui",
                 "1.5.4"
             )
-            library(
-                "androidx.compose",
-                "androidx.compose",
-                "compose-bom"
-            ).versionRef("androidx.compose")
             library(
                 "androidx.compose.ui",
                 "androidx.compose.ui",
                 "ui"
-            ).withoutVersion()
+            ).versionRef("androidx.compose.ui")
             library(
                 "androidx.compose.ui.geometry",
                 "androidx.compose.ui",
                 "ui-geometry"
-            ).withoutVersion()
+            ).versionRef("androidx.compose.ui")
             library(
                 "androidx.compose.ui.graphics",
                 "androidx.compose.ui",
                 "ui-graphics"
-            ).withoutVersion()
+            ).versionRef("androidx.compose.ui")
             library(
                 "androidx.compose.ui.tooling",
                 "androidx.compose.ui",
                 "ui-tooling"
-            ).withoutVersion()
+            ).versionRef("androidx.compose.ui")
             library(
                 "androidx.compose.ui.tooling.data",
                 "androidx.compose.ui",
                 "ui-tooling-data"
-            ).withoutVersion()
+            ).versionRef("androidx.compose.ui")
             library(
                 "androidx.compose.ui.tooling.preview",
                 "androidx.compose.ui",
                 "ui-tooling-preview"
-            ).withoutVersion()
+            ).versionRef("androidx.compose.ui")
             library(
                 "androidx.compose.ui.test.junit",
                 "androidx.compose.ui",
                 "ui-test-junit4"
-            ).withoutVersion()
+            ).versionRef("androidx.compose.ui")
+
+            version(
+                "androidx.compose.material3",
+                "1.1.2"
+            )
             library(
                 "androidx.compose.material3",
                 "androidx.compose.material3",
                 "material3"
-            ).withoutVersion()
+            ).versionRef("androidx.compose.material3")
             library(
                 "androidx.compose.material3.wsc",
                 "androidx.compose.material3",
                 "material3-window-size-class"
-            ).withoutVersion()
+            ).versionRef("androidx.compose.material3")
 
             version(
                 "androidx.appcompat",

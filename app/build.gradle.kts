@@ -42,7 +42,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = sketches.versions.androidx.compose.compiler.get()
+        kotlinCompilerExtensionVersion = sketches.versions.androidx.compose.ui.get()
     }
     packaging {
         resources {
