@@ -104,9 +104,19 @@ dependencyResolutionManagement {
             ).versionRef("androidx.annotation")
             library(
                 "androidx.annotation.jvm",
-                "androidx.appcompat",
+                "androidx.annotation",
                 "annotation-jvm"
             ).versionRef("androidx.annotation")
+
+            version(
+                "androidx.compose.bom",
+                "2023.10.01"
+            )
+            library(
+                "androidx.compose.bom",
+                "androidx.compose",
+                "compose-bom"
+            ).versionRef("androidx.compose.bom")
 
             version(
                 "androidx.compose.ui",
@@ -262,6 +272,46 @@ dependencyResolutionManagement {
                 "androidx.lifecycle",
                 "lifecycle-viewmodel-ktx"
             ).versionRef("androidx.lifecycle")
+            bundle(
+                "androidx",
+                listOf(
+                    "androidx.core",
+                    "androidx.core.ktx",
+                    "androidx.annotation",
+                    "androidx.annotation.jvm",
+                    "androidx.compose.bom",
+                    "androidx.compose.ui",
+                    "androidx.compose.ui.geometry",
+                    "androidx.compose.ui.graphics",
+                    "androidx.compose.material3",
+                    "androidx.compose.material3.wsc",
+                    "androidx.appcompat",
+                    "androidx.appcompat.resources",
+                    "androidx.activity",
+                    "androidx.activity.compose",
+                    "androidx.activity.ktx",
+                    "androidx.fragment",
+                    "androidx.fragment.ktx",
+                    "androidx.lifecycle.runtime",
+                    "androidx.lifecycle.runtime.ktx",
+                    "androidx.lifecycle.common",
+                    "androidx.lifecycle.livedata",
+                    "androidx.lifecycle.livedata.ktx",
+                    "androidx.lifecycle.livedata.core",
+                    "androidx.lifecycle.livedata.core.ktx",
+                    "androidx.lifecycle.viewmodel",
+                    "androidx.lifecycle.viewmodel.savedstate",
+                    "androidx.lifecycle.viewmodel.ktx"
+                )
+            )
+            bundle(
+                "androidx.debug",
+                listOf(
+                    "androidx.compose.ui.tooling",
+                    "androidx.compose.ui.tooling.data",
+                    "androidx.compose.ui.tooling.preview"
+                )
+            )
         }
     }
 }
