@@ -109,6 +109,10 @@ dependencyResolutionManagement {
             ).versionRef("androidx.annotation")
 
             version(
+                "androidx.compose.compiler",
+                "1.5.4"
+            )
+            version(
                 "androidx.compose.ui",
                 "1.5.4"
             )
@@ -147,6 +151,31 @@ dependencyResolutionManagement {
                 "androidx.compose.ui",
                 "ui-test-junit4"
             ).versionRef("androidx.compose.ui")
+
+            version(
+                "androidx.compose.material",
+                "1.5.4"
+            )
+            library(
+                "androidx.compose.material",
+                "androidx.compose.material",
+                "material"
+            ).versionRef("androidx.compose.material")
+            library(
+                "androidx.compose.material.icons.core",
+                "androidx.compose.material",
+                "material-icons-core"
+            ).versionRef("androidx.compose.material")
+            library(
+                "androidx.compose.material.icons.extended",
+                "androidx.compose.material",
+                "material-icons-extended"
+            ).versionRef("androidx.compose.material")
+            library(
+                "androidx.compose.material.ripple",
+                "androidx.compose.material",
+                "material-ripple"
+            ).versionRef("androidx.compose.material")
 
             version(
                 "androidx.compose.material3",
@@ -317,6 +346,10 @@ dependencyResolutionManagement {
                     "androidx.compose.ui",
                     "androidx.compose.ui.geometry",
                     "androidx.compose.ui.graphics",
+                    "androidx.compose.material",
+                    "androidx.compose.material.icons.core",
+                    "androidx.compose.material.icons.extended",
+                    "androidx.compose.material.ripple",
                     "androidx.compose.material3",
                     "androidx.compose.material3.wsc",
                     "androidx.activity",
