@@ -1,7 +1,7 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp")
+    alias(scratches.plugins.android.application)
+    alias(scratches.plugins.kotlin)
+    alias(scratches.plugins.ksp)
 }
 
 android {
@@ -72,10 +72,10 @@ dependencies {
     implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
     ksp("com.github.bumptech.glide:ksp:5.0.0-rc01")
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.20")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.20")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation(scratches.kotlin.stdlib)
+    implementation(scratches.kotlin.reflect)
+    implementation(scratches.kotlin.coroutines.core)
+    implementation(scratches.kotlin.coroutines.android)
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
