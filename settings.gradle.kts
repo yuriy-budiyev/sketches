@@ -207,6 +207,61 @@ dependencyResolutionManagement {
                 "androidx.fragment",
                 "fragment-ktx"
             ).versionRef("androidx.fragment")
+
+            version(
+                "androidx.lifecycle",
+                "2.6.2"
+            )
+            library(
+                "androidx.lifecycle.runtime",
+                "androidx.lifecycle",
+                "lifecycle-runtime"
+            ).versionRef("androidx.lifecycle")
+            library(
+                "androidx.lifecycle.runtime.ktx",
+                "androidx.lifecycle",
+                "lifecycle-runtime-ktx"
+            ).versionRef("androidx.lifecycle")
+            library(
+                "androidx.lifecycle.common",
+                "androidx.lifecycle",
+                "lifecycle-common-java8"
+            ).versionRef("androidx.lifecycle")
+            library(
+                "androidx.lifecycle.livedata",
+                "androidx.lifecycle",
+                "lifecycle-livedata"
+            ).versionRef("androidx.lifecycle")
+            library(
+                "androidx.lifecycle.livedata.ktx",
+                "androidx.lifecycle",
+                "lifecycle-livedata-ktx"
+            ).versionRef("androidx.lifecycle")
+            library(
+                "androidx.lifecycle.livedata.core",
+                "androidx.lifecycle",
+                "lifecycle-livedata-core"
+            ).versionRef("androidx.lifecycle")
+            library(
+                "androidx.lifecycle.livedata.core.ktx",
+                "androidx.lifecycle",
+                "lifecycle-livedata-core-ktx"
+            ).versionRef("androidx.lifecycle")
+            library(
+                "androidx.lifecycle.viewmodel",
+                "androidx.lifecycle",
+                "lifecycle-viewmodel"
+            ).versionRef("androidx.lifecycle")
+            library(
+                "androidx.lifecycle.viewmodel.savedstate",
+                "androidx.lifecycle",
+                "lifecycle-viewmodel-savedstate"
+            ).versionRef("androidx.lifecycle")
+            library(
+                "androidx.lifecycle.viewmodel.ktx",
+                "androidx.lifecycle",
+                "lifecycle-viewmodel-ktx"
+            ).versionRef("androidx.lifecycle")
         }
     }
 }
