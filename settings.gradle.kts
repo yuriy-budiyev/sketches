@@ -323,15 +323,19 @@ dependencyResolutionManagement {
                 "okhttp3-integration"
             ).versionRef("glide")
             library(
-                "glide.compose",
-                "com.github.bumptech.glide",
-                "compose"
-            ).versionRef("glide")
-            library(
                 "glide.ksp",
                 "com.github.bumptech.glide",
                 "ksp"
             ).versionRef("glide")
+            version(
+                "glide.compose",
+                "1.0.0-beta01"
+            )
+            library(
+                "glide.compose",
+                "com.github.bumptech.glide",
+                "compose"
+            ).versionRef("glide.compose")
             bundle(
                 "glide",
                 listOf(
