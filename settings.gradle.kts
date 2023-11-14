@@ -109,16 +109,6 @@ dependencyResolutionManagement {
             ).versionRef("androidx.annotation")
 
             version(
-                "androidx.compose.bom",
-                "2023.10.01"
-            )
-            library(
-                "androidx.compose.bom",
-                "androidx.compose",
-                "compose-bom"
-            ).versionRef("androidx.compose.bom")
-
-            version(
                 "androidx.compose.ui",
                 "1.5.4"
             )
@@ -298,7 +288,6 @@ dependencyResolutionManagement {
             bundle(
                 "androidx.compose",
                 listOf(
-                    "androidx.compose.bom",
                     "androidx.compose.ui",
                     "androidx.compose.ui.geometry",
                     "androidx.compose.ui.graphics",
