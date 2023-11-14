@@ -56,19 +56,14 @@ android {
 }
 
 dependencies {
-
     implementation(sketches.bundles.kotlin)
     implementation(sketches.bundles.androidx)
     implementation(sketches.bundles.androidx.compose)
     implementation(sketches.bundles.glide)
+    implementation(sketches.okhttp)
     ksp(sketches.glide.ksp)
-
     debugImplementation(sketches.bundles.androidx.compose.debug)
-
-    implementation("com.squareup.okhttp3:okhttp:4.11.0")
-
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.4")
+    testImplementation(sketches.junit)
+    androidTestImplementation(sketches.bundles.androidx.test)
+    androidTestImplementation(sketches.androidx.compose.ui.test.junit)
 }

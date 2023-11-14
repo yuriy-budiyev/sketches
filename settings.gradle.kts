@@ -332,6 +332,13 @@ dependencyResolutionManagement {
                     "androidx.compose.ui.tooling.preview"
                 )
             )
+            bundle(
+                "androidx.test",
+                listOf(
+                    "androidx.test.junit",
+                    "androidx.test.espresso"
+                )
+            )
 
             // OkHttp
             version(
