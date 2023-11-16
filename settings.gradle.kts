@@ -20,7 +20,7 @@ dependencyResolutionManagement {
             // Plugins and SDK
             version(
                 "android.application",
-                "8.1.3"
+                "8.1.4"
             )
             version(
                 "kotlin",
