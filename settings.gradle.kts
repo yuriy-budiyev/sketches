@@ -23,6 +23,10 @@ dependencyResolutionManagement {
                 "8.1.4"
             )
             version(
+                "java",
+                "1.8"
+            )
+            version(
                 "kotlin",
                 "1.9.20"
             )
