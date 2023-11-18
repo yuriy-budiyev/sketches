@@ -14,10 +14,8 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
 
-        // App (project-level) version catalog
         create("sketches") {
 
-            // Plugins and SDK
             version(
                 "android.application",
                 "8.1.4"
@@ -80,8 +78,6 @@ dependencyResolutionManagement {
                 )
             )
 
-            //Libraries
-            // AndroidX
             version(
                 "androidx.core",
                 "1.12.0"
@@ -96,6 +92,13 @@ dependencyResolutionManagement {
                 "androidx.core",
                 "core-ktx"
             ).versionRef("androidx.core")
+            bundle(
+                "androidx.core",
+                listOf(
+                    "androidx.core",
+                    "androidx.core.ktx"
+                )
+            )
 
             version(
                 "androidx.annotation",
@@ -111,6 +114,35 @@ dependencyResolutionManagement {
                 "androidx.annotation",
                 "annotation-jvm"
             ).versionRef("androidx.annotation")
+            bundle(
+                "androidx.annotation",
+                listOf(
+                    "androidx.annotation",
+                    "androidx.annotation.jvm"
+                )
+            )
+
+            version(
+                "androidx.appcompat",
+                "1.6.1"
+            )
+            library(
+                "androidx.appcompat",
+                "androidx.appcompat",
+                "appcompat"
+            ).versionRef("androidx.appcompat")
+            library(
+                "androidx.appcompat.resources",
+                "androidx.appcompat",
+                "appcompat-resources"
+            ).versionRef("androidx.appcompat")
+            bundle(
+                "androidx.appcompat",
+                listOf(
+                    "androidx.appcompat",
+                    "androidx.appcompat.resources"
+                )
+            )
 
             version(
                 "androidx.compose.compiler",
@@ -155,6 +187,22 @@ dependencyResolutionManagement {
                 "androidx.compose.ui",
                 "ui-test-junit4"
             ).versionRef("androidx.compose.ui")
+            bundle(
+                "androidx.compose.ui",
+                listOf(
+                    "androidx.compose.ui",
+                    "androidx.compose.ui.geometry",
+                    "androidx.compose.ui.graphics"
+                )
+            )
+            bundle(
+                "androidx.compose.ui.tooling",
+                listOf(
+                    "androidx.compose.ui.tooling",
+                    "androidx.compose.ui.tooling.data",
+                    "androidx.compose.ui.tooling.preview"
+                )
+            )
 
             version(
                 "androidx.compose.material",
@@ -180,6 +228,15 @@ dependencyResolutionManagement {
                 "androidx.compose.material",
                 "material-ripple"
             ).versionRef("androidx.compose.material")
+            bundle(
+                "androidx.compose.material",
+                listOf(
+                    "androidx.compose.material",
+                    "androidx.compose.material.icons.core",
+                    "androidx.compose.material.icons.extended",
+                    "androidx.compose.material.ripple"
+                )
+            )
 
             version(
                 "androidx.compose.material3",
@@ -195,21 +252,13 @@ dependencyResolutionManagement {
                 "androidx.compose.material3",
                 "material3-window-size-class"
             ).versionRef("androidx.compose.material3")
-
-            version(
-                "androidx.appcompat",
-                "1.6.1"
+            bundle(
+                "androidx.compose.material3",
+                listOf(
+                    "androidx.compose.material3",
+                    "androidx.compose.material3.wsc"
+                )
             )
-            library(
-                "androidx.appcompat",
-                "androidx.appcompat",
-                "appcompat"
-            ).versionRef("androidx.appcompat")
-            library(
-                "androidx.appcompat.resources",
-                "androidx.appcompat",
-                "appcompat-resources"
-            ).versionRef("androidx.appcompat")
 
             version(
                 "androidx.activity",
@@ -230,6 +279,14 @@ dependencyResolutionManagement {
                 "androidx.activity",
                 "activity-ktx"
             ).versionRef("androidx.activity")
+            bundle(
+                "androidx.activity",
+                listOf(
+                    "androidx.activity",
+                    "androidx.activity.compose",
+                    "androidx.activity.ktx"
+                )
+            )
 
             version(
                 "androidx.fragment",
@@ -245,6 +302,13 @@ dependencyResolutionManagement {
                 "androidx.fragment",
                 "fragment-ktx"
             ).versionRef("androidx.fragment")
+            bundle(
+                "androidx.fragment",
+                listOf(
+                    "androidx.fragment",
+                    "androidx.fragment.ktx"
+                )
+            )
 
             version(
                 "androidx.lifecycle",
@@ -300,6 +364,20 @@ dependencyResolutionManagement {
                 "androidx.lifecycle",
                 "lifecycle-viewmodel-ktx"
             ).versionRef("androidx.lifecycle")
+            bundle(
+                "androidx.lifecycle",
+                listOf(
+                    "androidx.lifecycle.runtime",
+                    "androidx.lifecycle.runtime.ktx",
+                    "androidx.lifecycle.common",
+                    "androidx.lifecycle.livedata",
+                    "androidx.lifecycle.livedata.ktx",
+                    "androidx.lifecycle.livedata.core",
+                    "androidx.lifecycle.livedata.core.ktx",
+                    "androidx.lifecycle.viewmodel",
+                    "androidx.lifecycle.viewmodel.ktx"
+                )
+            )
 
             version(
                 "androidx.camera",
@@ -335,26 +413,17 @@ dependencyResolutionManagement {
                 "androidx.camera",
                 "camera-extensions"
             ).versionRef("androidx.camera")
-
-            version(
-                "androidx.test.junit",
-                "1.1.5"
+            bundle(
+                "androidx.camera",
+                listOf(
+                    "androidx.camera.core",
+                    "androidx.camera.camera2",
+                    "androidx.camera.video",
+                    "androidx.camera.view",
+                    "androidx.camera.lifecycle",
+                    "androidx.camera.extensions"
+                )
             )
-            library(
-                "androidx.test.junit",
-                "androidx.test.ext",
-                "junit"
-            ).versionRef("androidx.test.junit")
-
-            version(
-                "androidx.test.espresso",
-                "3.5.1"
-            )
-            library(
-                "androidx.test.espresso",
-                "androidx.test.espresso",
-                "espresso-core"
-            ).versionRef("androidx.test.espresso")
 
             version(
                 "androidx.window",
@@ -380,79 +449,36 @@ dependencyResolutionManagement {
                 "androidx.window",
                 "window-testing"
             ).versionRef("androidx.window")
-
-
             bundle(
-                "androidx",
+                "androidx.window",
                 listOf(
-                    "androidx.core",
-                    "androidx.core.ktx",
-                    "androidx.annotation",
-                    "androidx.annotation.jvm",
-                    "androidx.appcompat",
-                    "androidx.appcompat.resources",
-                    "androidx.fragment",
-                    "androidx.fragment.ktx",
-                    "androidx.lifecycle.runtime",
-                    "androidx.lifecycle.runtime.ktx",
-                    "androidx.lifecycle.common",
-                    "androidx.lifecycle.livedata",
-                    "androidx.lifecycle.livedata.ktx",
-                    "androidx.lifecycle.livedata.core",
-                    "androidx.lifecycle.livedata.core.ktx",
-                    "androidx.lifecycle.viewmodel",
-                    "androidx.lifecycle.viewmodel.ktx",
                     "androidx.window",
                     "androidx.window.core",
                     "androidx.window.java"
                 )
             )
-            bundle(
-                "androidx.compose",
-                listOf(
-                    "androidx.compose.ui",
-                    "androidx.compose.ui.geometry",
-                    "androidx.compose.ui.graphics",
-                    "androidx.compose.material",
-                    "androidx.compose.material.icons.core",
-                    "androidx.compose.material.icons.extended",
-                    "androidx.compose.material.ripple",
-                    "androidx.compose.material3",
-                    "androidx.compose.material3.wsc",
-                    "androidx.activity",
-                    "androidx.activity.compose",
-                    "androidx.activity.ktx"
-                )
-            )
-            bundle(
-                "androidx.compose.debug",
-                listOf(
-                    "androidx.compose.ui.tooling",
-                    "androidx.compose.ui.tooling.data",
-                    "androidx.compose.ui.tooling.preview"
-                )
-            )
-            bundle(
-                "androidx.camera",
-                listOf(
-                    "androidx.camera.core",
-                    "androidx.camera.camera2",
-                    "androidx.camera.video",
-                    "androidx.camera.view",
-                    "androidx.camera.lifecycle",
-                    "androidx.camera.extensions"
-                )
-            )
-            bundle(
-                "androidx.test",
-                listOf(
-                    "androidx.test.junit",
-                    "androidx.test.espresso",
-                    "androidx.window.testing"
-                )
-            )
 
-            // OkHttp
+            version(
+                "androidx.test.junit",
+                "1.1.5"
+            )
+            library(
+                "androidx.test.junit",
+                "androidx.test.ext",
+                "junit"
+            ).versionRef("androidx.test.junit")
+
+            version(
+                "androidx.test.espresso",
+                "3.5.1"
+            )
+            library(
+                "androidx.test.espresso",
+                "androidx.test.espresso",
+                "espresso-core"
+            ).versionRef("androidx.test.espresso")
+
+
             version(
                 "okhttp",
                 "4.11.0"
@@ -463,7 +489,6 @@ dependencyResolutionManagement {
                 "okhttp"
             ).versionRef("okhttp")
 
-            // Glide
             version(
                 "glide",
                 "5.0.0-rc01"
@@ -483,6 +508,13 @@ dependencyResolutionManagement {
                 "com.github.bumptech.glide",
                 "ksp"
             ).versionRef("glide")
+            bundle(
+                "glide",
+                listOf(
+                    "glide",
+                    "glide.okhttp"
+                )
+            )
 
             version(
                 "glide.compose",
@@ -493,15 +525,6 @@ dependencyResolutionManagement {
                 "com.github.bumptech.glide",
                 "compose"
             ).versionRef("glide.compose")
-
-            bundle(
-                "glide",
-                listOf(
-                    "glide",
-                    "glide.okhttp",
-                    "glide.compose"
-                )
-            )
 
             version(
                 "junit",
