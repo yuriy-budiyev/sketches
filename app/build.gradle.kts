@@ -59,6 +59,7 @@ dependencies {
     implementation(sketches.bundles.kotlin)
     implementation(sketches.bundles.androidx)
     implementation(sketches.bundles.androidx.compose)
+    implementation(sketches.bundles.androidx.camera)
     implementation(sketches.okhttp)
     implementation(sketches.bundles.glide)
     ksp(sketches.glide.ksp)

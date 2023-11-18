@@ -302,6 +302,41 @@ dependencyResolutionManagement {
             ).versionRef("androidx.lifecycle")
 
             version(
+                "androidx.camera",
+                "1.3.0"
+            )
+            library(
+                "androidx.camera.core",
+                "androidx.camera",
+                "camera-core"
+            ).versionRef("androidx.camera")
+            library(
+                "androidx.camera.camera2",
+                "androidx.camera",
+                "camera-camera2"
+            ).versionRef("androidx.camera")
+            library(
+                "androidx.camera.video",
+                "androidx.camera",
+                "camera-video"
+            ).versionRef("androidx.camera")
+            library(
+                "androidx.camera.view",
+                "androidx.camera",
+                "camera-view"
+            ).versionRef("androidx.camera")
+            library(
+                "androidx.camera.lifecycle",
+                "androidx.camera",
+                "camera-lifecycle"
+            ).versionRef("androidx.camera")
+            library(
+                "androidx.camera.extensions",
+                "androidx.camera",
+                "camera-extensions"
+            ).versionRef("androidx.camera")
+
+            version(
                 "androidx.test.junit",
                 "1.1.5"
             )
@@ -367,6 +402,17 @@ dependencyResolutionManagement {
                     "androidx.compose.ui.tooling",
                     "androidx.compose.ui.tooling.data",
                     "androidx.compose.ui.tooling.preview"
+                )
+            )
+            bundle(
+                "androidx.camera",
+                listOf(
+                    "androidx.camera.core",
+                    "androidx.camera.camera2",
+                    "androidx.camera.video",
+                    "androidx.camera.view",
+                    "androidx.camera.lifecycle",
+                    "androidx.camera.extensions"
                 )
             )
             bundle(
