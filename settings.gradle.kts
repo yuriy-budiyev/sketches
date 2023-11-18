@@ -356,6 +356,32 @@ dependencyResolutionManagement {
                 "espresso-core"
             ).versionRef("androidx.test.espresso")
 
+            version(
+                "androidx.window",
+                "1.2.0"
+            )
+            library(
+                "androidx.window",
+                "androidx.window",
+                "window"
+            ).versionRef("androidx.window")
+            library(
+                "androidx.window.core",
+                "androidx.window",
+                "window-core"
+            ).versionRef("androidx.window")
+            library(
+                "androidx.window.java",
+                "androidx.window",
+                "window-java"
+            ).versionRef("androidx.window")
+            library(
+                "androidx.window.testing",
+                "androidx.window",
+                "window-testing"
+            ).versionRef("androidx.window")
+
+
             bundle(
                 "androidx",
                 listOf(
@@ -375,8 +401,10 @@ dependencyResolutionManagement {
                     "androidx.lifecycle.livedata.core",
                     "androidx.lifecycle.livedata.core.ktx",
                     "androidx.lifecycle.viewmodel",
-                    "androidx.lifecycle.viewmodel.savedstate",
-                    "androidx.lifecycle.viewmodel.ktx"
+                    "androidx.lifecycle.viewmodel.ktx",
+                    "androidx.window",
+                    "androidx.window.core",
+                    "androidx.window.java"
                 )
             )
             bundle(
@@ -419,7 +447,8 @@ dependencyResolutionManagement {
                 "androidx.test",
                 listOf(
                     "androidx.test.junit",
-                    "androidx.test.espresso"
+                    "androidx.test.espresso",
+                    "androidx.window.testing"
                 )
             )
 
