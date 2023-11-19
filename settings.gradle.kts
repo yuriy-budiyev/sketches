@@ -141,11 +141,6 @@ dependencyResolutionManagement {
                 "collection"
             ).versionRef("androidx.collection")
             library(
-                "androidx.collection.jvm",
-                "androidx.collection",
-                "collection-jvm"
-            ).versionRef("androidx.collection")
-            library(
                 "androidx.collection.ktx",
                 "androidx.collection",
                 "collection-ktx"
@@ -154,8 +149,29 @@ dependencyResolutionManagement {
                 "androidx.collection",
                 listOf(
                     "androidx.collection",
-                    "androidx.collection.jvm",
                     "androidx.collection.ktx"
+                )
+            )
+
+            version(
+                "androidx.concurrent",
+                "1.1.0"
+            )
+            library(
+                "androidx.concurrent.futures",
+                "androidx.concurrent",
+                "concurrent-futures"
+            ).versionRef("androidx.concurrent")
+            library(
+                "androidx.concurrent.futures.ktx",
+                "androidx.concurrent",
+                "concurrent-futures-ktx"
+            ).versionRef("androidx.concurrent")
+            bundle(
+                "androidx.concurrent",
+                listOf(
+                    "androidx.concurrent.futures",
+                    "androidx.concurrent.futures.ktx"
                 )
             )
 
@@ -514,7 +530,6 @@ dependencyResolutionManagement {
                 "androidx.test.espresso",
                 "espresso-core"
             ).versionRef("androidx.test.espresso")
-
 
             version(
                 "okhttp",
