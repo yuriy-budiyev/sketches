@@ -59,6 +59,7 @@ dependencies {
     implementation(sketches.bundles.kotlin)
     implementation(sketches.bundles.androidx.core)
     implementation(sketches.bundles.androidx.annotation)
+    implementation(sketches.bundles.androidx.collection)
     implementation(sketches.bundles.androidx.lifecycle)
     implementation(sketches.bundles.androidx.appcompat)
     implementation(sketches.bundles.androidx.fragment)

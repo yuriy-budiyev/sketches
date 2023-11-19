@@ -132,6 +132,34 @@ dependencyResolutionManagement {
             )
 
             version(
+                "androidx.collection",
+                "1.3.0"
+            )
+            library(
+                "androidx.collection",
+                "androidx.collection",
+                "collection"
+            ).versionRef("androidx.collection")
+            library(
+                "androidx.collection.jvm",
+                "androidx.collection",
+                "collection-jvm"
+            ).versionRef("androidx.collection")
+            library(
+                "androidx.collection.ktx",
+                "androidx.collection",
+                "collection-ktx"
+            ).versionRef("androidx.collection")
+            bundle(
+                "androidx.collection",
+                listOf(
+                    "androidx.collection",
+                    "androidx.collection.jvm",
+                    "androidx.collection.ktx"
+                )
+            )
+
+            version(
                 "androidx.appcompat",
                 "1.6.1"
             )
