@@ -1,6 +1,5 @@
 package com.github.yuriybudiyev.sketches
 
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -10,10 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
 import com.github.yuriybudiyev.sketches.ui.theme.SketchesTheme
 
 class MainActivity : AppCompatActivity() {
@@ -25,8 +21,7 @@ class MainActivity : AppCompatActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
-
-                    ) {
+                ) {
                     Greeting("Android")
                 }
 
@@ -34,16 +29,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-}
-
-@Composable
-@OptIn(ExperimentalGlideComposeApi::class)
-fun ImageItem(uri: Uri) {
-    GlideImage(
-        model = uri,
-        contentDescription = "Image",
-        contentScale = ContentScale.Crop
-    )
 }
 
 @Composable
