@@ -201,6 +201,7 @@ dependencyResolutionManagement {
                 "androidx.compose.compiler",
                 "1.5.4"
             )
+
             version(
                 "androidx.compose.ui",
                 "1.5.4"
@@ -254,6 +255,28 @@ dependencyResolutionManagement {
                     "androidx.compose.ui.tooling",
                     "androidx.compose.ui.tooling.data",
                     "androidx.compose.ui.tooling.preview"
+                )
+            )
+
+            version(
+                "androidx.compose.foundation",
+                "1.5.4"
+            )
+            library(
+                "androidx.compose.foundation",
+                "androidx.compose.foundation",
+                "foundation"
+            ).versionRef("androidx.compose.foundation")
+            library(
+                "androidx.compose.foundation.layout",
+                "androidx.compose.foundation",
+                "foundation-layout"
+            ).versionRef("androidx.compose.foundation")
+            bundle(
+                "androidx.compose.foundation",
+                listOf(
+                    "androidx.compose.foundation",
+                    "androidx.compose.foundation.layout"
                 )
             )
 

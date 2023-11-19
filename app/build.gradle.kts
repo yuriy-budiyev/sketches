@@ -67,7 +67,7 @@ dependencies {
     implementation(sketches.bundles.androidx.window)
     implementation(sketches.bundles.androidx.activity)
     implementation(sketches.bundles.androidx.compose.ui)
-    debugImplementation(sketches.bundles.androidx.compose.ui.tooling)
+    implementation(sketches.bundles.androidx.compose.foundation)
     implementation(sketches.bundles.androidx.compose.material)
     implementation(sketches.bundles.androidx.compose.material3)
     implementation(sketches.bundles.androidx.camera)
@@ -75,6 +75,9 @@ dependencies {
     implementation(sketches.bundles.glide)
     implementation(sketches.glide.compose)
     ksp(sketches.glide.ksp)
+
+    debugImplementation(sketches.bundles.androidx.compose.ui.tooling)
+
     testImplementation(sketches.junit)
     androidTestImplementation(sketches.androidx.test.junit)
     androidTestImplementation(sketches.androidx.test.espresso)
