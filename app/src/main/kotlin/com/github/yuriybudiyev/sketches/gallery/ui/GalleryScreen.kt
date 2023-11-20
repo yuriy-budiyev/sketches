@@ -9,14 +9,11 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun GalleryScreen(viewModel: GalleryViewModel) {
-    val uiState =
-        viewModel.uiState.collectAsState()
+    val uiState = viewModel.uiState.collectAsState()
     LazyVerticalGrid(columns = GridCells.Adaptive(128.dp)) {
-        val images =
-            uiState.value.images
-        items(
-            images,
-            { it.id }) {
+        val images = uiState.value.images
+        items(images,
+              { it.id }) {
 
         }
     }

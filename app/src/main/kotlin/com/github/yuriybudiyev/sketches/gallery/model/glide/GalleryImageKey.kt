@@ -23,8 +23,6 @@ class GalleryImageKey(image: GalleryImage) : Key {
     override fun toString(): String =
         key
 
-    private val key: String =
-        "galley_image_${image.id}"
-    private val keyBytes: ByteArray =
-        key.toByteArray(Key.CHARSET)
+    private val key: String = "galley_image_${image.id}"
+    private val keyBytes: ByteArray = key.toByteArray(Key.CHARSET)
 }
