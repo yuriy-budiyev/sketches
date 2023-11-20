@@ -628,5 +628,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "sketches"
+rootProject.name =
+    "sketches"
+
 include(":app")
