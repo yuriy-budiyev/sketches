@@ -7,6 +7,7 @@ import com.github.yuriybudiyev.sketches.gallery.model.data.GalleryImage
 import java.io.InputStream
 
 class GalleryImageLoader(private val context: Context) : ModelLoader<GalleryImage, InputStream> {
+
     override fun buildLoadData(
         model: GalleryImage,
         width: Int,

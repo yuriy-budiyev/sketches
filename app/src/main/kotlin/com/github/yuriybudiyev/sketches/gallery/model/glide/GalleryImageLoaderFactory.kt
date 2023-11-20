@@ -9,6 +9,7 @@ import java.io.InputStream
 
 class GalleryImageLoaderFactory(private val context: Context) :
     ModelLoaderFactory<GalleryImage, InputStream> {
+
     override fun build(multiFactory: MultiModelLoaderFactory): ModelLoader<GalleryImage, InputStream> =
         GalleryImageLoader(context)
 
