@@ -14,9 +14,6 @@ class GalleryActivity : AppCompatActivity() {
             this,
             ViewModelProvider.AndroidViewModelFactory(application)
         ).get()
-        viewModel.images.observe(this) { images ->
-
-        }
     }
 
     private lateinit var viewModel: GalleryViewModel
