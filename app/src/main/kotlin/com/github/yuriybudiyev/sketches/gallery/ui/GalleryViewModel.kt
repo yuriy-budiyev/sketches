@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class GalleryActivityViewModel(application: Application) : AndroidViewModel(application) {
+class GalleryViewModel(application: Application) : AndroidViewModel(application) {
 
     val images: LiveData<List<GalleryImage>>
         get() = imagesInternal
