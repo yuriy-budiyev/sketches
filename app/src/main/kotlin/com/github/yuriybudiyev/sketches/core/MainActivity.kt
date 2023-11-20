@@ -1,4 +1,4 @@
-package com.github.yuriybudiyev.sketches
+package com.github.yuriybudiyev.sketches.core
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -10,7 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.github.yuriybudiyev.sketches.ui.theme.SketchesTheme
+import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

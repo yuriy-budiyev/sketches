@@ -1,4 +1,4 @@
-package com.github.yuriybudiyev.sketches.ui.theme
+package com.github.yuriybudiyev.sketches.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
