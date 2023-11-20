@@ -1,8 +1,10 @@
 package com.github.yuriybudiyev.sketches.gallery.ui
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import com.github.yuriybudiyev.sketches.gallery.model.reository.GalleryRepository
 
-class GalleryActivityViewModel(private val repository: GalleryRepository) : ViewModel() {
+class GalleryActivityViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val repository: GalleryRepository = GalleryRepository(application.applicationContext)
 }
