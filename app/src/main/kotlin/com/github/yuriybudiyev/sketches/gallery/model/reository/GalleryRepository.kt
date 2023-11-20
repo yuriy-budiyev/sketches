@@ -11,7 +11,7 @@ import kotlinx.coroutines.withContext
 
 class GalleryRepository(private val context: Context) {
 
-    suspend fun getMediaStoreImages(): List<GalleryImage>? {
+    suspend fun getImages(): List<GalleryImage>? {
         val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
         } else {
