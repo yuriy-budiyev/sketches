@@ -1,4 +1,4 @@
-package com.github.yuriybudiyev.sketches.core.glide
+package com.github.yuriybudiyev.sketches.gallery.model.glide
 
 import com.bumptech.glide.load.Key
 import com.github.yuriybudiyev.sketches.gallery.model.data.GalleryImage

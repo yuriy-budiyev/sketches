@@ -1,4 +1,4 @@
-package com.github.yuriybudiyev.sketches.core.glide
+package com.github.yuriybudiyev.sketches.gallery.model.glide
 
 import android.net.Uri
 import com.bumptech.glide.Priority
