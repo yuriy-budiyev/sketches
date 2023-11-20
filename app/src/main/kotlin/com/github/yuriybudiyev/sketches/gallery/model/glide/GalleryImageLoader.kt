@@ -1,20 +1,24 @@
 package com.github.yuriybudiyev.sketches.gallery.model.glide
 
-import android.net.Uri
+import android.content.Context
 import com.bumptech.glide.load.Options
 import com.bumptech.glide.load.model.ModelLoader
 import com.github.yuriybudiyev.sketches.gallery.model.data.GalleryImage
+import java.io.InputStream
 
-class GalleryImageLoader : ModelLoader<GalleryImage, Uri> {
+class GalleryImageLoader(private val context: Context) : ModelLoader<GalleryImage, InputStream> {
     override fun buildLoadData(
         model: GalleryImage,
         width: Int,
         height: Int,
         options: Options
-    ): ModelLoader.LoadData<Uri> =
+    ): ModelLoader.LoadData<InputStream> =
         ModelLoader.LoadData(
             GalleryImageKey(model),
-            GalleryImageFetcher(model)
+            GalleryImageFetcher(
+                context,
+                model
+            )
         )
 
     override fun handles(model: GalleryImage): Boolean =
