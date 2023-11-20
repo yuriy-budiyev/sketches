@@ -18,12 +18,14 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
 
     fun loadImages() {
         viewModelScope.launch {
-            val images = withContext(Dispatchers.Default) { repository.getImages() }
+            val images =
+                withContext(Dispatchers.Default) { repository.getImages() }
             uiStateInternal.update { GalleryUiState(images ?: emptyList()) }
         }
     }
 
-    private val repository: GalleryRepository = GalleryRepository(application.applicationContext)
+    private val repository: GalleryRepository =
+        GalleryRepository(application.applicationContext)
     private val uiStateInternal: MutableStateFlow<GalleryUiState> =
         MutableStateFlow(GalleryUiState(emptyList()))
 }

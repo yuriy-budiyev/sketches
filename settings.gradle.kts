@@ -403,6 +403,11 @@ dependencyResolutionManagement {
             library(
                 "androidx.lifecycle.common",
                 "androidx.lifecycle",
+                "lifecycle-common"
+            ).versionRef("androidx.lifecycle")
+            library(
+                "androidx.lifecycle.common.java8",
+                "androidx.lifecycle",
                 "lifecycle-common-java8"
             ).versionRef("androidx.lifecycle")
             library(
@@ -436,6 +441,11 @@ dependencyResolutionManagement {
                 "lifecycle-viewmodel-savedstate"
             ).versionRef("androidx.lifecycle")
             library(
+                "androidx.lifecycle.viewmodel.compose",
+                "androidx.lifecycle",
+                "lifecycle-viewmodel-compose"
+            ).versionRef("androidx.lifecycle")
+            library(
                 "androidx.lifecycle.viewmodel.ktx",
                 "androidx.lifecycle",
                 "lifecycle-viewmodel-ktx"
@@ -443,14 +453,17 @@ dependencyResolutionManagement {
             bundle(
                 "androidx.lifecycle",
                 listOf(
+                    "androidx.lifecycle.common",
+                    "androidx.lifecycle.common.java8",
                     "androidx.lifecycle.runtime",
                     "androidx.lifecycle.runtime.ktx",
-                    "androidx.lifecycle.common",
                     "androidx.lifecycle.livedata",
                     "androidx.lifecycle.livedata.ktx",
                     "androidx.lifecycle.livedata.core",
                     "androidx.lifecycle.livedata.core.ktx",
                     "androidx.lifecycle.viewmodel",
+                    "androidx.lifecycle.viewmodel.savedstate",
+                    "androidx.lifecycle.viewmodel.compose",
                     "androidx.lifecycle.viewmodel.ktx"
                 )
             )
@@ -610,6 +623,7 @@ dependencyResolutionManagement {
                 "junit",
                 "junit"
             ).versionRef("junit")
+
         }
     }
 }
