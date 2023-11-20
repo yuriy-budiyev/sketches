@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 }
 
 @Composable
