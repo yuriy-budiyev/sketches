@@ -4,7 +4,7 @@ import com.bumptech.glide.load.Key
 import com.github.yuriybudiyev.sketches.gallery.model.data.GalleryImage
 import java.security.MessageDigest
 
-class GalleryImageModel(val image: GalleryImage) : Key {
+class GalleryImageKey(image: GalleryImage) : Key {
 
     override fun updateDiskCacheKey(messageDigest: MessageDigest) {
         messageDigest.update(keyBytes)
@@ -13,7 +13,7 @@ class GalleryImageModel(val image: GalleryImage) : Key {
     override fun equals(other: Any?): Boolean =
         when {
             other === this -> true
-            other is GalleryImageModel -> other.key == key
+            other is GalleryImageKey -> other.key == key
             else -> false
         }
 
