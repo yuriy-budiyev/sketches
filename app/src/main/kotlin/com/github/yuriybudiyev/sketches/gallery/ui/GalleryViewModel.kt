@@ -40,7 +40,7 @@ class GalleryViewModel(application: Application) : AndroidViewModel(application)
     val uiState: StateFlow<GalleryUiState>
         get() = uiStateInternal
 
-    fun loadImages() {
+    fun updateImages() {
         viewModelScope.launch {
             val images = withContext(Dispatchers.Default) { repository.getImages() }
             uiStateInternal.update { GalleryUiState(images ?: emptyList()) }
