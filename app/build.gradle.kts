@@ -74,6 +74,8 @@ dependencies {
     implementation(sketches.okhttp)
     implementation(sketches.bundles.glide)
     implementation(sketches.glide.compose)
+    implementation(sketches.androidsvg)
+
     ksp(sketches.glide.ksp)
 
     debugImplementation(sketches.bundles.androidx.compose.ui.tooling)

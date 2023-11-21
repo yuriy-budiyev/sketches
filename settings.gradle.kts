@@ -615,6 +615,18 @@ dependencyResolutionManagement {
             ).versionRef("glide.compose")
 
             version(
+                "androidsvg",
+                "1.4"
+            )
+            library(
+                "androidsvg",
+                "com.caverock",
+                "androidsvg"
+            ).versionRef("androidsvg")
+
+
+
+            version(
                 "junit",
                 "4.13.2"
             )
@@ -628,7 +640,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name =
-    "sketches"
+rootProject.name = "sketches"
 
 include(":app")
