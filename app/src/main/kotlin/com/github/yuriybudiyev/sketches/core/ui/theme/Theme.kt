@@ -50,7 +50,6 @@ fun SketchesTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> sketchesDarkColorScheme
         else -> sketchesLightColorScheme
     }
@@ -65,7 +64,6 @@ fun SketchesTheme(
             ).isAppearanceLightStatusBars = darkTheme
         }
     }
-
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
