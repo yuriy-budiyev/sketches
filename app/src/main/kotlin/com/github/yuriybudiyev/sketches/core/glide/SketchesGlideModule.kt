@@ -34,6 +34,7 @@ import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.load.engine.executor.GlideExecutor
 import com.bumptech.glide.load.resource.bitmap.BitmapDrawableDecoder
 import com.bumptech.glide.module.AppGlideModule
+import com.github.yuriybudiyev.sketches.core.glide.svg.SvgBitmapDecoder
 import com.github.yuriybudiyev.sketches.gallery.model.data.GalleryImage
 import com.github.yuriybudiyev.sketches.gallery.model.glide.GalleryImageLoaderFactory
 import java.io.InputStream

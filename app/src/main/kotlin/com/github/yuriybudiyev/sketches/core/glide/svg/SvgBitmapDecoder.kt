@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.glide
+package com.github.yuriybudiyev.sketches.core.glide.svg
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -72,14 +72,12 @@ class SvgBitmapDecoder(private val bitmapPool: BitmapPool) : ResourceDecoder<Inp
                     outWidth = baseWidth.toInt()
                     outHeight = (baseWidth / originalWidth * originalHeight).toInt()
                 }
-
                 width > height -> {
                     val baseHeight: Float =
                         if (height == Target.SIZE_ORIGINAL) originalHeight else height.toFloat()
                     outWidth = (baseHeight / originalHeight * originalWidth).toInt()
                     outHeight = baseHeight.toInt()
                 }
-
                 else -> {
                     outWidth = if (width == Target.SIZE_ORIGINAL) originalWidth.toInt() else width
                     outHeight =
