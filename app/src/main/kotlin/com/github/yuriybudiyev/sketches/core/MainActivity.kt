@@ -24,51 +24,49 @@
 
 package com.github.yuriybudiyev.sketches.core
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.get
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
+import com.github.yuriybudiyev.sketches.gallery.ui.GalleryScreen
+import com.github.yuriybudiyev.sketches.gallery.ui.GalleryViewModel
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory(application)
+        ).get()
         setContent {
             SketchesTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background,
-                ) {
-                    Greeting("Android")
-                }
-
+                GalleryScreen(viewModel)
+            }
+        }
+        if (checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED) {
+            viewModel.updateImages()
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                imagesPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
+            } else {
+                imagesPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
             }
         }
     }
-}
 
-@Composable
-fun Greeting(
-    name: String,
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    private lateinit var viewModel: GalleryViewModel
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SketchesTheme {
-        Greeting("Android")
-    }
+    private val imagesPermissionLauncher: ActivityResultLauncher<String> =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                viewModel.updateImages()
+            }
+        }
 }
