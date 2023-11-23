@@ -82,12 +82,13 @@ dependencies {
     ksp(sketches.hilt.compiler)
     ksp(sketches.androidx.hilt.compiler)
 
-    debugImplementation(sketches.bundles.androidx.compose.ui.tooling)
-
     testImplementation(sketches.junit)
+
     androidTestImplementation(sketches.androidx.test.junit)
     androidTestImplementation(sketches.androidx.test.espresso)
     androidTestImplementation(sketches.androidx.compose.ui.test.junit)
     androidTestImplementation(sketches.androidx.window.testing)
     androidTestImplementation(sketches.hilt.testing)
+
+    debugImplementation(sketches.bundles.androidx.compose.ui.tooling)
 }
