@@ -35,4 +35,6 @@ sealed interface GalleryUiState {
     data object NoPermission: GalleryUiState
 
     data class Success(val images: List<GalleryImage>): GalleryUiState
+
+    data class Error(val thrown: Exception): GalleryUiState
 }
