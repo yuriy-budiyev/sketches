@@ -32,26 +32,18 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
-import com.github.yuriybudiyev.sketches.gallery.ui.GalleryScreen
-import com.github.yuriybudiyev.sketches.gallery.ui.GalleryViewModel
 
 class MainActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.AndroidViewModelFactory(application)
-        ).get()
         setContent {
             SketchesTheme {
-                GalleryScreen(viewModel)
+
             }
         }
         if (checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED) {
-            viewModel.updateImages()
+
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 imagesPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
@@ -61,12 +53,11 @@ class MainActivity: AppCompatActivity() {
         }
     }
 
-    private lateinit var viewModel: GalleryViewModel
 
     private val imagesPermissionLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             if (granted) {
-                viewModel.updateImages()
+
             }
         }
 }

@@ -24,28 +24,39 @@
 
 package com.github.yuriybudiyev.sketches.gallery.ui
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.gallery.data.reository.GalleryRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class GalleryViewModel(application: Application): AndroidViewModel(application) {
+class GalleryViewModel(private val repository: GalleryRepository): ViewModel() {
 
     val uiState: StateFlow<GalleryUiState>
         get() = uiStateInternal
 
     fun updateImages() {
-        viewModelScope.launch {
-            val images = withContext(Dispatchers.Default) { repository.getImages() }
+        loadImagesJob?.cancel()
+        loadImagesJob = viewModelScope.launch {
+            uiStateInternal.value = GalleryUiState.Loading
+            try {
+                val images = withContext(Dispatchers.Default) { repository.getImages() }
+                if (!images.isNullOrEmpty()) {
+                    uiStateInternal.value = GalleryUiState.Success(images)
+                } else {
+                    uiStateInternal.value = GalleryUiState.Empty
+                }
+            } catch (e: Exception) {
+                uiStateInternal.value = GalleryUiState.Error(e)
+            }
         }
     }
 
-    private val repository: GalleryRepository = GalleryRepository(application.applicationContext)
     private val uiStateInternal: MutableStateFlow<GalleryUiState> =
         MutableStateFlow(GalleryUiState.Empty)
+    private var loadImagesJob: Job? = null
 }
