@@ -47,5 +47,5 @@ class GalleryViewModel(application: Application): AndroidViewModel(application) 
 
     private val repository: GalleryRepository = GalleryRepository(application.applicationContext)
     private val uiStateInternal: MutableStateFlow<GalleryUiState> =
-        MutableStateFlow(GalleryUiState.Loading)
+        MutableStateFlow(GalleryUiState.Empty)
 }
