@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.glide.svg
+package com.github.yuriybudiyev.sketches.core.data.glide.svg
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -37,7 +37,7 @@ import com.caverock.androidsvg.SVGParseException
 import java.io.IOException
 import java.io.InputStream
 
-class SvgBitmapDecoder(private val bitmapPool: BitmapPool) : ResourceDecoder<InputStream, Bitmap> {
+class SvgBitmapDecoder(private val bitmapPool: BitmapPool): ResourceDecoder<InputStream, Bitmap> {
 
     override fun handles(
         source: InputStream,

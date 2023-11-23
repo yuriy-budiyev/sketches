@@ -22,20 +22,20 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.gallery.model.glide
+package com.github.yuriybudiyev.sketches.gallery.data.glide
 
 import android.content.Context
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.data.DataFetcher
-import com.github.yuriybudiyev.sketches.gallery.model.data.GalleryImage
+import com.github.yuriybudiyev.sketches.gallery.data.model.GalleryImage
 import okhttp3.internal.closeQuietly
 import java.io.InputStream
 
 class GalleryImageFetcher(
     private val context: Context,
     private val image: GalleryImage
-) : DataFetcher<InputStream> {
+): DataFetcher<InputStream> {
 
     override fun loadData(
         priority: Priority,

@@ -624,7 +624,70 @@ dependencyResolutionManagement {
                 "androidsvg"
             ).versionRef("androidsvg")
 
+            version(
+                "hilt",
+                "2.48.1"
+            )
+            library(
+                "hilt",
+                "com.google.dagger",
+                "hilt-android"
+            ).versionRef("hilt")
+            library(
+                "hilt.compiler",
+                "com.google.dagger",
+                "hilt-compiler"
+            ).versionRef("hilt")
+            library(
+                "hilt.testing",
+                "com.google.dagger",
+                "hilt-android-testing"
+            ).versionRef("hilt")
 
+            version(
+                "androidx.hilt",
+                "1.1.0"
+            )
+            library(
+                "androidx.hilt.common",
+                "androidx.hilt",
+                "hilt-common"
+            ).versionRef("androidx.hilt")
+            library(
+                "androidx.hilt.work",
+                "androidx.hilt",
+                "hilt-work"
+            ).versionRef("androidx.hilt")
+            library(
+                "androidx.hilt.navigation",
+                "androidx.hilt",
+                "hilt-navigation"
+            ).versionRef("androidx.hilt")
+            library(
+                "androidx.hilt.navigation.fragment",
+                "androidx.hilt",
+                "hilt-navigation-fragment"
+            ).versionRef("androidx.hilt")
+            library(
+                "androidx.hilt.navigation.compose",
+                "androidx.hilt",
+                "hilt-navigation-compose"
+            ).versionRef("androidx.hilt")
+            library(
+                "androidx.hilt.compiler",
+                "androidx.hilt",
+                "hilt-compiler"
+            ).versionRef("androidx.hilt")
+            bundle(
+                "androidx.hilt",
+                listOf(
+                    "androidx.hilt.common",
+                    "androidx.hilt.work",
+                    "androidx.hilt.navigation",
+                    "androidx.hilt.navigation.fragment",
+                    "androidx.hilt.navigation.compose"
+                )
+            )
 
             version(
                 "junit",

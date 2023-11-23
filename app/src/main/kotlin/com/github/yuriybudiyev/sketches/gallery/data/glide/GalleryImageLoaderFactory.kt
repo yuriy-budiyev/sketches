@@ -22,17 +22,21 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.gallery.model.data
+package com.github.yuriybudiyev.sketches.gallery.data.glide
 
-import android.net.Uri
+import android.content.Context
+import com.bumptech.glide.load.model.ModelLoader
+import com.bumptech.glide.load.model.ModelLoaderFactory
+import com.bumptech.glide.load.model.MultiModelLoaderFactory
+import com.github.yuriybudiyev.sketches.gallery.data.model.GalleryImage
+import java.io.InputStream
 
-data class GalleryImage(
-    val id: Long,
-    val name: String,
-    val bucketId: Long,
-    val bucketName: String,
-    val dateAdded: Long,
-    val width: Int,
-    val height: Int,
-    val uri: Uri
-)
+class GalleryImageLoaderFactory(private val context: Context):
+    ModelLoaderFactory<GalleryImage, InputStream> {
+
+    override fun build(multiFactory: MultiModelLoaderFactory): ModelLoader<GalleryImage, InputStream> =
+        GalleryImageLoader(context)
+
+    override fun teardown() {
+    }
+}

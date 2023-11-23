@@ -38,7 +38,7 @@ import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
 import com.github.yuriybudiyev.sketches.gallery.ui.GalleryScreen
 import com.github.yuriybudiyev.sketches.gallery.ui.GalleryViewModel
 
-class MainActivity : AppCompatActivity() {
+class MainActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(

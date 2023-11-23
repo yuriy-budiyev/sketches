@@ -24,6 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.gallery.ui
 
-import com.github.yuriybudiyev.sketches.gallery.model.data.GalleryImage
+import com.github.yuriybudiyev.sketches.gallery.data.model.GalleryImage
 
-data class GalleryUiState(val images: List<GalleryImage>)
+sealed interface GalleryUiState {
+
+    data object Empty: GalleryUiState
+
+    data object Loading: GalleryUiState
+
+    data object NoPermission: GalleryUiState
+
+    data class Success(val images: List<GalleryImage>): GalleryUiState
+}

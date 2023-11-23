@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.glide
+package com.github.yuriybudiyev.sketches.core.data.glide
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -34,14 +34,14 @@ import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.load.engine.executor.GlideExecutor
 import com.bumptech.glide.load.resource.bitmap.BitmapDrawableDecoder
 import com.bumptech.glide.module.AppGlideModule
-import com.github.yuriybudiyev.sketches.core.glide.svg.SvgBitmapDecoder
-import com.github.yuriybudiyev.sketches.gallery.model.data.GalleryImage
-import com.github.yuriybudiyev.sketches.gallery.model.glide.GalleryImageLoaderFactory
+import com.github.yuriybudiyev.sketches.core.data.glide.svg.SvgBitmapDecoder
+import com.github.yuriybudiyev.sketches.gallery.data.glide.GalleryImageLoaderFactory
+import com.github.yuriybudiyev.sketches.gallery.data.model.GalleryImage
 import java.io.InputStream
 import kotlin.math.min
 
 @GlideModule(glideName = "SketchesGlide")
-class SketchesGlideModule : AppGlideModule() {
+class SketchesGlideModule: AppGlideModule() {
 
     override fun registerComponents(
         context: Context,

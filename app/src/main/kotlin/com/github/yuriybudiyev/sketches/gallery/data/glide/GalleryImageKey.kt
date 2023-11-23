@@ -22,21 +22,31 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.gallery.model.glide
+package com.github.yuriybudiyev.sketches.gallery.data.glide
 
-import android.content.Context
-import com.bumptech.glide.load.model.ModelLoader
-import com.bumptech.glide.load.model.ModelLoaderFactory
-import com.bumptech.glide.load.model.MultiModelLoaderFactory
-import com.github.yuriybudiyev.sketches.gallery.model.data.GalleryImage
-import java.io.InputStream
+import com.bumptech.glide.load.Key
+import com.github.yuriybudiyev.sketches.gallery.data.model.GalleryImage
+import java.security.MessageDigest
 
-class GalleryImageLoaderFactory(private val context: Context) :
-    ModelLoaderFactory<GalleryImage, InputStream> {
+class GalleryImageKey(image: GalleryImage): Key {
 
-    override fun build(multiFactory: MultiModelLoaderFactory): ModelLoader<GalleryImage, InputStream> =
-        GalleryImageLoader(context)
-
-    override fun teardown() {
+    override fun updateDiskCacheKey(messageDigest: MessageDigest) {
+        messageDigest.update(keyBytes)
     }
+
+    override fun equals(other: Any?): Boolean =
+        when {
+            other === this -> true
+            other is GalleryImageKey -> other.key == key
+            else -> false
+        }
+
+    override fun hashCode(): Int =
+        key.hashCode()
+
+    override fun toString(): String =
+        key
+
+    private val key: String = "galley_image_${image.id}"
+    private val keyBytes: ByteArray = key.toByteArray(Key.CHARSET)
 }

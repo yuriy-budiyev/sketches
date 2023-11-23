@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.gallery.model.reository
+package com.github.yuriybudiyev.sketches.gallery.data.reository
 
 import android.content.ContentUris
 import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
 import androidx.core.net.toUri
-import com.github.yuriybudiyev.sketches.gallery.model.data.GalleryImage
+import com.github.yuriybudiyev.sketches.gallery.data.model.GalleryImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

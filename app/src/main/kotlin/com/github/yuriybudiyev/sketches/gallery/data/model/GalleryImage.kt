@@ -22,31 +22,17 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.gallery.model.glide
+package com.github.yuriybudiyev.sketches.gallery.data.model
 
-import com.bumptech.glide.load.Key
-import com.github.yuriybudiyev.sketches.gallery.model.data.GalleryImage
-import java.security.MessageDigest
+import android.net.Uri
 
-class GalleryImageKey(image: GalleryImage) : Key {
-
-    override fun updateDiskCacheKey(messageDigest: MessageDigest) {
-        messageDigest.update(keyBytes)
-    }
-
-    override fun equals(other: Any?): Boolean =
-        when {
-            other === this -> true
-            other is GalleryImageKey -> other.key == key
-            else -> false
-        }
-
-    override fun hashCode(): Int =
-        key.hashCode()
-
-    override fun toString(): String =
-        key
-
-    private val key: String = "galley_image_${image.id}"
-    private val keyBytes: ByteArray = key.toByteArray(Key.CHARSET)
-}
+data class GalleryImage(
+    val id: Long,
+    val name: String,
+    val bucketId: Long,
+    val bucketName: String,
+    val dateAdded: Long,
+    val width: Int,
+    val height: Int,
+    val uri: Uri
+)

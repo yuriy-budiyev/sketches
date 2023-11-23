@@ -22,15 +22,15 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.gallery.model.glide
+package com.github.yuriybudiyev.sketches.gallery.data.glide
 
 import android.content.Context
 import com.bumptech.glide.load.Options
 import com.bumptech.glide.load.model.ModelLoader
-import com.github.yuriybudiyev.sketches.gallery.model.data.GalleryImage
+import com.github.yuriybudiyev.sketches.gallery.data.model.GalleryImage
 import java.io.InputStream
 
-class GalleryImageLoader(private val context: Context) : ModelLoader<GalleryImage, InputStream> {
+class GalleryImageLoader(private val context: Context): ModelLoader<GalleryImage, InputStream> {
 
     override fun buildLoadData(
         model: GalleryImage,
