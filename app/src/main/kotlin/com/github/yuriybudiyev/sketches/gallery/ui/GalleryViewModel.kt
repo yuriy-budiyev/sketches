@@ -39,9 +39,16 @@ class GalleryViewModel(private val repository: GalleryRepository): ViewModel() {
     val uiState: StateFlow<GalleryUiState>
         get() = uiStateInternal
 
+    fun setNoPermission() {
+        currentJob?.cancel()
+        currentJob = viewModelScope.launch {
+            uiStateInternal.value = GalleryUiState.NoPermission
+        }
+    }
+
     fun updateImages() {
-        loadImagesJob?.cancel()
-        loadImagesJob = viewModelScope.launch {
+        currentJob?.cancel()
+        currentJob = viewModelScope.launch {
             uiStateInternal.value = GalleryUiState.Loading
             try {
                 val images = withContext(Dispatchers.Default) { repository.getImages() }
@@ -58,5 +65,5 @@ class GalleryViewModel(private val repository: GalleryRepository): ViewModel() {
 
     private val uiStateInternal: MutableStateFlow<GalleryUiState> =
         MutableStateFlow(GalleryUiState.Empty)
-    private var loadImagesJob: Job? = null
+    private var currentJob: Job? = null
 }
