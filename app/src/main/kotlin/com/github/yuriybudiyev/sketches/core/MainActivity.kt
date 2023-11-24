@@ -35,6 +35,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
 
 class MainActivity: AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
