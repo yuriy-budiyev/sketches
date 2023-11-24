@@ -67,7 +67,6 @@ dependencies {
     implementation(sketches.bundles.androidx.activity)
     implementation(sketches.bundles.androidx.fragment)
     implementation(sketches.bundles.androidx.lifecycle)
-    implementation(sketches.bundles.androidx.camera)
     implementation(sketches.bundles.androidx.window)
     implementation(sketches.bundles.hilt)
     implementation(sketches.bundles.coil)

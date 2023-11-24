@@ -30,10 +30,12 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.core.net.toUri
 import com.github.yuriybudiyev.sketches.gallery.data.model.GalleryImage
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class GalleryRepository(private val context: Context) {
+class GalleryRepository @Inject constructor(@ApplicationContext private val context: Context) {
 
     suspend fun getImages(): List<GalleryImage>? {
         val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

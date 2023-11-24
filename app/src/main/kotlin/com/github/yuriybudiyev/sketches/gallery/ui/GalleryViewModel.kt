@@ -24,17 +24,24 @@
 
 package com.github.yuriybudiyev.sketches.gallery.ui
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.gallery.data.reository.GalleryRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class GalleryViewModel(private val repository: GalleryRepository): ViewModel() {
+@HiltViewModel
+class GalleryViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
+    private val repository: GalleryRepository
+): ViewModel() {
 
     val uiState: StateFlow<GalleryUiState>
         get() = uiStateInternal

@@ -25,8 +25,13 @@
 package com.github.yuriybudiyev.sketches.gallery.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.imageLoader
 
 @Composable
-fun GalleryScreen(viewModel: GalleryViewModel) {
+fun GalleryScreen(viewModel: GalleryViewModel = viewModel()) {
+    val context = LocalContext.current
+    val imageLoader = context.imageLoader
 
 }
