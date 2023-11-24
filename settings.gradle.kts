@@ -698,7 +698,6 @@ dependencyResolutionManagement {
                 "junit",
                 "junit"
             ).versionRef("junit")
-
         }
     }
 }
