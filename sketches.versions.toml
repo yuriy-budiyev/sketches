@@ -104,11 +104,11 @@ androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", vers
 hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
-coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
+coil = { group = "io.coil-kt", name = "coil-base", version.ref = "coil" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose-base", version.ref = "coil" }
 coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
 coil-gif = { group = "io.coil-kt", name = "coil-gif", version.ref = "coil" }
 coil-video = { group = "io.coil-kt", name = "coil-video", version.ref = "coil" }
-coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 
 [bundles]
 kotlin = ["kotlin-stdlib", "kotlin-reflect", "kotlin-coroutines-core", "kotlin-coroutines-android"]
@@ -127,4 +127,4 @@ androidx-camera = ["androidx-camera-core", "androidx-camera-camera2", "androidx-
 androidx-window = ["androidx-window", "androidx-window-core", "androidx-window-java"]
 hilt = ["hilt", "androidx-hilt-common", "androidx-hilt-work", "androidx-hilt-navigation", "androidx-hilt-navigation-fragment", "androidx-hilt-navigation-compose"]
 hilt-compiler = ["hilt-compiler", "androidx-hilt-compiler"]
-coil = ["coil", "coil-svg", "coil-gif", "coil-video", "coil-compose"]
+coil = ["coil", "coil-compose", "coil-gif", "coil-svg", "coil-video"]
