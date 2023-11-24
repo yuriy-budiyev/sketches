@@ -1,7 +1,7 @@
 plugins {
     alias(sketches.plugins.android.application)
     alias(sketches.plugins.kotlin)
-    alias(sketches.plugins.ksp)
+    alias(sketches.plugins.kotlin.ksp)
 }
 
 android {
@@ -66,29 +66,16 @@ dependencies {
     implementation(sketches.bundles.androidx.fragment)
     implementation(sketches.bundles.androidx.window)
     implementation(sketches.bundles.androidx.activity)
-    implementation(sketches.bundles.androidx.compose.ui)
-    implementation(sketches.bundles.androidx.compose.foundation)
-    implementation(sketches.bundles.androidx.compose.material)
-    implementation(sketches.bundles.androidx.compose.material3)
+    implementation(sketches.bundles.androidx.compose)
     implementation(sketches.bundles.androidx.camera)
-    implementation(sketches.bundles.androidx.hilt)
-    implementation(sketches.hilt)
+    implementation(sketches.bundles.hilt)
     implementation(sketches.okhttp)
     implementation(sketches.bundles.glide)
     implementation(sketches.glide.compose)
     implementation(sketches.androidsvg)
 
+    ksp(sketches.bundles.hilt)
     ksp(sketches.glide.ksp)
-    ksp(sketches.hilt.compiler)
-    ksp(sketches.androidx.hilt.compiler)
 
-    testImplementation(sketches.junit)
-
-    androidTestImplementation(sketches.androidx.test.junit)
-    androidTestImplementation(sketches.androidx.test.espresso)
-    androidTestImplementation(sketches.androidx.compose.ui.test.junit)
-    androidTestImplementation(sketches.androidx.window.testing)
-    androidTestImplementation(sketches.hilt.testing)
-
-    debugImplementation(sketches.bundles.androidx.compose.ui.tooling)
+    debugImplementation(sketches.bundles.androidx.compose.tooling)
 }
