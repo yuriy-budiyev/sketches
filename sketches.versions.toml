@@ -1,9 +1,9 @@
 [versions]
+android-application = "8.1.4"
 java = "1.8"
 kotlin = "1.9.20"
 kotlin-coroutines = "1.7.3"
 kotlin-ksp = "1.9.20-1.0.14"
-android-application = "8.1.4"
 androidx-core = "1.12.0"
 androidx-annotation = "1.7.0"
 androidx-collection = "1.3.0"
@@ -30,9 +30,9 @@ androidsvg = "1.4"
 junit = "4.13.2"
 
 [plugins]
+android-application = { id = "com.android.application", version.ref = "android-application" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
-android-application = { id = "com.android.application", version.ref = "android-application" }
 
 [libraries]
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
