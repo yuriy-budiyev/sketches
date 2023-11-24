@@ -27,8 +27,6 @@ dependencyResolutionManagement {
 
             from(files("sketches.versions.toml"))
         }
-
-
     }
 }
 
