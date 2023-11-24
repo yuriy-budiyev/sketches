@@ -16,7 +16,6 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -61,21 +60,21 @@ dependencies {
     implementation(sketches.bundles.androidx.annotation)
     implementation(sketches.bundles.androidx.collection)
     implementation(sketches.bundles.androidx.concurrent)
-    implementation(sketches.bundles.androidx.lifecycle)
     implementation(sketches.bundles.androidx.appcompat)
-    implementation(sketches.bundles.androidx.fragment)
-    implementation(sketches.bundles.androidx.window)
-    implementation(sketches.bundles.androidx.activity)
+    implementation(sketches.bundles.androidx.navigation)
     implementation(sketches.bundles.androidx.compose)
+    implementation(sketches.bundles.androidx.activity)
+    implementation(sketches.bundles.androidx.fragment)
+    implementation(sketches.bundles.androidx.lifecycle)
     implementation(sketches.bundles.androidx.camera)
+    implementation(sketches.bundles.androidx.window)
     implementation(sketches.bundles.hilt)
-    implementation(sketches.okhttp)
     implementation(sketches.bundles.glide)
-    implementation(sketches.glide.compose)
+    implementation(sketches.okhttp)
     implementation(sketches.androidsvg)
 
-    ksp(sketches.bundles.hilt)
-    ksp(sketches.glide.ksp)
+    ksp(sketches.bundles.hilt.compiler)
+    ksp(sketches.glide.compiler)
 
     debugImplementation(sketches.bundles.androidx.compose.tooling)
 }
