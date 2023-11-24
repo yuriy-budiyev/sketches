@@ -2,6 +2,7 @@ plugins {
     alias(sketches.plugins.android.application)
     alias(sketches.plugins.kotlin)
     alias(sketches.plugins.kotlin.ksp)
+    alias(sketches.plugins.hilt)
 }
 
 android {
@@ -69,12 +70,10 @@ dependencies {
     implementation(sketches.bundles.androidx.camera)
     implementation(sketches.bundles.androidx.window)
     implementation(sketches.bundles.hilt)
-    implementation(sketches.bundles.glide)
+    implementation(sketches.bundles.coil)
     implementation(sketches.okhttp)
-    implementation(sketches.androidsvg)
 
     ksp(sketches.bundles.hilt.compiler)
-    ksp(sketches.glide.compiler)
 
     debugImplementation(sketches.bundles.androidx.compose.tooling)
 }

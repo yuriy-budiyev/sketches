@@ -23,16 +23,13 @@ androidx-window = "1.2.0"
 androidx-hilt = "1.1.0"
 hilt = "2.48.1"
 okhttp = "4.12.0"
-glide = "5.0.0-rc01"
-glide-compose = "1.0.0-beta01"
-glide-ktx = "1.0.0-beta01"
-androidsvg = "1.4"
-junit = "4.13.2"
+coil = "2.5.0"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-application" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 
 [libraries]
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
@@ -64,10 +61,8 @@ androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graph
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "androidx-compose-ui" }
 androidx-compose-ui-tooling-data = { group = "androidx.compose.ui", name = "ui-tooling-data", version.ref = "androidx-compose-ui" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "androidx-compose-ui" }
-
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "androidx-compose-foundation" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "androidx-compose-foundation" }
-
 androidx-compose-material = { group = "androidx.compose.material", name = "material", version.ref = "androidx-compose-material" }
 androidx-compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core", version.ref = "androidx-compose-material" }
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "androidx-compose-material" }
@@ -109,12 +104,11 @@ androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", vers
 hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
-glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
-glide-okhttp = { group = "com.github.bumptech.glide", name = "okhttp3-integration", version.ref = "glide" }
-glide-compose = { group = "com.github.bumptech.glide", name = "compose", version.ref = "glide-compose" }
-glide-ktx = { group = "com.github.bumptech.glide", name = "ktx", version.ref = "glide-ktx" }
-glide-compiler = { group = "com.github.bumptech.glide", name = "ksp", version.ref = "glide" }
-androidsvg = { group = "com.caverock", name = "androidsvg", version.ref = "androidsvg" }
+coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
+coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
+coil-gif = { group = "io.coil-kt", name = "coil-gif", version.ref = "coil" }
+coil-video = { group = "io.coil-kt", name = "coil-video", version.ref = "coil" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 
 [bundles]
 kotlin = ["kotlin-stdlib", "kotlin-reflect", "kotlin-coroutines-core", "kotlin-coroutines-android"]
@@ -133,4 +127,4 @@ androidx-camera = ["androidx-camera-core", "androidx-camera-camera2", "androidx-
 androidx-window = ["androidx-window", "androidx-window-core", "androidx-window-java"]
 hilt = ["hilt", "androidx-hilt-common", "androidx-hilt-work", "androidx-hilt-navigation", "androidx-hilt-navigation-fragment", "androidx-hilt-navigation-compose"]
 hilt-compiler = ["hilt-compiler", "androidx-hilt-compiler"]
-glide = ["glide", "glide-okhttp", "glide-compose", "glide-ktx"]
+coil = ["coil", "coil-svg", "coil-gif", "coil-video", "coil-compose"]
