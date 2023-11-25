@@ -68,8 +68,10 @@ dependencies {
     implementation(sketches.bundles.androidx.fragment)
     implementation(sketches.bundles.androidx.lifecycle)
     implementation(sketches.bundles.androidx.window)
+    implementation(sketches.bundles.androidx.work)
     implementation(sketches.bundles.hilt)
     implementation(sketches.bundles.coil)
+    implementation(sketches.material)
     implementation(sketches.okhttp)
 
     ksp(sketches.bundles.hilt.compiler)
