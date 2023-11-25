@@ -31,21 +31,27 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
+import com.github.yuriybudiyev.sketches.gallery.ui.GalleryScreen
+import com.github.yuriybudiyev.sketches.gallery.ui.GalleryViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             SketchesTheme {
-
+                GalleryScreen(viewModel)
             }
         }
         if (checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED) {
-
+            viewModel.updateImages()
         } else {
+            viewModel.setNoPermission()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 imagesPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
             } else {
@@ -55,10 +61,14 @@ class MainActivity: AppCompatActivity() {
     }
 
 
+    private val viewModel: GalleryViewModel by viewModels()
+
     private val imagesPermissionLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             if (granted) {
-
+                viewModel.updateImages()
+            } else {
+                viewModel.setNoPermission()
             }
         }
 }
