@@ -26,11 +26,15 @@ package com.github.yuriybudiyev.sketches.gallery.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import coil.compose.rememberAsyncImagePainter
 import com.github.yuriybudiyev.sketches.gallery.data.model.GalleryImage
@@ -40,19 +44,19 @@ fun GalleryScreen(viewModel: GalleryViewModel) {
     val uiState = viewModel.uiState.collectAsState()
     when (val state = uiState.value) {
         GalleryUiState.Empty -> {
-
+            Text("Empty")
         }
         GalleryUiState.Loading -> {
-
+            Text("Loading")
         }
         GalleryUiState.NoPermission -> {
-
+            Text("No permission")
         }
         is GalleryUiState.Success -> {
             ImagesLazyGrid(state.images)
         }
         is GalleryUiState.Error -> {
-
+            Text("Error")
         }
     }
 }
@@ -64,10 +68,14 @@ fun ImagesLazyGrid(images: List<GalleryImage>) {
     LazyVerticalGrid(columns = GridCells.Fixed(if (landscape) 5 else 3)) {
         items(images,
               { it.id }) {
-            val painter = rememberAsyncImagePainter(it.uri)
+            val painter = rememberAsyncImagePainter(
+                model = it.uri.toString()
+            )
             Image(
                 painter = painter,
-                contentDescription = "Image"
+                contentDescription = "Image",
+                modifier = Modifier.aspectRatio(1.0f),
+                contentScale = ContentScale.Crop
             )
         }
     }
