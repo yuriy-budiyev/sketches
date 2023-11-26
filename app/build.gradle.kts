@@ -80,6 +80,7 @@ dependencies {
     implementation(sketches.androidx.startup)
     implementation(sketches.material)
     implementation(sketches.okhttp)
+    implementation(sketches.okio)
 
     ksp(sketches.bundles.hilt.compiler)
 
