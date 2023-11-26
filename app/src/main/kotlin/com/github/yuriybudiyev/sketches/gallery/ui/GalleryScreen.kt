@@ -67,7 +67,7 @@ fun GalleryScreen(viewModel: GalleryViewModel) {
         GalleryUiState.NoPermission -> {
             NoPermission()
         }
-        is GalleryUiState.Success -> {
+        is GalleryUiState.Gallery -> {
             Gallery(images = state.images)
         }
         is GalleryUiState.Error -> {

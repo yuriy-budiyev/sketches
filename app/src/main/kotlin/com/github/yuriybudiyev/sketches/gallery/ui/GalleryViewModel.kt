@@ -60,7 +60,7 @@ class GalleryViewModel @Inject constructor(
             try {
                 val images = withContext(Dispatchers.Default) { repository.getImages() }
                 if (!images.isNullOrEmpty()) {
-                    uiStateInternal.value = GalleryUiState.Success(images)
+                    uiStateInternal.value = GalleryUiState.Gallery(images)
                 } else {
                     uiStateInternal.value = GalleryUiState.Empty
                 }

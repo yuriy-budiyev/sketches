@@ -60,7 +60,6 @@ class MainActivity: AppCompatActivity() {
         }
     }
 
-
     private val viewModel: GalleryViewModel by viewModels()
 
     private val imagesPermissionLauncher: ActivityResultLauncher<String> =
