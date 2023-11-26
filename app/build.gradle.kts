@@ -24,7 +24,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -73,6 +73,7 @@ dependencies {
     implementation(sketches.bundles.androidx.work)
     implementation(sketches.bundles.hilt)
     implementation(sketches.bundles.coil)
+    implementation(sketches.bundles.bouncycastle)
     implementation(sketches.androidx.recyclerview)
     implementation(sketches.androidx.viewpager2)
     implementation(sketches.androidx.startup)
