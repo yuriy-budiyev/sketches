@@ -1,3 +1,3 @@
 # Sketches
 
-S~~i~~ample gallery app
+Simple gallery app
