@@ -1,3 +1,3 @@
 # Sketches
 
-Simple gallery app
+Simple gallery app and playground
