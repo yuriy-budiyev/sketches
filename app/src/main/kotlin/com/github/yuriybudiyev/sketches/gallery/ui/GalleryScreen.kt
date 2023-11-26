@@ -48,7 +48,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -143,10 +142,4 @@ fun CenteredMessage(text: String) {
     ) {
         Message(text = text)
     }
-}
-
-@Preview(device = "spec:width=411dp,height=891dp")
-@Composable
-fun Preview() {
-    NoPermission()
 }
