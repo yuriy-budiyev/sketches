@@ -24,18 +24,11 @@
 
 package com.github.yuriybudiyev.sketches.core
 
-import android.Manifest
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
-import com.github.yuriybudiyev.sketches.core.utils.checkPermissionGranted
 import com.github.yuriybudiyev.sketches.gallery.ui.GalleryScreen
-import com.github.yuriybudiyev.sketches.gallery.ui.GalleryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -45,30 +38,8 @@ class MainActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             SketchesTheme {
-                GalleryScreen(viewModel)
+                GalleryScreen()
             }
-        }
-        val imagesPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Manifest.permission.READ_MEDIA_IMAGES
-        } else {
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        }
-        if (checkPermissionGranted(imagesPermission)) {
-            viewModel.updateImages()
-        } else {
-            viewModel.setNoPermission()
-            imagesPermissionLauncher.launch(imagesPermission)
         }
     }
-
-    private val viewModel: GalleryViewModel by viewModels()
-
-    private val imagesPermissionLauncher: ActivityResultLauncher<String> =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (granted) {
-                viewModel.updateImages()
-            } else {
-                viewModel.setNoPermission()
-            }
-        }
 }
