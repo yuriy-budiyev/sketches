@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.core
 
 import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -34,6 +33,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
+import com.github.yuriybudiyev.sketches.core.utils.checkPermissionGranted
 import com.github.yuriybudiyev.sketches.gallery.ui.GalleryScreen
 import com.github.yuriybudiyev.sketches.gallery.ui.GalleryViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -53,7 +53,7 @@ class MainActivity: AppCompatActivity() {
         } else {
             Manifest.permission.READ_EXTERNAL_STORAGE
         }
-        if (checkSelfPermission(imagesPermission) == PackageManager.PERMISSION_GRANTED) {
+        if (checkPermissionGranted(imagesPermission)) {
             viewModel.updateImages()
         } else {
             viewModel.setNoPermission()

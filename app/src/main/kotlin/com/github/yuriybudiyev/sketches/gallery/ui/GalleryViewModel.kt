@@ -26,11 +26,11 @@ package com.github.yuriybudiyev.sketches.gallery.ui
 
 import android.Manifest
 import android.app.Application
-import android.content.pm.PackageManager
 import android.os.Build
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.yuriybudiyev.sketches.core.utils.checkPermissionGranted
 import com.github.yuriybudiyev.sketches.gallery.data.reository.GalleryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -67,7 +67,7 @@ class GalleryViewModel @Inject constructor(
             } else {
                 Manifest.permission.READ_EXTERNAL_STORAGE
             }
-            if (context.checkSelfPermission(imagesPermission) == PackageManager.PERMISSION_GRANTED) {
+            if (context.checkPermissionGranted(imagesPermission)) {
                 uiStateInternal.value = GalleryUiState.Loading
                 try {
                     val images = withContext(Dispatchers.Default) { repository.getImages() }
