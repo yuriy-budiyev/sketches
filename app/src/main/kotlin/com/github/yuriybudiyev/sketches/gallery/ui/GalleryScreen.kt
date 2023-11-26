@@ -24,12 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.gallery.ui
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,54 +41,24 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.gallery.data.model.GalleryImage
 
 @Composable
-fun GalleryScreen(viewModel: GalleryViewModel = viewModel()) {
-    val context = LocalContext.current
-    val uiState = viewModel.uiState.collectAsState().value
-    val imagesPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            viewModel.updateImages()
-        } else {
-            viewModel.setNoPermission()
-        }
-    }
-    val imagesPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        Manifest.permission.READ_MEDIA_IMAGES
-    } else {
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    }
-    if (context.checkSelfPermission(imagesPermission) == PackageManager.PERMISSION_GRANTED) {
-        if (uiState is GalleryUiState.Empty || uiState is GalleryUiState.NoPermission) {
-            SideEffect {
-                viewModel.updateImages()
-            }
-        }
-    } else {
-        SideEffect {
-            viewModel.setNoPermission()
-            imagesPermissionLauncher.launch(imagesPermission)
-        }
-    }
-    when (uiState) {
+fun GalleryScreen(viewModel: GalleryViewModel) {
+    val uiState = viewModel.uiState.collectAsState()
+    when (val state = uiState.value) {
         GalleryUiState.Empty -> {
             CenteredMessage(text = stringResource(id = R.string.gallery_ui_state_empty))
         }
@@ -103,7 +69,7 @@ fun GalleryScreen(viewModel: GalleryViewModel = viewModel()) {
             Loading()
         }
         is GalleryUiState.Gallery -> {
-            Gallery(images = uiState.images)
+            Gallery(images = state.images)
         }
         is GalleryUiState.Error -> {
             CenteredMessage(text = stringResource(id = R.string.gallery_ui_state_error))
