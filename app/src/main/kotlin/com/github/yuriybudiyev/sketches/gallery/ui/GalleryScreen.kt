@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import coil.compose.AsyncImage
@@ -43,19 +44,19 @@ fun GalleryScreen(viewModel: GalleryViewModel) {
     val uiState = viewModel.uiState.collectAsState()
     when (val state = uiState.value) {
         GalleryUiState.Empty -> {
-            Text("Empty")
+            Text(text = "Empty")
         }
         GalleryUiState.Loading -> {
-            Text("Loading")
+            Text(text = "Loading")
         }
         GalleryUiState.NoPermission -> {
-            Text("No permission")
+            Text(text = "No permission")
         }
         is GalleryUiState.Success -> {
-            ImagesLazyGrid(state.images)
+            ImagesLazyGrid(images = state.images)
         }
         is GalleryUiState.Error -> {
-            Text("Error")
+            Text(text = "Error")
         }
     }
 }
@@ -65,13 +66,14 @@ fun ImagesLazyGrid(images: List<GalleryImage>) {
     val configuration = LocalConfiguration.current
     val landscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     LazyVerticalGrid(columns = GridCells.Fixed(if (landscape) 5 else 3)) {
-        items(images,
-              { it.id }) {
+        items(items = images,
+              key = { it.id }) {
             AsyncImage(
                 model = it.uri,
                 contentDescription = "Image",
                 modifier = Modifier.aspectRatio(1.0f),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                filterQuality = FilterQuality.Low
             )
         }
     }
