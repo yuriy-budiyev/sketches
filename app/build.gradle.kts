@@ -62,6 +62,7 @@ dependencies {
     implementation(sketches.bundles.androidx.collection)
     implementation(sketches.bundles.androidx.concurrent)
     implementation(sketches.bundles.androidx.appcompat)
+    implementation(sketches.bundles.androidx.transition)
     implementation(sketches.bundles.androidx.navigation)
     implementation(sketches.bundles.androidx.compose)
     implementation(sketches.bundles.androidx.activity)
@@ -71,6 +72,8 @@ dependencies {
     implementation(sketches.bundles.androidx.work)
     implementation(sketches.bundles.hilt)
     implementation(sketches.bundles.coil)
+    implementation(sketches.androidx.recyclerview)
+    implementation(sketches.androidx.startup)
     implementation(sketches.material)
     implementation(sketches.okhttp)
 
