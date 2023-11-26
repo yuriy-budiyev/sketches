@@ -30,8 +30,8 @@ val SketchesPrimary = Color(0xFF6B69D6)
 
 val SketchesSecondaryLight = Color(0xFF7F7DDB)
 val SketchesTertiaryLight = Color(0xFF9391E1)
-val SketchesBackgroundLight = Color(0xFFFBFBFB)
+val SketchesBackgroundLight = Color(0xFFF3F3F3)
 
 val SketchesSecondaryDark = Color(0xFF5755D1)
 val SketchesTertiaryDark = Color(0xFF4341CB)
-val SketchesBackgroundDark = Color(0xFF2B2B2B)
+val SketchesBackgroundDark = Color(0xFF202020)
