@@ -24,6 +24,10 @@
 
 package com.github.yuriybudiyev.sketches.gallery.ui
 
+import android.Manifest
+import android.app.Application
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -40,7 +44,8 @@ import javax.inject.Inject
 @HiltViewModel
 class GalleryViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: GalleryRepository
+    private val repository: GalleryRepository,
+    private val application: Application
 ): ViewModel() {
 
     val uiState: StateFlow<GalleryUiState>
@@ -56,16 +61,26 @@ class GalleryViewModel @Inject constructor(
     fun updateImages() {
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
-            uiStateInternal.value = GalleryUiState.Loading
-            try {
-                val images = withContext(Dispatchers.Default) { repository.getImages() }
-                if (!images.isNullOrEmpty()) {
-                    uiStateInternal.value = GalleryUiState.Gallery(images)
-                } else {
-                    uiStateInternal.value = GalleryUiState.Empty
+            val context = application.applicationContext
+            val imagesPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Manifest.permission.READ_MEDIA_IMAGES
+            } else {
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            }
+            if (context.checkSelfPermission(imagesPermission) == PackageManager.PERMISSION_GRANTED) {
+                uiStateInternal.value = GalleryUiState.Loading
+                try {
+                    val images = withContext(Dispatchers.Default) { repository.getImages() }
+                    if (!images.isNullOrEmpty()) {
+                        uiStateInternal.value = GalleryUiState.Gallery(images)
+                    } else {
+                        uiStateInternal.value = GalleryUiState.Empty
+                    }
+                } catch (e: Exception) {
+                    uiStateInternal.value = GalleryUiState.Error(e)
                 }
-            } catch (e: Exception) {
-                uiStateInternal.value = GalleryUiState.Error(e)
+            } else {
+                uiStateInternal.value = GalleryUiState.NoPermission
             }
         }
     }

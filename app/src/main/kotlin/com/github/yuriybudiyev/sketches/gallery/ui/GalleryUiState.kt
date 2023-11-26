@@ -30,9 +30,9 @@ sealed interface GalleryUiState {
 
     data object Empty: GalleryUiState
 
-    data object Loading: GalleryUiState
-
     data object NoPermission: GalleryUiState
+
+    data object Loading: GalleryUiState
 
     data class Gallery(val images: List<GalleryImage>): GalleryUiState
 
