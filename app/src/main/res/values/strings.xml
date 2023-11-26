@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Sketches</string>
     <string name="gallery_ui_state_empty">No images found</string>
-    <string name="gallery_ui_state_no_permission_images">Images permission needed</string>
+    <string name="gallery_ui_state_loading">Loading</string>
+    <string name="gallery_ui_state_no_permission_images">Permission required to access images</string>
+    <string name="gallery_ui_state_no_permission_storage">Permission required to access the storage</string>
+    <string name="gallery_ui_state_error">An unexpected error occurred</string>
 </resources>

@@ -2,5 +2,8 @@
 <resources>
     <string name="app_name">Sketches</string>
     <string name="gallery_ui_state_empty">Изображений не найдено</string>
+    <string name="gallery_ui_state_loading">Загрузка</string>
     <string name="gallery_ui_state_no_permission_images">Необходимо разрешение на доступ к изображениям</string>
+    <string name="gallery_ui_state_no_permission_storage">Необходимо разрешение на доступ к хранилищу</string>
+    <string name="gallery_ui_state_error">Произошла неожиданная ошибка</string>
 </resources>
