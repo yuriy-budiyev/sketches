@@ -46,8 +46,7 @@ class SketchesApplication: Application(), ImageLoaderFactory {
                 Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME)
             }
             Security.addProvider(BouncyCastleProvider())
-        } catch (_: SecurityException) {
-            // Do nothing
+        } catch (_: SecurityException) { // Do nothing
         }
     }
 

@@ -31,6 +31,7 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
 import coil.decode.VideoFrameDecoder
+import coil.transition.CrossfadeTransition
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -45,13 +46,16 @@ object ImageLoaderModule {
     @Provides
     @Singleton
     fun provideImageLoader(@ApplicationContext context: Context): ImageLoader =
-        ImageLoader.Builder(context).components {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                add(ImageDecoderDecoder.Factory())
-            } else {
-                add(GifDecoder.Factory())
+        ImageLoader.Builder(context)
+            .transitionFactory(CrossfadeTransition.Factory())
+            .components {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    add(ImageDecoderDecoder.Factory())
+                } else {
+                    add(GifDecoder.Factory())
+                }
+                add(SvgDecoder.Factory())
+                add(VideoFrameDecoder.Factory())
             }
-            add(SvgDecoder.Factory())
-            add(VideoFrameDecoder.Factory())
-        }.build()
+            .build()
 }

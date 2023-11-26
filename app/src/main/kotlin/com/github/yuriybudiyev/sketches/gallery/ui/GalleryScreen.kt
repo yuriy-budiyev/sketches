@@ -25,21 +25,34 @@
 package com.github.yuriybudiyev.sketches.gallery.ui
 
 import android.content.res.Configuration
+import android.os.Build
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.gallery.data.model.GalleryImage
 
 @Composable
@@ -47,25 +60,25 @@ fun GalleryScreen(viewModel: GalleryViewModel) {
     val uiState = viewModel.uiState.collectAsState()
     when (val state = uiState.value) {
         GalleryUiState.Empty -> {
-            Text(text = "Empty")
+            CenteredMessage(text = stringResource(id = R.string.gallery_ui_state_empty))
         }
         GalleryUiState.Loading -> {
-            Text(text = "Loading")
+            Loading()
         }
         GalleryUiState.NoPermission -> {
-            Text(text = "No permission")
+            NoPermission()
         }
         is GalleryUiState.Success -> {
-            ImagesLazyGrid(images = state.images)
+            Gallery(images = state.images)
         }
         is GalleryUiState.Error -> {
-            Text(text = "Error")
+            CenteredMessage(text = stringResource(id = R.string.gallery_ui_state_error))
         }
     }
 }
 
 @Composable
-fun ImagesLazyGrid(images: List<GalleryImage>) {
+fun Gallery(images: List<GalleryImage>) {
     val configuration = LocalConfiguration.current
     val landscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     LazyVerticalGrid(columns = GridCells.Fixed(if (landscape) 5 else 3)) {
@@ -83,11 +96,57 @@ fun ImagesLazyGrid(images: List<GalleryImage>) {
 }
 
 @Composable
-fun TextMessage(message: String) {
+fun Message(text: String) {
     Text(
-        text = message,
+        text = text,
         color = MaterialTheme.colorScheme.primary,
         fontSize = 18.sp,
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
     )
+}
+
+@Composable
+fun Loading() {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        CircularProgressIndicator(
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .size(80.dp)
+                .padding(16.dp)
+        )
+        Message(text = stringResource(id = R.string.gallery_ui_state_loading))
+    }
+}
+
+@Composable
+fun NoPermission() {
+    val message = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        stringResource(id = R.string.gallery_ui_state_no_permission_images)
+    } else {
+        stringResource(id = R.string.gallery_ui_state_no_permission_storage)
+    }
+    CenteredMessage(text = message)
+}
+
+@Composable
+fun CenteredMessage(text: String) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Message(text = text)
+    }
+}
+
+@Preview(device = "spec:width=411dp,height=891dp")
+@Composable
+fun Preview() {
+    NoPermission()
 }
