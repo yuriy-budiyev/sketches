@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.gallery.ui
 
 import android.content.res.Configuration
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -36,7 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.github.yuriybudiyev.sketches.gallery.data.model.GalleryImage
 
 @Composable
@@ -68,11 +67,8 @@ fun ImagesLazyGrid(images: List<GalleryImage>) {
     LazyVerticalGrid(columns = GridCells.Fixed(if (landscape) 5 else 3)) {
         items(images,
               { it.id }) {
-            val painter = rememberAsyncImagePainter(
-                model = it.uri.toString()
-            )
-            Image(
-                painter = painter,
+            AsyncImage(
+                model = it.uri,
                 contentDescription = "Image",
                 modifier = Modifier.aspectRatio(1.0f),
                 contentScale = ContentScale.Crop
