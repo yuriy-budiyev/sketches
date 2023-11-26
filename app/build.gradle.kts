@@ -58,6 +58,7 @@ android {
 dependencies {
     implementation(sketches.bundles.kotlin)
     implementation(sketches.bundles.androidx.core)
+    implementation(sketches.bundles.androidx.arch.core)
     implementation(sketches.bundles.androidx.annotation)
     implementation(sketches.bundles.androidx.collection)
     implementation(sketches.bundles.androidx.concurrent)
@@ -73,6 +74,7 @@ dependencies {
     implementation(sketches.bundles.hilt)
     implementation(sketches.bundles.coil)
     implementation(sketches.androidx.recyclerview)
+    implementation(sketches.androidx.viewpager2)
     implementation(sketches.androidx.startup)
     implementation(sketches.material)
     implementation(sketches.okhttp)
