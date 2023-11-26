@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sketches</string>
+    <string name="gallery_ui_state_empty">Изображений не найдено</string>
+    <string name="gallery_ui_state_no_permission_images">Необходимо разрешение на доступ к изображениям</string>
+</resources>

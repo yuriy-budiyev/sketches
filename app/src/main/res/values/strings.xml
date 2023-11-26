@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">sketches</string>
+    <string name="app_name">Sketches</string>
+    <string name="gallery_ui_state_empty">No images found</string>
+    <string name="gallery_ui_state_no_permission_images">Images permission needed</string>
 </resources>
