@@ -15,7 +15,8 @@ object OkHttpClientModule {
     @Provides
     @Singleton
     fun provideOkhttpClient(): OkHttpClient =
-        OkHttpClient.Builder()
+        OkHttpClient
+            .Builder()
             .connectionSpecs(listOf(ConnectionSpec.COMPATIBLE_TLS))
             .build()
 }

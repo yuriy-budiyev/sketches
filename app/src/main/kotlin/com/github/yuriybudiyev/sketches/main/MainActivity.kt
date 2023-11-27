@@ -22,41 +22,28 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.di
+package com.github.yuriybudiyev.sketches.main
 
-import android.content.Context
-import android.os.Build
-import coil.ImageLoader
-import coil.decode.GifDecoder
-import coil.decode.ImageDecoderDecoder
-import coil.decode.SvgDecoder
-import coil.decode.VideoFrameDecoder
-import coil.transition.CrossfadeTransition
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material.Surface
+import androidx.compose.material3.MaterialTheme
+import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
+import com.github.yuriybudiyev.sketches.gallery.ui.GalleryScreen
+import dagger.hilt.android.AndroidEntryPoint
 
-@Module
-@InstallIn(SingletonComponent::class)
-object ImageLoaderModule {
+@AndroidEntryPoint
+class MainActivity: AppCompatActivity() {
 
-    @Provides
-    @Singleton
-    fun provideImageLoader(@ApplicationContext context: Context): ImageLoader =
-        ImageLoader
-            .Builder(context)
-            .transitionFactory(CrossfadeTransition.Factory())
-            .components {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    add(ImageDecoderDecoder.Factory())
-                } else {
-                    add(GifDecoder.Factory())
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            SketchesTheme {
+                Surface(color = MaterialTheme.colorScheme.background) {
+                    GalleryScreen()
                 }
-                add(SvgDecoder.Factory())
-                add(VideoFrameDecoder.Factory())
             }
-            .build()
+        }
+    }
 }

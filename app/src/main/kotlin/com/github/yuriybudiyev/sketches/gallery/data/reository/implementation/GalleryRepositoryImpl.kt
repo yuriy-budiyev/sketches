@@ -40,7 +40,8 @@ class GalleryRepositoryImpl(private val context: Context): GalleryRepository {
         val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
         } else {
-            context.getExternalFilesDir(null)
+            context
+                .getExternalFilesDir(null)
                 ?.toUri()
         } ?: return null
         val cursor = withContext(Dispatchers.IO) {

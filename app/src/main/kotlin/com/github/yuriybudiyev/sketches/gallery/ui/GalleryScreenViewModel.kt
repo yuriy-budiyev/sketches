@@ -38,18 +38,18 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class GalleryViewModel @Inject constructor(
+class GalleryScreenViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: GalleryRepository
 ): ViewModel() {
 
-    val uiState: StateFlow<GalleryUiState>
+    val uiState: StateFlow<GalleryScreenUiState>
         get() = uiStateInternal
 
     fun setNoPermission() {
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
-            uiStateInternal.value = GalleryUiState.NoPermission
+            uiStateInternal.value = GalleryScreenUiState.NoPermission
         }
     }
 
@@ -57,21 +57,21 @@ class GalleryViewModel @Inject constructor(
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
 
-            uiStateInternal.value = GalleryUiState.Loading
+            uiStateInternal.value = GalleryScreenUiState.Loading
             try {
                 val images = withContext(Dispatchers.Default) { repository.getImages() }
                 if (!images.isNullOrEmpty()) {
-                    uiStateInternal.value = GalleryUiState.Gallery(images)
+                    uiStateInternal.value = GalleryScreenUiState.Gallery(images)
                 } else {
-                    uiStateInternal.value = GalleryUiState.Empty
+                    uiStateInternal.value = GalleryScreenUiState.Empty
                 }
             } catch (e: Exception) {
-                uiStateInternal.value = GalleryUiState.Error(e)
+                uiStateInternal.value = GalleryScreenUiState.Error(e)
             }
         }
     }
 
-    private val uiStateInternal: MutableStateFlow<GalleryUiState> =
-        MutableStateFlow(GalleryUiState.Empty)
+    private val uiStateInternal: MutableStateFlow<GalleryScreenUiState> =
+        MutableStateFlow(GalleryScreenUiState.Empty)
     private var currentJob: Job? = null
 }

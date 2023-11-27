@@ -17,7 +17,6 @@ android {
         buildToolsVersion = "34.0.0"
         versionCode = 1
         versionName = "1.0"
-
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -26,11 +25,11 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            signingConfig = signingConfigs.getByName("debug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -84,27 +83,20 @@ dependencies {
     implementation(sketches.material)
     implementation(sketches.okhttp)
     implementation(sketches.okio)
-
     ksp(sketches.bundles.hilt.compiler)
-
     debugImplementation(sketches.bundles.androidx.compose.tooling)
 }
 
 protobuf {
-
     protoc {
-
-        artifact = sketches.protobuf.compiler.get().toString()
+        artifact = sketches.protobuf.compiler
+            .get()
+            .toString()
     }
-
     generateProtoTasks {
-
         all().forEach { task ->
-
             task.builtins {
-
                 register("java")
-
                 register("kotlin")
             }
         }

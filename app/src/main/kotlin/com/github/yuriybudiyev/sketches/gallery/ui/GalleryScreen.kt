@@ -66,7 +66,7 @@ import com.github.yuriybudiyev.sketches.gallery.data.model.GalleryImage
 @Composable
 fun GalleryScreen() {
     val context = LocalContext.current
-    val viewModel = viewModel<GalleryViewModel>()
+    val viewModel = viewModel<GalleryScreenViewModel>()
     val imagesPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -93,19 +93,19 @@ fun GalleryScreen() {
     }
     val uiState = viewModel.uiState.collectAsState()
     when (val state = uiState.value) {
-        GalleryUiState.Empty -> {
+        GalleryScreenUiState.Empty -> {
             CenteredMessage(text = stringResource(id = R.string.gallery_ui_state_empty))
         }
-        GalleryUiState.NoPermission -> {
+        GalleryScreenUiState.NoPermission -> {
             NoPermission()
         }
-        GalleryUiState.Loading -> {
+        GalleryScreenUiState.Loading -> {
             Loading()
         }
-        is GalleryUiState.Gallery -> {
+        is GalleryScreenUiState.Gallery -> {
             Gallery(images = state.images)
         }
-        is GalleryUiState.Error -> {
+        is GalleryScreenUiState.Error -> {
             CenteredMessage(text = stringResource(id = R.string.gallery_ui_state_error))
         }
     }

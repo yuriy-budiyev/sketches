@@ -26,15 +26,15 @@ package com.github.yuriybudiyev.sketches.gallery.ui
 
 import com.github.yuriybudiyev.sketches.gallery.data.model.GalleryImage
 
-sealed interface GalleryUiState {
+sealed interface GalleryScreenUiState {
 
-    data object Empty: GalleryUiState
+    data object Empty: GalleryScreenUiState
 
-    data object NoPermission: GalleryUiState
+    data object NoPermission: GalleryScreenUiState
 
-    data object Loading: GalleryUiState
+    data object Loading: GalleryScreenUiState
 
-    data class Gallery(val images: List<GalleryImage>): GalleryUiState
+    data class Gallery(val images: List<GalleryImage>): GalleryScreenUiState
 
-    data class Error(val thrown: Exception): GalleryUiState
+    data class Error(val thrown: Exception): GalleryScreenUiState
 }

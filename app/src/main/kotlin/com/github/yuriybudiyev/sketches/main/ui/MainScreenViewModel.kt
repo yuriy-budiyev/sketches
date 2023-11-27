@@ -22,28 +22,18 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core
+package com.github.yuriybudiyev.sketches.main.ui
 
-import android.os.Bundle
-import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material.Surface
-import androidx.compose.material3.MaterialTheme
-import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
-import com.github.yuriybudiyev.sketches.gallery.ui.GalleryScreen
-import dagger.hilt.android.AndroidEntryPoint
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import com.github.yuriybudiyev.sketches.settings.data.repository.SettingsRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-@AndroidEntryPoint
-class MainActivity: AppCompatActivity() {
+@HiltViewModel
+class MainScreenViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
+    private val settingsRepository: SettingsRepository
+): ViewModel() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            SketchesTheme {
-                Surface(color = MaterialTheme.colorScheme.background) {
-                    GalleryScreen()
-                }
-            }
-        }
-    }
 }
