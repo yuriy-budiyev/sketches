@@ -53,8 +53,11 @@ class GalleryRepositoryImpl(private val context: Context): GalleryRepository {
                     MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
                     MediaStore.Images.Media.DATE_ADDED,
                     MediaStore.Images.Media.WIDTH,
-                    MediaStore.Images.Media.HEIGHT
-
+                    MediaStore.Images.Media.HEIGHT,
+                    MediaStore.Images.Media.ORIENTATION,
+                    MediaStore.Images.Media.MIME_TYPE,
+                    MediaStore.Images.Media.SIZE,
+                    MediaStore.Images.Media.RELATIVE_PATH
                 ),
                 null,
                 null,
@@ -69,6 +72,10 @@ class GalleryRepositoryImpl(private val context: Context): GalleryRepository {
         val dateAddedColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED)
         val withColumn = cursor.getColumnIndex(MediaStore.Images.Media.WIDTH)
         val heightColumn = cursor.getColumnIndex(MediaStore.Images.Media.HEIGHT)
+        val orientationColumn = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION)
+        val mimeTypeColumn = cursor.getColumnIndex(MediaStore.Images.Media.MIME_TYPE)
+        val sizeColumn = cursor.getColumnIndex(MediaStore.Images.Media.SIZE)
+        val relativePathColumn = cursor.getColumnIndex(MediaStore.Images.Media.RELATIVE_PATH)
         while (cursor.moveToNext()) {
             val id = cursor.getLong(idColumn)
             images += GalleryImage(
@@ -79,6 +86,10 @@ class GalleryRepositoryImpl(private val context: Context): GalleryRepository {
                 cursor.getLong(dateAddedColumn) * 1000L,
                 cursor.getInt(withColumn),
                 cursor.getInt(heightColumn),
+                cursor.getInt(orientationColumn),
+                cursor.getString(mimeTypeColumn),
+                cursor.getLong(sizeColumn),
+                cursor.getString(relativePathColumn),
                 ContentUris.withAppendedId(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     id

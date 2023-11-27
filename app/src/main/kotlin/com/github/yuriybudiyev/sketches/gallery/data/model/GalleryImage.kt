@@ -34,5 +34,9 @@ data class GalleryImage(
     val dateAdded: Long,
     val width: Int,
     val height: Int,
+    val orientation: Int,
+    val mimeType: String,
+    val size: Long,
+    val relativePath: String,
     val uri: Uri
 )
