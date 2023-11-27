@@ -1,5 +1,6 @@
 plugins {
     alias(sketches.plugins.android.application)
+    alias(sketches.plugins.protobuf)
     alias(sketches.plugins.kotlin)
     alias(sketches.plugins.kotlin.ksp)
     alias(sketches.plugins.hilt)
@@ -75,8 +76,10 @@ dependencies {
     implementation(sketches.bundles.hilt)
     implementation(sketches.bundles.coil)
     implementation(sketches.bundles.bouncycastle)
+    implementation(sketches.bundles.protobuf)
     implementation(sketches.androidx.recyclerview)
     implementation(sketches.androidx.viewpager2)
+    implementation(sketches.androidx.datastore)
     implementation(sketches.androidx.startup)
     implementation(sketches.material)
     implementation(sketches.okhttp)
@@ -85,4 +88,25 @@ dependencies {
     ksp(sketches.bundles.hilt.compiler)
 
     debugImplementation(sketches.bundles.androidx.compose.tooling)
+}
+
+protobuf {
+
+    protoc {
+
+        artifact = sketches.protobuf.compiler.get().toString()
+    }
+
+    generateProtoTasks {
+
+        all().forEach { task ->
+
+            task.builtins {
+
+                register("java")
+
+                register("kotlin")
+            }
+        }
+    }
 }

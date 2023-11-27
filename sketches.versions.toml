@@ -9,12 +9,14 @@ androidx-arch-core = "2.2.0"
 androidx-annotation = "1.7.0"
 androidx-collection = "1.3.0"
 androidx-concurrent = "1.1.0"
+androidx-datastore = "1.0.0"
 androidx-appcompat = "1.6.1"
 androidx-recyclerview = "1.3.2"
 androidx-viewpager2 = "1.1.0-beta02"
 androidx-transition = "1.4.1"
 androidx-navigation = "2.7.5"
 androidx-compose-compiler = "1.5.4"
+androidx-compose-runtime = "1.5.4"
 androidx-compose-ui = "1.5.4"
 androidx-compose-foundation = "1.5.4"
 androidx-compose-animation = "1.5.4"
@@ -33,12 +35,15 @@ okhttp = "4.12.0"
 okio = "3.6.0"
 coil = "2.5.0"
 bouncycastle = "1.77"
+protobuf = "3.25.1"
+protobuf-plugin = "0.9.4"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-application" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
 
 [libraries]
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
@@ -57,6 +62,7 @@ androidx-collection = { group = "androidx.collection", name = "collection", vers
 androidx-collection-ktx = { group = "androidx.collection", name = "collection-ktx", version.ref = "androidx-collection" }
 androidx-concurrent-futures = { group = "androidx.concurrent", name = "concurrent-futures", version.ref = "androidx-concurrent" }
 androidx-concurrent-futures-ktx = { group = "androidx.concurrent", name = "concurrent-futures-ktx", version.ref = "androidx-concurrent" }
+androidx-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "androidx-datastore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-appcompat-resources = { group = "androidx.appcompat", name = "appcompat-resources", version.ref = "androidx-appcompat" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "androidx-recyclerview" }
@@ -72,6 +78,9 @@ androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navi
 androidx-navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "androidx-navigation" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "androidx-navigation" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidx-navigation" }
+androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "androidx-compose-runtime" }
+androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "androidx-compose-runtime" }
+androidx-compose-runtime-saveable = { group = "androidx.compose.runtime", name = "runtime-saveable", version.ref = "androidx-compose-runtime" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "androidx-compose-ui" }
 androidx-compose-ui-geometry = { group = "androidx.compose.ui", name = "ui-geometry", version.ref = "androidx-compose-ui" }
 androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "androidx-compose-ui" }
@@ -97,6 +106,8 @@ androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", ve
 androidx-lifecycle-common = { group = "androidx.lifecycle", name = "lifecycle-common", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-common-java8 = { group = "androidx.lifecycle", name = "lifecycle-common-java8", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-livadata = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-livedata", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
@@ -131,6 +142,9 @@ coil-video = { group = "io.coil-kt", name = "coil-video", version.ref = "coil" }
 bouncycastle-provider = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle" }
 bouncycastle-apis = { group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncycastle" }
 bouncycastle-utils = { group = "org.bouncycastle", name = "bcutil-jdk18on", version.ref = "bouncycastle" }
+protobuf-java = { group = "com.google.protobuf", name = "protobuf-java", version.ref = "protobuf" }
+protobuf-kotlin = { group = "com.google.protobuf", name = "protobuf-kotlin", version.ref = "protobuf" }
+protobuf-compiler = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
 
 [bundles]
 kotlin = ["kotlin-stdlib", "kotlin-stdlib-jdk7", "kotlin-stdlib-jdk8", "kotlin-reflect", "kotlin-coroutines-core", "kotlin-coroutines-android"]
@@ -142,14 +156,15 @@ androidx-concurrent = ["androidx-concurrent-futures", "androidx-concurrent-futur
 androidx-appcompat = ["androidx-appcompat", "androidx-appcompat-resources"]
 androidx-transition = ["androidx-transition", "androidx-transition-ktx"]
 androidx-navigation = ["androidx-navigation-common", "androidx-navigation-common-ktx", "androidx-navigation-runtime", "androidx-navigation-runtime-ktx", "androidx-navigation-fragment", "androidx-navigation-fragment-ktx", "androidx-navigation-ui", "androidx-navigation-ui-ktx", "androidx-navigation-compose"]
-androidx-compose = ["androidx-compose-ui", "androidx-compose-ui-geometry", "androidx-compose-ui-graphics", "androidx-compose-foundation", "androidx-compose-foundation-layout", "androidx-compose-animation", "androidx-compose-animation-core", "androidx-compose-animation-graphics", "androidx-compose-material", "androidx-compose-material-icons-core", "androidx-compose-material-icons-extended", "androidx-compose-material-ripple", "androidx-compose-material3", "androidx-compose-material3-wsc"]
+androidx-compose = ["androidx-compose-runtime", "androidx-compose-runtime-livedata", "androidx-compose-runtime-saveable", "androidx-compose-ui", "androidx-compose-ui-geometry", "androidx-compose-ui-graphics", "androidx-compose-foundation", "androidx-compose-foundation-layout", "androidx-compose-animation", "androidx-compose-animation-core", "androidx-compose-animation-graphics", "androidx-compose-material", "androidx-compose-material-icons-core", "androidx-compose-material-icons-extended", "androidx-compose-material-ripple", "androidx-compose-material3", "androidx-compose-material3-wsc"]
 androidx-compose-tooling = ["androidx-compose-ui-tooling", "androidx-compose-ui-tooling-data", "androidx-compose-ui-tooling-preview"]
 androidx-activity = ["androidx-activity", "androidx-activity-compose", "androidx-activity-ktx"]
 androidx-fragment = ["androidx-fragment", "androidx-fragment-ktx"]
-androidx-lifecycle = ["androidx-lifecycle-common", "androidx-lifecycle-common-java8", "androidx-lifecycle-runtime", "androidx-lifecycle-runtime-ktx", "androidx-lifecycle-livedata", "androidx-lifecycle-livedata-ktx", "androidx-lifecycle-livedata-core", "androidx-lifecycle-livedata-core-ktx", "androidx-lifecycle-viewmodel", "androidx-lifecycle-viewmodel-savedstate", "androidx-lifecycle-viewmodel-compose", "androidx-lifecycle-viewmodel-ktx"]
+androidx-lifecycle = ["androidx-lifecycle-common", "androidx-lifecycle-common-java8", "androidx-lifecycle-runtime", "androidx-lifecycle-runtime-compose", "androidx-lifecycle-runtime-ktx", "androidx-lifecycle-livedata", "androidx-lifecycle-livedata-ktx", "androidx-lifecycle-livedata-core", "androidx-lifecycle-livedata-core-ktx", "androidx-lifecycle-viewmodel", "androidx-lifecycle-viewmodel-savedstate", "androidx-lifecycle-viewmodel-compose", "androidx-lifecycle-viewmodel-ktx"]
 androidx-window = ["androidx-window", "androidx-window-core", "androidx-window-java"]
 androidx-work = ["androidx-work-runtime", "androidx-work-runtime-ktx"]
 hilt = ["hilt", "androidx-hilt-common", "androidx-hilt-work", "androidx-hilt-navigation", "androidx-hilt-navigation-fragment", "androidx-hilt-navigation-compose"]
 hilt-compiler = ["hilt-compiler", "androidx-hilt-compiler"]
 coil = ["coil", "coil-compose", "coil-gif", "coil-svg", "coil-video"]
 bouncycastle = ["bouncycastle-provider", "bouncycastle-apis", "bouncycastle-utils"]
+protobuf = ["protobuf-java", "protobuf-kotlin"]

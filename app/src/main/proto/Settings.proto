@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.github.yuriybudiyev.sketches.core.settings";
+
+enum MainScreenTab {
+  IMAGES = 0;
+  ALBUMS = 1;
+}
+
+message Settings {
+
+  MainScreenTab main_screen_tab = 1;
+}
