@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.di
+package com.github.yuriybudiyev.sketches.settings.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
-import com.github.yuriybudiyev.sketches.core.settings.Settings
-import com.github.yuriybudiyev.sketches.core.settings.SettingsSerializer
+import com.github.yuriybudiyev.sketches.settings.data.model.Settings
+import com.github.yuriybudiyev.sketches.settings.data.serialization.SettingsSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,11 +39,11 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object SettingsModule {
+object SettingsDataStoreModule {
 
     @Provides
     @Singleton
-    fun provideSettings(@ApplicationContext context: Context): DataStore<Settings> =
+    fun provideSettingsDataStore(@ApplicationContext context: Context): DataStore<Settings> =
         DataStoreFactory.create(SettingsSerializer) {
             context.dataStoreFile("settings")
         }
