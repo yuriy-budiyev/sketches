@@ -27,8 +27,8 @@ package com.github.yuriybudiyev.sketches.main
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material.Surface
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
 import com.github.yuriybudiyev.sketches.gallery.ui.GalleryScreen
 import dagger.hilt.android.AndroidEntryPoint
