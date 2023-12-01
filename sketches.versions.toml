@@ -1,5 +1,5 @@
 [versions]
-android-application = "8.1.4"
+android-application = "8.2.0"
 java = "1.8"
 kotlin = "1.9.20"
 kotlin-coroutines = "1.7.3"
@@ -27,7 +27,7 @@ androidx-fragment = "1.6.2"
 androidx-lifecycle = "2.6.2"
 androidx-startup = "1.1.1"
 androidx-window = "1.2.0"
-androidx-work = "2.8.1"
+androidx-work = "2.9.0"
 androidx-hilt = "1.1.0"
 hilt = "2.48.1"
 material = "1.10.0"
@@ -36,6 +36,7 @@ okio = "3.6.0"
 coil = "2.5.0"
 bouncycastle = "1.77"
 protobuf = "3.25.1"
+
 protobuf-plugin = "0.9.4"
 
 [plugins]
