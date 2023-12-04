@@ -56,7 +56,6 @@ class GalleryScreenViewModel @Inject constructor(
     fun updateImages() {
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
-
             uiStateInternal.value = GalleryScreenUiState.Loading
             try {
                 val images = withContext(Dispatchers.Default) { repository.getImages() }
