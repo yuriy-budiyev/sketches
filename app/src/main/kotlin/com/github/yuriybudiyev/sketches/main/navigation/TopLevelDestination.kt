@@ -1,12 +1,13 @@
 package com.github.yuriybudiyev.sketches.main.navigation
 
+import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
 enum class TopLevelDestination(
     val icon: ImageVector,
-    val text: Int
+    @StringRes val text: Int
 ) {
 
     IMAGES(
