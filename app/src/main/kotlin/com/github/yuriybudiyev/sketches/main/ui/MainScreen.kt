@@ -24,9 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.main.ui
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Photo
-import androidx.compose.material.icons.rounded.PhotoLibrary
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -34,6 +31,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
 @Composable
 fun MainScreen() {
@@ -42,7 +40,7 @@ fun MainScreen() {
             onClick = { },
             icon = {
                 Icon(
-                    imageVector = Icons.Rounded.Photo,
+                    imageVector = SketchesIcons.Images,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
@@ -54,7 +52,7 @@ fun MainScreen() {
             onClick = { },
             icon = {
                 Icon(
-                    imageVector = Icons.Rounded.PhotoLibrary,
+                    imageVector = SketchesIcons.Buckets,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
