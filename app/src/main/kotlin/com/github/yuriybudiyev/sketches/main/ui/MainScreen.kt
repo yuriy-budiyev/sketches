@@ -30,8 +30,10 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.github.yuriybudiyev.sketches.main.navigation.TopLevelDestination
@@ -39,11 +41,11 @@ import com.github.yuriybudiyev.sketches.main.navigation.TopLevelDestination
 @Composable
 fun MainScreen() {
     val destinations = TopLevelDestination.entries
-    val selectedIndex = remember { mutableIntStateOf(TopLevelDestination.IMAGES.ordinal) }
+    var selectedIndex by remember { mutableIntStateOf(TopLevelDestination.IMAGES.ordinal) }
     NavigationBar {
         destinations.forEach { destination ->
-            NavigationBarItem(selected = destination.ordinal == selectedIndex.intValue,
-                onClick = { selectedIndex.intValue = destination.ordinal },
+            NavigationBarItem(selected = destination.ordinal == selectedIndex,
+                onClick = { selectedIndex = destination.ordinal },
                 icon = {
                     Icon(
                         imageVector = destination.icon,
