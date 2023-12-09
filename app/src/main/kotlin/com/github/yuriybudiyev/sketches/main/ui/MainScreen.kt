@@ -52,7 +52,7 @@ fun MainScreen() {
                     )
                 },
                 label = {
-                    Text(text = stringResource(id = destination.text))
+                    Text(text = stringResource(id = destination.label))
                 })
         }
     }

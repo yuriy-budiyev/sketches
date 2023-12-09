@@ -7,16 +7,16 @@ import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
 enum class TopLevelDestination(
     val icon: ImageVector,
-    @StringRes val text: Int
+    @StringRes val label: Int
 ) {
 
     IMAGES(
         icon = SketchesIcons.Images,
-        text = R.string.main_navigation_images
+        label = R.string.main_navigation_images
     ),
 
     BUCKETS(
         icon = SketchesIcons.Buckets,
-        text = R.string.main_navigation_buckets
+        label = R.string.main_navigation_buckets
     )
 }
