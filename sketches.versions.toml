@@ -36,9 +36,7 @@ material = "1.10.0"
 okhttp = "4.12.0"
 okio = "3.6.0"
 coil = "2.5.0"
-bouncycastle = "1.77"
 protobuf = "3.25.1"
-
 protobuf-plugin = "0.9.4"
 
 [plugins]
@@ -143,9 +141,6 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
 coil-gif = { group = "io.coil-kt", name = "coil-gif", version.ref = "coil" }
 coil-video = { group = "io.coil-kt", name = "coil-video", version.ref = "coil" }
-bouncycastle-provider = { group = "org.bouncycastle", name = "bcprov-jdk18on", version.ref = "bouncycastle" }
-bouncycastle-apis = { group = "org.bouncycastle", name = "bcpkix-jdk18on", version.ref = "bouncycastle" }
-bouncycastle-utils = { group = "org.bouncycastle", name = "bcutil-jdk18on", version.ref = "bouncycastle" }
 protobuf-java = { group = "com.google.protobuf", name = "protobuf-java", version.ref = "protobuf" }
 protobuf-kotlin = { group = "com.google.protobuf", name = "protobuf-kotlin", version.ref = "protobuf" }
 protobuf-compiler = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
@@ -171,5 +166,4 @@ androidx-work = ["androidx-work-runtime", "androidx-work-runtime-ktx"]
 hilt = ["hilt", "androidx-hilt-common", "androidx-hilt-work", "androidx-hilt-navigation", "androidx-hilt-navigation-fragment", "androidx-hilt-navigation-compose"]
 hilt-compiler = ["hilt-compiler", "androidx-hilt-compiler"]
 coil = ["coil", "coil-compose", "coil-gif", "coil-svg", "coil-video"]
-bouncycastle = ["bouncycastle-provider", "bouncycastle-apis", "bouncycastle-utils"]
 protobuf = ["protobuf-java", "protobuf-kotlin"]

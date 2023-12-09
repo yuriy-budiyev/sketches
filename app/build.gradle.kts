@@ -75,7 +75,6 @@ dependencies {
     implementation(sketches.bundles.androidx.work)
     implementation(sketches.bundles.hilt)
     implementation(sketches.bundles.coil)
-    implementation(sketches.bundles.bouncycastle)
     implementation(sketches.bundles.protobuf)
     implementation(sketches.androidx.recyclerview)
     implementation(sketches.androidx.viewpager2)

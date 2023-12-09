@@ -6,17 +6,20 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
 enum class TopLevelDestination(
-    val icon: ImageVector,
-    @StringRes val label: Int
+    val iconSelected: ImageVector,
+    val iconUnselected: ImageVector,
+    @StringRes val labelRes: Int
 ) {
 
     IMAGES(
-        icon = SketchesIcons.Images,
-        label = R.string.main_navigation_images
+        iconSelected = SketchesIcons.ImagesSelected,
+        iconUnselected = SketchesIcons.ImagesUnselected,
+        labelRes = R.string.main_navigation_images
     ),
 
     BUCKETS(
-        icon = SketchesIcons.Buckets,
-        label = R.string.main_navigation_buckets
+        iconSelected = SketchesIcons.BucketsSelected,
+        iconUnselected = SketchesIcons.BucketsUnselected,
+        labelRes = R.string.main_navigation_buckets
     )
 }

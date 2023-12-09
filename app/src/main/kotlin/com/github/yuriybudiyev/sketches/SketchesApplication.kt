@@ -28,8 +28,6 @@ import android.app.Application
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import dagger.hilt.android.HiltAndroidApp
-import org.bouncycastle.jce.provider.BouncyCastleProvider
-import java.security.Security
 import javax.inject.Inject
 import javax.inject.Provider
 
@@ -38,17 +36,6 @@ class SketchesApplication: Application(), ImageLoaderFactory {
 
     @Inject
     lateinit var imageLoaderProvider: Provider<ImageLoader>
-
-    override fun onCreate() {
-        super.onCreate()
-        try {
-            while (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) != null) {
-                Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME)
-            }
-            Security.addProvider(BouncyCastleProvider())
-        } catch (_: SecurityException) {
-        }
-    }
 
     override fun newImageLoader(): ImageLoader =
         imageLoaderProvider.get()

@@ -44,17 +44,22 @@ fun MainScreen() {
     var selectedIndex by remember { mutableIntStateOf(TopLevelDestination.IMAGES.ordinal) }
     NavigationBar {
         destinations.forEach { destination ->
-            NavigationBarItem(selected = destination.ordinal == selectedIndex,
+            val selected = destination.ordinal == selectedIndex
+            NavigationBarItem(selected = selected,
                 onClick = { selectedIndex = destination.ordinal },
                 icon = {
                     Icon(
-                        imageVector = destination.icon,
+                        imageVector = if (selected) {
+                            destination.iconSelected
+                        } else {
+                            destination.iconUnselected
+                        },
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary
                     )
                 },
                 label = {
-                    Text(text = stringResource(id = destination.label))
+                    Text(text = stringResource(id = destination.labelRes))
                 })
         }
     }

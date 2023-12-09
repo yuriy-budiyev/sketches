@@ -42,7 +42,3 @@
 
 #Okio
 -dontwarn org.codehaus.mojo.animal_sniffer.*
-
-# Bouncycastle
--keep class org.bouncycastle.jcajce.provider.** { *; }
--keep class org.bouncycastle.jce.provider.** { *; }
