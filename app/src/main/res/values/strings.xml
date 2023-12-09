@@ -5,4 +5,6 @@
     <string name="gallery_ui_state_no_permission_images">Permission required to access images</string>
     <string name="gallery_ui_state_no_permission_storage">Permission required to access the storage</string>
     <string name="gallery_ui_state_error">An unexpected error occurred</string>
+    <string name="main_navigation_images">Images</string>
+    <string name="main_navigation_buckets">Albums</string>
 </resources>
