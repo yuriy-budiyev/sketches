@@ -26,7 +26,7 @@ package com.github.yuriybudiyev.sketches.main.ui
 
 sealed interface MainScreenUiState {
 
-    data object Albums: MainScreenUiState
+    data object Images: MainScreenUiState
 
     data object Buckets: MainScreenUiState
 }
