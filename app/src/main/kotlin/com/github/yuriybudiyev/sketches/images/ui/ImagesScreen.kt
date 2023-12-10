@@ -66,15 +66,15 @@ import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
 fun ImagesRoute(onImageClick: (Long) -> Unit) {
     val viewModel = hiltViewModel<ImagesScreenViewModel>()
     ImagesScreen(
-        viewModel = viewModel,
-        onImageClick = onImageClick
+        onImageClick = onImageClick,
+        viewModel = viewModel
     )
 }
 
 @Composable
 fun ImagesScreen(
-    viewModel: ImagesScreenViewModel,
-    onImageClick: (Long) -> Unit
+    onImageClick: (Long) -> Unit,
+    viewModel: ImagesScreenViewModel
 ) {
     val context = LocalContext.current
     val imagesPermissionLauncher = rememberLauncherForActivityResult(

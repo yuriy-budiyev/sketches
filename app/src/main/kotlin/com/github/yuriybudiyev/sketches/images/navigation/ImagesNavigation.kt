@@ -9,7 +9,7 @@ import androidx.navigation.navArgument
 import com.github.yuriybudiyev.sketches.images.ui.ImagesRoute
 
 const val IMAGES_ARG_BUCKET_ID = "bucket_id"
-const val IMAGES_ROUTE = "images/$IMAGES_ARG_BUCKET_ID"
+const val IMAGES_ROUTE = "images/{$IMAGES_ARG_BUCKET_ID}"
 
 fun NavGraphBuilder.imagesScreen(onImageClick: (Long) -> Unit) {
     composable(

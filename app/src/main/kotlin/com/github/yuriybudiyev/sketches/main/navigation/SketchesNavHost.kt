@@ -5,12 +5,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.github.yuriybudiyev.sketches.images.navigation.IMAGES_ROUTE
 import com.github.yuriybudiyev.sketches.images.navigation.imagesScreen
+import com.github.yuriybudiyev.sketches.main.ui.SketchesAppState
 
 @Composable
-fun SketchesNavHost() {
-    val navController = rememberNavController()
+fun SketchesNavHost(appState: SketchesAppState) {
     NavHost(
-        navController = navController,
+        navController = appState.navController,
         startDestination = IMAGES_ROUTE
     ) {
         imagesScreen { }
