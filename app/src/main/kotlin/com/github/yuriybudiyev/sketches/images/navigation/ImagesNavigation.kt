@@ -6,45 +6,35 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDeepLink
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
-import androidx.navigation.NavType
-import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-import com.github.yuriybudiyev.sketches.core.navigation.TopLevelNavigationDestination
+import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.navigation.composable
+import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
+import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.images.ui.ImagesRoute
 
 const val IMAGES_ARG_BUCKET_ID = "bucket_id"
 const val IMAGES_ROUTE = "images/{$IMAGES_ARG_BUCKET_ID}"
 
 fun NavGraphBuilder.imagesScreen(onImageClick: (Long) -> Unit) {
-    composable(
-        route = IMAGES_ROUTE,
-        arguments = listOf(navArgument(IMAGES_ARG_BUCKET_ID) { type = NavType.LongType })
-    ) {
+    composable(ImagesNavigationDestination) {
         ImagesRoute(onImageClick = onImageClick)
     }
 }
 
 fun NavController.navigateToImages(navOptions: NavOptions? = null) {
     navigate(
-        IMAGES_ROUTE,
+        ImagesNavigationDestination.route,
         navOptions
     )
 }
 
 object ImagesNavigationDestination: TopLevelNavigationDestination {
 
-    override val route: String
-        get() = TODO("Not yet implemented")
-    override val arguments: List<NamedNavArgument>
-        get() = TODO("Not yet implemented")
-    override val deepLinks: List<NavDeepLink>
-        get() = TODO("Not yet implemented")
-    override val labelRes: Int
-        get() = TODO("Not yet implemented")
-    override val navigationIcon: ImageVector
-        get() = TODO("Not yet implemented")
-    override val selectedIcon: ImageVector
-        get() = TODO("Not yet implemented")
-    override val unselectedIcon: ImageVector
-        get() = TODO("Not yet implemented")
+    override val route: String = "images"
+    override val arguments: List<NamedNavArgument> = emptyList()
+    override val deepLinks: List<NavDeepLink> = emptyList()
+    override val labelRes: Int = R.string.main_navigation_images
+    override val navigationIcon: ImageVector = SketchesIcons.ImagesNavigation
+    override val selectedIcon: ImageVector = SketchesIcons.ImagesSelected
+    override val unselectedIcon: ImageVector = SketchesIcons.ImagesUnselected
 }

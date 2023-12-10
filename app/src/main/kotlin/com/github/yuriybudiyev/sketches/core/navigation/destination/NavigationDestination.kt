@@ -1,4 +1,4 @@
-package com.github.yuriybudiyev.sketches.core.navigation
+package com.github.yuriybudiyev.sketches.core.navigation.destination
 
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
