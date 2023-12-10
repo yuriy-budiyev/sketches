@@ -22,21 +22,21 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.gallery.data.reository.implementation
+package com.github.yuriybudiyev.sketches.images.data.reository.implementation
 
 import android.content.ContentUris
 import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
 import androidx.core.net.toUri
-import com.github.yuriybudiyev.sketches.gallery.data.model.GalleryImage
-import com.github.yuriybudiyev.sketches.gallery.data.reository.GalleryRepository
+import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
+import com.github.yuriybudiyev.sketches.images.data.reository.ImagesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class GalleryRepositoryImpl(private val context: Context): GalleryRepository {
+class ImagesRepositoryImpl(private val context: Context): ImagesRepository {
 
-    override suspend fun getImages(): List<GalleryImage>? {
+    override suspend fun getImages(): List<MediaStoreImage>? {
         val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
         } else {
@@ -65,7 +65,7 @@ class GalleryRepositoryImpl(private val context: Context): GalleryRepository {
                 "${MediaStore.Images.Media.DATE_ADDED} DESC"
             )
         } ?: return null
-        val images = ArrayList<GalleryImage>(cursor.count)
+        val images = ArrayList<MediaStoreImage>(cursor.count)
         val idColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID)
         val nameColumn = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME)
         val bucketIdColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID)
@@ -79,7 +79,7 @@ class GalleryRepositoryImpl(private val context: Context): GalleryRepository {
         val relativePathColumn = cursor.getColumnIndex(MediaStore.Images.Media.RELATIVE_PATH)
         while (cursor.moveToNext()) {
             val id = cursor.getLong(idColumn)
-            images += GalleryImage(
+            images += MediaStoreImage(
                 id,
                 cursor.getString(nameColumn),
                 cursor.getLong(bucketIdColumn),

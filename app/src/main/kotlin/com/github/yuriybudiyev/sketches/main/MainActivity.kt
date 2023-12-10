@@ -30,7 +30,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
-import com.github.yuriybudiyev.sketches.gallery.ui.GalleryScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -41,7 +40,7 @@ class MainActivity: AppCompatActivity() {
         setContent {
             SketchesTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    GalleryScreen()
+
                 }
             }
         }

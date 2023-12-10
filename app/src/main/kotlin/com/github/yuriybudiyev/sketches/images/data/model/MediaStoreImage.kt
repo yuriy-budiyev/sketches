@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.gallery.data.model
+package com.github.yuriybudiyev.sketches.images.data.model
 
 import android.net.Uri
 
-data class GalleryImage(
+data class MediaStoreImage(
     val id: Long,
     val name: String,
     val bucketId: Long,

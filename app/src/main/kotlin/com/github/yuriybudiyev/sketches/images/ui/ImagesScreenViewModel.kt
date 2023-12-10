@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.gallery.ui
+package com.github.yuriybudiyev.sketches.images.ui
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.gallery.data.reository.GalleryRepository
+import com.github.yuriybudiyev.sketches.images.data.reository.ImagesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -38,39 +38,39 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class GalleryScreenViewModel @Inject constructor(
+class ImagesScreenViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val repository: GalleryRepository
+    private val repository: ImagesRepository
 ): ViewModel() {
 
-    val uiState: StateFlow<GalleryScreenUiState>
+    val uiState: StateFlow<ImagesScreenUiState>
         get() = uiStateInternal
 
     fun setNoPermission() {
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
-            uiStateInternal.value = GalleryScreenUiState.NoPermission
+            uiStateInternal.value = ImagesScreenUiState.NoPermission
         }
     }
 
     fun updateImages() {
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
-            uiStateInternal.value = GalleryScreenUiState.Loading
+            uiStateInternal.value = ImagesScreenUiState.Loading
             try {
                 val images = withContext(Dispatchers.Default) { repository.getImages() }
                 if (!images.isNullOrEmpty()) {
-                    uiStateInternal.value = GalleryScreenUiState.Gallery(images)
+                    uiStateInternal.value = ImagesScreenUiState.Images(images)
                 } else {
-                    uiStateInternal.value = GalleryScreenUiState.Empty
+                    uiStateInternal.value = ImagesScreenUiState.Empty
                 }
             } catch (e: Exception) {
-                uiStateInternal.value = GalleryScreenUiState.Error(e)
+                uiStateInternal.value = ImagesScreenUiState.Error(e)
             }
         }
     }
 
-    private val uiStateInternal: MutableStateFlow<GalleryScreenUiState> =
-        MutableStateFlow(GalleryScreenUiState.Empty)
+    private val uiStateInternal: MutableStateFlow<ImagesScreenUiState> =
+        MutableStateFlow(ImagesScreenUiState.Empty)
     private var currentJob: Job? = null
 }

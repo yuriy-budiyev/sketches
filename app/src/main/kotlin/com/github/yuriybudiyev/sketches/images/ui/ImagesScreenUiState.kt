@@ -22,19 +22,19 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.gallery.ui
+package com.github.yuriybudiyev.sketches.images.ui
 
-import com.github.yuriybudiyev.sketches.gallery.data.model.GalleryImage
+import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
 
-sealed interface GalleryScreenUiState {
+sealed interface ImagesScreenUiState {
 
-    data object Empty: GalleryScreenUiState
+    data object Empty: ImagesScreenUiState
 
-    data object NoPermission: GalleryScreenUiState
+    data object NoPermission: ImagesScreenUiState
 
-    data object Loading: GalleryScreenUiState
+    data object Loading: ImagesScreenUiState
 
-    data class Gallery(val images: List<GalleryImage>): GalleryScreenUiState
+    data class Images(val images: List<MediaStoreImage>): ImagesScreenUiState
 
-    data class Error(val thrown: Exception): GalleryScreenUiState
+    data class Error(val thrown: Exception): ImagesScreenUiState
 }

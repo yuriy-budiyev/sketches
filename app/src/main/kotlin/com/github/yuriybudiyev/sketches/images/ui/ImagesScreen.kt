@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.gallery.ui
+package com.github.yuriybudiyev.sketches.images.ui
 
 import android.Manifest
 import android.os.Build
@@ -56,17 +56,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.SubcomposeAsyncImage
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.utils.checkPermissionGranted
-import com.github.yuriybudiyev.sketches.gallery.data.model.GalleryImage
+import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
 
 @Composable
-fun GalleryScreen() {
+fun ImagesRoute(onImageClick: (Long) -> Unit) {
+    val viewModel = hiltViewModel<ImagesScreenViewModel>()
+    ImagesScreen(
+        viewModel = viewModel,
+        onImageClick = onImageClick
+    )
+}
+
+@Composable
+fun ImagesScreen(
+    viewModel: ImagesScreenViewModel,
+    onImageClick: (Long) -> Unit
+) {
     val context = LocalContext.current
-    val viewModel = hiltViewModel<GalleryScreenViewModel>()
     val imagesPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -93,26 +103,26 @@ fun GalleryScreen() {
     }
     val uiState = viewModel.uiState.collectAsState()
     when (val state = uiState.value) {
-        GalleryScreenUiState.Empty -> {
+        ImagesScreenUiState.Empty -> {
             CenteredMessage(text = stringResource(id = R.string.gallery_ui_state_empty))
         }
-        GalleryScreenUiState.NoPermission -> {
+        ImagesScreenUiState.NoPermission -> {
             NoPermission()
         }
-        GalleryScreenUiState.Loading -> {
+        ImagesScreenUiState.Loading -> {
             Loading()
         }
-        is GalleryScreenUiState.Gallery -> {
+        is ImagesScreenUiState.Images -> {
             Gallery(images = state.images)
         }
-        is GalleryScreenUiState.Error -> {
+        is ImagesScreenUiState.Error -> {
             CenteredMessage(text = stringResource(id = R.string.gallery_ui_state_error))
         }
     }
 }
 
 @Composable
-fun Gallery(images: List<GalleryImage>) {
+fun Gallery(images: List<MediaStoreImage>) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(120.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),

@@ -4,7 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.github.yuriybudiyev.sketches.gallery.ui.GalleryScreen
+import com.github.yuriybudiyev.sketches.images.ui.ImagesRoute
+import com.github.yuriybudiyev.sketches.images.ui.ImagesScreen
 
 @Composable
 fun SketchesNavHost() {
@@ -14,7 +15,7 @@ fun SketchesNavHost() {
         startDestination = "images"
     ) {
         composable("images") {
-            GalleryScreen()
+            ImagesRoute(onImageClick = {})
         }
     }
 }
