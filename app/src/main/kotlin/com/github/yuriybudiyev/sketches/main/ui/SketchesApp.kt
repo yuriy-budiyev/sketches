@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
+import com.github.yuriybudiyev.sketches.main.navigation.TopLevelDestination
 import com.github.yuriybudiyev.sketches.main.navigation.TopLevelNavigation
 
 @Composable
@@ -33,28 +34,7 @@ fun SketchesApp(
         Surface(color = MaterialTheme.colorScheme.background) {
             Scaffold(bottomBar = {
                 if (appState.currentTopLevelNavigation == TopLevelNavigation.BAR) {
-                    NavigationBar {
-                        appState.topLevelDestinations.forEach { destination ->
-                            val selected = destination == appState.currentTopLevelDestination
-                            NavigationBarItem(selected = selected,
-                                onClick = {
-                                    appState.navigateToTopLevelDestination(destination)
-                                },
-                                icon = {
-                                    Icon(
-                                        imageVector = if (selected) {
-                                            destination.iconSelected
-                                        } else {
-                                            destination.iconUnselected
-                                        },
-                                        contentDescription = null
-                                    )
-                                },
-                                label = {
-                                    Text(text = stringResource(id = destination.labelRes))
-                                })
-                        }
-                    }
+                    SketchesNavBar(appState)
                 }
             }) { contentPadding ->
                 Row(
@@ -63,28 +43,7 @@ fun SketchesApp(
                         .padding(contentPadding)
                 ) {
                     if (appState.currentTopLevelNavigation == TopLevelNavigation.RAIL) {
-                        NavigationRail {
-                            appState.topLevelDestinations.forEach { destination ->
-                                val selected = destination == appState.currentTopLevelDestination
-                                NavigationRailItem(selected = selected,
-                                    onClick = {
-                                        appState.navigateToTopLevelDestination(destination)
-                                    },
-                                    icon = {
-                                        Icon(
-                                            imageVector = if (selected) {
-                                                destination.iconSelected
-                                            } else {
-                                                destination.iconUnselected
-                                            },
-                                            contentDescription = null
-                                        )
-                                    },
-                                    label = {
-                                        Text(text = stringResource(id = destination.labelRes))
-                                    })
-                            }
-                        }
+                        SketchesNavRail(appState)
                     }
                     Column(modifier = Modifier.fillMaxSize()) {
                         if (appState.currentTopLevelNavigation == TopLevelNavigation.NONE) {
@@ -96,4 +55,68 @@ fun SketchesApp(
             }
         }
     }
+}
+
+@Composable
+private fun SketchesNavBar(appState: SketchesAppState) {
+    NavigationBar {
+        appState.topLevelDestinations.forEach { destination ->
+            val selected = destination == appState.currentTopLevelDestination
+            NavigationBarItem(selected = selected,
+                onClick = {
+                    appState.navigateToTopLevelDestination(destination)
+                },
+                icon = {
+                    TopLevelDestinationIcon(
+                        selected,
+                        destination
+                    )
+                },
+                label = {
+                    TopLevelDestinationLabel(destination)
+                })
+        }
+    }
+}
+
+@Composable
+private fun SketchesNavRail(appState: SketchesAppState) {
+    NavigationRail {
+        appState.topLevelDestinations.forEach { destination ->
+            val selected = destination == appState.currentTopLevelDestination
+            NavigationRailItem(selected = selected,
+                onClick = {
+                    appState.navigateToTopLevelDestination(destination)
+                },
+                icon = {
+                    TopLevelDestinationIcon(
+                        selected,
+                        destination
+                    )
+                },
+                label = {
+                    TopLevelDestinationLabel(destination)
+                })
+        }
+    }
+}
+
+@Composable
+private fun TopLevelDestinationIcon(
+    selected: Boolean,
+    destination: TopLevelDestination
+) {
+    Icon(
+        imageVector = if (selected) {
+            destination.iconSelected
+        } else {
+            destination.iconUnselected
+        },
+        contentDescription = null
+    )
+}
+
+@Composable
+private fun TopLevelDestinationLabel(destination: TopLevelDestination) {
+    Text(text = stringResource(id = destination.labelRes))
 }
