@@ -6,5 +6,4 @@ import androidx.navigation.NavOptions
 const val BUCKETS_ROUTE = "buckets"
 
 fun NavController.navigateToBuckets(navOptions: NavOptions?) {
-
 }
