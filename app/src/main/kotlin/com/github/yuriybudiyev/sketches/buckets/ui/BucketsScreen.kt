@@ -24,8 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.buckets.ui
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.buckets.data.model.MediaStoreBucket
 
 typealias BucketClickListener = (index: Int, bucket: MediaStoreBucket) -> Unit
@@ -35,4 +42,32 @@ fun BucketsRoute(
     onBucketClick: BucketClickListener,
     viewModel: BucketsScreenViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    BucketsScreen(
+        uiState = uiState,
+        onBucketClick = onBucketClick
+    )
+}
+
+@Composable
+fun BucketsScreen(
+    uiState: BucketsScreenUiState,
+    onBucketClick: BucketClickListener
+) {
+}
+
+@Composable
+fun Buckets(
+    buckets: List<MediaStoreBucket>,
+    onBucketClick: BucketClickListener
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(120.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        itemsIndexed(items = buckets,
+            key = { index, item -> item.id }) { index, item ->
+        }
+    }
 }

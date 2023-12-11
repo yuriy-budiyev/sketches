@@ -26,10 +26,15 @@ package com.github.yuriybudiyev.sketches.buckets.ui
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.buckets.data.repository.BucketsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,6 +46,24 @@ class BucketsScreenViewModel @Inject constructor(
     val uiState: StateFlow<BucketsScreenUiState>
         get() = uiStateInternal
 
+    fun updateBuckets() {
+        currentJob?.cancel()
+        currentJob = viewModelScope.launch {
+            uiStateInternal.value = BucketsScreenUiState.Loading
+            try {
+                val buckets = withContext(Dispatchers.Default) { bucketsRepository.getBuckets() }
+                if (!buckets.isNullOrEmpty()) {
+                    uiStateInternal.value = BucketsScreenUiState.Buckets(buckets)
+                } else {
+                    uiStateInternal.value = BucketsScreenUiState.Empty
+                }
+            } catch (e: Exception) {
+                uiStateInternal.value = BucketsScreenUiState.Error(e)
+            }
+        }
+    }
+
     private val uiStateInternal: MutableStateFlow<BucketsScreenUiState> =
         MutableStateFlow(BucketsScreenUiState.Empty)
+    private var currentJob: Job? = null
 }
