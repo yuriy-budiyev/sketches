@@ -43,13 +43,13 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.github.yuriybudiyev.sketches.core.navigation.destination.NavigationDestination
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 import com.github.yuriybudiyev.sketches.main.navigation.TopLevelNavigationType
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 fun SketchesApp(
     windowSizeClass: WindowSizeClass,
     appState: SketchesAppState = rememberSketchesAppState(windowSizeClass = windowSizeClass)
@@ -74,22 +74,7 @@ fun SketchesApp(
                         if (currentTopLevelNavigationType == TopLevelNavigationType.NONE) {
                             val currentDestination = appState.currentNavigationDestination
                             if (currentDestination != null) {
-                                TopAppBar(
-
-                                    title = {
-                                        Text(
-                                            text = stringResource(
-                                                id = currentDestination.labelRes
-                                            )
-                                        )
-                                    },
-                                    navigationIcon = {
-                                        Icon(
-                                            imageVector = currentDestination.navigationIcon,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                    })
+                                SketchesTopAppBar(currentDestination)
                             }
                         }
                         SketchesNavHost(appState = appState)
@@ -144,6 +129,27 @@ private fun SketchesNavRail(appState: SketchesAppState) {
                 })
         }
     }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun SketchesTopAppBar(currentDestination: NavigationDestination) {
+    TopAppBar(
+
+        title = {
+            Text(
+                text = stringResource(
+                    id = currentDestination.labelRes
+                )
+            )
+        },
+        navigationIcon = {
+            Icon(
+                imageVector = currentDestination.navigationIcon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        })
 }
 
 @Composable
