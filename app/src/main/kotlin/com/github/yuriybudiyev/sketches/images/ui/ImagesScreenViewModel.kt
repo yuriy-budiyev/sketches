@@ -46,13 +46,6 @@ class ImagesScreenViewModel @Inject constructor(
     val uiState: StateFlow<ImagesScreenUiState>
         get() = uiStateInternal
 
-    fun setNoPermission() {
-        currentJob?.cancel()
-        currentJob = viewModelScope.launch {
-            uiStateInternal.value = ImagesScreenUiState.NoPermission
-        }
-    }
-
     fun updateImages() {
         currentJob?.cancel()
         currentJob = viewModelScope.launch {

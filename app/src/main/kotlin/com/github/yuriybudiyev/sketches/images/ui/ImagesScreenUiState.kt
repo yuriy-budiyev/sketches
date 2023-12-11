@@ -30,8 +30,6 @@ sealed interface ImagesScreenUiState {
 
     data object Empty: ImagesScreenUiState
 
-    data object NoPermission: ImagesScreenUiState
-
     data object Loading: ImagesScreenUiState
 
     data class Images(val images: List<MediaStoreImage>): ImagesScreenUiState

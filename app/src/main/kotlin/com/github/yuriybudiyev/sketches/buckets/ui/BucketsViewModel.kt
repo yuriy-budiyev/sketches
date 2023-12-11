@@ -22,29 +22,18 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.main.navigation
+package com.github.yuriybudiyev.sketches.buckets.ui
 
-import androidx.compose.runtime.Composable
-import androidx.navigation.compose.NavHost
-import com.github.yuriybudiyev.sketches.buckets.navigation.BucketsNavigationDestination
-import com.github.yuriybudiyev.sketches.core.navigation.buildRoute
-import com.github.yuriybudiyev.sketches.core.navigation.composable
-import com.github.yuriybudiyev.sketches.core.navigation.registerIn
-import com.github.yuriybudiyev.sketches.images.navigation.ImagesNavigationDestination
-import com.github.yuriybudiyev.sketches.images.ui.ImagesRoute
-import com.github.yuriybudiyev.sketches.main.ui.SketchesAppState
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import com.github.yuriybudiyev.sketches.buckets.data.repository.BucketsRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-@Composable
-fun SketchesNavHost(appState: SketchesAppState) {
-    NavHost(
-        navController = appState.navController,
-        startDestination = ImagesNavigationDestination.buildRoute()
-    ) {
-        composable(ImagesNavigationDestination.registerIn(appState)) {
-            ImagesRoute(onImageClick = { index, image -> })
-        }
-        composable(BucketsNavigationDestination.registerIn(appState)) {
+@HiltViewModel
+class BucketsViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
+    private val bucketsRepository: BucketsRepository
+): ViewModel() {
 
-        }
-    }
 }

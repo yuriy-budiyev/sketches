@@ -24,10 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.images.ui
 
-import android.Manifest
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,82 +35,60 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.SubcomposeAsyncImage
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
-import com.github.yuriybudiyev.sketches.core.utils.checkPermissionGranted
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
 
+typealias ImageClickListener = (index: Int, image: MediaStoreImage) -> Unit
+
 @Composable
-fun ImagesRoute(onImageClick: (Long) -> Unit) {
-    val viewModel = hiltViewModel<ImagesScreenViewModel>()
+fun ImagesRoute(
+    onImageClick: ImageClickListener,
+    viewModel: ImagesScreenViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    viewModel.updateImages()
     ImagesScreen(
-        onImageClick = onImageClick,
-        viewModel = viewModel
+        uiState = uiState,
+        onImageClick = onImageClick
     )
 }
 
 @Composable
 fun ImagesScreen(
-    onImageClick: (Long) -> Unit,
-    viewModel: ImagesScreenViewModel
+    uiState: ImagesScreenUiState,
+    onImageClick: ImageClickListener
 ) {
-    val context = LocalContext.current
-    val imagesPermissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            viewModel.updateImages()
-        } else {
-            viewModel.setNoPermission()
-        }
-    }
-    val imagesPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        Manifest.permission.READ_MEDIA_IMAGES
-    } else {
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    }
-    if (context.checkPermissionGranted(imagesPermission)) {
-        LaunchedEffect(Unit) {
-            viewModel.updateImages()
-        }
-    } else {
-        LaunchedEffect(Unit) {
-            viewModel.setNoPermission()
-            imagesPermissionLauncher.launch(imagesPermission)
-        }
-    }
-    val uiState = viewModel.uiState.collectAsState()
-    when (val state = uiState.value) {
+    when (uiState) {
         ImagesScreenUiState.Empty -> {
             CenteredMessage(text = stringResource(id = R.string.gallery_ui_state_empty))
-        }
-        ImagesScreenUiState.NoPermission -> {
-            NoPermission()
         }
         ImagesScreenUiState.Loading -> {
             Loading()
         }
         is ImagesScreenUiState.Images -> {
-            Gallery(images = state.images)
+            Images(
+                images = uiState.images,
+                onImageClick = onImageClick
+            )
         }
         is ImagesScreenUiState.Error -> {
             CenteredMessage(text = stringResource(id = R.string.gallery_ui_state_error))
@@ -122,21 +97,30 @@ fun ImagesScreen(
 }
 
 @Composable
-fun Gallery(images: List<MediaStoreImage>) {
+fun Images(
+    images: List<MediaStoreImage>,
+    onImageClick: ImageClickListener
+) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(120.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        items(items = images,
-            key = { it.id }) {
-            SubcomposeAsyncImage(model = it.uri,
+        itemsIndexed(items = images,
+            key = { index, image -> image.id }) { index, image ->
+            SubcomposeAsyncImage(model = image.uri,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 filterQuality = FilterQuality.Low,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(ratio = 1.0f),
+                    .aspectRatio(ratio = 1.0f)
+                    .clickable {
+                        onImageClick(
+                            index,
+                            image
+                        )
+                    },
                 error = {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
@@ -179,16 +163,6 @@ fun Loading() {
         )
         Message(text = stringResource(id = R.string.gallery_ui_state_loading))
     }
-}
-
-@Composable
-fun NoPermission() {
-    val message = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        stringResource(id = R.string.gallery_ui_state_no_permission_images)
-    } else {
-        stringResource(id = R.string.gallery_ui_state_no_permission_storage)
-    }
-    CenteredMessage(text = message)
 }
 
 @Composable

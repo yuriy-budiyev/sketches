@@ -24,6 +24,10 @@
 
 package com.github.yuriybudiyev.sketches.main.ui
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,11 +45,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.destination.NavigationDestination
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
+import com.github.yuriybudiyev.sketches.core.utils.checkPermissionGranted
+import com.github.yuriybudiyev.sketches.images.ui.CenteredMessage
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 import com.github.yuriybudiyev.sketches.main.navigation.TopLevelNavigationType
 
@@ -56,30 +69,68 @@ fun SketchesApp(
 ) {
     SketchesTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
-            val currentTopLevelNavigationType = appState.currentTopLevelNavigationType
-            Scaffold(bottomBar = {
-                if (currentTopLevelNavigationType == TopLevelNavigationType.BAR) {
-                    SketchesNavBar(appState)
+            var permissionGranted by remember { mutableStateOf(true) }
+            val context = LocalContext.current
+            val imagesPermissionLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestPermission()
+            ) { isGranted ->
+                permissionGranted = isGranted
+            }
+            val imagesPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Manifest.permission.READ_MEDIA_IMAGES
+            } else {
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            }
+            if (!permissionGranted) {
+                permissionGranted = context.checkPermissionGranted(imagesPermission)
+            }
+            if (permissionGranted) {
+                MainScreen(appState = appState)
+            } else {
+                NoPermission()
+                LaunchedEffect(Unit) {
+                    imagesPermissionLauncher.launch(imagesPermission)
                 }
-            }) { contentPadding ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(contentPadding)
-                ) {
-                    if (currentTopLevelNavigationType == TopLevelNavigationType.RAIL) {
-                        SketchesNavRail(appState)
-                    }
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        if (currentTopLevelNavigationType == TopLevelNavigationType.NONE) {
-                            val currentDestination = appState.currentNavigationDestination
-                            if (currentDestination != null) {
-                                SketchesTopAppBar(currentDestination)
-                            }
-                        }
-                        SketchesNavHost(appState = appState)
+            }
+
+        }
+    }
+}
+
+@Composable
+private fun NoPermission() {
+    val message = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        stringResource(id = R.string.gallery_ui_state_no_permission_images)
+    } else {
+        stringResource(id = R.string.gallery_ui_state_no_permission_storage)
+    }
+    CenteredMessage(text = message)
+}
+
+@Composable
+private fun MainScreen(appState: SketchesAppState) {
+    val currentTopLevelNavigationType = appState.currentTopLevelNavigationType
+    Scaffold(bottomBar = {
+        if (currentTopLevelNavigationType == TopLevelNavigationType.BAR) {
+            SketchesNavBar(appState)
+        }
+    }) { contentPadding ->
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(contentPadding)
+        ) {
+            if (currentTopLevelNavigationType == TopLevelNavigationType.RAIL) {
+                SketchesNavRail(appState)
+            }
+            Column(modifier = Modifier.fillMaxSize()) {
+                if (currentTopLevelNavigationType == TopLevelNavigationType.NONE) {
+                    val currentDestination = appState.currentNavigationDestination
+                    if (currentDestination != null) {
+                        SketchesTopAppBar(currentDestination)
                     }
                 }
+                SketchesNavHost(appState = appState)
             }
         }
     }
