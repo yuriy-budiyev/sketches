@@ -1,6 +1,6 @@
 package com.github.yuriybudiyev.sketches.main.navigation
 
-enum class TopLevelNavigation {
+enum class TopLevelNavigationType {
 
     BAR,
     RAIL,

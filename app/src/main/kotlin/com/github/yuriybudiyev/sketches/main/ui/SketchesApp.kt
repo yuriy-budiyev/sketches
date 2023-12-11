@@ -19,10 +19,10 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
-import com.github.yuriybudiyev.sketches.main.navigation.TopLevelDestination
-import com.github.yuriybudiyev.sketches.main.navigation.TopLevelNavigation
+import com.github.yuriybudiyev.sketches.main.navigation.TopLevelNavigationType
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,7 +33,7 @@ fun SketchesApp(
     SketchesTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
             Scaffold(bottomBar = {
-                if (appState.currentTopLevelNavigation == TopLevelNavigation.BAR) {
+                if (appState.currentTopLevelNavigationType == TopLevelNavigationType.BAR) {
                     SketchesNavBar(appState)
                 }
             }) { contentPadding ->
@@ -42,11 +42,11 @@ fun SketchesApp(
                         .fillMaxSize()
                         .padding(contentPadding)
                 ) {
-                    if (appState.currentTopLevelNavigation == TopLevelNavigation.RAIL) {
+                    if (appState.currentTopLevelNavigationType == TopLevelNavigationType.RAIL) {
                         SketchesNavRail(appState)
                     }
                     Column(modifier = Modifier.fillMaxSize()) {
-                        if (appState.currentTopLevelNavigation == TopLevelNavigation.NONE) {
+                        if (appState.currentTopLevelNavigationType == TopLevelNavigationType.NONE) {
 
                             TopAppBar(title = { })
                         }
@@ -61,8 +61,9 @@ fun SketchesApp(
 @Composable
 private fun SketchesNavBar(appState: SketchesAppState) {
     NavigationBar {
-        appState.topLevelDestinations.forEach { destination ->
-            val selected = destination == appState.currentTopLevelDestination
+        val currentDestination = appState.currentTopLevelNavigationDestination
+        appState.topLevelNavigationDestinations.forEach { destination ->
+            val selected = destination == currentDestination
             NavigationBarItem(selected = selected,
                 onClick = {
                     appState.navigateToTopLevelDestination(destination)
@@ -83,8 +84,9 @@ private fun SketchesNavBar(appState: SketchesAppState) {
 @Composable
 private fun SketchesNavRail(appState: SketchesAppState) {
     NavigationRail {
-        appState.topLevelDestinations.forEach { destination ->
-            val selected = destination == appState.currentTopLevelDestination
+        val currentDestination = appState.currentTopLevelNavigationDestination
+        appState.topLevelNavigationDestinations.forEach { destination ->
+            val selected = destination == currentDestination
             NavigationRailItem(selected = selected,
                 onClick = {
                     appState.navigateToTopLevelDestination(destination)
@@ -105,19 +107,19 @@ private fun SketchesNavRail(appState: SketchesAppState) {
 @Composable
 private fun TopLevelDestinationIcon(
     selected: Boolean,
-    destination: TopLevelDestination
+    destination: TopLevelNavigationDestination
 ) {
     Icon(
         imageVector = if (selected) {
-            destination.iconSelected
+            destination.selectedIcon
         } else {
-            destination.iconUnselected
+            destination.unselectedIcon
         },
         contentDescription = null
     )
 }
 
 @Composable
-private fun TopLevelDestinationLabel(destination: TopLevelDestination) {
+private fun TopLevelDestinationLabel(destination: TopLevelNavigationDestination) {
     Text(text = stringResource(id = destination.labelRes))
 }

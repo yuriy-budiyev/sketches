@@ -5,18 +5,16 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.github.yuriybudiyev.sketches.buckets.navigation.BUCKETS_ROUTE
-import com.github.yuriybudiyev.sketches.buckets.navigation.navigateToBuckets
-import com.github.yuriybudiyev.sketches.images.navigation.IMAGES_ROUTE
-import com.github.yuriybudiyev.sketches.images.navigation.navigateToImages
-import com.github.yuriybudiyev.sketches.main.navigation.TopLevelDestination
-import com.github.yuriybudiyev.sketches.main.navigation.TopLevelNavigation
+import com.github.yuriybudiyev.sketches.core.navigation.buildRoute
+import com.github.yuriybudiyev.sketches.core.navigation.destination.NavigationDestination
+import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
+import com.github.yuriybudiyev.sketches.core.navigation.navigate
+import com.github.yuriybudiyev.sketches.main.navigation.TopLevelNavigationType
 
 @Composable
 fun rememberSketchesAppState(
@@ -39,48 +37,58 @@ class SketchesAppState(
     val navController: NavHostController
 ) {
 
-    val currentDestination: NavDestination?
-        @Composable get() = navController.currentBackStackEntryAsState().value?.destination
-
-    val currentTopLevelDestination: TopLevelDestination?
-        @Composable get() = when (currentDestination?.route) {
-            IMAGES_ROUTE -> TopLevelDestination.IMAGES
-            BUCKETS_ROUTE -> TopLevelDestination.BUCKETS
-            else -> null
+    val currentNavigationDestination: NavigationDestination?
+        @Composable get() {
+            val route = navController.currentBackStackEntryAsState().value?.destination?.route
+                ?: return null
+            return navigationDestinationsInternal[route]
         }
 
-    val currentTopLevelNavigation: TopLevelNavigation
-        @Composable get() = when (currentTopLevelDestination) {
-            TopLevelDestination.IMAGES, TopLevelDestination.BUCKETS -> {
-                if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact) {
-                    TopLevelNavigation.BAR
-                } else {
-                    TopLevelNavigation.RAIL
-                }
-            }
-            else -> {
-                TopLevelNavigation.NONE
-            }
+    val currentTopLevelNavigationDestination: TopLevelNavigationDestination?
+        @Composable get() {
+            val destination = currentNavigationDestination ?: return null
+            if (destination is TopLevelNavigationDestination) return destination
+            return null
         }
 
-    val topLevelDestinations: List<TopLevelDestination>
-        get() = TopLevelDestination.entries
+    val currentTopLevelNavigationType: TopLevelNavigationType
+        @Composable get() = if (currentTopLevelNavigationDestination != null) {
+            if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact) {
+                TopLevelNavigationType.BAR
+            } else {
+                TopLevelNavigationType.RAIL
+            }
+        } else {
+            TopLevelNavigationType.NONE
+        }
 
-    fun navigateToTopLevelDestination(destination: TopLevelDestination) {
-        val navOptions = navOptions {
+    val topLevelNavigationDestinations: List<TopLevelNavigationDestination>
+        get() = topLevelNavigationDestinationsInternal
+
+    fun navigateToTopLevelDestination(destination: TopLevelNavigationDestination) {
+        val options = navOptions {
             popUpTo(navController.graph.findStartDestination().id) {
                 saveState = true
             }
             launchSingleTop = true
             restoreState = true
         }
-        when (destination) {
-            TopLevelDestination.IMAGES -> {
-                navController.navigateToImages(navOptions)
-            }
-            TopLevelDestination.BUCKETS -> {
-                navController.navigateToBuckets(navOptions)
-            }
+        navController.navigate(
+            destination,
+            options
+        )
+    }
+
+    fun registerNavigationDestination(destination: NavigationDestination) {
+        navigationDestinationsInternal[destination.buildRoute()] = destination
+        if (destination is TopLevelNavigationDestination) {
+            topLevelNavigationDestinationsInternal += destination
         }
     }
+
+    private val navigationDestinationsInternal: MutableMap<String, NavigationDestination> =
+        HashMap()
+
+    private val topLevelNavigationDestinationsInternal: MutableList<TopLevelNavigationDestination> =
+        ArrayList()
 }
