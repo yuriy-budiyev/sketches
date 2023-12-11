@@ -56,8 +56,9 @@ fun SketchesApp(
 ) {
     SketchesTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
+            val currentTopLevelNavigationType = appState.currentTopLevelNavigationType
             Scaffold(bottomBar = {
-                if (appState.currentTopLevelNavigationType == TopLevelNavigationType.BAR) {
+                if (currentTopLevelNavigationType == TopLevelNavigationType.BAR) {
                     SketchesNavBar(appState)
                 }
             }) { contentPadding ->
@@ -66,13 +67,30 @@ fun SketchesApp(
                         .fillMaxSize()
                         .padding(contentPadding)
                 ) {
-                    if (appState.currentTopLevelNavigationType == TopLevelNavigationType.RAIL) {
+                    if (currentTopLevelNavigationType == TopLevelNavigationType.RAIL) {
                         SketchesNavRail(appState)
                     }
                     Column(modifier = Modifier.fillMaxSize()) {
-                        if (appState.currentTopLevelNavigationType == TopLevelNavigationType.NONE) {
+                        if (currentTopLevelNavigationType == TopLevelNavigationType.NONE) {
+                            val currentNavigationDestination = appState.currentNavigationDestination
+                            if (currentNavigationDestination != null) {
+                                TopAppBar(
 
-                            TopAppBar(title = { })
+                                    title = {
+                                        Text(
+                                            text = stringResource(
+                                                id = currentNavigationDestination.labelRes
+                                            )
+                                        )
+                                    },
+                                    navigationIcon = {
+                                        Icon(
+                                            imageVector = currentNavigationDestination.navigationIcon,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    })
+                            }
                         }
                         SketchesNavHost(appState = appState)
                     }
