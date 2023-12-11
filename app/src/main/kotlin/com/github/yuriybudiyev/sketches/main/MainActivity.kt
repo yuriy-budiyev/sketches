@@ -29,6 +29,7 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
 import com.github.yuriybudiyev.sketches.main.ui.SketchesApp
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -39,7 +40,9 @@ class MainActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            SketchesApp(windowSizeClass = calculateWindowSizeClass(activity = this))
+            SketchesTheme {
+                SketchesApp(windowSizeClass = calculateWindowSizeClass(activity = this))
+            }
         }
     }
 }

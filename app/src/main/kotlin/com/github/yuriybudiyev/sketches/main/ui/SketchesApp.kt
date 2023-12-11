@@ -45,18 +45,22 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.destination.NavigationDestination
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
-import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
 import com.github.yuriybudiyev.sketches.core.utils.checkPermissionGranted
 import com.github.yuriybudiyev.sketches.images.ui.CenteredMessage
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
@@ -67,32 +71,38 @@ fun SketchesApp(
     windowSizeClass: WindowSizeClass,
     appState: SketchesAppState = rememberSketchesAppState(windowSizeClass = windowSizeClass)
 ) {
-    SketchesTheme {
-        Surface(color = MaterialTheme.colorScheme.background) {
-            var permissionGranted by remember { mutableStateOf(false) }
-            val context = LocalContext.current
-            val imagesPermissionLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.RequestPermission()
-            ) { isGranted ->
-                permissionGranted = isGranted
-            }
-            val imagesPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Manifest.permission.READ_MEDIA_IMAGES
-            } else {
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            }
-            if (!permissionGranted) {
-                permissionGranted = context.checkPermissionGranted(imagesPermission)
-            }
-            if (permissionGranted) {
-                MainScreen(appState = appState)
-            } else {
-                NoPermission()
-                LaunchedEffect(Unit) {
-                    imagesPermissionLauncher.launch(imagesPermission)
+    val context = LocalContext.current
+    val imagesPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        Manifest.permission.READ_MEDIA_IMAGES
+    } else {
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    }
+    var permissionGranted by remember { mutableStateOf(context.checkPermissionGranted(imagesPermission)) }
+    Surface(color = MaterialTheme.colorScheme.background) {
+        if (permissionGranted) {
+            MainScreen(appState = appState)
+        } else {
+            NoPermission()
+            val lifecycle by rememberUpdatedState(LocalLifecycleOwner.current.lifecycle)
+            DisposableEffect(lifecycle) {
+                val lifecycleObserver = LifecycleEventObserver { _, event ->
+                    if (event == Lifecycle.Event.ON_RESUME) {
+                        permissionGranted = context.checkPermissionGranted(imagesPermission)
+                    }
+                }
+                lifecycle.addObserver(lifecycleObserver)
+                onDispose {
+                    lifecycle.removeObserver(lifecycleObserver)
                 }
             }
-
+            val imagesPermissionLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestPermission()
+            ) { granted ->
+                permissionGranted = granted
+            }
+            LaunchedEffect(Unit) {
+                imagesPermissionLauncher.launch(imagesPermission)
+            }
         }
     }
 }

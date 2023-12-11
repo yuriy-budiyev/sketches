@@ -27,11 +27,8 @@ package com.github.yuriybudiyev.sketches.buckets.ui
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.github.yuriybudiyev.sketches.buckets.data.repository.BucketsRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 
-@HiltViewModel
-class BucketsViewModel @Inject constructor(
+class BucketsViewModel constructor(
     private val savedStateHandle: SavedStateHandle,
     private val bucketsRepository: BucketsRepository
 ): ViewModel() {
