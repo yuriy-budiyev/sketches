@@ -67,7 +67,8 @@ fun Buckets(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         itemsIndexed(items = buckets,
-            key = { index, item -> item.id }) { index, item ->
+            key = { _, item -> item.id }) { index, item ->
+
         }
     }
 }

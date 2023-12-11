@@ -51,7 +51,9 @@ class BucketsScreenViewModel @Inject constructor(
         currentJob = viewModelScope.launch {
             uiStateInternal.value = BucketsScreenUiState.Loading
             try {
-                val buckets = withContext(Dispatchers.Default) { bucketsRepository.getBuckets() }
+                val buckets = withContext(Dispatchers.Default) {
+                    bucketsRepository.getBuckets()
+                }
                 if (!buckets.isNullOrEmpty()) {
                     uiStateInternal.value = BucketsScreenUiState.Buckets(buckets)
                 } else {
