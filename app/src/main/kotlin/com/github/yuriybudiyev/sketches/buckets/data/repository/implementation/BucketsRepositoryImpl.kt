@@ -47,7 +47,6 @@ class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
             context.contentResolver.query(
                 uri,
                 arrayOf(
-                    MediaStore.Images.Media._ID,
                     MediaStore.Images.Media.BUCKET_ID,
                     MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
                     MediaStore.Images.Media.DATE_ADDED,
@@ -57,8 +56,45 @@ class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
                 "${MediaStore.Images.Media.DATE_ADDED} DESC"
             )
         } ?: return null
+        val bucketCounters = LinkedHashMap<Long, BucketInfo>()
+        val bucketIdColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID)
+        val bucketNameColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
+        while (cursor.moveToNext()) {
+            val bucketId = cursor.getLong(bucketIdColumn)
+            val bucketName = cursor.getString(bucketNameColumn)
+            bucketCounters.getOrPut(bucketId) {
+                BucketInfo(
+                    bucketId,
+                    bucketName,
+                    0
+                )
+            }.imagesCount++
+        }
+        val buckets = ArrayList<MediaStoreBucket>(bucketCounters.size)
+        bucketCounters.forEach { (_, info) ->
+            buckets += MediaStoreBucket(
+                info.id,
+                info.name,
+                info.imagesCount
+            )
+        }
+        return buckets
+    }
 
+    private class BucketInfo(
+        val id: Long,
+        val name: String,
+        var imagesCount: Int
+    ) {
 
-        TODO("Not yet implemented")
+        override fun equals(other: Any?): Boolean =
+            when {
+                other === this -> true
+                other is BucketInfo -> id == other.id
+                else -> false
+            }
+
+        override fun hashCode(): Int =
+            id.hashCode()
     }
 }
