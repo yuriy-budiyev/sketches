@@ -72,20 +72,20 @@ fun SketchesApp(
                     }
                     Column(modifier = Modifier.fillMaxSize()) {
                         if (currentTopLevelNavigationType == TopLevelNavigationType.NONE) {
-                            val currentNavigationDestination = appState.currentNavigationDestination
-                            if (currentNavigationDestination != null) {
+                            val currentDestination = appState.currentNavigationDestination
+                            if (currentDestination != null) {
                                 TopAppBar(
 
                                     title = {
                                         Text(
                                             text = stringResource(
-                                                id = currentNavigationDestination.labelRes
+                                                id = currentDestination.labelRes
                                             )
                                         )
                                     },
                                     navigationIcon = {
                                         Icon(
-                                            imageVector = currentNavigationDestination.navigationIcon,
+                                            imageVector = currentDestination.navigationIcon,
                                             contentDescription = null,
                                             tint = MaterialTheme.colorScheme.primary
                                         )
