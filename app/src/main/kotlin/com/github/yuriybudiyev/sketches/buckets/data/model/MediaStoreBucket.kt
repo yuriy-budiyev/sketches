@@ -24,4 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.buckets.data.model
 
-data class MediaStoreBucket(val id: Long)
+data class MediaStoreBucket(
+    val id: Long,
+    val name: String,
+    val size: Int
+)

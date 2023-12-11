@@ -25,6 +25,40 @@
 package com.github.yuriybudiyev.sketches.buckets.data.repository.implementation
 
 import android.content.Context
+import android.os.Build
+import android.provider.MediaStore
+import androidx.core.net.toUri
+import com.github.yuriybudiyev.sketches.buckets.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.buckets.data.repository.BucketsRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class BucketsRepositoryImpl(private val context: Context): BucketsRepository {}
+class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
+
+    override suspend fun getBuckets(): List<MediaStoreBucket>? {
+        val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+        } else {
+            context
+                .getExternalFilesDir(null)
+                ?.toUri()
+        } ?: return null
+        val cursor = withContext(Dispatchers.IO) {
+            context.contentResolver.query(
+                uri,
+                arrayOf(
+                    MediaStore.Images.Media._ID,
+                    MediaStore.Images.Media.BUCKET_ID,
+                    MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
+                    MediaStore.Images.Media.DATE_ADDED,
+                ),
+                null,
+                null,
+                "${MediaStore.Images.Media.DATE_ADDED} DESC"
+            )
+        } ?: return null
+
+
+        TODO("Not yet implemented")
+    }
+}

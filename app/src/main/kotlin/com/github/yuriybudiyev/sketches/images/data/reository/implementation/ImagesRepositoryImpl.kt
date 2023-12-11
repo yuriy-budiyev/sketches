@@ -36,7 +36,7 @@ import kotlinx.coroutines.withContext
 
 class ImagesRepositoryImpl(private val context: Context): ImagesRepository {
 
-    override suspend fun getImages(): List<MediaStoreImage>? {
+    override suspend fun getImages(bucketId: Long): List<MediaStoreImage>? {
         val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
         } else {
@@ -60,8 +60,16 @@ class ImagesRepositoryImpl(private val context: Context): ImagesRepository {
                     MediaStore.Images.Media.SIZE,
                     MediaStore.Images.Media.RELATIVE_PATH
                 ),
-                null,
-                null,
+                if (bucketId != -1L) {
+                    "${MediaStore.Images.Media.BUCKET_ID}=?"
+                } else {
+                    null
+                },
+                if (bucketId != -1L) {
+                    arrayOf(bucketId.toString())
+                } else {
+                    null
+                },
                 "${MediaStore.Images.Media.DATE_ADDED} DESC"
             )
         } ?: return null

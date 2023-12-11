@@ -28,5 +28,5 @@ import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
 
 interface ImagesRepository {
 
-    suspend fun getImages(): List<MediaStoreImage>?
+    suspend fun getImages(bucketId: Long = -1L): List<MediaStoreImage>?
 }
