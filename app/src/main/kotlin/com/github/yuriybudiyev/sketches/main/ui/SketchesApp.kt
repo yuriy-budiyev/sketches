@@ -69,7 +69,7 @@ fun SketchesApp(
 ) {
     SketchesTheme {
         Surface(color = MaterialTheme.colorScheme.background) {
-            var permissionGranted by remember { mutableStateOf(true) }
+            var permissionGranted by remember { mutableStateOf(false) }
             val context = LocalContext.current
             val imagesPermissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestPermission()
