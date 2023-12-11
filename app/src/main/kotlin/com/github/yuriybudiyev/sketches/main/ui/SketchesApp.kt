@@ -47,6 +47,7 @@ fun SketchesApp(
                     }
                     Column(modifier = Modifier.fillMaxSize()) {
                         if (appState.currentTopLevelNavigation == TopLevelNavigation.NONE) {
+
                             TopAppBar(title = { })
                         }
                         SketchesNavHost(appState = appState)

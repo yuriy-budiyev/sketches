@@ -7,7 +7,7 @@ import androidx.navigation.NavDeepLink
 
 interface NavigationDestination {
 
-    val route: String
+    val routeBase: String
 
     val arguments: List<NamedNavArgument>
 

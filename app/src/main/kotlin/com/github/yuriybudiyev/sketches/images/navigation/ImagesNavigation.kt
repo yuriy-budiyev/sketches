@@ -23,14 +23,14 @@ fun NavGraphBuilder.imagesScreen(onImageClick: (Long) -> Unit) {
 
 fun NavController.navigateToImages(navOptions: NavOptions? = null) {
     navigate(
-        ImagesNavigationDestination.route,
+        ImagesNavigationDestination.routeBase,
         navOptions
     )
 }
 
 object ImagesNavigationDestination: TopLevelNavigationDestination {
 
-    override val route: String = "images"
+    override val routeBase: String = "images"
     override val arguments: List<NamedNavArgument> = emptyList()
     override val deepLinks: List<NavDeepLink> = emptyList()
     override val labelRes: Int = R.string.main_navigation_images
