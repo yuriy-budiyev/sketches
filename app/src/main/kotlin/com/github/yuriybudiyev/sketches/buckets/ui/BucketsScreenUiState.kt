@@ -24,4 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.buckets.ui
 
-sealed interface BucketsUiState {}
+import com.github.yuriybudiyev.sketches.buckets.data.model.MediaStoreBucket
+
+sealed interface BucketsScreenUiState {
+
+    data object Empty: BucketsScreenUiState
+
+    data object Loading: BucketsScreenUiState
+
+    data class Buckets(val images: List<MediaStoreBucket>): BucketsScreenUiState
+
+    data class Error(val thrown: Exception): BucketsScreenUiState
+}

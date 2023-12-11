@@ -27,10 +27,20 @@ package com.github.yuriybudiyev.sketches.buckets.ui
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.github.yuriybudiyev.sketches.buckets.data.repository.BucketsRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
-class BucketsViewModel constructor(
+@HiltViewModel
+class BucketsScreenViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val bucketsRepository: BucketsRepository
 ): ViewModel() {
 
+    val uiState: StateFlow<BucketsScreenUiState>
+        get() = uiStateInternal
+
+    private val uiStateInternal: MutableStateFlow<BucketsScreenUiState> =
+        MutableStateFlow(BucketsScreenUiState.Empty)
 }

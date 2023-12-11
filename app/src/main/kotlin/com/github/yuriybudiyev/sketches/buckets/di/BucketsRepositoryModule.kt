@@ -36,7 +36,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface BucketsRepositoryModule {
+object BucketsRepositoryModule {
 
     @Provides
     @Singleton

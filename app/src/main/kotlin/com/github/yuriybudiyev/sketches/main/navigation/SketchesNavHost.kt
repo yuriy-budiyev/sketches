@@ -27,6 +27,7 @@ package com.github.yuriybudiyev.sketches.main.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import com.github.yuriybudiyev.sketches.buckets.navigation.BucketsNavigationDestination
+import com.github.yuriybudiyev.sketches.buckets.ui.BucketsRoute
 import com.github.yuriybudiyev.sketches.core.navigation.buildRoute
 import com.github.yuriybudiyev.sketches.core.navigation.composable
 import com.github.yuriybudiyev.sketches.core.navigation.registerIn
@@ -44,7 +45,7 @@ fun SketchesNavHost(appState: SketchesAppState) {
             ImagesRoute(onImageClick = { index, image -> })
         }
         composable(BucketsNavigationDestination.registerIn(appState)) {
-
+            BucketsRoute(onBucketClick = { index, bucket -> })
         }
     }
 }

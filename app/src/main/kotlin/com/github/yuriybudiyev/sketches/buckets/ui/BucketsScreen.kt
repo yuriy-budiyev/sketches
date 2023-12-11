@@ -24,3 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.buckets.ui
 
+import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.yuriybudiyev.sketches.buckets.data.model.MediaStoreBucket
+
+typealias BucketClickListener = (index: Int, bucket: MediaStoreBucket) -> Unit
+
+@Composable
+fun BucketsRoute(
+    onBucketClick: BucketClickListener,
+    viewModel: BucketsScreenViewModel = hiltViewModel()
+) {
+}
