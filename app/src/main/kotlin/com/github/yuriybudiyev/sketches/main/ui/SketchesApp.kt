@@ -162,7 +162,7 @@ private fun SketchesNavBar(appState: SketchesAppState) {
 
 @Composable
 private fun SketchesNavRail(appState: SketchesAppState) {
-    NavigationRail {
+    NavigationRail(containerColor = MaterialTheme.colorScheme.background) {
         val currentDestination = appState.currentTopLevelNavigationDestination
         appState.topLevelNavigationDestinations.forEach { destination ->
             val selected = destination == currentDestination
