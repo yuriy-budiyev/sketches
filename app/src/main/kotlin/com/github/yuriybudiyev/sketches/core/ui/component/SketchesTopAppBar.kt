@@ -26,11 +26,11 @@ package com.github.yuriybudiyev.sketches.core.ui.component
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesColors
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,10 +46,7 @@ fun SketchesTopAppBar(
         },
         actions = actions,
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = SketchesColors.TopAppBar,
-            titleContentColor = SketchesColors.OnTopAppBar,
-            navigationIconContentColor = SketchesColors.OnTopAppBar,
-            actionIconContentColor = SketchesColors.OnTopAppBar
+            containerColor = MaterialTheme.colorScheme.background
         )
     )
 }

@@ -24,34 +24,23 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.theme
 
-import androidx.compose.material3.Typography
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
 
-// Set of Material typography styles to start with
-val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )/* Other default text styles to override
-        titleLarge = TextStyle(
-            fontFamily = FontFamily.Default,
-            fontWeight = FontWeight.Normal,
-            fontSize = 22.sp,
-            lineHeight = 28.sp,
-            letterSpacing = 0.sp
-        ),
-        labelSmall = TextStyle(
-            fontFamily = FontFamily.Default,
-            fontWeight = FontWeight.Medium,
-            fontSize = 11.sp,
-            lineHeight = 16.sp,
-            letterSpacing = 0.5.sp
-        )
-        */
-)
+object SketchesColors {
+
+    val Primary = Color(0xFF6B69D6)
+
+    object Light {
+
+        val Secondary = Color(0xFF7F7DDB)
+        val Tertiary = Color(0xFF9391E1)
+        val Background = Color(0xFFEFEFEF)
+    }
+
+    object Dark {
+
+        val Secondary = Color(0xFF5755D1)
+        val Tertiary = Color(0xFF4341CB)
+        val Background = Color(0xFF0F0F0F)
+    }
+}
