@@ -111,8 +111,8 @@ fun Images(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         itemsIndexed(items = images,
-            key = { _, image -> image.id }) { index, image ->
-            SketchesImage(uri = image.uri,
+            key = { _, item -> item.id }) { index, item ->
+            SketchesImage(uri = item.uri,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -121,7 +121,7 @@ fun Images(
                     .clickable {
                         onImageClick(
                             index,
-                            image
+                            item
                         )
                     })
         }

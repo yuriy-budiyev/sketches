@@ -70,7 +70,7 @@ class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
                 BucketInfo(
                     id = bucketId,
                     name = cursor.getString(bucketNameColumn),
-                    cover = ContentUris.withAppendedId(
+                    coverUri = ContentUris.withAppendedId(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         cursor.getLong(idColumn)
                     ),
@@ -85,7 +85,7 @@ class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
                 id = info.id,
                 name = info.name,
                 size = info.imagesCount,
-                cover = info.cover,
+                coverUri = info.coverUri,
                 coverDate = info.coverDate
             )
         }
@@ -95,7 +95,7 @@ class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
     private data class BucketInfo(
         val id: Long,
         val name: String,
-        val cover: Uri,
+        val coverUri: Uri,
         val coverDate: Long,
         var imagesCount: Int
     )

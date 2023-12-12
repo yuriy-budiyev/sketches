@@ -30,6 +30,6 @@ data class MediaStoreBucket(
     val id: Long,
     val name: String,
     val size: Int,
-    val cover: Uri,
+    val coverUri: Uri,
     val coverDate: Long
 )
