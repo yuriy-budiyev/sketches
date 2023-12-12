@@ -22,21 +22,34 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.buckets.navigation
+package com.github.yuriybudiyev.sketches.core.ui.component
 
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavDeepLink
-import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
-import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesColors
 
-object BucketsNavigationDestination: TopLevelNavigationDestination {
-
-    override val routeBase: String = "buckets"
-    override val arguments: List<NamedNavArgument> = emptyList()
-    override val deepLinks: List<NavDeepLink> = emptyList()
-    override val labelRes: Int = R.string.buckets_navigation_label
-    override val selectedIcon: ImageVector = SketchesIcons.BucketsSelected
-    override val unselectedIcon: ImageVector = SketchesIcons.BucketsUnselected
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+fun SketchesTopAppBar(
+    text: String? = null,
+    actions: @Composable RowScope.() -> Unit = {}
+) {
+    TopAppBar(
+        title = {
+            if (!text.isNullOrEmpty()) {
+                Text(text = text)
+            }
+        },
+        actions = actions,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = SketchesColors.TopAppBar,
+            titleContentColor = SketchesColors.OnTopAppBar,
+            navigationIconContentColor = SketchesColors.OnTopAppBar,
+            actionIconContentColor = SketchesColors.OnTopAppBar
+        )
+    )
 }

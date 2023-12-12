@@ -33,7 +33,6 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navOptions
 import com.github.yuriybudiyev.sketches.core.navigation.buildRoute
 import com.github.yuriybudiyev.sketches.core.navigation.destination.NavigationDestination
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
@@ -90,18 +89,13 @@ class SketchesAppState(
         get() = topLevelNavigationDestinationsInternal
 
     fun navigateToTopLevelDestination(destination: TopLevelNavigationDestination) {
-        val options = navOptions {
+        navController.navigate(destination) {
             popUpTo(navController.graph.findStartDestination().id) {
                 saveState = true
             }
             launchSingleTop = true
             restoreState = true
-
         }
-        navController.navigate(
-            destination,
-            options
-        )
     }
 
     fun registerNavigationDestination(destination: NavigationDestination) {

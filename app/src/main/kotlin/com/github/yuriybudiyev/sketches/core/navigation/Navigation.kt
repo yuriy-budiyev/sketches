@@ -31,8 +31,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.navOptions
 import com.github.yuriybudiyev.sketches.core.navigation.destination.NavigationDestination
 import com.github.yuriybudiyev.sketches.main.ui.SketchesAppState
 
@@ -52,12 +53,12 @@ fun NavGraphBuilder.composable(
 
 fun NavController.navigate(
     destination: NavigationDestination,
-    options: NavOptions? = null,
-    vararg args: Any
+    vararg args: Any,
+    optionsBuilder: NavOptionsBuilder.() -> Unit = {}
 ) {
     navigate(
         destination.buildRouteWithArgs(*args),
-        options
+        navOptions(optionsBuilder)
     )
 }
 
@@ -87,9 +88,8 @@ fun NavigationDestination.buildRouteWithArgs(vararg args: Any): String =
         buildString {
             append(routeBase)
             args.forEach { arg ->
-                append("/{")
+                append("/")
                 append(arg.toString())
-                append("}")
             }
         }
     }

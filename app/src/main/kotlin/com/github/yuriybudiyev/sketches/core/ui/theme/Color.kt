@@ -26,12 +26,23 @@ package com.github.yuriybudiyev.sketches.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val SketchesPrimary = Color(0xFF6B69D6)
+object SketchesColors {
 
-val SketchesSecondaryLight = Color(0xFF7F7DDB)
-val SketchesTertiaryLight = Color(0xFF9391E1)
-val SketchesBackgroundLight = Color(0xFFF3F3F3)
+    val Primary = Color(0xFF6B69D6)
+    val TopAppBar = Color(0xFF6B69D6)
+    val OnTopAppBar = Color(0xFFFAFAFA)
 
-val SketchesSecondaryDark = Color(0xFF5755D1)
-val SketchesTertiaryDark = Color(0xFF4341CB)
-val SketchesBackgroundDark = Color(0xFF202020)
+    object Light {
+
+        val Secondary = Color(0xFF7F7DDB)
+        val Tertiary = Color(0xFF9391E1)
+        val Background = Color(0xFFEFEFEF)
+    }
+
+    object Dark {
+
+        val Secondary = Color(0xFF5755D1)
+        val Tertiary = Color(0xFF4341CB)
+        val Background = Color(0xFF0F0F0F)
+    }
+}

@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import com.github.yuriybudiyev.sketches.R
 
 @Composable
-fun SketchesLoading() {
+fun SketchesLoadingIndicator() {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,

@@ -61,15 +61,15 @@ fun SketchesTheme(content: @Composable () -> Unit) {
 }
 
 private val sketchesLightColorScheme = lightColorScheme(
-    primary = SketchesPrimary,
-    secondary = SketchesSecondaryLight,
-    tertiary = SketchesTertiaryLight,
-    background = SketchesBackgroundLight
+    primary = SketchesColors.Primary,
+    secondary = SketchesColors.Light.Secondary,
+    tertiary = SketchesColors.Light.Tertiary,
+    background = SketchesColors.Light.Background
 )
 
 private val sketchesDarkColorScheme = darkColorScheme(
-    primary = SketchesPrimary,
-    secondary = SketchesSecondaryDark,
-    tertiary = SketchesTertiaryDark,
-    background = SketchesBackgroundDark
+    primary = SketchesColors.Primary,
+    secondary = SketchesColors.Dark.Secondary,
+    tertiary = SketchesColors.Dark.Tertiary,
+    background = SketchesColors.Dark.Background
 )

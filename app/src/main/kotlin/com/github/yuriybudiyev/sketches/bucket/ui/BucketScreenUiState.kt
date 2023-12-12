@@ -22,21 +22,20 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.buckets.navigation
+package com.github.yuriybudiyev.sketches.bucket.ui
 
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavDeepLink
-import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
-import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
+import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
 
-object BucketsNavigationDestination: TopLevelNavigationDestination {
+sealed interface BucketScreenUiState {
 
-    override val routeBase: String = "buckets"
-    override val arguments: List<NamedNavArgument> = emptyList()
-    override val deepLinks: List<NavDeepLink> = emptyList()
-    override val labelRes: Int = R.string.buckets_navigation_label
-    override val selectedIcon: ImageVector = SketchesIcons.BucketsSelected
-    override val unselectedIcon: ImageVector = SketchesIcons.BucketsUnselected
+    data object Empty: BucketScreenUiState
+
+    data object Loading: BucketScreenUiState
+
+    data class Bucket(
+        val id: Long,
+        val images: List<MediaStoreImage>
+    ): BucketScreenUiState
+
+    data class Error(val thrown: Exception): BucketScreenUiState
 }

@@ -52,7 +52,7 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.buckets.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesImage
-import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoading
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 
 typealias BucketClickListener = (index: Int, bucket: MediaStoreBucket) -> Unit
 
@@ -78,10 +78,10 @@ fun BucketsScreen(
 ) {
     when (uiState) {
         BucketsScreenUiState.Empty -> {
-            SketchesCenteredMessage(text = stringResource(id = R.string.buckets_screen_empty))
+            SketchesCenteredMessage(text = stringResource(id = R.string.no_buckets_found))
         }
         BucketsScreenUiState.Loading -> {
-            SketchesLoading()
+            SketchesLoadingIndicator()
         }
         is BucketsScreenUiState.Buckets -> {
             BucketsLayout(

@@ -27,10 +27,7 @@ package com.github.yuriybudiyev.sketches.images.navigation
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavDeepLink
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.navigation.destination.NavigationDestination
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
@@ -42,19 +39,9 @@ object ImagesNavigationDestination: TopLevelNavigationDestination {
 
     override val deepLinks: List<NavDeepLink> = emptyList()
 
-    override val labelRes: Int = R.string.images_screen_label
+    override val labelRes: Int = R.string.images_navigation_label
 
     override val selectedIcon: ImageVector = SketchesIcons.ImagesSelected
 
     override val unselectedIcon: ImageVector = SketchesIcons.ImagesUnselected
-}
-
-object BucketNavigationDestination: NavigationDestination {
-
-    override val routeBase: String = "bucket"
-
-    override val arguments: List<NamedNavArgument> =
-        listOf(navArgument(name = "id") { type = NavType.LongType })
-
-    override val deepLinks: List<NavDeepLink> = emptyList()
 }

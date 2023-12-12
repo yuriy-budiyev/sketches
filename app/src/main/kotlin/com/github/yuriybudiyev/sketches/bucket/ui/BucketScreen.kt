@@ -22,11 +22,14 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.images.ui
+package com.github.yuriybudiyev.sketches.bucket.ui
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -35,43 +38,52 @@ import com.github.yuriybudiyev.sketches.core.ui.component.ImageClickListener
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesImagesLayout
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 
 @Composable
-fun ImagesRoute(
+fun BucketRoute(
+    id: Long,
+    name: String?,
     onImageClick: ImageClickListener,
-    viewModel: ImagesScreenViewModel = hiltViewModel()
+    viewModel: BucketScreenViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
-        viewModel.updateImages()
+        viewModel.updateImages(id)
     }
-    ImagesScreen(
+    BucketScreen(
+        name = name,
         uiState = uiState,
         onImageClick = onImageClick
     )
 }
 
 @Composable
-fun ImagesScreen(
-    uiState: ImagesScreenUiState,
+fun BucketScreen(
+    name: String?,
+    uiState: BucketScreenUiState,
     onImageClick: ImageClickListener
 ) {
-    when (uiState) {
-        ImagesScreenUiState.Empty -> {
-            SketchesCenteredMessage(text = stringResource(id = R.string.no_images_found))
+    Column(modifier = Modifier.fillMaxSize()) {
+        if (!name.isNullOrEmpty()) {
+            SketchesTopAppBar(name)
         }
-        ImagesScreenUiState.Loading -> {
-            SketchesLoadingIndicator()
-        }
-        is ImagesScreenUiState.Images -> {
-            SketchesImagesLayout(
-                images = uiState.images,
-                onImageClick = onImageClick
-            )
-        }
-        is ImagesScreenUiState.Error -> {
-            SketchesCenteredMessage(text = stringResource(id = R.string.unexpected_error))
+        when (uiState) {
+            BucketScreenUiState.Empty -> {
+                SketchesCenteredMessage(text = stringResource(id = R.string.no_images_found))
+            }
+            BucketScreenUiState.Loading -> {
+                SketchesLoadingIndicator()
+            }
+            is BucketScreenUiState.Bucket -> {
+                SketchesImagesLayout(
+                    images = uiState.images,
+                    onImageClick = onImageClick
+                )
+            }
+            is BucketScreenUiState.Error -> {
+                SketchesCenteredMessage(text = stringResource(id = R.string.unexpected_error))
+            }
         }
     }
 }
-
