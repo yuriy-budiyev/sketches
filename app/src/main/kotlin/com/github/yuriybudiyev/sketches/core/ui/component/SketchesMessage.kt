@@ -22,17 +22,40 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.buckets.ui
+package com.github.yuriybudiyev.sketches.core.ui.component
 
-import com.github.yuriybudiyev.sketches.buckets.data.model.MediaStoreBucket
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
-sealed interface BucketsScreenUiState {
+@Composable
+fun SketchesMessage(text: String) {
+    Text(
+        text = text,
+        color = MaterialTheme.colorScheme.primary,
+        fontSize = 18.sp,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    )
+}
 
-    data object Empty: BucketsScreenUiState
-
-    data object Loading: BucketsScreenUiState
-
-    data class Buckets(val buckets: List<MediaStoreBucket>): BucketsScreenUiState
-
-    data class Error(val thrown: Exception): BucketsScreenUiState
+@Composable
+fun SketchesCenteredMessage(text: String) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        SketchesMessage(text = text)
+    }
 }

@@ -26,6 +26,7 @@ package com.github.yuriybudiyev.sketches.buckets.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -33,6 +34,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,6 +44,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.buckets.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesImage
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoading
 
 typealias BucketClickListener = (index: Int, bucket: MediaStoreBucket) -> Unit
 
@@ -51,6 +54,9 @@ fun BucketsRoute(
     viewModel: BucketsScreenViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) {
+        viewModel.updateBuckets()
+    }
     BucketsScreen(
         uiState = uiState,
         onBucketClick = onBucketClick
@@ -62,32 +68,48 @@ fun BucketsScreen(
     uiState: BucketsScreenUiState,
     onBucketClick: BucketClickListener
 ) {
+    when (uiState) {
+        BucketsScreenUiState.Empty -> {
+        }
+        BucketsScreenUiState.Loading -> {
+            SketchesLoading()
+        }
+        is BucketsScreenUiState.Buckets -> {
+            Buckets(
+                buckets = uiState.buckets,
+                onBucketClick = onBucketClick
+            )
+        }
+        is BucketsScreenUiState.Error -> {
+        }
+    }
 }
 
 @Composable
-fun Buckets(
+private fun Buckets(
     buckets: List<MediaStoreBucket>,
     onBucketClick: BucketClickListener
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(120.dp),
+        contentPadding = PaddingValues(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         itemsIndexed(items = buckets,
             key = { _, item -> item.id }) { index, item ->
-                SketchesImage(uri = item.coverUri,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(ratio = 1f)
-                        .clip(shape = RoundedCornerShape(8.dp))
-                        .clickable {
-                            onBucketClick(
-                                index,
-                                item
-                            )
-                        })
+            SketchesImage(uri = item.coverUri,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(ratio = 1f)
+                    .clip(shape = RoundedCornerShape(8.dp))
+                    .clickable {
+                        onBucketClick(
+                            index,
+                            item
+                        )
+                    })
         }
     }
 }

@@ -61,8 +61,8 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.destination.NavigationDestination
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.utils.checkPermissionGranted
-import com.github.yuriybudiyev.sketches.images.ui.CenteredMessage
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 import com.github.yuriybudiyev.sketches.main.navigation.TopLevelNavigationType
 
@@ -120,7 +120,7 @@ private fun NoPermission() {
     } else {
         stringResource(id = R.string.gallery_ui_state_no_permission_storage)
     }
-    CenteredMessage(text = message)
+    SketchesCenteredMessage(text = message)
 }
 
 @Composable

@@ -26,36 +26,27 @@ package com.github.yuriybudiyev.sketches.images.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesImage
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoading
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
 
 typealias ImageClickListener = (index: Int, image: MediaStoreImage) -> Unit
@@ -82,10 +73,10 @@ fun ImagesScreen(
 ) {
     when (uiState) {
         ImagesScreenUiState.Empty -> {
-            CenteredMessage(text = stringResource(id = R.string.gallery_ui_state_empty))
+            SketchesCenteredMessage(text = stringResource(id = R.string.gallery_ui_state_empty))
         }
         ImagesScreenUiState.Loading -> {
-            Loading()
+            SketchesLoading()
         }
         is ImagesScreenUiState.Images -> {
             Images(
@@ -94,13 +85,13 @@ fun ImagesScreen(
             )
         }
         is ImagesScreenUiState.Error -> {
-            CenteredMessage(text = stringResource(id = R.string.gallery_ui_state_error))
+            SketchesCenteredMessage(text = stringResource(id = R.string.gallery_ui_state_error))
         }
     }
 }
 
 @Composable
-fun Images(
+private fun Images(
     images: List<MediaStoreImage>,
     onImageClick: ImageClickListener
 ) {
@@ -125,45 +116,5 @@ fun Images(
                         )
                     })
         }
-    }
-}
-
-@Composable
-fun Message(text: String) {
-    Text(
-        text = text,
-        color = MaterialTheme.colorScheme.primary,
-        fontSize = 18.sp,
-        textAlign = TextAlign.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-    )
-}
-
-@Composable
-fun Loading() {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        CircularProgressIndicator(
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .size(80.dp)
-                .padding(16.dp)
-        )
-        Message(text = stringResource(id = R.string.gallery_ui_state_loading))
-    }
-}
-
-@Composable
-fun CenteredMessage(text: String) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Message(text = text)
     }
 }
