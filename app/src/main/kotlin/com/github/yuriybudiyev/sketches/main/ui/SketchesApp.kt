@@ -116,9 +116,9 @@ fun SketchesApp(
 @Composable
 private fun NoPermission() {
     val message = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        stringResource(id = R.string.gallery_ui_state_no_permission_images)
+        stringResource(id = R.string.no_images_permission)
     } else {
-        stringResource(id = R.string.gallery_ui_state_no_permission_storage)
+        stringResource(id = R.string.no_storage_permission)
     }
     SketchesCenteredMessage(text = message)
 }

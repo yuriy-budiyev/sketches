@@ -36,7 +36,7 @@ object ImagesNavigationDestination: TopLevelNavigationDestination {
     override val routeBase: String = "images"
     override val arguments: List<NamedNavArgument> = emptyList()
     override val deepLinks: List<NavDeepLink> = emptyList()
-    override val labelRes: Int = R.string.main_navigation_images
+    override val labelRes: Int = R.string.images_screen_label
     override val navigationIcon: ImageVector = SketchesIcons.ImagesNavigation
     override val selectedIcon: ImageVector = SketchesIcons.ImagesSelected
     override val unselectedIcon: ImageVector = SketchesIcons.ImagesUnselected

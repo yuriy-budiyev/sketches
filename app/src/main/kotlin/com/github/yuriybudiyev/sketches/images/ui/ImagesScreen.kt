@@ -73,7 +73,7 @@ fun ImagesScreen(
 ) {
     when (uiState) {
         ImagesScreenUiState.Empty -> {
-            SketchesCenteredMessage(text = stringResource(id = R.string.gallery_ui_state_empty))
+            SketchesCenteredMessage(text = stringResource(id = R.string.images_screen_empty))
         }
         ImagesScreenUiState.Loading -> {
             SketchesLoading()
@@ -85,7 +85,7 @@ fun ImagesScreen(
             )
         }
         is ImagesScreenUiState.Error -> {
-            SketchesCenteredMessage(text = stringResource(id = R.string.gallery_ui_state_error))
+            SketchesCenteredMessage(text = stringResource(id = R.string.unexpected_error))
         }
     }
 }

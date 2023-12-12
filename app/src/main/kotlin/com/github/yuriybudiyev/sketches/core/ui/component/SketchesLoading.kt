@@ -51,6 +51,6 @@ fun SketchesLoading() {
                 .size(80.dp)
                 .padding(16.dp)
         )
-        SketchesMessage(text = stringResource(id = R.string.gallery_ui_state_loading))
+        SketchesMessage(text = stringResource(id = R.string.loading_message))
     }
 }

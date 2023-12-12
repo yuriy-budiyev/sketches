@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">Sketches</string>
-    <string name="gallery_ui_state_empty">No images found</string>
-    <string name="gallery_ui_state_loading">Loading</string>
-    <string name="gallery_ui_state_no_permission_images">Permission required to access images</string>
-    <string name="gallery_ui_state_no_permission_storage">Permission required to access the storage</string>
-    <string name="gallery_ui_state_error">An unexpected error occurred</string>
-    <string name="main_navigation_images">Images</string>
-    <string name="main_navigation_buckets">Albums</string>
+    <string name="images_screen_empty">No images found</string>
+    <string name="loading_message">Loading</string>
+    <string name="no_images_permission">Permission required to access images</string>
+    <string name="no_storage_permission">Permission required to access the storage</string>
+    <string name="unexpected_error">An unexpected error occurred</string>
+    <string name="images_screen_label">Images</string>
+    <string name="buckets_screen_label">Albums</string>
+    <string name="buckets_screen_empty">No albums found</string>
 </resources>

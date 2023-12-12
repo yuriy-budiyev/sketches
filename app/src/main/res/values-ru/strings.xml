@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Sketches</string>
-    <string name="gallery_ui_state_empty">Изображений не найдено</string>
-    <string name="gallery_ui_state_loading">Загрузка</string>
-    <string name="gallery_ui_state_no_permission_images">Необходимо разрешение на доступ к изображениям</string>
-    <string name="gallery_ui_state_no_permission_storage">Необходимо разрешение на доступ к хранилищу</string>
-    <string name="gallery_ui_state_error">Произошла неожиданная ошибка</string>
-    <string name="main_navigation_images">Изображения</string>
-    <string name="main_navigation_buckets">Альбомы</string>
+    <string name="images_screen_empty">Изображений не найдено</string>
+    <string name="loading_message">Загрузка</string>
+    <string name="no_images_permission">Необходимо разрешение на доступ к изображениям</string>
+    <string name="no_storage_permission">Необходимо разрешение на доступ к хранилищу</string>
+    <string name="unexpected_error">Произошла неожиданная ошибка</string>
+    <string name="images_screen_label">Изображения</string>
+    <string name="buckets_screen_label">Альбомы</string>
+    <string name="buckets_screen_empty">Альбомов не найдено</string>
 </resources>
