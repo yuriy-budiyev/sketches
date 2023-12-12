@@ -46,19 +46,21 @@ class ImagesScreenViewModel @Inject constructor(
     val uiState: StateFlow<ImagesScreenUiState>
         get() = uiStateInternal
 
-    fun updateImages() {
+    fun updateImages(force: Boolean = false) {
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
-            uiStateInternal.value = ImagesScreenUiState.Loading
-            try {
-                val images = withContext(Dispatchers.Default) { repository.getImages() }
-                if (!images.isNullOrEmpty()) {
-                    uiStateInternal.value = ImagesScreenUiState.Images(images)
-                } else {
-                    uiStateInternal.value = ImagesScreenUiState.Empty
+            if (force || uiStateInternal.value !is ImagesScreenUiState.Images) {
+                uiStateInternal.value = ImagesScreenUiState.Loading
+                try {
+                    val images = withContext(Dispatchers.Default) { repository.getImages() }
+                    if (!images.isNullOrEmpty()) {
+                        uiStateInternal.value = ImagesScreenUiState.Images(images)
+                    } else {
+                        uiStateInternal.value = ImagesScreenUiState.Empty
+                    }
+                } catch (e: Exception) {
+                    uiStateInternal.value = ImagesScreenUiState.Error(e)
                 }
-            } catch (e: Exception) {
-                uiStateInternal.value = ImagesScreenUiState.Error(e)
             }
         }
     }

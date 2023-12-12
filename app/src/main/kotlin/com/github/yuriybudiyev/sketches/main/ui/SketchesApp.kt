@@ -85,16 +85,16 @@ fun SketchesApp(
             MainScreen(appState = appState)
         } else {
             NoPermission()
-            val lifecycle by rememberUpdatedState(LocalLifecycleOwner.current.lifecycle)
-            DisposableEffect(lifecycle) {
+            val lifecycleOwner by rememberUpdatedState(LocalLifecycleOwner.current)
+            DisposableEffect(lifecycleOwner) {
                 val lifecycleObserver = LifecycleEventObserver { _, event ->
                     if (event == Lifecycle.Event.ON_RESUME) {
                         permissionGranted = context.checkPermissionGranted(imagesPermission)
                     }
                 }
-                lifecycle.addObserver(lifecycleObserver)
+                lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
                 onDispose {
-                    lifecycle.removeObserver(lifecycleObserver)
+                    lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
                 }
             }
             val imagesPermissionLauncher = rememberLauncherForActivityResult(
@@ -122,11 +122,12 @@ private fun NoPermission() {
 @Composable
 private fun MainScreen(appState: SketchesAppState) {
     val currentTopLevelNavigationType = appState.currentTopLevelNavigationType
-    Scaffold(bottomBar = {
-        if (currentTopLevelNavigationType == TopLevelNavigationType.BAR) {
-            SketchesNavBar(appState)
-        }
-    }) { contentPadding ->
+    Scaffold(modifier = Modifier.fillMaxSize(),
+        bottomBar = {
+            if (currentTopLevelNavigationType == TopLevelNavigationType.BAR) {
+                SketchesNavBar(appState)
+            }
+        }) { contentPadding ->
         Row(
             modifier = Modifier
                 .fillMaxSize()

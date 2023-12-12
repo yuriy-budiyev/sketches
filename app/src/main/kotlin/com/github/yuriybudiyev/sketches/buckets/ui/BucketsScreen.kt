@@ -84,7 +84,7 @@ fun BucketsScreen(
             SketchesLoading()
         }
         is BucketsScreenUiState.Buckets -> {
-            Buckets(
+            BucketsLayout(
                 buckets = uiState.buckets,
                 onBucketClick = onBucketClick
             )
@@ -96,7 +96,7 @@ fun BucketsScreen(
 }
 
 @Composable
-private fun Buckets(
+private fun BucketsLayout(
     buckets: List<MediaStoreBucket>,
     onBucketClick: BucketClickListener
 ) {

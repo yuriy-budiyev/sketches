@@ -80,7 +80,7 @@ fun ImagesScreen(
             SketchesLoading()
         }
         is ImagesScreenUiState.Images -> {
-            Images(
+            ImagesLayout(
                 images = uiState.images,
                 onImageClick = onImageClick
             )
@@ -92,7 +92,7 @@ fun ImagesScreen(
 }
 
 @Composable
-private fun Images(
+private fun ImagesLayout(
     images: List<MediaStoreImage>,
     onImageClick: ImageClickListener
 ) {

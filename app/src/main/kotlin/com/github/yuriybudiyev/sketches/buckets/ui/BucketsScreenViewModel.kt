@@ -46,21 +46,23 @@ class BucketsScreenViewModel @Inject constructor(
     val uiState: StateFlow<BucketsScreenUiState>
         get() = uiStateInternal
 
-    fun updateBuckets() {
+    fun updateBuckets(force: Boolean = false) {
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
-            uiStateInternal.value = BucketsScreenUiState.Loading
-            try {
-                val buckets = withContext(Dispatchers.Default) {
-                    bucketsRepository.getBuckets()
+            if (force || uiStateInternal.value !is BucketsScreenUiState.Buckets) {
+                uiStateInternal.value = BucketsScreenUiState.Loading
+                try {
+                    val buckets = withContext(Dispatchers.Default) {
+                        bucketsRepository.getBuckets()
+                    }
+                    if (!buckets.isNullOrEmpty()) {
+                        uiStateInternal.value = BucketsScreenUiState.Buckets(buckets)
+                    } else {
+                        uiStateInternal.value = BucketsScreenUiState.Empty
+                    }
+                } catch (e: Exception) {
+                    uiStateInternal.value = BucketsScreenUiState.Error(e)
                 }
-                if (!buckets.isNullOrEmpty()) {
-                    uiStateInternal.value = BucketsScreenUiState.Buckets(buckets)
-                } else {
-                    uiStateInternal.value = BucketsScreenUiState.Empty
-                }
-            } catch (e: Exception) {
-                uiStateInternal.value = BucketsScreenUiState.Error(e)
             }
         }
     }
