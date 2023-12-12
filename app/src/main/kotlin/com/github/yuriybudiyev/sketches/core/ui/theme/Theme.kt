@@ -37,7 +37,8 @@ import androidx.core.view.WindowCompat
 
 @Composable
 fun SketchesTheme(content: @Composable () -> Unit) {
-    val colorScheme = if (isSystemInDarkTheme()) {
+    val darkTheme = isSystemInDarkTheme()
+    val colorScheme = if (darkTheme) {
         sketchesDarkColorScheme
     } else {
         sketchesLightColorScheme
@@ -47,10 +48,13 @@ fun SketchesTheme(content: @Composable () -> Unit) {
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(
+            window.navigationBarColor = colorScheme.background.toArgb()
+            val insetsController = WindowCompat.getInsetsController(
                 window,
                 view
-            ).isAppearanceLightStatusBars = false
+            )
+            insetsController.isAppearanceLightStatusBars = false
+            insetsController.isAppearanceLightNavigationBars = !darkTheme
         }
     }
     MaterialTheme(

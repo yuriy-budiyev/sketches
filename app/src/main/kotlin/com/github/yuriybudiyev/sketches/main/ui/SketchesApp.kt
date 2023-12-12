@@ -78,7 +78,7 @@ fun SketchesApp(
     }
     Surface(color = MaterialTheme.colorScheme.background) {
         if (permissionGranted) {
-            MainScreen(appState = appState)
+            ContentLayout(appState = appState)
         } else {
             NoPermission()
             val lifecycleOwner by rememberUpdatedState(LocalLifecycleOwner.current)
@@ -116,7 +116,7 @@ private fun NoPermission() {
 }
 
 @Composable
-private fun MainScreen(appState: SketchesAppState) {
+private fun ContentLayout(appState: SketchesAppState) {
     val currentTopLevelNavigationType = appState.currentTopLevelNavigationType
     Scaffold(modifier = Modifier.fillMaxSize(),
         bottomBar = {
@@ -139,7 +139,7 @@ private fun MainScreen(appState: SketchesAppState) {
 
 @Composable
 private fun SketchesNavBar(appState: SketchesAppState) {
-    NavigationBar {
+    NavigationBar(containerColor = MaterialTheme.colorScheme.background) {
         val currentDestination = appState.currentTopLevelNavigationDestination
         appState.topLevelNavigationDestinations.forEach { destination ->
             val selected = destination == currentDestination
