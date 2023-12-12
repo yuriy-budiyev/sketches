@@ -74,11 +74,7 @@ fun SketchesApp(
         Manifest.permission.READ_EXTERNAL_STORAGE
     }
     var permissionGranted by remember {
-        mutableStateOf(
-            context.checkPermissionGranted(
-                imagesPermission
-            )
-        )
+        mutableStateOf(context.checkPermissionGranted(imagesPermission))
     }
     Surface(color = MaterialTheme.colorScheme.background) {
         if (permissionGranted) {
