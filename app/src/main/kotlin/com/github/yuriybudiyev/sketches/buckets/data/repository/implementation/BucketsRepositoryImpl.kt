@@ -24,7 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.buckets.data.repository.implementation
 
+import android.content.ContentUris
 import android.content.Context
+import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import androidx.core.net.toUri
@@ -47,6 +49,7 @@ class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
             context.contentResolver.query(
                 uri,
                 arrayOf(
+                    MediaStore.Images.Media._ID,
                     MediaStore.Images.Media.BUCKET_ID,
                     MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
                     MediaStore.Images.Media.DATE_ADDED,
@@ -57,44 +60,43 @@ class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
             )
         } ?: return null
         val bucketCounters = LinkedHashMap<Long, BucketInfo>()
+        val idColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID)
         val bucketIdColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID)
         val bucketNameColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
+        val dateAddedColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED)
         while (cursor.moveToNext()) {
             val bucketId = cursor.getLong(bucketIdColumn)
-            val bucketName = cursor.getString(bucketNameColumn)
             bucketCounters.getOrPut(bucketId) {
                 BucketInfo(
-                    bucketId,
-                    bucketName,
-                    0
+                    id = bucketId,
+                    name = cursor.getString(bucketNameColumn),
+                    cover = ContentUris.withAppendedId(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        cursor.getLong(idColumn)
+                    ),
+                    coverDate = cursor.getLong(dateAddedColumn) * 1000L,
+                    imagesCount = 0
                 )
             }.imagesCount++
         }
         val buckets = ArrayList<MediaStoreBucket>(bucketCounters.size)
         bucketCounters.forEach { (_, info) ->
             buckets += MediaStoreBucket(
-                info.id,
-                info.name,
-                info.imagesCount
+                id = info.id,
+                name = info.name,
+                size = info.imagesCount,
+                cover = info.cover,
+                coverDate = info.coverDate
             )
         }
         return buckets
     }
 
-    private class BucketInfo(
+    private data class BucketInfo(
         val id: Long,
         val name: String,
+        val cover: Uri,
+        val coverDate: Long,
         var imagesCount: Int
-    ) {
-
-        override fun equals(other: Any?): Boolean =
-            when {
-                other === this -> true
-                other is BucketInfo -> id == other.id
-                else -> false
-            }
-
-        override fun hashCode(): Int =
-            id.hashCode()
-    }
+    )
 }

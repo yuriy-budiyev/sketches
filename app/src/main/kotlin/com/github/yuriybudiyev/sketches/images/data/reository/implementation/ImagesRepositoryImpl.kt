@@ -88,18 +88,18 @@ class ImagesRepositoryImpl(private val context: Context): ImagesRepository {
         while (cursor.moveToNext()) {
             val id = cursor.getLong(idColumn)
             images += MediaStoreImage(
-                id,
-                cursor.getString(nameColumn),
-                cursor.getLong(bucketIdColumn),
-                cursor.getString(bucketNameColumn),
-                cursor.getLong(dateAddedColumn) * 1000L,
-                cursor.getInt(withColumn),
-                cursor.getInt(heightColumn),
-                cursor.getInt(orientationColumn),
-                cursor.getString(mimeTypeColumn),
-                cursor.getLong(sizeColumn),
-                cursor.getString(relativePathColumn),
-                ContentUris.withAppendedId(
+                id = id,
+                name = cursor.getString(nameColumn),
+                bucketId = cursor.getLong(bucketIdColumn),
+                bucketName = cursor.getString(bucketNameColumn),
+                dateAdded = cursor.getLong(dateAddedColumn) * 1000L,
+                width = cursor.getInt(withColumn),
+                height = cursor.getInt(heightColumn),
+                orientation = cursor.getInt(orientationColumn),
+                mimeType = cursor.getString(mimeTypeColumn),
+                sizeBytes = cursor.getLong(sizeColumn),
+                relativePath = cursor.getString(relativePathColumn),
+                uri = ContentUris.withAppendedId(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     id
                 )

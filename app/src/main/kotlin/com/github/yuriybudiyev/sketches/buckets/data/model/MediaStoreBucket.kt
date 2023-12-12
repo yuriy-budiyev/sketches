@@ -24,8 +24,12 @@
 
 package com.github.yuriybudiyev.sketches.buckets.data.model
 
+import android.net.Uri
+
 data class MediaStoreBucket(
     val id: Long,
     val name: String,
-    val size: Int
+    val size: Int,
+    val cover: Uri,
+    val coverDate: Long
 )
