@@ -9,10 +9,8 @@ import androidx.compose.material.icons.outlined.PhotoLibrary
 
 object SketchesIcons {
 
-    val ImagesNavigation = Icons.Filled.PhotoLibrary
     val ImagesSelected = Icons.Filled.Photo
     val ImagesUnselected = Icons.Outlined.Photo
-    val BucketsNavigation = Icons.Filled.PhotoLibrary
     val BucketsSelected = Icons.Filled.PhotoLibrary
     val BucketsUnselected = Icons.Outlined.PhotoLibrary
     val ImageLoadError = Icons.Outlined.BrokenImage

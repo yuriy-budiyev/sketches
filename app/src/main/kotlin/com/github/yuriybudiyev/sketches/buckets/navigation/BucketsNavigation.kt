@@ -37,7 +37,6 @@ object BucketsNavigationDestination: TopLevelNavigationDestination {
     override val arguments: List<NamedNavArgument> = emptyList()
     override val deepLinks: List<NavDeepLink> = emptyList()
     override val labelRes: Int = R.string.buckets_screen_label
-    override val navigationIcon: ImageVector = SketchesIcons.BucketsNavigation
     override val selectedIcon: ImageVector = SketchesIcons.BucketsSelected
     override val unselectedIcon: ImageVector = SketchesIcons.BucketsUnselected
 }

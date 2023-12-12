@@ -25,6 +25,8 @@
 package com.github.yuriybudiyev.sketches.core.navigation
 
 import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
@@ -42,6 +44,8 @@ fun NavGraphBuilder.composable(
         route = destination.buildRoute(),
         arguments = destination.arguments,
         deepLinks = destination.deepLinks,
+        enterTransition = { fadeIn() },
+        exitTransition = { fadeOut() },
         content = content
     )
 }

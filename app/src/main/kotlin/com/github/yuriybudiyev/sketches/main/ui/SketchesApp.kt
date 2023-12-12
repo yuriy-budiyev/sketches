@@ -28,11 +28,9 @@ import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -42,7 +40,6 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -59,7 +56,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.navigation.destination.NavigationDestination
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.utils.checkPermissionGranted
@@ -139,15 +135,7 @@ private fun MainScreen(appState: SketchesAppState) {
             if (currentTopLevelNavigationType == TopLevelNavigationType.RAIL) {
                 SketchesNavRail(appState)
             }
-            Column(modifier = Modifier.fillMaxSize()) {
-                if (currentTopLevelNavigationType == TopLevelNavigationType.NONE) {
-                    val currentDestination = appState.currentNavigationDestination
-                    if (currentDestination != null) {
-                        SketchesTopAppBar(currentDestination)
-                    }
-                }
-                SketchesNavHost(appState = appState)
-            }
+            SketchesNavHost(appState = appState)
         }
     }
 }
@@ -196,27 +184,6 @@ private fun SketchesNavRail(appState: SketchesAppState) {
                 })
         }
     }
-}
-
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-private fun SketchesTopAppBar(currentDestination: NavigationDestination) {
-    TopAppBar(
-
-        title = {
-            Text(
-                text = stringResource(
-                    id = currentDestination.labelRes
-                )
-            )
-        },
-        navigationIcon = {
-            Icon(
-                imageVector = currentDestination.navigationIcon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
-        })
 }
 
 @Composable

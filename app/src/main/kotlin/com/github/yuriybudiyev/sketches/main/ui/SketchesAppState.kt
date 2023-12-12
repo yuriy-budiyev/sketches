@@ -96,6 +96,7 @@ class SketchesAppState(
             }
             launchSingleTop = true
             restoreState = true
+
         }
         navController.navigate(
             destination,
