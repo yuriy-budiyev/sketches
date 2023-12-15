@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.main.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import com.github.yuriybudiyev.sketches.bucket.navigation.BucketNavigationDestination
 import com.github.yuriybudiyev.sketches.bucket.ui.BucketRoute
@@ -39,8 +40,12 @@ import com.github.yuriybudiyev.sketches.images.ui.ImagesRoute
 import com.github.yuriybudiyev.sketches.main.ui.SketchesAppState
 
 @Composable
-fun SketchesNavHost(appState: SketchesAppState) {
+fun SketchesNavHost(
+    appState: SketchesAppState,
+    modifier: Modifier = Modifier
+) {
     NavHost(
+        modifier = modifier,
         navController = appState.navController,
         startDestination = ImagesNavigationDestination.buildRoute()
     ) {

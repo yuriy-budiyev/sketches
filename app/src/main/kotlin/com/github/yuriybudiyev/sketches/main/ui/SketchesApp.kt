@@ -28,18 +28,14 @@ import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -58,9 +54,9 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.utils.checkPermissionGranted
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
-import com.github.yuriybudiyev.sketches.main.navigation.TopLevelNavigationType
 
 @Composable
 fun SketchesApp(
@@ -117,88 +113,43 @@ private fun NoPermission() {
 
 @Composable
 private fun ContentLayout(appState: SketchesAppState) {
-    val currentTopLevelNavigationType = appState.currentTopLevelNavigationType
+    val currentDestinations = appState.topLevelNavigationDestinations
+    val currentDestination = appState.currentNavigationDestination
     Scaffold(modifier = Modifier.fillMaxSize(),
-        bottomBar = {
-            if (currentTopLevelNavigationType == TopLevelNavigationType.BAR) {
-                SketchesNavBar(appState)
+        topBar = {
+            if (currentDestination is TopLevelNavigationDestination) {
+                SketchesTopAppBar(text = stringResource(id = currentDestination.labelRes))
             }
-        }) { contentPadding ->
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(contentPadding)
-        ) {
-            if (currentTopLevelNavigationType == TopLevelNavigationType.RAIL) {
-                SketchesNavRail(appState)
-            }
-            SketchesNavHost(appState = appState)
-        }
-    }
-}
-
-@Composable
-private fun SketchesNavBar(appState: SketchesAppState) {
-    NavigationBar(containerColor = MaterialTheme.colorScheme.background) {
-        val currentDestination = appState.currentTopLevelNavigationDestination
-        appState.topLevelNavigationDestinations.forEach { destination ->
-            val selected = destination == currentDestination
-            NavigationBarItem(selected = selected,
-                onClick = {
-                    appState.navigateToTopLevelDestination(destination)
-                },
-                icon = {
-                    TopLevelDestinationIcon(
-                        selected,
-                        destination
-                    )
-                },
-                label = {
-                    TopLevelDestinationLabel(destination)
-                })
-        }
-    }
-}
-
-@Composable
-private fun SketchesNavRail(appState: SketchesAppState) {
-    NavigationRail(containerColor = MaterialTheme.colorScheme.background) {
-        val currentDestination = appState.currentTopLevelNavigationDestination
-        appState.topLevelNavigationDestinations.forEach { destination ->
-            val selected = destination == currentDestination
-            NavigationRailItem(selected = selected,
-                onClick = {
-                    appState.navigateToTopLevelDestination(destination)
-                },
-                icon = {
-                    TopLevelDestinationIcon(
-                        selected,
-                        destination
-                    )
-                },
-                label = {
-                    TopLevelDestinationLabel(destination)
-                })
-        }
-    }
-}
-
-@Composable
-private fun TopLevelDestinationIcon(
-    selected: Boolean,
-    destination: TopLevelNavigationDestination
-) {
-    Icon(
-        imageVector = if (selected) {
-            destination.selectedIcon
-        } else {
-            destination.unselectedIcon
         },
-        contentDescription = null
-    )
-}
-
-@Composable
-private fun TopLevelDestinationLabel(destination: TopLevelNavigationDestination) {
-    Text(text = stringResource(id = destination.labelRes))
+        bottomBar = {
+            if (currentDestination is TopLevelNavigationDestination) {
+                NavigationBar(containerColor = MaterialTheme.colorScheme.background) {
+                    currentDestinations.forEach { destination ->
+                        val selected = destination == currentDestination
+                        NavigationBarItem(selected = selected,
+                            onClick = {
+                                appState.navigateToTopLevelDestination(destination)
+                            },
+                            icon = {
+                                Icon(
+                                    imageVector = if (selected) {
+                                        destination.selectedIcon
+                                    } else {
+                                        destination.unselectedIcon
+                                    },
+                                    contentDescription = null
+                                )
+                            })
+                    }
+                }
+            }
+        },
+        content = { contentPadding ->
+            SketchesNavHost(
+                appState = appState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(contentPadding)
+            )
+        })
 }

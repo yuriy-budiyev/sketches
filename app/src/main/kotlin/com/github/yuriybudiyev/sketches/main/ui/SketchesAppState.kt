@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.main.ui
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -37,7 +36,6 @@ import com.github.yuriybudiyev.sketches.core.navigation.buildRoute
 import com.github.yuriybudiyev.sketches.core.navigation.destination.NavigationDestination
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.navigation.navigate
-import com.github.yuriybudiyev.sketches.main.navigation.TopLevelNavigationType
 
 @Composable
 fun rememberSketchesAppState(
@@ -72,17 +70,6 @@ class SketchesAppState(
             val destination = currentNavigationDestination ?: return null
             if (destination is TopLevelNavigationDestination) return destination
             return null
-        }
-
-    val currentTopLevelNavigationType: TopLevelNavigationType
-        @Composable get() = if (currentTopLevelNavigationDestination != null) {
-            if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact) {
-                TopLevelNavigationType.BAR
-            } else {
-                TopLevelNavigationType.RAIL
-            }
-        } else {
-            TopLevelNavigationType.NONE
         }
 
     val topLevelNavigationDestinations: List<TopLevelNavigationDestination>
