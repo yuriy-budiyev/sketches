@@ -40,8 +40,8 @@ fun LifecycleEventEffect(
 ) {
     val lifecycleOwner by rememberUpdatedState(LocalLifecycleOwner.current)
     DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _: LifecycleOwner, e: Lifecycle.Event ->
-            if (event == e) {
+        val observer = LifecycleEventObserver { _: LifecycleOwner, currentEvent: Lifecycle.Event ->
+            if (currentEvent == event) {
                 effect()
             }
         }

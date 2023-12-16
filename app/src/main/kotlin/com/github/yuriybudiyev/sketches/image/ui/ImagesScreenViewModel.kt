@@ -26,11 +26,13 @@ package com.github.yuriybudiyev.sketches.image.ui
 
 import androidx.lifecycle.ViewModel
 import com.github.yuriybudiyev.sketches.images.data.reository.ImagesRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
+@HiltViewModel
 class ImagesScreenViewModel @Inject constructor(private val imagesRepository: ImagesRepository):
     ViewModel() {
 
