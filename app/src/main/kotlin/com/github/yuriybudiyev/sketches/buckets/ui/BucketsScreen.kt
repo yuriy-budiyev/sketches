@@ -25,20 +25,15 @@
 package com.github.yuriybudiyev.sketches.buckets.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,12 +42,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.buckets.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesImage
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLazyVerticalGrid
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
+import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 
 typealias BucketClickListener = (index: Int, bucket: MediaStoreBucket) -> Unit
 
@@ -62,7 +60,7 @@ fun BucketsRoute(
     viewModel: BucketsScreenViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) {
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.updateBuckets()
     }
     BucketsScreen(
@@ -100,13 +98,7 @@ private fun BucketsLayout(
     buckets: List<MediaStoreBucket>,
     onBucketClick: BucketClickListener
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(120.dp),
-        contentPadding = PaddingValues(4.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.fillMaxSize()
-    ) {
+    SketchesLazyVerticalGrid(modifier = Modifier.fillMaxSize()) {
         itemsIndexed(items = buckets,
             key = { _, item -> item.id }) { index, item ->
             Column(modifier = Modifier

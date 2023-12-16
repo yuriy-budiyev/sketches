@@ -27,11 +27,11 @@ package com.github.yuriybudiyev.sketches.bucket.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.component.ImageClickListener
@@ -39,6 +39,7 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessag
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesImagesLayout
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 
 @Composable
 fun BucketRoute(
@@ -48,7 +49,7 @@ fun BucketRoute(
     viewModel: BucketScreenViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) {
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.updateImages(id)
     }
     BucketScreen(

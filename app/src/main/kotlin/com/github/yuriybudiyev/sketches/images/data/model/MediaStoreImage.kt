@@ -37,6 +37,5 @@ data class MediaStoreImage(
     val orientation: Int,
     val mimeType: String,
     val sizeBytes: Long,
-    val relativePath: String,
     val uri: Uri
 )

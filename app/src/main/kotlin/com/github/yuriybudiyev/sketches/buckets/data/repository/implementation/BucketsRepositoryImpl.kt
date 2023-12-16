@@ -29,7 +29,6 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import androidx.core.net.toUri
 import com.github.yuriybudiyev.sketches.buckets.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.buckets.data.repository.BucketsRepository
 import kotlinx.coroutines.Dispatchers
@@ -41,9 +40,7 @@ class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
         val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
         } else {
-            context
-                .getExternalFilesDir(null)
-                ?.toUri()
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         } ?: return null
         val cursor = withContext(Dispatchers.IO) {
             context.contentResolver.query(

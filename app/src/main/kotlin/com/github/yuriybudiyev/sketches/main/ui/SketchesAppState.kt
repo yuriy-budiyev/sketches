@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.main.ui
 
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -39,24 +38,14 @@ import com.github.yuriybudiyev.sketches.core.navigation.navigate
 
 @Composable
 fun rememberSketchesAppState(
-    windowSizeClass: WindowSizeClass,
     navController: NavHostController = rememberNavController()
 ): SketchesAppState =
-    remember(
-        windowSizeClass,
-        navController
-    ) {
-        SketchesAppState(
-            windowSizeClass,
-            navController
-        )
+    remember(navController) {
+        SketchesAppState(navController)
     }
 
 @Stable
-class SketchesAppState(
-    val windowSizeClass: WindowSizeClass,
-    val navController: NavHostController
-) {
+class SketchesAppState(val navController: NavHostController) {
 
     val currentNavigationDestination: NavigationDestination?
         @Composable get() {

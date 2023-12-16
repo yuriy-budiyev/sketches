@@ -48,25 +48,28 @@ class BucketScreenViewModel @Inject constructor(
 
     fun updateImages(
         bucketId: Long,
-        force: Boolean = false
+        silent: Boolean = uiState.value is BucketScreenUiState.Bucket
     ) {
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
-            val currentUiState = uiStateInternal.value
-            if (force || (currentUiState is BucketScreenUiState.Bucket && currentUiState.id != bucketId) || currentUiState !is BucketScreenUiState.Bucket) {
+            if (!silent) {
                 uiStateInternal.value = BucketScreenUiState.Loading
-                try {
-                    val images =
-                        withContext(Dispatchers.Default) { imagesRepository.getImages(bucketId) }
-                    if (!images.isNullOrEmpty()) {
-                        uiStateInternal.value = BucketScreenUiState.Bucket(
-                            bucketId,
-                            images
-                        )
-                    } else {
+            }
+            try {
+                val images =
+                    withContext(Dispatchers.Default) { imagesRepository.getImages(bucketId) }
+                if (!images.isNullOrEmpty()) {
+                    uiStateInternal.value = BucketScreenUiState.Bucket(
+                        bucketId,
+                        images
+                    )
+                } else {
+                    if (!silent) {
                         uiStateInternal.value = BucketScreenUiState.Empty
                     }
-                } catch (e: Exception) {
+                }
+            } catch (e: Exception) {
+                if (!silent) {
                     uiStateInternal.value = BucketScreenUiState.Error(e)
                 }
             }

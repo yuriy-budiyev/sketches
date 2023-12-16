@@ -28,7 +28,6 @@ import android.content.ContentUris
 import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
-import androidx.core.net.toUri
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
 import com.github.yuriybudiyev.sketches.images.data.reository.ImagesRepository
 import kotlinx.coroutines.Dispatchers
@@ -40,9 +39,7 @@ class ImagesRepositoryImpl(private val context: Context): ImagesRepository {
         val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
         } else {
-            context
-                .getExternalFilesDir(null)
-                ?.toUri()
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         } ?: return null
         val cursor = withContext(Dispatchers.IO) {
             context.contentResolver.query(
@@ -57,8 +54,7 @@ class ImagesRepositoryImpl(private val context: Context): ImagesRepository {
                     MediaStore.Images.Media.HEIGHT,
                     MediaStore.Images.Media.ORIENTATION,
                     MediaStore.Images.Media.MIME_TYPE,
-                    MediaStore.Images.Media.SIZE,
-                    MediaStore.Images.Media.RELATIVE_PATH
+                    MediaStore.Images.Media.SIZE
                 ),
                 if (bucketId != -1L) {
                     "${MediaStore.Images.Media.BUCKET_ID}=?"
@@ -84,7 +80,6 @@ class ImagesRepositoryImpl(private val context: Context): ImagesRepository {
         val orientationColumn = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION)
         val mimeTypeColumn = cursor.getColumnIndex(MediaStore.Images.Media.MIME_TYPE)
         val sizeColumn = cursor.getColumnIndex(MediaStore.Images.Media.SIZE)
-        val relativePathColumn = cursor.getColumnIndex(MediaStore.Images.Media.RELATIVE_PATH)
         while (cursor.moveToNext()) {
             val id = cursor.getLong(idColumn)
             images += MediaStoreImage(
@@ -98,7 +93,6 @@ class ImagesRepositoryImpl(private val context: Context): ImagesRepository {
                 orientation = cursor.getInt(orientationColumn),
                 mimeType = cursor.getString(mimeTypeColumn),
                 sizeBytes = cursor.getLong(sizeColumn),
-                relativePath = cursor.getString(relativePathColumn),
                 uri = ContentUris.withAppendedId(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     id

@@ -24,41 +24,26 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.component
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
-
-typealias ImageClickListener = (index: Int, image: MediaStoreImage) -> Unit
 
 @Composable
-fun SketchesImagesLayout(
-    images: List<MediaStoreImage>,
-    onImageClick: ImageClickListener
+fun SketchesLazyVerticalGrid(
+    modifier: Modifier = Modifier,
+    content: LazyGridScope.() -> Unit
 ) {
-    SketchesLazyVerticalGrid(modifier = Modifier.fillMaxSize()) {
-        itemsIndexed(items = images,
-            key = { _, item -> item.id }) { index, item ->
-            SketchesImage(uri = item.uri,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(ratio = 1f)
-                    .clip(shape = RoundedCornerShape(8.dp))
-                    .clickable {
-                        onImageClick(
-                            index,
-                            item
-                        )
-                    })
-        }
-    }
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 110.dp),
+        contentPadding = PaddingValues(all = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(space = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(space = 4.dp),
+        modifier = modifier,
+        content = content
+    )
 }

@@ -36,33 +36,26 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.core.utils.checkPermissionGranted
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 
 @Composable
-fun SketchesApp(
-    windowSizeClass: WindowSizeClass,
-    appState: SketchesAppState = rememberSketchesAppState(windowSizeClass = windowSizeClass)
-) {
+fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
     val context = LocalContext.current
     val imagesPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         Manifest.permission.READ_MEDIA_IMAGES
@@ -77,17 +70,8 @@ fun SketchesApp(
             ContentLayout(appState = appState)
         } else {
             NoPermission()
-            val lifecycleOwner by rememberUpdatedState(LocalLifecycleOwner.current)
-            DisposableEffect(lifecycleOwner) {
-                val lifecycleObserver = LifecycleEventObserver { _, event ->
-                    if (event == Lifecycle.Event.ON_RESUME) {
-                        permissionGranted = context.checkPermissionGranted(imagesPermission)
-                    }
-                }
-                lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
-                onDispose {
-                    lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
-                }
+            LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+                permissionGranted = context.checkPermissionGranted(imagesPermission)
             }
             val imagesPermissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestPermission()
