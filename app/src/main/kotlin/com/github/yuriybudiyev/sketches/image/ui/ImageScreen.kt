@@ -23,3 +23,20 @@
  */
 
 package com.github.yuriybudiyev.sketches.image.ui
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
+
+typealias ImageShareListener = (image: MediaStoreImage) -> Unit
+
+@Composable
+fun ImageRoute(
+    onImageShare: ImageShareListener,
+    viewModel: ImageScreenViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    
+}

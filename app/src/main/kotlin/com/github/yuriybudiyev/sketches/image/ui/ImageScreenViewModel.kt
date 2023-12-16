@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class ImagesScreenViewModel @Inject constructor(private val imagesRepository: ImagesRepository):
+class ImageScreenViewModel @Inject constructor(private val imagesRepository: ImagesRepository):
     ViewModel() {
 
     val uiState: StateFlow<ImageScreenUiState>
