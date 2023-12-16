@@ -22,26 +22,23 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.images.navigation
+package com.github.yuriybudiyev.sketches.buckets.navigation
 
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavDeepLink
-import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
-object ImagesNavigationDestination: TopLevelNavigationDestination {
+object BucketsNavigationDestination: TopLevelNavigationDestination {
 
-    override val routeBase: String = "images"
+    override val routeBase: String = "buckets"
 
     override val arguments: List<NamedNavArgument> = emptyList()
 
     override val deepLinks: List<NavDeepLink> = emptyList()
 
-    override val labelRes: Int = R.string.images_navigation_label
+    override val selectedIcon: ImageVector = SketchesIcons.BucketsSelected
 
-    override val selectedIcon: ImageVector = SketchesIcons.ImagesSelected
-
-    override val unselectedIcon: ImageVector = SketchesIcons.ImagesUnselected
+    override val unselectedIcon: ImageVector = SketchesIcons.BucketsUnselected
 }

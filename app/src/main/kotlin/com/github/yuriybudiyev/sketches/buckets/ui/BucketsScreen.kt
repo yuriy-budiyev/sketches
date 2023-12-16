@@ -50,6 +50,7 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessag
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLazyVerticalGrid
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 
 typealias BucketClickListener = (index: Int, bucket: MediaStoreBucket) -> Unit
@@ -74,21 +75,24 @@ fun BucketsScreen(
     uiState: BucketsScreenUiState,
     onBucketClick: BucketClickListener
 ) {
-    when (uiState) {
-        BucketsScreenUiState.Empty -> {
-            SketchesCenteredMessage(text = stringResource(id = R.string.no_buckets_found))
-        }
-        BucketsScreenUiState.Loading -> {
-            SketchesLoadingIndicator()
-        }
-        is BucketsScreenUiState.Buckets -> {
-            BucketsLayout(
-                buckets = uiState.buckets,
-                onBucketClick = onBucketClick
-            )
-        }
-        is BucketsScreenUiState.Error -> {
-            SketchesCenteredMessage(text = stringResource(id = R.string.unexpected_error))
+    Column(modifier = Modifier.fillMaxSize()) {
+        SketchesTopAppBar(text = stringResource(id = R.string.buckets_screen_label))
+        when (uiState) {
+            BucketsScreenUiState.Empty -> {
+                SketchesCenteredMessage(text = stringResource(id = R.string.no_buckets_found))
+            }
+            BucketsScreenUiState.Loading -> {
+                SketchesLoadingIndicator()
+            }
+            is BucketsScreenUiState.Buckets -> {
+                BucketsLayout(
+                    buckets = uiState.buckets,
+                    onBucketClick = onBucketClick
+                )
+            }
+            is BucketsScreenUiState.Error -> {
+                SketchesCenteredMessage(text = stringResource(id = R.string.unexpected_error))
+            }
         }
     }
 }

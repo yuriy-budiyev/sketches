@@ -24,8 +24,11 @@
 
 package com.github.yuriybudiyev.sketches.images.ui
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -35,6 +38,7 @@ import com.github.yuriybudiyev.sketches.core.ui.component.ImageClickListener
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesImagesLayout
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 
 @Composable
@@ -57,21 +61,24 @@ fun ImagesScreen(
     uiState: ImagesScreenUiState,
     onImageClick: ImageClickListener
 ) {
-    when (uiState) {
-        ImagesScreenUiState.Empty -> {
-            SketchesCenteredMessage(text = stringResource(id = R.string.no_images_found))
-        }
-        ImagesScreenUiState.Loading -> {
-            SketchesLoadingIndicator()
-        }
-        is ImagesScreenUiState.Images -> {
-            SketchesImagesLayout(
-                images = uiState.images,
-                onImageClick = onImageClick
-            )
-        }
-        is ImagesScreenUiState.Error -> {
-            SketchesCenteredMessage(text = stringResource(id = R.string.unexpected_error))
+    Column(modifier = Modifier.fillMaxSize()) {
+        SketchesTopAppBar(text = stringResource(id = R.string.images_screen_label))
+        when (uiState) {
+            ImagesScreenUiState.Empty -> {
+                SketchesCenteredMessage(text = stringResource(id = R.string.no_images_found))
+            }
+            ImagesScreenUiState.Loading -> {
+                SketchesLoadingIndicator()
+            }
+            is ImagesScreenUiState.Images -> {
+                SketchesImagesLayout(
+                    images = uiState.images,
+                    onImageClick = onImageClick
+                )
+            }
+            is ImagesScreenUiState.Error -> {
+                SketchesCenteredMessage(text = stringResource(id = R.string.unexpected_error))
+            }
         }
     }
 }

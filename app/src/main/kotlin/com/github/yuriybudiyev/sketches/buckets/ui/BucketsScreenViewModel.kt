@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.buckets.ui
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.buckets.data.repository.BucketsRepository
@@ -38,10 +37,8 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class BucketsScreenViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val bucketsRepository: BucketsRepository
-): ViewModel() {
+class BucketsScreenViewModel @Inject constructor(private val bucketsRepository: BucketsRepository):
+    ViewModel() {
 
     val uiState: StateFlow<BucketsScreenUiState>
         get() = uiStateInternal
@@ -72,6 +69,6 @@ class BucketsScreenViewModel @Inject constructor(
     }
 
     private val uiStateInternal: MutableStateFlow<BucketsScreenUiState> =
-        MutableStateFlow(BucketsScreenUiState.Empty)
+        MutableStateFlow(BucketsScreenUiState.Loading)
     private var currentJob: Job? = null
 }

@@ -6,7 +6,7 @@
     <string name="no_images_permission">Необходимо разрешение на доступ к изображениям</string>
     <string name="no_storage_permission">Необходимо разрешение на доступ к хранилищу</string>
     <string name="unexpected_error">Произошла неожиданная ошибка</string>
-    <string name="images_navigation_label">Изображения</string>
-    <string name="buckets_navigation_label">Альбомы</string>
+    <string name="images_screen_label">Изображения</string>
+    <string name="buckets_screen_label">Альбомы</string>
     <string name="no_buckets_found">Альбомов не найдено</string>
 </resources>

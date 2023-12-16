@@ -67,7 +67,7 @@ fun BucketScreen(
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         if (!name.isNullOrEmpty()) {
-            SketchesTopAppBar(name)
+            SketchesTopAppBar(text = name)
         }
         when (uiState) {
             BucketScreenUiState.Empty -> {

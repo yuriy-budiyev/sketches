@@ -49,7 +49,6 @@ import androidx.lifecycle.Lifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
-import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.core.utils.checkPermissionGranted
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
@@ -100,11 +99,6 @@ private fun ContentLayout(appState: SketchesAppState) {
     val currentDestinations = appState.topLevelNavigationDestinations
     val currentDestination = appState.currentNavigationDestination
     Scaffold(modifier = Modifier.fillMaxSize(),
-        topBar = {
-            if (currentDestination is TopLevelNavigationDestination) {
-                SketchesTopAppBar(text = stringResource(id = currentDestination.labelRes))
-            }
-        },
         bottomBar = {
             if (currentDestination is TopLevelNavigationDestination) {
                 NavigationBar(containerColor = MaterialTheme.colorScheme.background) {

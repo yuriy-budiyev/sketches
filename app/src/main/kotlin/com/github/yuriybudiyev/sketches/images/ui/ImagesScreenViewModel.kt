@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.images.ui
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.images.data.reository.ImagesRepository
@@ -38,10 +37,8 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class ImagesScreenViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val repository: ImagesRepository
-): ViewModel() {
+class ImagesScreenViewModel @Inject constructor(private val repository: ImagesRepository):
+    ViewModel() {
 
     val uiState: StateFlow<ImagesScreenUiState>
         get() = uiStateInternal
@@ -70,6 +67,6 @@ class ImagesScreenViewModel @Inject constructor(
     }
 
     private val uiStateInternal: MutableStateFlow<ImagesScreenUiState> =
-        MutableStateFlow(ImagesScreenUiState.Empty)
+        MutableStateFlow(ImagesScreenUiState.Loading)
     private var currentJob: Job? = null
 }
