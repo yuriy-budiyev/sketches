@@ -2,6 +2,7 @@ plugins {
     alias(sketches.plugins.android.application)
     alias(sketches.plugins.protobuf)
     alias(sketches.plugins.kotlin)
+    alias(sketches.plugins.kotlin.parcelize)
     alias(sketches.plugins.kotlin.ksp)
     alias(sketches.plugins.hilt)
 }

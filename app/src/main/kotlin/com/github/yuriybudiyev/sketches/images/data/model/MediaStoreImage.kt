@@ -25,7 +25,10 @@
 package com.github.yuriybudiyev.sketches.images.data.model
 
 import android.net.Uri
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class MediaStoreImage(
     val id: Long,
     val name: String,
@@ -38,4 +41,4 @@ data class MediaStoreImage(
     val mimeType: String,
     val sizeBytes: Long,
     val uri: Uri
-)
+): Parcelable

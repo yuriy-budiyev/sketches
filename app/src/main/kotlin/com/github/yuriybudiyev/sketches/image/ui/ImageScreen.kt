@@ -38,5 +38,4 @@ fun ImageRoute(
     viewModel: ImageScreenViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    
 }
