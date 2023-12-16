@@ -25,14 +25,11 @@
 package com.github.yuriybudiyev.sketches.buckets.data.model
 
 import android.net.Uri
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
 data class MediaStoreBucket(
     val id: Long,
     val name: String,
     val size: Int,
     val coverUri: Uri,
     val coverDate: Long
-): Parcelable
+)

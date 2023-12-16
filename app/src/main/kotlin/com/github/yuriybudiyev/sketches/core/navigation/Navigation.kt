@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.navigation
 
-import android.os.Parcelable
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -33,12 +32,10 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
 import com.github.yuriybudiyev.sketches.core.navigation.destination.NavigationDestination
 import com.github.yuriybudiyev.sketches.main.ui.SketchesAppState
-import kotlin.reflect.KClass
 
 fun NavGraphBuilder.composable(
     destination: NavigationDestination,
@@ -96,6 +93,3 @@ fun NavigationDestination.buildRouteWithArgs(vararg args: Any): String =
             }
         }
     }
-
-fun <T: Parcelable> NavType.Companion.ofParcelable(kotlinClass: KClass<T>): NavType.ParcelableType<T> =
-    NavType.ParcelableType(kotlinClass.java)
