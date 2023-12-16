@@ -24,4 +24,20 @@
 
 package com.github.yuriybudiyev.sketches.image.ui
 
-class ImagesScreenViewModel {}
+import androidx.lifecycle.ViewModel
+import com.github.yuriybudiyev.sketches.images.data.reository.ImagesRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
+
+class ImagesScreenViewModel @Inject constructor(private val imagesRepository: ImagesRepository):
+    ViewModel() {
+
+    val uiState: StateFlow<ImageScreenUiState>
+        get() = uiStateInternal
+
+    private val uiStateInternal: MutableStateFlow<ImageScreenUiState> =
+        MutableStateFlow(ImageScreenUiState.Loading)
+    private var currentJob: Job? = null
+}

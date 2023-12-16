@@ -23,4 +23,3 @@
  */
 
 package com.github.yuriybudiyev.sketches.image.ui
-

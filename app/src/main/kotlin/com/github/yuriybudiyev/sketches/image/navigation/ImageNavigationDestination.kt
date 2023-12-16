@@ -35,14 +35,15 @@ object ImageNavigationDestination: NavigationDestination {
     override val routeBase: String = "image"
 
     override val arguments: List<NamedNavArgument> =
-        listOf(navArgument(name = Args.IMAGE_ID) { type = NavType.LongType },
+        listOf(navArgument(name = Args.IMAGE_INDEX) { type = NavType.IntType },
+            navArgument(name = Args.IMAGE_ID) { type = NavType.LongType },
             navArgument(name = Args.BUCKET_ID) { type = NavType.LongType })
 
-    override val deepLinks: List<NavDeepLink>
-        get() = TODO("Not yet implemented")
+    override val deepLinks: List<NavDeepLink> = emptyList()
 
     object Args {
 
+        const val IMAGE_INDEX = "image_index"
         const val IMAGE_ID = "image_id"
         const val BUCKET_ID = "bucket_id"
     }

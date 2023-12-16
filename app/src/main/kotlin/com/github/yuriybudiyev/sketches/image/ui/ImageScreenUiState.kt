@@ -24,4 +24,18 @@
 
 package com.github.yuriybudiyev.sketches.image.ui
 
-sealed interface ImageScreenUiState {}
+import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
+
+sealed interface ImageScreenUiState {
+
+    data object Empty: ImageScreenUiState
+
+    data object Loading: ImageScreenUiState
+
+    data class Image(
+        val index: Int,
+        val images: List<MediaStoreImage>
+    ): ImageScreenUiState
+
+    data class Error(val thrown: Exception): ImageScreenUiState
+}
