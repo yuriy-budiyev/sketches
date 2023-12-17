@@ -25,11 +25,15 @@
 package com.github.yuriybudiyev.sketches.image.ui
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.images.data.reository.ImagesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,6 +42,69 @@ class ImageScreenViewModel @Inject constructor(private val imagesRepository: Ima
 
     val uiState: StateFlow<ImageScreenUiState>
         get() = uiStateInternal
+
+    fun updateImages(
+        imagePosition: Int,
+        imageId: Long,
+        bucketId: Long,
+        silent: Boolean = uiState.value is ImageScreenUiState.Image
+    ) {
+        currentJob?.cancel()
+        currentJob = viewModelScope.launch {
+            if (!silent) {
+                uiStateInternal.value = ImageScreenUiState.Loading
+            }
+            try {
+                val images =
+                    withContext(Dispatchers.Default) { imagesRepository.getImages(bucketId) }
+                if (!images.isNullOrEmpty()) {
+                    if (images[imagePosition].id == imageId) {
+                        uiStateInternal.value = ImageScreenUiState.Image(
+                            imagePosition,
+                            imageId,
+                            bucketId,
+                            images
+                        )
+                    } else {
+                        var backwardIndex = imagePosition - 1
+                        var forwardIndex = imagePosition + 1
+                        var actualPosition = 0
+                        val imagesSize = images.size
+                        while (backwardIndex > -1 || forwardIndex < imagesSize) {
+                            if (backwardIndex > -1) {
+                                if (images[backwardIndex].id == imageId) {
+                                    actualPosition = backwardIndex
+                                    break
+                                }
+                                backwardIndex--
+                            }
+                            if (forwardIndex < imagesSize) {
+                                if (images[forwardIndex].id == imageId) {
+                                    actualPosition = forwardIndex
+                                    break
+                                }
+                                forwardIndex++
+                            }
+                        }
+                        uiStateInternal.value = ImageScreenUiState.Image(
+                            actualPosition,
+                            imageId,
+                            bucketId,
+                            images
+                        )
+                    }
+                } else {
+                    if (!silent) {
+                        uiStateInternal.value = ImageScreenUiState.Empty
+                    }
+                }
+            } catch (e: Exception) {
+                if (!silent) {
+                    uiStateInternal.value = ImageScreenUiState.Error(e)
+                }
+            }
+        }
+    }
 
     private val uiStateInternal: MutableStateFlow<ImageScreenUiState> =
         MutableStateFlow(ImageScreenUiState.Loading)
