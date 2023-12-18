@@ -33,7 +33,7 @@ sealed interface ImageScreenUiState {
     data object Loading: ImageScreenUiState
 
     data class Image(
-        val imagePosition: Int,
+        val imageIndex: Int,
         val imageId: Long,
         val bucketId: Long,
         val images: List<MediaStoreImage>

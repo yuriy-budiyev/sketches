@@ -44,7 +44,7 @@ class ImageScreenViewModel @Inject constructor(private val imagesRepository: Ima
         get() = uiStateInternal
 
     fun updateImages(
-        imagePosition: Int,
+        imageIndex: Int,
         imageId: Long,
         bucketId: Long,
         silent: Boolean = uiState.value is ImageScreenUiState.Image
@@ -58,36 +58,36 @@ class ImageScreenViewModel @Inject constructor(private val imagesRepository: Ima
                 val images =
                     withContext(Dispatchers.Default) { imagesRepository.getImages(bucketId) }
                 if (!images.isNullOrEmpty()) {
-                    if (images[imagePosition].id == imageId) {
+                    if (images[imageIndex].id == imageId) {
                         uiStateInternal.value = ImageScreenUiState.Image(
-                            imagePosition,
+                            imageIndex,
                             imageId,
                             bucketId,
                             images
                         )
                     } else {
-                        var backwardIndex = imagePosition - 1
-                        var forwardIndex = imagePosition + 1
-                        var actualPosition = 0
+                        var backwardIndex = imageIndex - 1
+                        var forwardIndex = imageIndex + 1
+                        var actualIndex = 0
                         val imagesSize = images.size
                         while (backwardIndex > -1 || forwardIndex < imagesSize) {
                             if (backwardIndex > -1) {
                                 if (images[backwardIndex].id == imageId) {
-                                    actualPosition = backwardIndex
+                                    actualIndex = backwardIndex
                                     break
                                 }
                                 backwardIndex--
                             }
                             if (forwardIndex < imagesSize) {
                                 if (images[forwardIndex].id == imageId) {
-                                    actualPosition = forwardIndex
+                                    actualIndex = forwardIndex
                                     break
                                 }
                                 forwardIndex++
                             }
                         }
                         uiStateInternal.value = ImageScreenUiState.Image(
-                            actualPosition,
+                            actualIndex,
                             imageId,
                             bucketId,
                             images

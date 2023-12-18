@@ -35,6 +35,8 @@ import com.github.yuriybudiyev.sketches.core.navigation.buildRoute
 import com.github.yuriybudiyev.sketches.core.navigation.composable
 import com.github.yuriybudiyev.sketches.core.navigation.navigate
 import com.github.yuriybudiyev.sketches.core.navigation.registerIn
+import com.github.yuriybudiyev.sketches.image.navigation.ImageNavigationDestination
+import com.github.yuriybudiyev.sketches.image.ui.ImageRoute
 import com.github.yuriybudiyev.sketches.images.navigation.ImagesNavigationDestination
 import com.github.yuriybudiyev.sketches.images.ui.ImagesRoute
 import com.github.yuriybudiyev.sketches.main.ui.SketchesAppState
@@ -50,7 +52,15 @@ fun SketchesNavHost(
         startDestination = ImagesNavigationDestination.buildRoute()
     ) {
         composable(ImagesNavigationDestination.registerIn(appState)) {
-            ImagesRoute(onImageClick = { index, image -> })
+            ImagesRoute(onImageClick = { index, image ->
+                appState.navController.navigate(
+                    ImageNavigationDestination,
+                    index,
+                    image.id,
+                    -1L
+                )
+
+            })
         }
         composable(BucketsNavigationDestination.registerIn(appState)) {
             BucketsRoute(onBucketClick = { _, bucket ->
@@ -71,8 +81,31 @@ fun SketchesNavHost(
             BucketRoute(id = bucketId,
                 name = bucketName,
                 onImageClick = { index, image ->
-
+                    appState.navController.navigate(
+                        ImageNavigationDestination,
+                        index,
+                        image.id,
+                        image.bucketId
+                    )
                 })
+        }
+        composable(ImageNavigationDestination.registerIn(appState)) { backStackEntry ->
+            val imageIndex = backStackEntry.arguments?.getInt(
+                ImageNavigationDestination.Arguments.IMAGE_INDEX,
+                -1
+            ) ?: -1
+            val imageId = backStackEntry.arguments?.getLong(
+                ImageNavigationDestination.Arguments.IMAGE_ID,
+                -1L
+            ) ?: -1L
+            val bucketId = backStackEntry.arguments?.getLong(
+                ImageNavigationDestination.Arguments.BUCKET_ID,
+                -1L
+            ) ?: -1L
+            ImageRoute(imageIndex = imageIndex,
+                imageId = imageId,
+                bucketId = bucketId,
+                onImageShare = { image -> })
         }
     }
 }
