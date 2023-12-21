@@ -22,43 +22,46 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.component
+package com.github.yuriybudiyev.sketches.images.ui.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesImage
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLazyVerticalGrid
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
 
 typealias ImageClickListener = (index: Int, image: MediaStoreImage) -> Unit
 
 @Composable
-fun SketchesImagesLayout(
+fun SketchesImagesVerticalGrid(
     images: List<MediaStoreImage>,
     onImageClick: ImageClickListener
 ) {
     SketchesLazyVerticalGrid(modifier = Modifier.fillMaxSize()) {
-        itemsIndexed(items = images,
-            key = { _, item -> item.id }) { index, item ->
-            SketchesImage(uri = item.uri,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(ratio = 1f)
-                    .clip(shape = RoundedCornerShape(8.dp))
-                    .clickable {
-                        onImageClick(
-                            index,
-                            item
-                        )
-                    })
-        }
+        items(count = images.size,
+            key = { index -> images[index].id },
+            itemContent = { index ->
+                val image = images[index]
+                SketchesImage(uri = image.uri,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(ratio = 1f)
+                        .clip(shape = RoundedCornerShape(8.dp))
+                        .clickable {
+                            onImageClick(
+                                index,
+                                image
+                            )
+                        })
+            })
     }
 }

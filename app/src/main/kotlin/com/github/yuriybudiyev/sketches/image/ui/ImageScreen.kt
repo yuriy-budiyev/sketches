@@ -98,7 +98,7 @@ fun ImageScreen(
         }
         is ImageScreenUiState.Image -> {
             ImagePager(
-                imageIndex = uiState.imageIndex,
+                index = uiState.imageIndex,
                 images = uiState.images,
                 onImageChanged = onImageChanged,
                 onImageShare = onImageShare
@@ -112,31 +112,31 @@ fun ImageScreen(
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
-fun ImagePager(
-    imageIndex: Int,
+private fun ImagePager(
+    index: Int,
     images: List<MediaStoreImage>,
     onImageChanged: ImageChangeListener,
     onImageShare: ImageShareListener
 ) {
-    val imagesUpdated by rememberUpdatedState(images)
-    val pagerState = rememberPagerState(imageIndex) { imagesUpdated.size }
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }.collect { currentPage ->
+    val data by rememberUpdatedState(images)
+    val state = rememberPagerState(index) { data.size }
+    LaunchedEffect(state) {
+        snapshotFlow { state.currentPage }.collect { page ->
             onImageChanged(
-                currentPage,
-                imagesUpdated[currentPage]
+                page,
+                data[page]
             )
         }
     }
-    LaunchedEffect(imageIndex) {
-        pagerState.scrollToPage(imageIndex)
+    LaunchedEffect(index) {
+        state.scrollToPage(index)
     }
-    HorizontalPager(state = pagerState,
+    HorizontalPager(state = state,
         modifier = Modifier.fillMaxSize(),
-        key = { page -> imagesUpdated[page].id },
+        key = { page -> data[page].id },
         pageContent = { page ->
             SketchesImage(
-                uri = imagesUpdated[page].uri,
+                uri = data[page].uri,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit,
                 filterQuality = FilterQuality.High
