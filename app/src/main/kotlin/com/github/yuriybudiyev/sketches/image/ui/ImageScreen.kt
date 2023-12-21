@@ -33,6 +33,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -117,12 +118,13 @@ fun ImagePager(
     onImageChanged: ImageChangeListener,
     onImageShare: ImageShareListener
 ) {
-    val pagerState = rememberPagerState(imageIndex) { images.size }
+    val imagesUpdated by rememberUpdatedState(images)
+    val pagerState = rememberPagerState(imageIndex) { imagesUpdated.size }
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { currentPage ->
             onImageChanged(
                 currentPage,
-                images[currentPage]
+                imagesUpdated[currentPage]
             )
         }
     }
@@ -131,10 +133,10 @@ fun ImagePager(
     }
     HorizontalPager(state = pagerState,
         modifier = Modifier.fillMaxSize(),
-        key = { page -> images[page].id },
+        key = { page -> imagesUpdated[page].id },
         pageContent = { page ->
             SketchesImage(
-                uri = images[page].uri,
+                uri = imagesUpdated[page].uri,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit,
                 filterQuality = FilterQuality.High
