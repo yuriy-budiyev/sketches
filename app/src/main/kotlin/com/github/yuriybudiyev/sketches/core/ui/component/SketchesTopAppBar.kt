@@ -31,10 +31,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun SketchesTopAppBar(
+    modifier: Modifier = Modifier,
     text: String? = null,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
@@ -47,6 +49,7 @@ fun SketchesTopAppBar(
         actions = actions,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.background
-        )
+        ),
+        modifier = modifier
     )
 }

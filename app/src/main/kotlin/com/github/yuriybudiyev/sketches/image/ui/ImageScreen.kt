@@ -25,12 +25,9 @@
 package com.github.yuriybudiyev.sketches.image.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -50,9 +47,7 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
-import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
-import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
 
 typealias ImageShareListener = (image: MediaStoreImage) -> Unit
@@ -134,25 +129,15 @@ fun ImagePager(
     LaunchedEffect(imageIndex) {
         pagerState.scrollToPage(imageIndex)
     }
-    Box(modifier = Modifier.fillMaxSize()) {
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize()
-        ) { page ->
-            SketchesImage(
-                uri = images[page].uri,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Fit,
-                filterQuality = FilterQuality.High
-            )
-        }
-        SketchesTopAppBar {
-            Icon(imageVector = SketchesIcons.Share,
-                contentDescription = null,
-                modifier = Modifier.clickable {
-                    onImageShare(images[pagerState.currentPage])
-                })
-        }
+    HorizontalPager(
+        state = pagerState,
+        modifier = Modifier.fillMaxSize()
+    ) { page ->
+        SketchesImage(
+            uri = images[page].uri,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Fit,
+            filterQuality = FilterQuality.High
+        )
     }
 }
- 
