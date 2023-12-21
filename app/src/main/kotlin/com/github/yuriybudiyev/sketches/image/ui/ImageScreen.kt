@@ -29,7 +29,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
@@ -46,6 +52,8 @@ import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
 
 typealias ImageShareListener = (image: MediaStoreImage) -> Unit
 
+typealias ImageChangeListener = (index: Int, image: MediaStoreImage) -> Unit
+
 @Composable
 fun ImageRoute(
     imageIndex: Int,
@@ -55,15 +63,21 @@ fun ImageRoute(
     onImageShare: ImageShareListener
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var currentImageIndex by rememberSaveable { mutableIntStateOf(imageIndex) }
+    var currentImageId by rememberSaveable { mutableLongStateOf(imageId) }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.updateImages(
-            imageIndex = imageIndex,
-            imageId = imageId,
+            imageIndex = currentImageIndex,
+            imageId = currentImageId,
             bucketId = bucketId
         )
     }
     ImageScreen(
         uiState = uiState,
+        { index, image ->
+            currentImageIndex = index
+            currentImageId = image.id
+        },
         onImageShare = onImageShare
     )
 }
@@ -71,6 +85,7 @@ fun ImageRoute(
 @Composable
 fun ImageScreen(
     uiState: ImageScreenUiState,
+    onImageChanged: ImageChangeListener,
     onImageShare: ImageShareListener
 ) {
     when (uiState) {
@@ -84,6 +99,7 @@ fun ImageScreen(
             ImagePager(
                 imageIndex = uiState.imageIndex,
                 images = uiState.images,
+                onImageChanged = onImageChanged,
                 onImageShare = onImageShare
             )
         }
@@ -98,9 +114,21 @@ fun ImageScreen(
 fun ImagePager(
     imageIndex: Int,
     images: List<MediaStoreImage>,
+    onImageChanged: ImageChangeListener,
     onImageShare: ImageShareListener
 ) {
     val pagerState = rememberPagerState(imageIndex) { images.size }
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect { currentPage ->
+            onImageChanged(
+                currentPage,
+                images[currentPage]
+            )
+        }
+    }
+    LaunchedEffect(imageIndex) {
+        pagerState.scrollToPage(imageIndex)
+    }
     HorizontalPager(
         state = pagerState,
         modifier = Modifier.fillMaxSize()
