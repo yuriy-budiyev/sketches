@@ -129,15 +129,15 @@ fun ImagePager(
     LaunchedEffect(imageIndex) {
         pagerState.scrollToPage(imageIndex)
     }
-    HorizontalPager(
-        state = pagerState,
-        modifier = Modifier.fillMaxSize()
-    ) { page ->
-        SketchesImage(
-            uri = images[page].uri,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Fit,
-            filterQuality = FilterQuality.High
-        )
-    }
+    HorizontalPager(state = pagerState,
+        modifier = Modifier.fillMaxSize(),
+        key = { page -> images[page].id },
+        pageContent = { page ->
+            SketchesImage(
+                uri = images[page].uri,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Fit,
+                filterQuality = FilterQuality.High
+            )
+        })
 }
