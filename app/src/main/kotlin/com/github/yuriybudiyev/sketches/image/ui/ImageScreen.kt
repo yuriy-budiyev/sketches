@@ -97,7 +97,7 @@ fun ImageScreen(
             SketchesLoadingIndicator()
         }
         is ImageScreenUiState.Image -> {
-            ImagePager(
+            ImageLayout(
                 index = uiState.imageIndex,
                 images = uiState.images,
                 onImageChanged = onImageChanged,
@@ -112,11 +112,11 @@ fun ImageScreen(
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
-private fun ImagePager(
+private fun ImageLayout(
     index: Int,
     images: List<MediaStoreImage>,
     onImageChanged: ImageChangeListener,
-    onImageShare: ImageShareListener
+    onImageShare: ImageShareListener,
 ) {
     val data by rememberUpdatedState(images)
     val state = rememberPagerState(index) { data.size }
