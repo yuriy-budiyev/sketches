@@ -30,6 +30,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -45,11 +47,12 @@ fun SketchesImagesVerticalGrid(
     images: List<MediaStoreImage>,
     onImageClick: ImageClickListener
 ) {
+    val data by rememberUpdatedState(images)
     SketchesLazyVerticalGrid(modifier = Modifier.fillMaxSize()) {
-        items(count = images.size,
-            key = { index -> images[index].id },
+        items(count = data.size,
+            key = { index -> data[index].id },
             itemContent = { index ->
-                val image = images[index]
+                val image = data[index]
                 SketchesImage(uri = image.uri,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier

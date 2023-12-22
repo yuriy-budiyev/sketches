@@ -74,6 +74,7 @@ dependencies {
     implementation(sketches.bundles.androidx.lifecycle)
     implementation(sketches.bundles.androidx.window)
     implementation(sketches.bundles.androidx.work)
+    implementation(sketches.bundles.androidx.room)
     implementation(sketches.bundles.hilt)
     implementation(sketches.bundles.coil)
     implementation(sketches.bundles.protobuf)
@@ -84,6 +85,7 @@ dependencies {
     implementation(sketches.material)
     implementation(sketches.okhttp)
     implementation(sketches.okio)
+    ksp(sketches.androidx.room.compiler)
     ksp(sketches.bundles.hilt.compiler)
     debugImplementation(sketches.bundles.androidx.compose.tooling)
 }

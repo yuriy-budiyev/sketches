@@ -30,11 +30,11 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -102,46 +102,49 @@ private fun BucketsLayout(
     buckets: List<MediaStoreBucket>,
     onBucketClick: BucketClickListener
 ) {
+    val data by rememberUpdatedState(buckets)
     SketchesLazyVerticalGrid(modifier = Modifier.fillMaxSize()) {
-        itemsIndexed(items = buckets,
-            key = { _, item -> item.id }) { index, item ->
-            Column(modifier = Modifier
-                .clip(shape = RoundedCornerShape(8.dp))
-                .clickable {
-                    onBucketClick(
-                        index,
-                        item
+        items(count = data.size,
+            key = { index -> data[index].id },
+            itemContent = { index ->
+                val item = data[index]
+                Column(modifier = Modifier
+                    .clip(shape = RoundedCornerShape(8.dp))
+                    .clickable {
+                        onBucketClick(
+                            index,
+                            item
+                        )
+                    }) {
+                    SketchesImage(
+                        uri = item.coverUri,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(ratio = 1f)
+                            .clip(shape = RoundedCornerShape(8.dp))
                     )
-                }) {
-                SketchesImage(
-                    uri = item.coverUri,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(ratio = 1f)
-                        .clip(shape = RoundedCornerShape(8.dp))
-                )
-                Text(
-                    text = item.name,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(
-                        start = 4.dp,
-                        top = 4.dp,
-                        end = 4.dp,
-                        bottom = 0.dp
+                    Text(
+                        text = item.name,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(
+                            start = 4.dp,
+                            top = 4.dp,
+                            end = 4.dp,
+                            bottom = 0.dp
+                        )
                     )
-                )
-                Text(
-                    text = item.size.toString(),
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(
-                        start = 4.dp,
-                        top = 0.dp,
-                        end = 4.dp,
-                        bottom = 4.dp
+                    Text(
+                        text = item.size.toString(),
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(
+                            start = 4.dp,
+                            top = 0.dp,
+                            end = 4.dp,
+                            bottom = 4.dp
+                        )
                     )
-                )
-            }
-        }
+                }
+            })
     }
 }
