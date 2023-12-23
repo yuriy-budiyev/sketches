@@ -152,10 +152,13 @@ private fun ImageLayout(
         coroutineScope
     ) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
-            onImageChanged(
-                page,
-                data[page]
-            )
+            val image = data[page]
+            coroutineScope.launch {
+                onImageChanged(
+                    page,
+                    image
+                )
+            }
             val scrollOffset = calculateScrollOffset(listState)
             coroutineScope.launch {
                 listState.animateScrollToItem(
