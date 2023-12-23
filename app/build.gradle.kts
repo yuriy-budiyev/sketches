@@ -66,6 +66,7 @@ dependencies {
     implementation(sketches.bundles.androidx.collection)
     implementation(sketches.bundles.androidx.concurrent)
     implementation(sketches.bundles.androidx.appcompat)
+    implementation(sketches.bundles.androidx.appcompat.tools)
     implementation(sketches.bundles.androidx.constraintlayout)
     implementation(sketches.bundles.androidx.transition)
     implementation(sketches.bundles.androidx.navigation)

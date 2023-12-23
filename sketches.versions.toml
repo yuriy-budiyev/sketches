@@ -11,6 +11,8 @@ androidx-collection = "1.3.0"
 androidx-concurrent = "1.1.0"
 androidx-datastore = "1.0.0"
 androidx-appcompat = "1.6.1"
+androidx-loader = "1.1.0"
+androidx-localbroadcastmanager = "1.1.0"
 androidx-constraintlayout = "2.1.4"
 androidx-constraintlayout-solver = "2.0.4"
 androidx-recyclerview = "1.3.2"
@@ -69,6 +71,8 @@ androidx-concurrent-futures-ktx = { group = "androidx.concurrent", name = "concu
 androidx-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "androidx-datastore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-appcompat-resources = { group = "androidx.appcompat", name = "appcompat-resources", version.ref = "androidx-appcompat" }
+androidx-loader = { group = "androidx.loader", name = "loader", version.ref = "androidx-loader" }
+androidx-localbroadcastmanager = { group = "androidx.localbroadcastmanager", name = "localbroadcastmanager", version.ref = "androidx-localbroadcastmanager" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraintlayout" }
 androidx-constraintlayout-solver = { group = "androidx.constraintlayout", name = "constraintlayout-solver", version.ref = "androidx-constraintlayout-solver" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "androidx-recyclerview" }
@@ -163,6 +167,7 @@ androidx-annotation = ["androidx-annotation", "androidx-annotation-jvm"]
 androidx-collection = ["androidx-collection", "androidx-collection-ktx"]
 androidx-concurrent = ["androidx-concurrent-futures", "androidx-concurrent-futures-ktx"]
 androidx-appcompat = ["androidx-appcompat", "androidx-appcompat-resources"]
+androidx-appcompat-tools = ["androidx-loader", "androidx-localbroadcastmanager"]
 androidx-constraintlayout = ["androidx-constraintlayout", "androidx-constraintlayout-solver"]
 androidx-transition = ["androidx-transition", "androidx-transition-ktx"]
 androidx-navigation = ["androidx-navigation-common", "androidx-navigation-common-ktx", "androidx-navigation-runtime", "androidx-navigation-runtime-ktx", "androidx-navigation-fragment", "androidx-navigation-fragment-ktx", "androidx-navigation-ui", "androidx-navigation-ui-ktx", "androidx-navigation-compose"]
