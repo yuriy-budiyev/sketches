@@ -154,9 +154,9 @@ private fun ImageLayout(
                 horizontalArrangement = Arrangement.spacedBy(space = 4.dp),
                 content = {
                     items(count = data.size,
-                        key = { page -> data[page].id },
-                        itemContent = { page ->
-                            val image = data[page]
+                        key = { item -> data[item].id },
+                        itemContent = { item ->
+                            val image = data[item]
                             SketchesImage(uri = image.uri,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
