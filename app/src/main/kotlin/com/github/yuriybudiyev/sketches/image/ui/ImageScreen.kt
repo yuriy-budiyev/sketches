@@ -172,7 +172,9 @@ private fun ImageLayout(
         index,
         pagerState
     ) {
-        pagerState.scrollToPage(index)
+        snapshotFlow { index }.collect { index ->
+            pagerState.scrollToPage(index)
+        }
     }
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
