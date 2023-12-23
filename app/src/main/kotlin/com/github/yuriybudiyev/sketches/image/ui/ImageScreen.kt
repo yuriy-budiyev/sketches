@@ -161,7 +161,10 @@ private fun ImageLayout(
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .fillMaxHeight()
-                                    .aspectRatio(ratio = 1f)
+                                    .aspectRatio(
+                                        ratio = 1f,
+                                        matchHeightConstraintsFirst = true
+                                    )
                                     .clip(shape = RoundedCornerShape(8.dp))
                                     .clickable {
 
