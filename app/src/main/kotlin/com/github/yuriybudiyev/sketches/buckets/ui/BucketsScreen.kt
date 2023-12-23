@@ -34,6 +34,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +53,7 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLazyVerticalGr
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
+import kotlinx.coroutines.launch
 
 typealias BucketClickListener = (index: Int, bucket: MediaStoreBucket) -> Unit
 
@@ -103,6 +105,7 @@ private fun BucketsLayout(
     onBucketClick: BucketClickListener
 ) {
     val data by rememberUpdatedState(buckets)
+    val coroutineScope = rememberCoroutineScope()
     SketchesLazyVerticalGrid(modifier = Modifier.fillMaxSize()) {
         items(count = data.size,
             key = { index -> data[index].id },
@@ -111,10 +114,12 @@ private fun BucketsLayout(
                 Column(modifier = Modifier
                     .clip(shape = RoundedCornerShape(8.dp))
                     .clickable {
-                        onBucketClick(
-                            index,
-                            item
-                        )
+                        coroutineScope.launch {
+                            onBucketClick(
+                                index,
+                                item
+                            )
+                        }
                     }) {
                     SketchesAsyncImage(
                         uri = item.coverUri,

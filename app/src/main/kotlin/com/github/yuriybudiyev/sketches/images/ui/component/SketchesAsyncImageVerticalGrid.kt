@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLazyVerticalGrid
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
+import kotlinx.coroutines.launch
 
 typealias ImageClickListener = (index: Int, image: MediaStoreImage) -> Unit
 
@@ -48,6 +50,7 @@ fun SketchesAsyncImageVerticalGrid(
     onImageClick: ImageClickListener
 ) {
     val data by rememberUpdatedState(images)
+    val coroutineScope = rememberCoroutineScope()
     SketchesLazyVerticalGrid(modifier = Modifier.fillMaxSize()) {
         items(count = data.size,
             key = { index -> data[index].id },
@@ -60,10 +63,12 @@ fun SketchesAsyncImageVerticalGrid(
                         .aspectRatio(ratio = 1f)
                         .clip(shape = RoundedCornerShape(8.dp))
                         .clickable {
-                            onImageClick(
-                                index,
-                                image
-                            )
+                            coroutineScope.launch {
+                                onImageClick(
+                                    index,
+                                    image
+                                )
+                            }
                         })
             })
     }
