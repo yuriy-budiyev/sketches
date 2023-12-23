@@ -139,9 +139,9 @@ private fun ImageLayout(
     onImageChanged: ImageChangeListener,
     onImageShare: ImageShareListener,
 ) {
-    val data by rememberUpdatedState(images)
-    val pagerState = rememberPagerState(index) { data.size }
-    val listState = rememberLazyListState()
+    val data by rememberUpdatedState(newValue = images)
+    val pagerState = rememberPagerState(initialPage = index) { data.size }
+    val listState = rememberLazyListState(initialFirstVisibleItemIndex = index)
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
