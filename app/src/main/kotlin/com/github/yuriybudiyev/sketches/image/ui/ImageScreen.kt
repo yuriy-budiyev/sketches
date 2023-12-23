@@ -193,8 +193,9 @@ private fun ImageLayout(
         bottomBar = {
             LazyRow(state = listState,
                 modifier = Modifier
-                    .height(height = 80.dp)
+                    .height(height = 96.dp)
                     .fillMaxWidth(),
+                contentPadding = PaddingValues(vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(space = 4.dp),
                 content = {
                     items(count = data.size,
@@ -223,7 +224,6 @@ private fun ImageLayout(
                     .fillMaxSize()
                     .padding(contentPadding),
                 pageSpacing = 8.dp,
-                contentPadding = PaddingValues(bottom = 8.dp),
                 key = { page -> data[page].id },
                 pageContent = { page ->
                     SketchesAsyncImage(
