@@ -181,7 +181,10 @@ private fun ImageLayout(
                     .size(size = 48.dp)
                     .clip(shape = CircleShape)
                     .clickable {
-                        onImageShare(data[pagerState.currentPage])
+                        val image = data[pagerState.currentPage]
+                        coroutineScope.launch {
+                            onImageShare(image)
+                        }
                     },
                     contentAlignment = Alignment.Center,
                     content = {
