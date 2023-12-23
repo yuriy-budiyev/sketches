@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -143,19 +144,16 @@ private fun ImageLayout(
     val pagerState = rememberPagerState(initialPage = index) { data.size }
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = index)
     val coroutineScope = rememberCoroutineScope()
-    LaunchedEffect(pagerState) {
+    LaunchedEffect(
+        pagerState,
+        listState
+    ) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
             onImageChanged(
                 page,
                 data[page]
-            ) //TODO: Consider item spacing
-            val listItemsInfo = listState.layoutInfo.visibleItemsInfo
-            val scrollOffset = if (listItemsInfo.isNotEmpty()) {
-                val itemSize = listItemsInfo.first().size
-                -1 * listItemsInfo.size * itemSize / 2 + itemSize / 2
-            } else {
-                0
-            }
+            )
+            val scrollOffset = calculateScrollOffset(listState)
             coroutineScope.launch {
                 listState.animateScrollToItem(
                     page,
@@ -189,7 +187,7 @@ private fun ImageLayout(
         bottomBar = {
             LazyRow(state = listState,
                 modifier = Modifier
-                    .height(80.dp)
+                    .height(height = 80.dp)
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(space = 4.dp),
                 content = {
@@ -229,4 +227,15 @@ private fun ImageLayout(
                     )
                 })
         })
+}
+
+private fun calculateScrollOffset(listState: LazyListState): Int {
+    val listLayoutInfo = listState.layoutInfo
+    val listItemsInfo = listLayoutInfo.visibleItemsInfo
+    val scrollOffset = if (listItemsInfo.isNotEmpty()) {
+        listItemsInfo.first().size / 2 - (listLayoutInfo.viewportEndOffset - listLayoutInfo.viewportStartOffset) / 2
+    } else {
+        0
+    }
+    return scrollOffset
 }
