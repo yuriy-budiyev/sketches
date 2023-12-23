@@ -25,9 +25,19 @@
 package com.github.yuriybudiyev.sketches.image.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,9 +48,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -119,9 +131,10 @@ private fun ImageLayout(
     onImageShare: ImageShareListener,
 ) {
     val data by rememberUpdatedState(images)
-    val state = rememberPagerState(index) { data.size }
-    LaunchedEffect(state) {
-        snapshotFlow { state.currentPage }.collect { page ->
+    val pagerState = rememberPagerState(index) { data.size }
+    val listState = rememberLazyListState()
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect { page ->
             onImageChanged(
                 page,
                 data[page]
@@ -129,17 +142,47 @@ private fun ImageLayout(
         }
     }
     LaunchedEffect(index) {
-        state.scrollToPage(index)
+        pagerState.scrollToPage(index)
     }
-    HorizontalPager(state = state,
-        modifier = Modifier.fillMaxSize(),
-        key = { page -> data[page].id },
-        pageContent = { page ->
-            SketchesImage(
-                uri = data[page].uri,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Fit,
-                filterQuality = FilterQuality.High
-            )
+    Scaffold(modifier = Modifier.fillMaxSize(),
+        topBar = {
+
+        },
+        bottomBar = {
+            LazyRow(state = listState,
+                contentPadding = PaddingValues(horizontal = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(space = 4.dp),
+                content = {
+                    items(count = data.size,
+                        key = { index -> data[index].id },
+                        itemContent = { index ->
+                            val image = data[index]
+                            SketchesImage(uri = image.uri,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .aspectRatio(ratio = 1f)
+                                    .clip(shape = RoundedCornerShape(8.dp))
+                                    .clickable {
+
+                                    })
+                        })
+                })
+        },
+        content = { contentPadding ->
+            HorizontalPager(state = pagerState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(contentPadding),
+                pageSpacing = 8.dp,
+                key = { page -> data[page].id },
+                pageContent = { page ->
+                    SketchesImage(
+                        uri = data[page].uri,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Fit,
+                        filterQuality = FilterQuality.High
+                    )
+                })
         })
 }

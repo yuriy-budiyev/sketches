@@ -4,6 +4,7 @@ plugins {
     alias(sketches.plugins.kotlin.parcelize)
     alias(sketches.plugins.kotlin.ksp)
     alias(sketches.plugins.protobuf)
+    alias(sketches.plugins.room)
     alias(sketches.plugins.hilt)
 }
 
@@ -104,4 +105,8 @@ protobuf {
             }
         }
     }
+}
+
+room {
+    schemaDirectory("$projectDir/schemas/")
 }
