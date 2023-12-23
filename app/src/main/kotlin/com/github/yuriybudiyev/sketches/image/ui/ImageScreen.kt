@@ -27,26 +27,32 @@ package com.github.yuriybudiyev.sketches.image.ui
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
@@ -60,8 +66,11 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
+import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
+import kotlinx.coroutines.launch
 
 typealias ImageShareListener = (image: MediaStoreImage) -> Unit
 
@@ -133,12 +142,26 @@ private fun ImageLayout(
     val data by rememberUpdatedState(images)
     val pagerState = rememberPagerState(index) { data.size }
     val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
             onImageChanged(
                 page,
                 data[page]
-            )
+            ) //TODO: Consider item spacing
+            val listItemsInfo = listState.layoutInfo.visibleItemsInfo
+            val scrollOffset = if (listItemsInfo.isNotEmpty()) {
+                val itemSize = listItemsInfo.first().size
+                -1 * listItemsInfo.size * itemSize / 2 + itemSize / 2
+            } else {
+                0
+            }
+            coroutineScope.launch {
+                listState.animateScrollToItem(
+                    page,
+                    scrollOffset
+                )
+            }
         }
     }
     LaunchedEffect(index) {
@@ -146,11 +169,28 @@ private fun ImageLayout(
     }
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
-
+            SketchesTopAppBar(actions = {
+                Box(modifier = Modifier
+                    .size(size = 48.dp)
+                    .clip(shape = CircleShape)
+                    .clickable {
+                        onImageShare(data[pagerState.currentPage])
+                    },
+                    contentAlignment = Alignment.Center,
+                    content = {
+                        Icon(
+                            imageVector = SketchesIcons.Share,
+                            contentDescription = null,
+                            modifier = Modifier.size(size = 24.dp)
+                        )
+                    })
+            })
         },
         bottomBar = {
             LazyRow(state = listState,
-                contentPadding = PaddingValues(horizontal = 4.dp),
+                modifier = Modifier
+                    .height(80.dp)
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(space = 4.dp),
                 content = {
                     items(count = data.size,
@@ -160,14 +200,15 @@ private fun ImageLayout(
                             SketchesImage(uri = image.uri,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
-                                    .fillMaxHeight()
                                     .aspectRatio(
                                         ratio = 1f,
                                         matchHeightConstraintsFirst = true
                                     )
                                     .clip(shape = RoundedCornerShape(8.dp))
                                     .clickable {
-
+                                        coroutineScope.launch {
+                                            pagerState.animateScrollToPage(item)
+                                        }
                                     })
                         })
                 })
