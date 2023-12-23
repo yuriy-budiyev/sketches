@@ -250,8 +250,8 @@ private fun ImageLayout(
 private fun calculateScrollOffset(listState: LazyListState): Int {
     val layoutInfo = listState.layoutInfo
     val itemsInfo = layoutInfo.visibleItemsInfo
-    val viewportSize = layoutInfo.viewportEndOffset - layoutInfo.viewportStartOffset
     return if (itemsInfo.isNotEmpty()) {
+        val viewportSize = layoutInfo.viewportEndOffset - layoutInfo.viewportStartOffset
         itemsInfo.first().size / 2 - viewportSize / 2
     } else {
         0
