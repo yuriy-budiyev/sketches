@@ -166,8 +166,8 @@ private fun ImageLayout(
         }
     }
     LaunchedEffect(
-        pagerState,
-        index
+        index,
+        pagerState
     ) {
         pagerState.scrollToPage(index)
     }
