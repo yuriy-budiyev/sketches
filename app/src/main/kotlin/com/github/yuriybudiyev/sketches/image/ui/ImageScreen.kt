@@ -65,8 +65,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
-import com.github.yuriybudiyev.sketches.core.ui.component.SketchesImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
@@ -165,7 +165,10 @@ private fun ImageLayout(
             }
         }
     }
-    LaunchedEffect(index) {
+    LaunchedEffect(
+        pagerState,
+        index
+    ) {
         pagerState.scrollToPage(index)
     }
     Scaffold(modifier = Modifier.fillMaxSize(),
@@ -198,7 +201,7 @@ private fun ImageLayout(
                         key = { item -> data[item].id },
                         itemContent = { item ->
                             val image = data[item]
-                            SketchesImage(uri = image.uri,
+                            SketchesAsyncImage(uri = image.uri,
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
                                     .aspectRatio(
@@ -223,7 +226,7 @@ private fun ImageLayout(
                 contentPadding = PaddingValues(bottom = 8.dp),
                 key = { page -> data[page].id },
                 pageContent = { page ->
-                    SketchesImage(
+                    SketchesAsyncImage(
                         uri = data[page].uri,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Fit,

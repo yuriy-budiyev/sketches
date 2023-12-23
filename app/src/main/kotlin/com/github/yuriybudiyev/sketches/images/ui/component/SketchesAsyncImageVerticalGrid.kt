@@ -36,14 +36,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.github.yuriybudiyev.sketches.core.ui.component.SketchesImage
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLazyVerticalGrid
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
 
 typealias ImageClickListener = (index: Int, image: MediaStoreImage) -> Unit
 
 @Composable
-fun SketchesImagesVerticalGrid(
+fun SketchesAsyncImageVerticalGrid(
     images: List<MediaStoreImage>,
     onImageClick: ImageClickListener
 ) {
@@ -53,7 +53,7 @@ fun SketchesImagesVerticalGrid(
             key = { index -> data[index].id },
             itemContent = { index ->
                 val image = data[index]
-                SketchesImage(uri = image.uri,
+                SketchesAsyncImage(uri = image.uri,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()

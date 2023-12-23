@@ -34,12 +34,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.images.ui.component.ImageClickListener
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
-import com.github.yuriybudiyev.sketches.images.ui.component.SketchesImagesVerticalGrid
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
+import com.github.yuriybudiyev.sketches.images.ui.component.ImageClickListener
+import com.github.yuriybudiyev.sketches.images.ui.component.SketchesAsyncImageVerticalGrid
 
 @Composable
 fun BucketRoute(
@@ -77,7 +77,7 @@ fun BucketScreen(
                 SketchesLoadingIndicator()
             }
             is BucketScreenUiState.Bucket -> {
-                SketchesImagesVerticalGrid(
+                SketchesAsyncImageVerticalGrid(
                     images = uiState.images,
                     onImageClick = onImageClick
                 )

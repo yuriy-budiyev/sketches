@@ -39,7 +39,7 @@ import coil.compose.SubcomposeAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
 @Composable
-fun SketchesImage(
+fun SketchesAsyncImage(
     uri: Uri,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
