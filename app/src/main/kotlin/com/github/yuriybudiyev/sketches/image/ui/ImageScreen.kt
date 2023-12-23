@@ -28,6 +28,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -145,8 +146,10 @@ private fun ImageLayout(
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = index)
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(
+        data,
         pagerState,
-        listState
+        listState,
+        coroutineScope
     ) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
             onImageChanged(
@@ -217,6 +220,7 @@ private fun ImageLayout(
                     .fillMaxSize()
                     .padding(contentPadding),
                 pageSpacing = 8.dp,
+                contentPadding = PaddingValues(bottom = 8.dp),
                 key = { page -> data[page].id },
                 pageContent = { page ->
                     SketchesImage(
@@ -229,13 +233,16 @@ private fun ImageLayout(
         })
 }
 
+/**
+ * Works only if all items have the same size.
+ */
 private fun calculateScrollOffset(listState: LazyListState): Int {
-    val listLayoutInfo = listState.layoutInfo
-    val listItemsInfo = listLayoutInfo.visibleItemsInfo
-    val scrollOffset = if (listItemsInfo.isNotEmpty()) {
-        listItemsInfo.first().size / 2 - (listLayoutInfo.viewportEndOffset - listLayoutInfo.viewportStartOffset) / 2
+    val layoutInfo = listState.layoutInfo
+    val itemsInfo = layoutInfo.visibleItemsInfo
+    val viewportSize = layoutInfo.viewportEndOffset - layoutInfo.viewportStartOffset
+    return if (itemsInfo.isNotEmpty()) {
+        itemsInfo.first().size / 2 - viewportSize / 2
     } else {
         0
     }
-    return scrollOffset
 }
