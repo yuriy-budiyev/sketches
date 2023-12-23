@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.image.ui
 
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -72,7 +73,6 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
-import kotlinx.coroutines.launch
 
 typealias ImageShareListener = (image: MediaStoreImage) -> Unit
 

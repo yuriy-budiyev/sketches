@@ -24,13 +24,13 @@
 
 package com.github.yuriybudiyev.sketches.core.di
 
+import javax.inject.Singleton
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)

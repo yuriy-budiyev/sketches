@@ -24,17 +24,17 @@
 
 package com.github.yuriybudiyev.sketches.buckets.ui
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.buckets.data.repository.BucketsRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.github.yuriybudiyev.sketches.buckets.data.repository.BucketsRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 @HiltViewModel
 class BucketsScreenViewModel @Inject constructor(private val bucketsRepository: BucketsRepository):

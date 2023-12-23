@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.di
 
+import javax.inject.Singleton
 import android.content.Context
 import android.os.Build
 import coil.ImageLoader
@@ -37,7 +38,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)

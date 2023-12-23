@@ -24,6 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.buckets.data.repository.implementation
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
@@ -31,8 +33,6 @@ import android.os.Build
 import android.provider.MediaStore
 import com.github.yuriybudiyev.sketches.buckets.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.buckets.data.repository.BucketsRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
 

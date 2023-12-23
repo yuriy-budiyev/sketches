@@ -24,12 +24,12 @@
 
 package com.github.yuriybudiyev.sketches
 
+import javax.inject.Inject
+import javax.inject.Provider
 import android.app.Application
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import dagger.hilt.android.HiltAndroidApp
-import javax.inject.Inject
-import javax.inject.Provider
 
 @HiltAndroidApp
 class SketchesApplication: Application(), ImageLoaderFactory {

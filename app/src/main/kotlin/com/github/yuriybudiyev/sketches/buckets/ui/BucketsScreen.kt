@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.buckets.ui
 
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -53,7 +54,6 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLazyVerticalGr
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
-import kotlinx.coroutines.launch
 
 typealias BucketClickListener = (index: Int, bucket: MediaStoreBucket) -> Unit
 

@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.images.ui.component
 
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLazyVerticalGrid
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
-import kotlinx.coroutines.launch
 
 typealias ImageClickListener = (index: Int, image: MediaStoreImage) -> Unit
 
