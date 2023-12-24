@@ -24,13 +24,16 @@
 
 package com.github.yuriybudiyev.sketches.main.ui
 
+import kotlinx.coroutines.launch
 import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,11 +46,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
@@ -60,6 +65,7 @@ import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 @Composable
 fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val mediaPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         arrayOf(
             Manifest.permission.READ_MEDIA_IMAGES,
@@ -91,15 +97,20 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                 verticalArrangement = Arrangement.Center
             ) {
                 SketchesMessage(text = message)
+                Spacer(modifier = Modifier.height(8.dp))
                 SketchesOutlinedButton(text = stringResource(id = R.string.open_settings)) {
+                    coroutineScope.launch {
 
+                    }
                 }
             }
             LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
                 permissionsGranted = context.checkAllPermissionsGranted(mediaPermissions)
             }
             LaunchedEffect(Unit) {
-                mediaPermissionsLauncher.launch(mediaPermissions)
+                coroutineScope.launch {
+                    mediaPermissionsLauncher.launch(mediaPermissions)
+                }
             }
         }
     }
