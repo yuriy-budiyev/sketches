@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.utils
+package com.github.yuriybudiyev.sketches.core.util
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -39,11 +39,11 @@ fun Context.checkAllPermissionsGranted(permissions: Array<String>): Boolean {
     return true
 }
 
-fun checkAllPermissionGranted(permissions: Map<String, Boolean>): Boolean {
+fun checkAllPermissionsGranted(permissions: Map<String, Boolean>): Boolean {
     for ((_, granted) in permissions) {
-        if (granted) {
-            return true
+        if (!granted) {
+            return false
         }
     }
-    return false
+    return true
 }

@@ -54,8 +54,7 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesMessage
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
-import com.github.yuriybudiyev.sketches.core.utils.checkAllPermissionGranted
-import com.github.yuriybudiyev.sketches.core.utils.checkAllPermissionsGranted
+import com.github.yuriybudiyev.sketches.core.util.checkAllPermissionsGranted
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 
 @Composable
@@ -83,7 +82,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
             val imagesPermissionLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestMultiplePermissions()
             ) { grantResult ->
-                permissionsGranted = checkAllPermissionGranted(grantResult)
+                permissionsGranted = checkAllPermissionsGranted(grantResult)
             }
             LaunchedEffect(Unit) {
                 imagesPermissionLauncher.launch(mediaPermissions)
