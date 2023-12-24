@@ -40,13 +40,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLazyVerticalGrid
-import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
+import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
 
-typealias ImageClickListener = (index: Int, image: MediaStoreImage) -> Unit
+typealias ImageClickListener = (index: Int, image: MediaStoreFile) -> Unit
 
 @Composable
 fun SketchesAsyncImageVerticalGrid(
-    images: List<MediaStoreImage>,
+    images: List<MediaStoreFile>,
     onImageClick: ImageClickListener
 ) {
     val data by rememberUpdatedState(images)

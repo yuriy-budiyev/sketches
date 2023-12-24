@@ -72,11 +72,11 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicat
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
-import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
+import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
 
-typealias ImageShareListener = (image: MediaStoreImage) -> Unit
+typealias ImageShareListener = (image: MediaStoreFile) -> Unit
 
-typealias ImageChangeListener = (index: Int, image: MediaStoreImage) -> Unit
+typealias ImageChangeListener = (index: Int, image: MediaStoreFile) -> Unit
 
 @Composable
 fun ImageRoute(
@@ -137,7 +137,7 @@ fun ImageScreen(
 @OptIn(ExperimentalFoundationApi::class)
 private fun ImageLayout(
     index: Int,
-    images: List<MediaStoreImage>,
+    images: List<MediaStoreFile>,
     onImageChanged: ImageChangeListener,
     onImageShare: ImageShareListener,
 ) {

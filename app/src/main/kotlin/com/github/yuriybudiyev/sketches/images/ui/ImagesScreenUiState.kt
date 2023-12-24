@@ -24,7 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.images.ui
 
-import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
+import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
 
 sealed interface ImagesScreenUiState {
 
@@ -32,7 +32,7 @@ sealed interface ImagesScreenUiState {
 
     data object Loading: ImagesScreenUiState
 
-    data class Images(val images: List<MediaStoreImage>): ImagesScreenUiState
+    data class Images(val images: List<MediaStoreFile>): ImagesScreenUiState
 
     data class Error(val thrown: Exception): ImagesScreenUiState
 }

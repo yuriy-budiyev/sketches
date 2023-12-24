@@ -26,9 +26,10 @@ package com.github.yuriybudiyev.sketches.images.data.model
 
 import android.net.Uri
 
-data class MediaStoreImage(
+data class MediaStoreFile(
     val id: Long,
     val name: String,
+    val type: Type,
     val bucketId: Long,
     val bucketName: String,
     val dateAdded: Long,
@@ -38,4 +39,11 @@ data class MediaStoreImage(
     val mimeType: String,
     val sizeBytes: Long,
     val uri: Uri
-)
+) {
+
+    enum class Type {
+
+        IMAGE,
+        VIDEO
+    }
+}

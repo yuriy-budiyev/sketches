@@ -24,9 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.images.data.reository
 
-import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
+import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
 
 interface ImagesRepository {
 
-    suspend fun getImages(bucketId: Long = -1L): List<MediaStoreImage>?
+    suspend fun getImages(bucketId: Long = -1L): List<MediaStoreFile>?
 }

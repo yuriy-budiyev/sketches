@@ -24,7 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.bucket.ui
 
-import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreImage
+import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
 
 sealed interface BucketScreenUiState {
 
@@ -34,7 +34,7 @@ sealed interface BucketScreenUiState {
 
     data class Bucket(
         val id: Long,
-        val images: List<MediaStoreImage>
+        val images: List<MediaStoreFile>
     ): BucketScreenUiState
 
     data class Error(val thrown: Exception): BucketScreenUiState
