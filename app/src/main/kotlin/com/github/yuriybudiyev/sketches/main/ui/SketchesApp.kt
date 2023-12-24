@@ -54,35 +54,39 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesMessage
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
-import com.github.yuriybudiyev.sketches.core.utils.checkPermissionGranted
+import com.github.yuriybudiyev.sketches.core.utils.checkAllPermissionGranted
+import com.github.yuriybudiyev.sketches.core.utils.checkAllPermissionsGranted
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 
 @Composable
 fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
     val context = LocalContext.current
-    val imagesPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        Manifest.permission.READ_MEDIA_IMAGES
+    val mediaPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        arrayOf(
+            Manifest.permission.READ_MEDIA_IMAGES,
+            Manifest.permission.READ_MEDIA_VIDEO
+        )
     } else {
-        Manifest.permission.READ_EXTERNAL_STORAGE
+        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
     }
-    var permissionGranted by remember {
-        mutableStateOf(context.checkPermissionGranted(imagesPermission))
+    var permissionsGranted by remember {
+        mutableStateOf(context.checkAllPermissionsGranted(mediaPermissions))
     }
     Surface(color = MaterialTheme.colorScheme.background) {
-        if (permissionGranted) {
+        if (permissionsGranted) {
             ContentLayout(appState = appState)
         } else {
             NoPermission()
             LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-                permissionGranted = context.checkPermissionGranted(imagesPermission)
+                permissionsGranted = context.checkAllPermissionsGranted(mediaPermissions)
             }
             val imagesPermissionLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.RequestPermission()
-            ) { granted ->
-                permissionGranted = granted
+                contract = ActivityResultContracts.RequestMultiplePermissions()
+            ) { grantResult ->
+                permissionsGranted = checkAllPermissionGranted(grantResult)
             }
             LaunchedEffect(Unit) {
-                imagesPermissionLauncher.launch(imagesPermission)
+                imagesPermissionLauncher.launch(mediaPermissions)
             }
         }
     }
@@ -101,8 +105,7 @@ private fun NoPermission() {
         verticalArrangement = Arrangement.Center
     ) {
         SketchesMessage(text = message)
-        OutlinedButton(onClick = { /*TODO*/ }) {
-            //TODO
+        OutlinedButton(onClick = { /*TODO*/ }) { //TODO
         }
     }
 }
