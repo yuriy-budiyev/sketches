@@ -53,7 +53,7 @@ class BucketsScreenViewModel @Inject constructor(private val bucketsRepository: 
                 val buckets = withContext(Dispatchers.Default) {
                     bucketsRepository.getBuckets()
                 }
-                if (!buckets.isNullOrEmpty()) {
+                if (buckets.isNotEmpty()) {
                     uiStateInternal.value = BucketsScreenUiState.Buckets(buckets)
                 } else {
                     if (!silent) {

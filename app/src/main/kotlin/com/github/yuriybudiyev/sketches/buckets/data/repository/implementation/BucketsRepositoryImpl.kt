@@ -36,15 +36,47 @@ import com.github.yuriybudiyev.sketches.buckets.data.repository.BucketsRepositor
 
 class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
 
-    override suspend fun getBuckets(): List<MediaStoreBucket>? {
-        val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    override suspend fun getBuckets(): List<MediaStoreBucket> {
+        val imagesUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
         } else {
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        } ?: return null
+        }
+        val videoUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+        } else {
+            MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+        }
+        val bucketsInfo = LinkedHashMap<Long, BucketInfo>()
+        getBucketsInfoTo(
+            imagesUri,
+            bucketsInfo
+        )
+        getBucketsInfoTo(
+            videoUri,
+            bucketsInfo
+        )
+        val buckets = ArrayList<MediaStoreBucket>(bucketsInfo.size)
+        bucketsInfo.forEach { (_, info) ->
+            buckets += MediaStoreBucket(
+                id = info.id,
+                name = info.name,
+                size = info.imagesCount,
+                coverUri = info.coverUri,
+                coverDateAdded = info.coverDateAdded
+            )
+        }
+        buckets.sortByDescending { bucket -> bucket.coverDateAdded }
+        return buckets
+    }
+
+    private suspend fun getBucketsInfoTo(
+        contentUri: Uri,
+        bucketsInfo: MutableMap<Long, BucketInfo>
+    ) {
         val cursor = withContext(Dispatchers.IO) {
             context.contentResolver.query(
-                uri,
+                contentUri,
                 arrayOf(
                     MediaStore.Images.Media._ID,
                     MediaStore.Images.Media.BUCKET_ID,
@@ -53,47 +85,36 @@ class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
                 ),
                 null,
                 null,
-                "${MediaStore.Images.Media.DATE_ADDED} DESC"
+                null
             )
-        } ?: return null
-        val bucketCounters = LinkedHashMap<Long, BucketInfo>()
+        } ?: return
         val idColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID)
         val bucketIdColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID)
         val bucketNameColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
-        val dateAddedColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED)
+        val dateAddedColumn =
+            cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED) //TODO: Cover!
         while (cursor.moveToNext()) {
             val bucketId = cursor.getLong(bucketIdColumn)
-            bucketCounters.getOrPut(bucketId) {
+            bucketsInfo.getOrPut(bucketId) {
                 BucketInfo(
                     id = bucketId,
                     name = cursor.getString(bucketNameColumn),
                     coverUri = ContentUris.withAppendedId(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        contentUri,
                         cursor.getLong(idColumn)
                     ),
-                    coverDate = cursor.getLong(dateAddedColumn) * 1000L,
+                    coverDateAdded = cursor.getLong(dateAddedColumn) * 1000L,
                     imagesCount = 0
                 )
             }.imagesCount++
         }
-        val buckets = ArrayList<MediaStoreBucket>(bucketCounters.size)
-        bucketCounters.forEach { (_, info) ->
-            buckets += MediaStoreBucket(
-                id = info.id,
-                name = info.name,
-                size = info.imagesCount,
-                coverUri = info.coverUri,
-                coverDate = info.coverDate
-            )
-        }
-        return buckets
     }
 
     private data class BucketInfo(
         val id: Long,
         val name: String,
         val coverUri: Uri,
-        val coverDate: Long,
+        val coverDateAdded: Long,
         var imagesCount: Int
     )
 }

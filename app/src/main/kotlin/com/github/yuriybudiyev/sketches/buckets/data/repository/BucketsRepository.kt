@@ -28,5 +28,5 @@ import com.github.yuriybudiyev.sketches.buckets.data.model.MediaStoreBucket
 
 interface BucketsRepository {
 
-    suspend fun getBuckets(): List<MediaStoreBucket>?
+    suspend fun getBuckets(): List<MediaStoreBucket>
 }

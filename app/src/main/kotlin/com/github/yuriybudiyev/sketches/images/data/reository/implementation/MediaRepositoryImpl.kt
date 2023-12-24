@@ -28,22 +28,50 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import android.content.ContentUris
 import android.content.Context
+import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.images.data.reository.ImagesRepository
+import com.github.yuriybudiyev.sketches.images.data.reository.MediaRepository
 
-class ImagesRepositoryImpl(private val context: Context): ImagesRepository {
+class MediaRepositoryImpl(private val context: Context): MediaRepository {
 
-    override suspend fun getImages(bucketId: Long): List<MediaStoreFile>? {
-        val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    override suspend fun getMedia(bucketId: Long): List<MediaStoreFile> {
+        val imagesUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
         } else {
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        } ?: return null
+        }
+        val videoUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+        } else {
+            MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+        }
+        val images = getMedia(
+            imagesUri,
+            MediaStoreFile.Type.IMAGE,
+            bucketId
+        )
+        val video = getMedia(
+            videoUri,
+            MediaStoreFile.Type.VIDEO,
+            bucketId
+        )
+        val media = ArrayList<MediaStoreFile>(images.size + video.size)
+        media.addAll(images)
+        media.addAll(video)
+        media.sortByDescending { file -> file.dateAdded }
+        return media
+    }
+
+    private suspend fun getMedia(
+        contentUri: Uri,
+        mediaType: MediaStoreFile.Type,
+        bucketId: Long
+    ): List<MediaStoreFile> {
         val cursor = withContext(Dispatchers.IO) {
             context.contentResolver.query(
-                uri,
+                contentUri,
                 arrayOf(
                     MediaStore.MediaColumns._ID,
                     MediaStore.MediaColumns.DISPLAY_NAME,
@@ -66,10 +94,10 @@ class ImagesRepositoryImpl(private val context: Context): ImagesRepository {
                 } else {
                     null
                 },
-                "${MediaStore.MediaColumns.DATE_ADDED} DESC"
+                null
             )
-        } ?: return null
-        val images = ArrayList<MediaStoreFile>(cursor.count)
+        } ?: return emptyList()
+        val files = ArrayList<MediaStoreFile>(cursor.count)
         val idColumn = cursor.getColumnIndex(MediaStore.MediaColumns._ID)
         val nameColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
         val bucketIdColumn = cursor.getColumnIndex(MediaStore.MediaColumns.BUCKET_ID)
@@ -82,10 +110,10 @@ class ImagesRepositoryImpl(private val context: Context): ImagesRepository {
         val sizeColumn = cursor.getColumnIndex(MediaStore.MediaColumns.SIZE)
         while (cursor.moveToNext()) {
             val id = cursor.getLong(idColumn)
-            images += MediaStoreFile(
+            files += MediaStoreFile(
                 id = id,
                 name = cursor.getString(nameColumn),
-                type = MediaStoreFile.Type.IMAGE,
+                type = mediaType,
                 bucketId = cursor.getLong(bucketIdColumn),
                 bucketName = cursor.getString(bucketNameColumn),
                 dateAdded = cursor.getLong(dateAddedColumn) * 1000L,
@@ -95,11 +123,11 @@ class ImagesRepositoryImpl(private val context: Context): ImagesRepository {
                 mimeType = cursor.getString(mimeTypeColumn),
                 sizeBytes = cursor.getLong(sizeColumn),
                 uri = ContentUris.withAppendedId(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    contentUri,
                     id
                 )
             )
         }
-        return images
+        return files
     }
 }

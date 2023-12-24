@@ -33,11 +33,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.images.data.reository.ImagesRepository
+import com.github.yuriybudiyev.sketches.images.data.reository.MediaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 @HiltViewModel
-class BucketScreenViewModel @Inject constructor(private val imagesRepository: ImagesRepository):
+class BucketScreenViewModel @Inject constructor(private val imagesRepository: MediaRepository):
     ViewModel() {
 
     val uiState: StateFlow<BucketScreenUiState>
@@ -54,8 +54,8 @@ class BucketScreenViewModel @Inject constructor(private val imagesRepository: Im
             }
             try {
                 val images =
-                    withContext(Dispatchers.Default) { imagesRepository.getImages(bucketId) }
-                if (!images.isNullOrEmpty()) {
+                    withContext(Dispatchers.Default) { imagesRepository.getMedia(bucketId) }
+                if (images.isNotEmpty()) {
                     uiStateInternal.value = BucketScreenUiState.Bucket(
                         bucketId,
                         images

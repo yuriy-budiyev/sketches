@@ -22,24 +22,11 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.images.di
+package com.github.yuriybudiyev.sketches.images.data.reository
 
-import javax.inject.Singleton
-import android.content.Context
-import com.github.yuriybudiyev.sketches.images.data.reository.ImagesRepository
-import com.github.yuriybudiyev.sketches.images.data.reository.implementation.ImagesRepositoryImpl
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
+import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
 
-@Module
-@InstallIn(SingletonComponent::class)
-object ImagesRepositoryModule {
+interface MediaRepository {
 
-    @Provides
-    @Singleton
-    fun provideGalleryRepository(@ApplicationContext context: Context): ImagesRepository =
-        ImagesRepositoryImpl(context)
+    suspend fun getMedia(bucketId: Long = -1L): List<MediaStoreFile>
 }

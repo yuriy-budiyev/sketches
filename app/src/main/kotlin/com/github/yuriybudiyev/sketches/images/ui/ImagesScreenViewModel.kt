@@ -33,11 +33,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.images.data.reository.ImagesRepository
+import com.github.yuriybudiyev.sketches.images.data.reository.MediaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 @HiltViewModel
-class ImagesScreenViewModel @Inject constructor(private val repository: ImagesRepository):
+class ImagesScreenViewModel @Inject constructor(private val repository: MediaRepository):
     ViewModel() {
 
     val uiState: StateFlow<ImagesScreenUiState>
@@ -50,8 +50,8 @@ class ImagesScreenViewModel @Inject constructor(private val repository: ImagesRe
                 uiStateInternal.value = ImagesScreenUiState.Loading
             }
             try {
-                val images = withContext(Dispatchers.Default) { repository.getImages() }
-                if (!images.isNullOrEmpty()) {
+                val images = withContext(Dispatchers.Default) { repository.getMedia() }
+                if (images.isNotEmpty()) {
                     uiStateInternal.value = ImagesScreenUiState.Images(images)
                 } else {
                     if (!silent) {
