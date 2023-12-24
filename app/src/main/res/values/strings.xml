@@ -8,4 +8,5 @@
     <string name="images_screen_label">Images</string>
     <string name="buckets_screen_label">Albums</string>
     <string name="no_buckets_found">No albums found</string>
+    <string name="open_settings">Settings</string>
 </resources>
