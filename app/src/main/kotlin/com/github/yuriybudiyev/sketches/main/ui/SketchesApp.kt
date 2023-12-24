@@ -26,7 +26,10 @@ package com.github.yuriybudiyev.sketches.main.ui
 
 import kotlinx.coroutines.launch
 import android.Manifest
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -91,6 +94,11 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
             ) { grantResult ->
                 permissionsGranted = checkAllPermissionsGranted(grantResult)
             }
+            val settingsLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartActivityForResult()
+            ) {
+                permissionsGranted = context.checkAllPermissionsGranted(mediaPermissions)
+            }
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -100,7 +108,13 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 SketchesOutlinedButton(text = stringResource(id = R.string.open_settings)) {
                     coroutineScope.launch {
-
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        intent.data = Uri.fromParts(
+                            "package",
+                            context.packageName,
+                            null
+                        )
+                        settingsLauncher.launch(intent)
                     }
                 }
             }
