@@ -91,30 +91,39 @@ class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
         val idColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID)
         val bucketIdColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID)
         val bucketNameColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
-        val dateAddedColumn =
-            cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED) //TODO: Cover!
+        val dateAddedColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED)
         while (cursor.moveToNext()) {
+            val id = cursor.getLong(idColumn)
             val bucketId = cursor.getLong(bucketIdColumn)
-            bucketsInfo.getOrPut(bucketId) {
+            val dateAdded = cursor.getLong(dateAddedColumn) * 1000L
+            val bucketInfo = bucketsInfo.getOrPut(bucketId) {
                 BucketInfo(
                     id = bucketId,
                     name = cursor.getString(bucketNameColumn),
                     coverUri = ContentUris.withAppendedId(
                         contentUri,
-                        cursor.getLong(idColumn)
+                        id
                     ),
-                    coverDateAdded = cursor.getLong(dateAddedColumn) * 1000L,
+                    coverDateAdded = dateAdded,
                     imagesCount = 0
                 )
-            }.imagesCount++
+            }
+            bucketInfo.imagesCount++
+            if (bucketInfo.coverDateAdded < dateAdded) {
+                bucketInfo.coverDateAdded = dateAdded
+                bucketInfo.coverUri = ContentUris.withAppendedId(
+                    contentUri,
+                    id
+                )
+            }
         }
     }
 
-    private data class BucketInfo(
+    private class BucketInfo(
         val id: Long,
         val name: String,
-        val coverUri: Uri,
-        val coverDateAdded: Long,
+        var coverUri: Uri,
+        var coverDateAdded: Long,
         var imagesCount: Int
     )
 }
