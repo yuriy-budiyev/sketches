@@ -78,11 +78,7 @@ class MediaRepositoryImpl(private val context: Context): MediaRepository {
                     MediaStore.MediaColumns.BUCKET_ID,
                     MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
                     MediaStore.MediaColumns.DATE_ADDED,
-                    MediaStore.MediaColumns.WIDTH,
-                    MediaStore.MediaColumns.HEIGHT,
-                    MediaStore.MediaColumns.ORIENTATION,
                     MediaStore.MediaColumns.MIME_TYPE,
-                    MediaStore.MediaColumns.SIZE
                 ),
                 if (bucketId != -1L) {
                     "${MediaStore.MediaColumns.BUCKET_ID}=?"
@@ -103,11 +99,7 @@ class MediaRepositoryImpl(private val context: Context): MediaRepository {
         val bucketIdColumn = cursor.getColumnIndex(MediaStore.MediaColumns.BUCKET_ID)
         val bucketNameColumn = cursor.getColumnIndex(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME)
         val dateAddedColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DATE_ADDED)
-        val withColumn = cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH)
-        val heightColumn = cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT)
-        val orientationColumn = cursor.getColumnIndex(MediaStore.MediaColumns.ORIENTATION)
         val mimeTypeColumn = cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)
-        val sizeColumn = cursor.getColumnIndex(MediaStore.MediaColumns.SIZE)
         while (cursor.moveToNext()) {
             val id = cursor.getLong(idColumn)
             files += MediaStoreFile(
@@ -117,11 +109,7 @@ class MediaRepositoryImpl(private val context: Context): MediaRepository {
                 bucketId = cursor.getLong(bucketIdColumn),
                 bucketName = cursor.getString(bucketNameColumn),
                 dateAdded = cursor.getLong(dateAddedColumn) * 1000L,
-                width = cursor.getInt(withColumn),
-                height = cursor.getInt(heightColumn),
-                orientation = cursor.getInt(orientationColumn),
                 mimeType = cursor.getString(mimeTypeColumn),
-                sizeBytes = cursor.getLong(sizeColumn),
                 uri = ContentUris.withAppendedId(
                     contentUri,
                     id

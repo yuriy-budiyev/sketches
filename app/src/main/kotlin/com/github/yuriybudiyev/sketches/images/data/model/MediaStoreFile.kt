@@ -33,11 +33,7 @@ data class MediaStoreFile(
     val bucketId: Long,
     val bucketName: String,
     val dateAdded: Long,
-    val width: Int,
-    val height: Int,
-    val orientation: Int,
     val mimeType: String,
-    val sizeBytes: Long,
     val uri: Uri
 ) {
 
