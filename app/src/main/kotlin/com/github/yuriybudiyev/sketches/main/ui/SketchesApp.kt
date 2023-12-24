@@ -105,7 +105,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                 verticalArrangement = Arrangement.Center
             ) {
                 SketchesMessage(text = message)
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 SketchesOutlinedButton(text = stringResource(id = R.string.open_settings)) {
                     coroutineScope.launch {
                         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
