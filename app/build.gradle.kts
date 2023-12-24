@@ -77,6 +77,7 @@ dependencies {
     implementation(sketches.bundles.androidx.window)
     implementation(sketches.bundles.androidx.work)
     implementation(sketches.bundles.androidx.room)
+    implementation(sketches.bundles.androidx.media3)
     implementation(sketches.bundles.hilt)
     implementation(sketches.bundles.coil)
     implementation(sketches.bundles.protobuf)
