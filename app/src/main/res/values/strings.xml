@@ -2,7 +2,7 @@
     <string name="app_name">Sketches</string>
     <string name="no_images_found">No images found</string>
     <string name="loading_message">Loading</string>
-    <string name="no_images_permission">Permission required to access images</string>
+    <string name="no_images_permission">Permission required to access images and video</string>
     <string name="no_storage_permission">Permission required to access the storage</string>
     <string name="unexpected_error">An unexpected error occurred</string>
     <string name="images_screen_label">Images</string>
