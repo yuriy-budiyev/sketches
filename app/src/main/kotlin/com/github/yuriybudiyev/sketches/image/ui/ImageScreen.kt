@@ -73,6 +73,7 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.images.ui.component.SketchesMediaItem
 
 typealias ImageShareListener = (image: MediaStoreFile) -> Unit
 
@@ -209,9 +210,8 @@ private fun ImageLayout(
                     items(count = data.size,
                         key = { item -> data[item].id },
                         itemContent = { item ->
-                            val image = data[item]
-                            SketchesAsyncImage(uri = image.uri,
-                                contentScale = ContentScale.Crop,
+                            SketchesMediaItem(file = data[item],
+                                iconPadding = 2.dp,
                                 modifier = Modifier
                                     .aspectRatio(
                                         ratio = 1f,

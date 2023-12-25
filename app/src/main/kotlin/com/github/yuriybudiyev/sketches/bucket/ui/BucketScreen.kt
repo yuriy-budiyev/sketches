@@ -38,14 +38,14 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessag
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
-import com.github.yuriybudiyev.sketches.images.ui.component.ImageClickListener
-import com.github.yuriybudiyev.sketches.images.ui.component.SketchesAsyncImageVerticalGrid
+import com.github.yuriybudiyev.sketches.images.ui.component.MediaItemClickListener
+import com.github.yuriybudiyev.sketches.images.ui.component.SketchesMediaVerticalGrid
 
 @Composable
 fun BucketRoute(
     id: Long,
     name: String?,
-    onImageClick: ImageClickListener,
+    onImageClick: MediaItemClickListener,
     viewModel: BucketScreenViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -63,7 +63,7 @@ fun BucketRoute(
 fun BucketScreen(
     name: String?,
     uiState: BucketScreenUiState,
-    onImageClick: ImageClickListener
+    onImageClick: MediaItemClickListener
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         if (!name.isNullOrEmpty()) {
@@ -77,9 +77,9 @@ fun BucketScreen(
                 SketchesLoadingIndicator()
             }
             is BucketScreenUiState.Bucket -> {
-                SketchesAsyncImageVerticalGrid(
+                SketchesMediaVerticalGrid(
                     images = uiState.images,
-                    onImageClick = onImageClick
+                    onItemClick = onImageClick
                 )
             }
             is BucketScreenUiState.Error -> {

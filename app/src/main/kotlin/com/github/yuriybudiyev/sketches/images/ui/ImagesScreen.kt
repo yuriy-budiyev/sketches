@@ -38,12 +38,12 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessag
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
-import com.github.yuriybudiyev.sketches.images.ui.component.ImageClickListener
-import com.github.yuriybudiyev.sketches.images.ui.component.SketchesAsyncImageVerticalGrid
+import com.github.yuriybudiyev.sketches.images.ui.component.MediaItemClickListener
+import com.github.yuriybudiyev.sketches.images.ui.component.SketchesMediaVerticalGrid
 
 @Composable
 fun ImagesRoute(
-    onImageClick: ImageClickListener,
+    onImageClick: MediaItemClickListener,
     viewModel: ImagesScreenViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -59,7 +59,7 @@ fun ImagesRoute(
 @Composable
 fun ImagesScreen(
     uiState: ImagesScreenUiState,
-    onImageClick: ImageClickListener
+    onImageClick: MediaItemClickListener
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         SketchesTopAppBar(text = stringResource(id = R.string.images_screen_label))
@@ -71,9 +71,9 @@ fun ImagesScreen(
                 SketchesLoadingIndicator()
             }
             is ImagesScreenUiState.Images -> {
-                SketchesAsyncImageVerticalGrid(
+                SketchesMediaVerticalGrid(
                     images = uiState.images,
-                    onImageClick = onImageClick
+                    onItemClick = onImageClick
                 )
             }
             is ImagesScreenUiState.Error -> {

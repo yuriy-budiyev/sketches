@@ -26,34 +26,24 @@ package com.github.yuriybudiyev.sketches.images.ui.component
 
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLazyVerticalGrid
-import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
 
-typealias ImageClickListener = (index: Int, image: MediaStoreFile) -> Unit
-
 @Composable
-fun SketchesAsyncImageVerticalGrid(
+fun SketchesMediaVerticalGrid(
     images: List<MediaStoreFile>,
-    onImageClick: ImageClickListener
+    onItemClick: MediaItemClickListener
 ) {
     val data by rememberUpdatedState(images)
     val coroutineScope = rememberCoroutineScope()
@@ -61,35 +51,21 @@ fun SketchesAsyncImageVerticalGrid(
         items(count = data.size,
             key = { index -> data[index].id },
             itemContent = { index ->
-                val image = data[index]
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(ratio = 1f)
-                    .clip(shape = RoundedCornerShape(8.dp))
-                    .clickable {
-                        coroutineScope.launch {
-                            onImageClick(
-                                index,
-                                image
-                            )
-                        }
-                    }) {
-                    SketchesAsyncImage(
-                        uri = image.uri,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.matchParentSize()
-                    )
-                    if (image.type == MediaStoreFile.Type.VIDEO) {
-                        Icon(
-                            imageVector = SketchesIcons.Video,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier
-                                .align(Alignment.BottomEnd)
-                                .padding(4.dp)
-                        )
-                    }
-                }
+                val file = data[index]
+                SketchesMediaItem(file = data[index],
+                    iconPadding = 4.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(ratio = 1f)
+                        .clip(shape = RoundedCornerShape(8.dp))
+                        .clickable {
+                            coroutineScope.launch {
+                                onItemClick(
+                                    index,
+                                    file
+                                )
+                            }
+                        })
             })
     }
 }
