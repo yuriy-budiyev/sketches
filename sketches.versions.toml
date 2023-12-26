@@ -148,7 +148,6 @@ androidx-media3-container = { group = "androidx.media3", name = "media3-containe
 androidx-media3-extractor = { group = "androidx.media3", name = "media3-extractor", version.ref = "androidx-media3" }
 androidx-media3-decoder = { group = "androidx.media3", name = "media3-decoder", version.ref = "androidx-media3" }
 androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "androidx-media3" }
-androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "androidx-media3" }
 androidx-hilt-common = { group = "androidx.hilt", name = "hilt-common", version.ref = "androidx-hilt" }
 androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "androidx-hilt" }
 androidx-hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation", version.ref = "androidx-hilt" }
@@ -189,7 +188,7 @@ androidx-lifecycle = ["androidx-lifecycle-common", "androidx-lifecycle-common-ja
 androidx-window = ["androidx-window", "androidx-window-core", "androidx-window-java"]
 androidx-work = ["androidx-work-runtime", "androidx-work-runtime-ktx"]
 androidx-room = ["androidx-room-common", "androidx-room-runtime", "androidx-room-paging", "androidx-room-ktx"]
-androidx-media3 = ["androidx-media3-common", "androidx-media3-database", "androidx-media3-datasource", "androidx-media3-datasource-okhttp", "androidx-media3-decoder", "androidx-media3-container", "androidx-media3-extractor", "androidx-media3-exoplayer", "androidx-media3-ui"]
+androidx-media3 = ["androidx-media3-common", "androidx-media3-database", "androidx-media3-datasource", "androidx-media3-datasource-okhttp", "androidx-media3-decoder", "androidx-media3-container", "androidx-media3-extractor", "androidx-media3-exoplayer"]
 hilt = ["hilt", "androidx-hilt-common", "androidx-hilt-work", "androidx-hilt-navigation", "androidx-hilt-navigation-fragment", "androidx-hilt-navigation-compose"]
 hilt-compiler = ["hilt-compiler", "androidx-hilt-compiler"]
 coil = ["coil", "coil-compose", "coil-gif", "coil-svg", "coil-video"]
