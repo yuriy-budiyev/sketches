@@ -34,8 +34,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,8 +51,8 @@ fun MediaPlayer(
 ) {
     val context by rememberUpdatedState(LocalContext.current)
     val state = rememberMediaPlayerState(context)
-    var isVisible by remember { mutableStateOf(true) }
     val displayAspectRatio by state.videoDisplayAspectRatioState
+    var isVisible by rememberSaveable { mutableStateOf(false) }
     Box(modifier = modifier) {
         AndroidView(modifier = Modifier
             .fillMaxSize()
