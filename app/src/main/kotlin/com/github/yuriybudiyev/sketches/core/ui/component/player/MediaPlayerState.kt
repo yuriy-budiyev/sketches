@@ -28,10 +28,10 @@ import android.content.Context
 import android.net.Uri
 import android.view.SurfaceView
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.FloatState
 import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -39,7 +39,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.DeviceInfo
 import androidx.media3.common.MediaItem
@@ -55,17 +54,13 @@ import androidx.media3.common.text.CueGroup
 import androidx.media3.exoplayer.ExoPlayer
 
 @Composable
-fun rememberMediaPlayerState(): MediaPlayerState {
-    val context by rememberUpdatedState(LocalContext.current.applicationContext)
-    val state = remember(context) { MediaPlayerState(context) }
-    DisposableEffect(state) {
-        onDispose { state.dispose() }
-    }
-    return state
+fun rememberMediaPlayerState(context: Context): MediaPlayerState {
+    val appContext by rememberUpdatedState(context.applicationContext)
+    return remember(appContext) { MediaPlayerState(appContext) }
 }
 
 @Stable
-class MediaPlayerState(context: Context) {
+class MediaPlayerState(context: Context): RememberObserver {
 
     val isLoadingState: State<Boolean>
         get() = isLoadingStateInternal
@@ -100,6 +95,17 @@ class MediaPlayerState(context: Context) {
     fun dispose() {
         player.clearVideoSurface()
         player.release()
+    }
+
+    override fun onAbandoned() {
+        dispose()
+    }
+
+    override fun onForgotten() {
+        dispose()
+    }
+
+    override fun onRemembered() {
     }
 
     private val player: ExoPlayer

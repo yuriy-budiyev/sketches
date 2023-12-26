@@ -26,10 +26,9 @@ package com.github.yuriybudiyev.sketches.core.ui.component.player
 
 import android.net.Uri
 import android.view.SurfaceView
-import android.view.ViewGroup
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,24 +43,20 @@ import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 @Composable
 fun MediaPlayer(
     uri: Uri,
-    modifier: Modifier = Modifier,
-    state: MediaPlayerState = rememberMediaPlayerState()
+    modifier: Modifier = Modifier
 ) {
     val context by rememberUpdatedState(LocalContext.current)
+    val state = rememberMediaPlayerState(context)
     val displayAspectRatio by state.videoDisplayAspectRatioState
     Box(modifier = modifier) {
         AndroidView(modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(ratio = displayAspectRatio)
+            .fillMaxSize()
+            .aspectRatio(
+                ratio = displayAspectRatio,
+                matchHeightConstraintsFirst = displayAspectRatio < 1f
+            )
             .align(Alignment.Center),
-            factory = {
-                SurfaceView(context).apply {
-                    layoutParams = ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                    )
-                }
-            },
+            factory = { SurfaceView(context) },
             update = { view ->
                 state.setSurfaceView(view)
             })
