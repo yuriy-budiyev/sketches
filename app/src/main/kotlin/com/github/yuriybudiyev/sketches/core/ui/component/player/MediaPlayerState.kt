@@ -24,12 +24,21 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.component.player
 
+import android.content.Context
+import android.net.Uri
+import android.view.SurfaceView
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.FloatState
+import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.DeviceInfo
@@ -47,16 +56,16 @@ import androidx.media3.exoplayer.ExoPlayer
 
 @Composable
 fun rememberMediaPlayerState(): MediaPlayerState {
-    val player = ExoPlayer
-        .Builder(LocalContext.current)
-        .build()
-    return remember(player) {
-        MediaPlayerState(player)
+    val context by rememberUpdatedState(LocalContext.current.applicationContext)
+    val state = remember(context) { MediaPlayerState(context) }
+    DisposableEffect(state) {
+        onDispose { state.dispose() }
     }
+    return state
 }
 
 @Stable
-class MediaPlayerState(private val player: Player) {
+class MediaPlayerState(context: Context) {
 
     val isLoadingState: State<Boolean>
         get() = isLoadingStateInternal
@@ -67,11 +76,46 @@ class MediaPlayerState(private val player: Player) {
     val videoSizeState: State<VideoSize>
         get() = videoSizeStateInternal
 
-    private val isLoadingStateInternal: MutableState<Boolean> = mutableStateOf(player.isLoading)
-    private val isPlayingStateInternal: MutableState<Boolean> = mutableStateOf(player.isPlaying)
-    private val videoSizeStateInternal: MutableState<VideoSize> = mutableStateOf(player.videoSize)
+    val videoDisplayAspectRatioState: FloatState
+        get() = videoDisplayAspectRatioStateInternal
+
+    fun setSurfaceView(view: SurfaceView) {
+        player.clearVideoSurface()
+        player.setVideoSurfaceView(view)
+    }
+
+    fun open(uri: Uri) {
+        player.setMediaItem(MediaItem.fromUri(uri))
+        player.prepare()
+    }
+
+    fun play() {
+        player.play()
+    }
+
+    fun pause() {
+        player.pause()
+    }
+
+    fun dispose() {
+        player.clearVideoSurface()
+        player.release()
+    }
+
+    private val player: ExoPlayer
+    private val isLoadingStateInternal: MutableState<Boolean>
+    private val isPlayingStateInternal: MutableState<Boolean>
+    private val videoSizeStateInternal: MutableState<VideoSize>
+    private val videoDisplayAspectRatioStateInternal: MutableFloatState
 
     init {
+        player = ExoPlayer
+            .Builder(context)
+            .build()
+        isLoadingStateInternal = mutableStateOf(player.isLoading)
+        isPlayingStateInternal = mutableStateOf(player.isPlaying)
+        videoSizeStateInternal = mutableStateOf(player.videoSize)
+        videoDisplayAspectRatioStateInternal = mutableFloatStateOf(1f)
         player.addListener(PlayerListener())
     }
 
@@ -181,6 +225,14 @@ class MediaPlayerState(private val player: Player) {
 
         override fun onVideoSizeChanged(videoSize: VideoSize) {
             videoSizeStateInternal.value = videoSize
+
+            val width = videoSize.width
+            val height = videoSize.height
+            videoDisplayAspectRatioStateInternal.floatValue = if (width > 0 && height > 0) {
+                width * videoSize.pixelWidthHeightRatio / height
+            } else {
+                1f
+            }
         }
 
         override fun onSurfaceSizeChanged(

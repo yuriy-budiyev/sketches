@@ -25,9 +25,21 @@
 package com.github.yuriybudiyev.sketches.core.ui.component.player
 
 import android.net.Uri
+import android.view.SurfaceView
+import android.view.ViewGroup
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 
 @Composable
 fun MediaPlayer(
@@ -35,7 +47,32 @@ fun MediaPlayer(
     modifier: Modifier = Modifier,
     state: MediaPlayerState = rememberMediaPlayerState()
 ) {
+    val context by rememberUpdatedState(LocalContext.current)
+    val displayAspectRatio by state.videoDisplayAspectRatioState
     Box(modifier = modifier) {
-
+        AndroidView(modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(ratio = displayAspectRatio)
+            .align(Alignment.Center),
+            factory = {
+                SurfaceView(context).apply {
+                    layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                }
+            },
+            update = { view ->
+                state.setSurfaceView(view)
+            })
+    }
+    LaunchedEffect(uri) {
+        state.open(uri)
+    }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        state.play()
+    }
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+        state.pause()
     }
 }
