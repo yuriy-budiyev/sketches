@@ -26,13 +26,17 @@ package com.github.yuriybudiyev.sketches.core.ui.component.player
 
 import android.net.Uri
 import android.view.SurfaceView
+import android.view.View
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -47,6 +51,7 @@ fun MediaPlayer(
 ) {
     val context by rememberUpdatedState(LocalContext.current)
     val state = rememberMediaPlayerState(context)
+    var isVisible by remember { mutableStateOf(true) }
     val displayAspectRatio by state.videoDisplayAspectRatioState
     Box(modifier = modifier) {
         AndroidView(modifier = Modifier
@@ -59,15 +64,22 @@ fun MediaPlayer(
             factory = { SurfaceView(context) },
             update = { view ->
                 state.setSurfaceView(view)
+                view.visibility = if (isVisible) {
+                    View.VISIBLE
+                } else {
+                    View.INVISIBLE
+                }
             })
     }
     LaunchedEffect(uri) {
         state.open(uri)
     }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        isVisible = true
         state.play()
     }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
         state.pause()
+        isVisible = false
     }
 }
