@@ -25,8 +25,6 @@
 package com.github.yuriybudiyev.sketches.image.ui
 
 import kotlinx.coroutines.launch
-import android.view.SurfaceView
-import android.view.ViewGroup
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -65,17 +63,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.component.player.MediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
@@ -252,24 +248,10 @@ private fun ImageLayout(
                             )
                         }
                         MediaStoreFile.Type.VIDEO -> {
-                            AndroidView(modifier = Modifier.fillMaxSize(),
-                                factory = {
-                                    SurfaceView(context).apply {
-                                        layoutParams = ViewGroup.LayoutParams(
-                                            ViewGroup.LayoutParams.MATCH_PARENT,
-                                            ViewGroup.LayoutParams.MATCH_PARENT
-                                        )
-                                    }
-                                },
-                                update = { view -> //TODO
-                                    val player = ExoPlayer
-                                        .Builder(context)
-                                        .build()
-                                    player.clearVideoSurface()
-                                    player.setVideoSurfaceView(view)
-                                    player.setMediaItem(MediaItem.fromUri(file.uri))
-                                    player.prepare()
-                                })
+                            MediaPlayer(
+                                uri = file.uri,
+                                modifier = Modifier.fillMaxSize()
+                            )
                         }
                     }
                 })
