@@ -24,8 +24,11 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.component.media
 
+import java.util.ArrayDeque
+import java.util.Queue
 import android.content.Context
 import android.net.Uri
+import android.view.SurfaceView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.MutableState
@@ -56,6 +59,10 @@ interface MediaState {
 
     val displayAspectRatio: Float
 
+    fun setVideoView(view: SurfaceView)
+
+    fun clearVideView()
+
     fun openMedia(
         uri: Uri,
         playWhenReady: Boolean
@@ -79,6 +86,18 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
         mutableFloatStateOf(calculateDar(player.videoSize))
     override val displayAspectRatio: Float by displayAspectRatioState
 
+    override fun setVideoView(view: SurfaceView) {
+        if (player.isCommandAvailable(Player.COMMAND_SET_VIDEO_SURFACE)) {
+            player.setVideoSurfaceView(view)
+        }
+    }
+
+    override fun clearVideView() {
+        if (player.isCommandAvailable(Player.COMMAND_SET_VIDEO_SURFACE)) {
+            player.clearVideoSurface()
+        }
+    }
+
     override fun openMedia(
         uri: Uri,
         playWhenReady: Boolean
@@ -97,6 +116,9 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
         displayAspectRatioState.floatValue = calculateDar(videoSize)
     }
 
+    override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
+    }
+
     override fun onAbandoned() {
         if (player.isCommandAvailable(Player.COMMAND_RELEASE)) {
             player.release()
@@ -112,6 +134,22 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
     override fun onRemembered() {
     }
 
+    private val pendingCommands: Queue<PendingCommand> = ArrayDeque()
+    private inline fun enqueueCommand(
+        @Player.Command command: Int,
+        crossinline block: () -> Unit
+    ) {
+        pendingCommands.add(object: PendingCommand {
+
+            override val command: Int
+                get() = command
+
+            override fun execute() {
+                block()
+            }
+        })
+    }
+
     init {
         player.addListener(this)
     }
@@ -125,5 +163,13 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
         } else {
             1f
         }
+    }
+
+    private interface PendingCommand {
+
+        @get:Player.Command
+        val command: Int
+
+        fun execute()
     }
 }
