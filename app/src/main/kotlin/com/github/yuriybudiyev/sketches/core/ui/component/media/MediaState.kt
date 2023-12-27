@@ -24,14 +24,11 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.component.media
 
-import java.util.ArrayDeque
-import java.util.Queue
 import android.content.Context
 import android.net.Uri
 import android.view.SurfaceView
+import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableFloatState
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -39,12 +36,19 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.VideoSize
+import androidx.media3.common.util.Size
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 
 @Composable
+@OptIn(UnstableApi::class)
 fun rememberMediaState(): MediaState {
     val appContext by rememberUpdatedState(LocalContext.current.applicationContext)
     return remember(appContext) { MediaStateImpl(appContext) }
@@ -61,30 +65,42 @@ interface MediaState {
 
     fun setVideoView(view: SurfaceView)
 
-    fun clearVideView()
+    fun clearVideoView()
 
-    fun openMedia(
+    fun open(
         uri: Uri,
-        playWhenReady: Boolean
+        playWhenReady: Boolean = false
     )
+
+    fun play()
+
+    fun pause()
+
+    fun stop()
 }
 
 @Stable
+@UnstableApi
 private class MediaStateImpl(context: Context): MediaState, Player.Listener, RememberObserver {
 
     private val player: Player = ExoPlayer
         .Builder(context)
+        .setMediaSourceFactory(ProgressiveMediaSource.Factory(DefaultDataSource.Factory(context)))
         .build()
 
-    private val isLoadingState: MutableState<Boolean> = mutableStateOf(player.isLoading)
-    override val isLoading: Boolean by isLoadingState
+    override var isLoading: Boolean by mutableStateOf(player.isLoading)
+        private set
 
-    private val isPlayingState: MutableState<Boolean> = mutableStateOf(player.isPlaying)
-    override val isPlaying: Boolean by isPlayingState
+    override var isPlaying: Boolean by mutableStateOf(player.isPlaying)
+        private set
 
-    private val displayAspectRatioState: MutableFloatState =
-        mutableFloatStateOf(calculateDar(player.videoSize))
-    override val displayAspectRatio: Float by displayAspectRatioState
+    override var displayAspectRatio: Float by mutableFloatStateOf(
+        calculateDar(
+            player.videoSize,
+            player.surfaceSize
+        )
+    )
+        private set
 
     override fun setVideoView(view: SurfaceView) {
         if (player.isCommandAvailable(Player.COMMAND_SET_VIDEO_SURFACE)) {
@@ -92,31 +108,71 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
         }
     }
 
-    override fun clearVideView() {
+    override fun clearVideoView() {
         if (player.isCommandAvailable(Player.COMMAND_SET_VIDEO_SURFACE)) {
             player.clearVideoSurface()
         }
     }
 
-    override fun openMedia(
+    override fun open(
         uri: Uri,
         playWhenReady: Boolean
     ) {
+        if (player.isCommandAvailable(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
+            player.setMediaItem(MediaItem.fromUri(uri))
+        }
+        if (player.isCommandAvailable(Player.COMMAND_PREPARE)) {
+            player.prepare()
+        }
+        if (player.isCommandAvailable(Player.COMMAND_PLAY_PAUSE)) {
+            player.playWhenReady = playWhenReady
+        }
+    }
+
+    override fun play() {
+        if (player.isCommandAvailable(Player.COMMAND_PLAY_PAUSE)) {
+            player.play()
+        }
+    }
+
+    override fun pause() {
+        if (player.isCommandAvailable(Player.COMMAND_PLAY_PAUSE)) {
+            player.pause()
+        }
+    }
+
+    override fun stop() {
+        if (player.isCommandAvailable(Player.COMMAND_STOP)) {
+            player.pause()
+        }
     }
 
     override fun onIsLoadingChanged(isLoading: Boolean) {
-        isLoadingState.value = isLoading
+        this.isLoading = isLoading
     }
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
-        isPlayingState.value = isPlaying
+        this.isPlaying = isPlaying
     }
 
     override fun onVideoSizeChanged(videoSize: VideoSize) {
-        displayAspectRatioState.floatValue = calculateDar(videoSize)
+        this.displayAspectRatio = calculateDar(
+            videoSize,
+            player.surfaceSize
+        )
     }
 
-    override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
+    override fun onSurfaceSizeChanged(
+        width: Int,
+        height: Int
+    ) {
+        this.displayAspectRatio = calculateDar(
+            player.videoSize,
+            Size(
+                width,
+                height
+            )
+        )
     }
 
     override fun onAbandoned() {
@@ -134,42 +190,26 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
     override fun onRemembered() {
     }
 
-    private val pendingCommands: Queue<PendingCommand> = ArrayDeque()
-    private inline fun enqueueCommand(
-        @Player.Command command: Int,
-        crossinline block: () -> Unit
-    ) {
-        pendingCommands.add(object: PendingCommand {
-
-            override val command: Int
-                get() = command
-
-            override fun execute() {
-                block()
-            }
-        })
-    }
-
     init {
         player.addListener(this)
     }
 
-    private fun calculateDar(videoSize: VideoSize): Float {
-        val width = videoSize.width.toFloat()
-        val height = videoSize.height.toFloat()
-        val ratio = videoSize.pixelWidthHeightRatio
+    private fun calculateDar(
+        videoSize: VideoSize,
+        surfaceSize: Size
+    ): Float {
+        var width = videoSize.width.toFloat()
+        var height = videoSize.height.toFloat()
         return if (width > 0f && height > 0f) {
-            width * ratio / height
+            width * videoSize.pixelWidthHeightRatio / height
         } else {
-            1f
+            width = surfaceSize.width.toFloat()
+            height = surfaceSize.height.toFloat()
+            if (width > 0f && height > 0f) {
+                width / height
+            } else {
+                1f
+            }
         }
-    }
-
-    private interface PendingCommand {
-
-        @get:Player.Command
-        val command: Int
-
-        fun execute()
     }
 }
