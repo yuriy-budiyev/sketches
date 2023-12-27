@@ -141,7 +141,7 @@ private fun BucketsLayout(
                     )
                     Text(
                         text = item.size.toString(),
-                        fontSize = 14.sp,
+                        fontSize = 16.sp,
                         modifier = Modifier.padding(
                             start = 4.dp,
                             top = 0.dp,
