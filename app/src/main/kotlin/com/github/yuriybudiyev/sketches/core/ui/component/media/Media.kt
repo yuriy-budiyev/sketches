@@ -25,13 +25,15 @@
 package com.github.yuriybudiyev.sketches.core.ui.component.media
 
 import android.view.SurfaceView
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 
@@ -40,16 +42,41 @@ fun MediaDisplay(
     state: MediaState,
     modifier: Modifier = Modifier
 ) {
-    val context by rememberUpdatedState(LocalContext.current)
-    val ratio = state.displayAspectRatio
-    Box(modifier = modifier) {
-        AndroidView(modifier = Modifier
-            .aspectRatio(
-                ratio = ratio,
-                matchHeightConstraintsFirst = ratio < 1f
-            )
-            .align(Alignment.Center),
-            factory = { SurfaceView(context) },
-            update = { view -> state.setVideoView(view) })
+    val context = LocalContext.current
+    val displayAspectRatio = state.displayAspectRatio
+    val isVideoVisible = state.isVideoVisible
+    key(
+        displayAspectRatio,
+        isVideoVisible
+    ) {
+        Box(modifier = modifier) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(
+                        color = MaterialTheme.colorScheme.background,
+                        shape = RectangleShape
+                    )
+            ) {
+                AndroidView(modifier = Modifier
+                    .aspectRatio(
+                        ratio = displayAspectRatio,
+                        matchHeightConstraintsFirst = displayAspectRatio < 1f
+                    )
+                    .align(Alignment.Center),
+                    factory = { SurfaceView(context) },
+                    update = { view -> state.setVideoView(view) })
+            }
+            if (!isVideoVisible) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(
+                            color = MaterialTheme.colorScheme.background,
+                            shape = RectangleShape
+                        )
+                )
+            }
+        }
     }
 }

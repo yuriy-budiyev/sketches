@@ -50,7 +50,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.VideoSize
-import androidx.media3.common.util.Size
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.ExoPlayer
@@ -80,6 +79,8 @@ interface MediaState {
     val isPlaying: Boolean
 
     val displayAspectRatio: Float
+
+    val isVideoVisible: Boolean
 
     val durationMillis: Long
 
@@ -129,38 +130,28 @@ private class MediaStateImpl(
         this.isPlaying = isPlaying
     }
 
-    private fun displayAspectRatioInternal(
-        videoSize: VideoSize,
-        surfaceSize: Size
-    ): Float {
-        var width = videoSize.width.toFloat()
-        var height = videoSize.height.toFloat()
+    private fun displayAspectRatioInternal(videoSize: VideoSize = player.videoSize): Float {
+        val width = videoSize.width.toFloat()
+        val height = videoSize.height.toFloat()
         return if (width > 0f && height > 0f) {
             width * videoSize.pixelWidthHeightRatio / height
         } else {
-            width = surfaceSize.width.toFloat()
-            height = surfaceSize.height.toFloat()
-            if (width > 0f && height > 0f) {
-                width / height
-            } else {
-                1f
-            }
+            1f
         }
     }
 
-    override var displayAspectRatio: Float by mutableFloatStateOf(
-        displayAspectRatioInternal(
-            player.videoSize,
-            player.surfaceSize
-        )
-    )
+    override var displayAspectRatio: Float by mutableFloatStateOf(displayAspectRatioInternal())
+        private set
+
+    private fun isVideoVisibleInternal(videoSize: VideoSize = player.videoSize): Boolean =
+        videoSize.width > 0 && videoSize.height > 0
+
+    override var isVideoVisible: Boolean by mutableStateOf(isVideoVisibleInternal())
         private set
 
     override fun onVideoSizeChanged(videoSize: VideoSize) {
-        this.displayAspectRatio = displayAspectRatioInternal(
-            videoSize,
-            player.surfaceSize
-        )
+        this.displayAspectRatio = displayAspectRatioInternal(videoSize)
+        this.isVideoVisible = isVideoVisibleInternal(videoSize)
     }
 
     override fun setVideoView(view: SurfaceView) {
@@ -179,13 +170,7 @@ private class MediaStateImpl(
         width: Int,
         height: Int
     ) {
-        this.displayAspectRatio = displayAspectRatioInternal(
-            player.videoSize,
-            Size(
-                width,
-                height
-            )
-        )
+        this.displayAspectRatio = displayAspectRatioInternal()
     }
 
     private fun durationMillisInternal(): Long =
