@@ -85,4 +85,8 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
 
     override fun onRemembered() {
     }
+
+    init {
+        player.addListener(this)
+    }
 }
