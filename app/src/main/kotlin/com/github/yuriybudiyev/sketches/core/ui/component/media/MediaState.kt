@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.ui.component.media
 
 import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.MutableState
@@ -54,6 +55,11 @@ interface MediaState {
     val isPlaying: Boolean
 
     val displayAspectRatio: Float
+
+    fun openMedia(
+        uri: Uri,
+        playWhenReady: Boolean
+    )
 }
 
 @Stable
@@ -72,6 +78,12 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
     private val displayAspectRatioState: MutableFloatState =
         mutableFloatStateOf(calculateDar(player.videoSize))
     override val displayAspectRatio: Float by displayAspectRatioState
+
+    override fun openMedia(
+        uri: Uri,
+        playWhenReady: Boolean
+    ) {
+    }
 
     override fun onIsLoadingChanged(isLoading: Boolean) {
         isLoadingState.value = isLoading
