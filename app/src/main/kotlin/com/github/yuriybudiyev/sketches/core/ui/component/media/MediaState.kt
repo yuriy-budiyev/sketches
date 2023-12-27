@@ -161,12 +161,14 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
         player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
             setPlayWhenReady(playWhenReady)
         }
+        updateTimeSpec()
     }
 
     override fun seek(positionMillis: Long) {
         player.callWithCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
             seekTo(positionMillis)
         }
+        updateTimeSpec()
     }
 
     override fun play() {
