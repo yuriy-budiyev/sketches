@@ -72,6 +72,8 @@ interface MediaState {
 
     val positionMillis: Long
 
+    fun updateTimeSpec()
+
     fun setVideoView(view: SurfaceView)
 
     fun clearVideoView()
@@ -113,19 +115,26 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
     )
         private set
 
-    override var durationMillis: Long by mutableLongStateOf(
+    private fun durationMillisInternal(): Long =
         player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
             available = { contentDuration },
             unavailable = { 0L })
-    )
+
+    override var durationMillis: Long by mutableLongStateOf(durationMillisInternal())
         private set
 
-    override var positionMillis: Long by mutableLongStateOf(
+    private fun positionMillisInternal(): Long =
         player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
             available = { contentPosition },
             unavailable = { 0L })
-    )
+
+    override var positionMillis: Long by mutableLongStateOf(positionMillisInternal())
         private set
+
+    override fun updateTimeSpec() {
+        durationMillis = durationMillisInternal()
+        positionMillis = positionMillisInternal()
+    }
 
     override fun setVideoView(view: SurfaceView) {
         player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
