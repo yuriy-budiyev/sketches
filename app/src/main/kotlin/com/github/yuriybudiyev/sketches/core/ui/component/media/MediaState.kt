@@ -26,20 +26,24 @@ package com.github.yuriybudiyev.sketches.core.ui.component.media
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.Player
+import androidx.media3.common.VideoSize
 import androidx.media3.exoplayer.ExoPlayer
 
 @Composable
 fun rememberMediaState(): MediaState {
-    val appContext = LocalContext.current.applicationContext
-    return remember { MediaStateImpl(appContext) }
+    val appContext by rememberUpdatedState(LocalContext.current.applicationContext)
+    return remember(appContext) { MediaStateImpl(appContext) }
 }
 
 @Stable
@@ -48,6 +52,8 @@ interface MediaState {
     val isLoading: Boolean
 
     val isPlaying: Boolean
+
+    val displayAspectRatio: Float
 }
 
 @Stable
@@ -63,12 +69,20 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
     private val isPlayingState: MutableState<Boolean> = mutableStateOf(player.isPlaying)
     override val isPlaying: Boolean by isPlayingState
 
+    private val displayAspectRatioState: MutableFloatState =
+        mutableFloatStateOf(calculateDar(player.videoSize))
+    override val displayAspectRatio: Float by displayAspectRatioState
+
     override fun onIsLoadingChanged(isLoading: Boolean) {
         isLoadingState.value = isLoading
     }
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
         isPlayingState.value = isPlaying
+    }
+
+    override fun onVideoSizeChanged(videoSize: VideoSize) {
+        displayAspectRatioState.floatValue = calculateDar(videoSize)
     }
 
     override fun onAbandoned() {
@@ -88,5 +102,16 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
 
     init {
         player.addListener(this)
+    }
+
+    private fun calculateDar(videoSize: VideoSize): Float {
+        val width = videoSize.width.toFloat()
+        val height = videoSize.height.toFloat()
+        val ratio = videoSize.pixelWidthHeightRatio
+        return if (width > 0f && height > 0f) {
+            width * ratio / height
+        } else {
+            1f
+        }
     }
 }
