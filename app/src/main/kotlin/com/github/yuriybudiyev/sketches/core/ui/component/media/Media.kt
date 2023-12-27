@@ -33,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
@@ -40,7 +41,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 @Composable
 fun MediaDisplay(
     state: MediaState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = MaterialTheme.colorScheme.background
 ) {
     val context = LocalContext.current
     val displayAspectRatio = state.displayAspectRatio
@@ -54,7 +56,7 @@ fun MediaDisplay(
                 modifier = Modifier
                     .matchParentSize()
                     .background(
-                        color = MaterialTheme.colorScheme.background,
+                        color = backgroundColor,
                         shape = RectangleShape
                     )
             ) {
@@ -72,7 +74,7 @@ fun MediaDisplay(
                     modifier = Modifier
                         .matchParentSize()
                         .background(
-                            color = MaterialTheme.colorScheme.background,
+                            color = backgroundColor,
                             shape = RectangleShape
                         )
                 )
