@@ -71,7 +71,6 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
-import com.github.yuriybudiyev.sketches.core.ui.component.player.MediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
@@ -248,10 +247,6 @@ private fun ImageLayout(
                             )
                         }
                         MediaStoreFile.Type.VIDEO -> {
-                            MediaPlayer(
-                                uri = file.uri,
-                                modifier = Modifier.fillMaxSize()
-                            )
                         }
                     }
                 })
