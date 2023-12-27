@@ -24,6 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.component.media
 
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import android.content.Context
 import android.net.Uri
 import android.view.SurfaceView
@@ -33,6 +36,7 @@ import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -63,6 +67,10 @@ interface MediaState {
 
     val displayAspectRatio: Float
 
+    val durationMillis: Long
+
+    val positionMillis: Long
+
     fun setVideoView(view: SurfaceView)
 
     fun clearVideoView()
@@ -71,6 +79,8 @@ interface MediaState {
         uri: Uri,
         playWhenReady: Boolean = false
     )
+
+    fun seekTo(positionMillis: Long)
 
     fun play()
 
@@ -102,8 +112,22 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
     )
         private set
 
+    override var durationMillis: Long by mutableLongStateOf(
+        player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
+            available = { contentDuration },
+            unavailable = { 0L })
+    )
+        private set
+
+    override var positionMillis: Long by mutableLongStateOf(
+        player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
+            available = { contentPosition },
+            unavailable = { 0L })
+    )
+        private set
+
     override fun setVideoView(view: SurfaceView) {
-        if (player.isCommandAvailable(Player.COMMAND_SET_VIDEO_SURFACE)) {
+        callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
             player.setVideoSurfaceView(view)
         }
     }
@@ -118,15 +142,19 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
         uri: Uri,
         playWhenReady: Boolean
     ) {
-        if (player.isCommandAvailable(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
-            player.setMediaItem(MediaItem.fromUri(uri))
+        player.callWithCheck(Player.COMMAND_CHANGE_MEDIA_ITEMS) {
+            setMediaItem(MediaItem.fromUri(uri))
         }
-        if (player.isCommandAvailable(Player.COMMAND_PREPARE)) {
-            player.prepare()
+        player.callWithCheck(Player.COMMAND_PREPARE) {
+            prepare()
         }
-        if (player.isCommandAvailable(Player.COMMAND_PLAY_PAUSE)) {
-            player.playWhenReady = playWhenReady
+        player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
+            setPlayWhenReady(playWhenReady)
         }
+    }
+
+    override fun seekTo(positionMillis: Long) {
+        TODO("Not yet implemented")
     }
 
     override fun play() {
@@ -210,6 +238,45 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
             } else {
                 1f
             }
+        }
+    }
+
+    @kotlin.OptIn(ExperimentalContracts::class)
+    private inline fun <R, T> R.callWithCheck(
+        @Player.Command command: Int,
+        available: R.() -> T,
+        unavailable: R.() -> T
+    ): T {
+        contract {
+            callsInPlace(
+                available,
+                InvocationKind.UNKNOWN
+            )
+            callsInPlace(
+                unavailable,
+                InvocationKind.UNKNOWN
+            )
+        }
+        return if (player.isCommandAvailable(command)) {
+            available()
+        } else {
+            unavailable()
+        }
+    }
+
+    @kotlin.OptIn(ExperimentalContracts::class)
+    private inline fun <R> R.callWithCheck(
+        @Player.Command command: Int,
+        available: R.() -> Unit
+    ) {
+        contract {
+            callsInPlace(
+                available,
+                InvocationKind.UNKNOWN
+            )
+        }
+        if (player.isCommandAvailable(command)) {
+            available()
         }
     }
 }
