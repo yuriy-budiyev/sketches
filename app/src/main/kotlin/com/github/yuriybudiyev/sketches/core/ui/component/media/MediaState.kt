@@ -166,13 +166,6 @@ private class MediaStateImpl(
         }
     }
 
-    override fun onSurfaceSizeChanged(
-        width: Int,
-        height: Int
-    ) {
-        this.displayAspectRatio = displayAspectRatioInternal()
-    }
-
     private fun durationMillisInternal(): Long =
         player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
             available = { contentDuration },
