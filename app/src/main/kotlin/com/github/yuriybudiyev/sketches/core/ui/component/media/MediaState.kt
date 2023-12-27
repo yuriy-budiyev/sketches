@@ -27,6 +27,7 @@ package com.github.yuriybudiyev.sketches.core.ui.component.media
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import kotlinx.coroutines.CoroutineScope
 import android.content.Context
 import android.net.Uri
 import android.view.SurfaceView
@@ -39,7 +40,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.MediaItem
@@ -55,8 +56,17 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource
 @Composable
 @OptIn(UnstableApi::class)
 fun rememberMediaState(): MediaState {
-    val appContext by rememberUpdatedState(LocalContext.current.applicationContext)
-    return remember(appContext) { MediaStateImpl(appContext) }
+    val appContext = LocalContext.current.applicationContext
+    val coroutineScope = rememberCoroutineScope()
+    return remember(
+        appContext,
+        coroutineScope
+    ) {
+        MediaStateImpl(
+            appContext,
+            coroutineScope
+        )
+    }
 }
 
 @Stable
@@ -71,8 +81,6 @@ interface MediaState {
     val durationMillis: Long
 
     val positionMillis: Long
-
-    fun updateTimeSpec()
 
     fun setVideoView(view: SurfaceView)
 
@@ -94,7 +102,10 @@ interface MediaState {
 
 @Stable
 @UnstableApi
-private class MediaStateImpl(context: Context): MediaState, Player.Listener, RememberObserver {
+private class MediaStateImpl(
+    context: Context,
+    private val coroutineScope: CoroutineScope
+): MediaState, Player.Listener, RememberObserver {
 
     private val player: Player = ExoPlayer
         .Builder(context)
@@ -131,7 +142,7 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
     override var positionMillis: Long by mutableLongStateOf(positionMillisInternal())
         private set
 
-    override fun updateTimeSpec() {
+    private fun updateTimeSpec() {
         durationMillis = durationMillisInternal()
         positionMillis = positionMillisInternal()
     }
@@ -161,14 +172,12 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
         player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
             setPlayWhenReady(playWhenReady)
         }
-        updateTimeSpec()
     }
 
     override fun seek(positionMillis: Long) {
         player.callWithCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
             seekTo(positionMillis)
         }
-        updateTimeSpec()
     }
 
     override fun play() {
