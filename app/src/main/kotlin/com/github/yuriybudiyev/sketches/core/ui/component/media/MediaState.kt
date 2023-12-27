@@ -28,6 +28,10 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import android.content.Context
 import android.net.Uri
 import android.view.SurfaceView
@@ -45,7 +49,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.Timeline
 import androidx.media3.common.VideoSize
 import androidx.media3.common.util.Size
 import androidx.media3.common.util.UnstableApi
@@ -206,10 +209,21 @@ private class MediaStateImpl(
         positionMillis = positionMillisInternal()
     }
 
-    override fun onTimelineChanged(
-        timeline: Timeline,
-        @Player.TimelineChangeReason reason: Int
-    ) {
+    private var timeSpecPeriodicUpdateJob: Job? = null
+
+    private fun startTimeSpecPeriodicUpdate() {
+        timeSpecPeriodicUpdateJob?.cancel()
+        timeSpecPeriodicUpdateJob = coroutineScope.launch {
+            while (isActive && isPlaying) {
+                delay(250L)
+                updateTimeSpec()
+            }
+        }
+    }
+
+    private fun stopTimeSpecPeriodicUpdate() {
+        timeSpecPeriodicUpdateJob?.cancel()
+        timeSpecPeriodicUpdateJob = null
     }
 
     override fun open(
@@ -224,40 +238,51 @@ private class MediaStateImpl(
         }
         player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
             setPlayWhenReady(playWhenReady)
+            if (playWhenReady) {
+                startTimeSpecPeriodicUpdate()
+            }
         }
     }
 
     override fun seek(positionMillis: Long) {
         player.callWithCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
             seekTo(positionMillis)
+            updateTimeSpec()
         }
     }
 
     override fun play() {
         player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
             play()
+            updateTimeSpec()
+            startTimeSpecPeriodicUpdate()
         }
     }
 
     override fun pause() {
+        stopTimeSpecPeriodicUpdate()
         player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
             pause()
+            updateTimeSpec()
         }
     }
 
     override fun stop() {
+        stopTimeSpecPeriodicUpdate()
         player.callWithCheck(Player.COMMAND_STOP) {
             stop()
         }
     }
 
     override fun onAbandoned() {
+        stopTimeSpecPeriodicUpdate()
         player.callWithCheck(Player.COMMAND_RELEASE) {
             release()
         }
     }
 
     override fun onForgotten() {
+        stopTimeSpecPeriodicUpdate()
         player.callWithCheck(Player.COMMAND_RELEASE) {
             release()
         }
