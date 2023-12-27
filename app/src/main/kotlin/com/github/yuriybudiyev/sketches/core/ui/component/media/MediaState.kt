@@ -44,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
 import androidx.media3.common.VideoSize
 import androidx.media3.common.util.Size
 import androidx.media3.common.util.UnstableApi
@@ -80,7 +81,7 @@ interface MediaState {
         playWhenReady: Boolean = false
     )
 
-    fun seekTo(positionMillis: Long)
+    fun seek(positionMillis: Long)
 
     fun play()
 
@@ -127,14 +128,14 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
         private set
 
     override fun setVideoView(view: SurfaceView) {
-        callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
-            player.setVideoSurfaceView(view)
+        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+            setVideoSurfaceView(view)
         }
     }
 
     override fun clearVideoView() {
-        if (player.isCommandAvailable(Player.COMMAND_SET_VIDEO_SURFACE)) {
-            player.clearVideoSurface()
+        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+            clearVideoSurface()
         }
     }
 
@@ -153,25 +154,27 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
         }
     }
 
-    override fun seekTo(positionMillis: Long) {
-        TODO("Not yet implemented")
+    override fun seek(positionMillis: Long) {
+        player.callWithCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
+            seekTo(positionMillis)
+        }
     }
 
     override fun play() {
-        if (player.isCommandAvailable(Player.COMMAND_PLAY_PAUSE)) {
-            player.play()
+        player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
+            play()
         }
     }
 
     override fun pause() {
-        if (player.isCommandAvailable(Player.COMMAND_PLAY_PAUSE)) {
-            player.pause()
+        player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
+            pause()
         }
     }
 
     override fun stop() {
-        if (player.isCommandAvailable(Player.COMMAND_STOP)) {
-            player.pause()
+        player.callWithCheck(Player.COMMAND_STOP) {
+            stop()
         }
     }
 
@@ -201,6 +204,12 @@ private class MediaStateImpl(context: Context): MediaState, Player.Listener, Rem
                 height
             )
         )
+    }
+
+    override fun onTimelineChanged(
+        timeline: Timeline,
+        @Player.TimelineChangeReason reason: Int
+    ) {
     }
 
     override fun onAbandoned() {
