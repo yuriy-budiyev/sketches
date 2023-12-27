@@ -73,6 +73,7 @@ fun ImagesScreen(
             is ImagesScreenUiState.Images -> {
                 SketchesMediaVerticalGrid(
                     images = uiState.images,
+                    modifier = Modifier.fillMaxSize(),
                     onItemClick = onImageClick
                 )
             }

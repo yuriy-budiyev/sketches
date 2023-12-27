@@ -131,7 +131,7 @@ private fun BucketsLayout(
                     )
                     Text(
                         text = item.name,
-                        fontSize = 14.sp,
+                        fontSize = 16.sp,
                         modifier = Modifier.padding(
                             start = 4.dp,
                             top = 4.dp,

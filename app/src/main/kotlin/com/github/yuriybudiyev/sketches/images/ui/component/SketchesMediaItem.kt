@@ -70,9 +70,8 @@ fun SketchesMediaItem(
                 Icon(
                     imageVector = SketchesIcons.Video,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onBackground,
-
-                    )
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
             }
         }
     }

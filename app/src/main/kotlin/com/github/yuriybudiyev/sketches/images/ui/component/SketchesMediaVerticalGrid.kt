@@ -27,8 +27,6 @@ package com.github.yuriybudiyev.sketches.images.ui.component
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,11 +41,12 @@ import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
 @Composable
 fun SketchesMediaVerticalGrid(
     images: List<MediaStoreFile>,
+    modifier: Modifier = Modifier,
     onItemClick: MediaItemClickListener
 ) {
     val data by rememberUpdatedState(images)
     val coroutineScope = rememberCoroutineScope()
-    SketchesLazyVerticalGrid(modifier = Modifier.fillMaxSize()) {
+    SketchesLazyVerticalGrid(modifier = modifier) {
         items(count = data.size,
             key = { index -> data[index].id },
             itemContent = { index ->
@@ -55,7 +54,6 @@ fun SketchesMediaVerticalGrid(
                 SketchesMediaItem(file = data[index],
                     iconPadding = 4.dp,
                     modifier = Modifier
-                        .fillMaxWidth()
                         .aspectRatio(ratio = 1f)
                         .clip(shape = RoundedCornerShape(8.dp))
                         .clickable {

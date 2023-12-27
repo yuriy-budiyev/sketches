@@ -79,6 +79,7 @@ fun BucketScreen(
             is BucketScreenUiState.Bucket -> {
                 SketchesMediaVerticalGrid(
                     images = uiState.images,
+                    modifier = Modifier.fillMaxSize(),
                     onItemClick = onImageClick
                 )
             }
