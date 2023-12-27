@@ -115,16 +115,75 @@ private class MediaStateImpl(
     override var isLoading: Boolean by mutableStateOf(player.isLoading)
         private set
 
+    override fun onIsLoadingChanged(isLoading: Boolean) {
+        this.isLoading = isLoading
+    }
+
     override var isPlaying: Boolean by mutableStateOf(player.isPlaying)
         private set
 
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+        this.isPlaying = isPlaying
+    }
+
+    private fun displayAspectRatioInternal(
+        videoSize: VideoSize,
+        surfaceSize: Size
+    ): Float {
+        var width = videoSize.width.toFloat()
+        var height = videoSize.height.toFloat()
+        return if (width > 0f && height > 0f) {
+            width * videoSize.pixelWidthHeightRatio / height
+        } else {
+            width = surfaceSize.width.toFloat()
+            height = surfaceSize.height.toFloat()
+            if (width > 0f && height > 0f) {
+                width / height
+            } else {
+                1f
+            }
+        }
+    }
+
     override var displayAspectRatio: Float by mutableFloatStateOf(
-        calculateDar(
+        displayAspectRatioInternal(
             player.videoSize,
             player.surfaceSize
         )
     )
         private set
+
+    override fun onVideoSizeChanged(videoSize: VideoSize) {
+        this.displayAspectRatio = displayAspectRatioInternal(
+            videoSize,
+            player.surfaceSize
+        )
+    }
+
+    override fun setVideoView(view: SurfaceView) {
+        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+            setVideoSurfaceView(view)
+        }
+    }
+
+    override fun clearVideoView() {
+        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+            clearVideoSurface()
+        }
+    }
+
+    override fun onSurfaceSizeChanged(
+        width: Int,
+        height: Int
+    ) {
+        this.displayAspectRatio = displayAspectRatioInternal(
+            player.videoSize,
+            Size(
+                width,
+                height
+            )
+        )
+    }
 
     private fun durationMillisInternal(): Long =
         player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
@@ -147,16 +206,10 @@ private class MediaStateImpl(
         positionMillis = positionMillisInternal()
     }
 
-    override fun setVideoView(view: SurfaceView) {
-        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
-            setVideoSurfaceView(view)
-        }
-    }
-
-    override fun clearVideoView() {
-        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
-            clearVideoSurface()
-        }
+    override fun onTimelineChanged(
+        timeline: Timeline,
+        @Player.TimelineChangeReason reason: Int
+    ) {
     }
 
     override fun open(
@@ -198,49 +251,15 @@ private class MediaStateImpl(
         }
     }
 
-    override fun onIsLoadingChanged(isLoading: Boolean) {
-        this.isLoading = isLoading
-    }
-
-    override fun onIsPlayingChanged(isPlaying: Boolean) {
-        this.isPlaying = isPlaying
-    }
-
-    override fun onVideoSizeChanged(videoSize: VideoSize) {
-        this.displayAspectRatio = calculateDar(
-            videoSize,
-            player.surfaceSize
-        )
-    }
-
-    override fun onSurfaceSizeChanged(
-        width: Int,
-        height: Int
-    ) {
-        this.displayAspectRatio = calculateDar(
-            player.videoSize,
-            Size(
-                width,
-                height
-            )
-        )
-    }
-
-    override fun onTimelineChanged(
-        timeline: Timeline,
-        @Player.TimelineChangeReason reason: Int
-    ) {
-    }
-
     override fun onAbandoned() {
-        if (player.isCommandAvailable(Player.COMMAND_RELEASE)) {
-            player.release()
+        player.callWithCheck(Player.COMMAND_RELEASE) {
+            release()
         }
     }
 
     override fun onForgotten() {
-        if (player.isCommandAvailable(Player.COMMAND_RELEASE)) {
-            player.release()
+        player.callWithCheck(Player.COMMAND_RELEASE) {
+            release()
         }
     }
 
@@ -249,25 +268,6 @@ private class MediaStateImpl(
 
     init {
         player.addListener(this)
-    }
-
-    private fun calculateDar(
-        videoSize: VideoSize,
-        surfaceSize: Size
-    ): Float {
-        var width = videoSize.width.toFloat()
-        var height = videoSize.height.toFloat()
-        return if (width > 0f && height > 0f) {
-            width * videoSize.pixelWidthHeightRatio / height
-        } else {
-            width = surfaceSize.width.toFloat()
-            height = surfaceSize.height.toFloat()
-            if (width > 0f && height > 0f) {
-                width / height
-            } else {
-                1f
-            }
-        }
     }
 
     @kotlin.OptIn(ExperimentalContracts::class)
