@@ -1,13 +1,23 @@
 package com.github.yuriybudiyev.sketches.core.ui.icon
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PauseCircle
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.PlayCircleOutline
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.VolumeOff
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.outlined.BrokenImage
+import androidx.compose.material.icons.outlined.Pause
+import androidx.compose.material.icons.outlined.PauseCircle
 import androidx.compose.material.icons.outlined.Photo
 import androidx.compose.material.icons.outlined.PhotoLibrary
+import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material.icons.outlined.PlayCircle
 
 object SketchesIcons {
 
@@ -17,5 +27,9 @@ object SketchesIcons {
     val BucketsUnselected = Icons.Outlined.PhotoLibrary
     val ImageLoadError = Icons.Outlined.BrokenImage
     val Share = Icons.Filled.Share
-    val Video = Icons.Filled.PlayCircleOutline
+    val Video = Icons.Outlined.PlayCircle
+    val Play = Icons.Filled.PlayArrow
+    val Pause = Icons.Filled.Pause
+    val VolumeOn = Icons.Filled.VolumeUp
+    val VolumeOff = Icons.Filled.VolumeOff
 }

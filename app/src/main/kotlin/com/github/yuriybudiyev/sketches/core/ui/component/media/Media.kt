@@ -24,25 +24,35 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.component.media
 
+import kotlinx.coroutines.launch
 import android.net.Uri
 import android.view.SurfaceView
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
 @Composable
 fun MediaPlayer(
@@ -62,7 +72,8 @@ fun MediaPlayer(
         MediaController(
             state = state,
             modifier = Modifier
-                .height(height = 40.dp)
+                .height(height = 56.dp)
+                .padding(horizontal = 4.dp)
                 .background(
                     color = controlsBackgroundColor,
                     shape = RectangleShape
@@ -130,25 +141,61 @@ fun MediaController(
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.onBackground
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val duration = state.durationMillis.toFloat()
     val position = state.positionMillis.toFloat() / duration
-    Slider(
-        value = position,
+    Row(
         modifier = modifier,
-        onValueChange = { value ->
-            state.seek((duration * value).toLong())
-        },
-        colors = SliderDefaults.colors(
-            thumbColor = color,
-            activeTrackColor = color,
-            activeTickColor = color,
-            inactiveTrackColor = color,
-            inactiveTickColor = color,
-            disabledThumbColor = color,
-            disabledActiveTrackColor = color,
-            disabledActiveTickColor = color,
-            disabledInactiveTrackColor = color,
-            disabledInactiveTickColor = color
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(modifier = Modifier
+            .size(size = 48.dp)
+            .clip(shape = CircleShape)
+            .clickable {
+                coroutineScope.launch {}
+            },
+            contentAlignment = Alignment.Center,
+            content = {
+                Icon(
+                    imageVector = SketchesIcons.Pause,
+                    contentDescription = null,
+                    modifier = Modifier.size(size = 24.dp)
+                )
+            })
+        Slider(
+            value = position,
+            modifier = Modifier.weight(1f),
+            onValueChange = { value ->
+                state.seek((duration * value).toLong())
+            },
+            colors = SliderDefaults.colors(
+                thumbColor = color,
+                activeTrackColor = color,
+                activeTickColor = color,
+                inactiveTrackColor = color,
+                inactiveTickColor = color,
+                disabledThumbColor = color,
+                disabledActiveTrackColor = color,
+                disabledActiveTickColor = color,
+                disabledInactiveTrackColor = color,
+                disabledInactiveTickColor = color
+            )
         )
-    )
+        Box(modifier = Modifier
+            .size(size = 48.dp)
+            .clip(shape = CircleShape)
+            .clickable {
+                coroutineScope.launch {
+
+                }
+            },
+            contentAlignment = Alignment.Center,
+            content = {
+                Icon(
+                    imageVector = SketchesIcons.VolumeOn,
+                    contentDescription = null,
+                    modifier = Modifier.size(size = 24.dp)
+                )
+            })
+    }
 }
