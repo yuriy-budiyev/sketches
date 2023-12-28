@@ -34,7 +34,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import android.content.Context
 import android.net.Uri
-import android.view.SurfaceView
+import android.view.TextureView
 import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.RememberObserver
@@ -85,7 +85,7 @@ interface MediaState {
 
     val position: Float
 
-    fun setVideoView(view: SurfaceView)
+    fun setVideoView(view: TextureView)
 
     fun clearVideoView()
 
@@ -177,9 +177,9 @@ private class MediaStateImpl(
         this.isVideoVisible = isVideoVisibleInternal(videoSize)
     }
 
-    override fun setVideoView(view: SurfaceView) {
+    override fun setVideoView(view: TextureView) {
         player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
-            setVideoSurfaceView(view)
+            setVideoTextureView(view)
         }
     }
 
