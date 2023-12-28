@@ -79,9 +79,11 @@ interface MediaState {
 
     val isVolumeEnabled: Boolean
 
-    val displayAspectRatio: Float
+    val isRepeatEnabled: Boolean
 
     val isVideoVisible: Boolean
+
+    val displayAspectRatio: Float
 
     val position: Float
 
@@ -106,6 +108,10 @@ interface MediaState {
     fun enableVolume()
 
     fun disableVolume()
+
+    fun enableRepeat()
+
+    fun disableRepeat()
 }
 
 @Stable
@@ -134,10 +140,28 @@ private class MediaStateImpl(
         this.isPlaying = isPlaying
         if (isPlaying) {
             updatePosition()
-            startTimeSpecPeriodicUpdate()
+            startPositionPeriodicUpdate()
         } else {
-            stopTimeSpecPeriodicUpdate()
+            stopPositionPeriodicUpdate()
             updatePosition()
+        }
+    }
+
+    override fun play() {
+        player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
+            play()
+        }
+    }
+
+    override fun pause() {
+        player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
+            pause()
+        }
+    }
+
+    override fun stop() {
+        player.callWithCheck(Player.COMMAND_STOP) {
+            stop()
         }
     }
 
@@ -153,6 +177,51 @@ private class MediaStateImpl(
         this.isVolumeEnabled = isVolumeEnabledInternal()
     }
 
+    override fun enableVolume() {
+        player.callWithCheck(Player.COMMAND_SET_VOLUME) {
+            volume = 1f
+        }
+    }
+
+    override fun disableVolume() {
+        player.callWithCheck(Player.COMMAND_SET_VOLUME) {
+            volume = 0f
+        }
+    }
+
+    private fun isRepeatEnabledInternal(@Player.RepeatMode repeatMode: Int = player.repeatMode): Boolean =
+        repeatMode != Player.REPEAT_MODE_OFF
+
+    override var isRepeatEnabled: Boolean by mutableStateOf(isRepeatEnabledInternal())
+        private set
+
+    override fun onRepeatModeChanged(@Player.RepeatMode repeatMode: Int) {
+        this.isRepeatEnabled = isRepeatEnabledInternal(repeatMode)
+    }
+
+    override fun enableRepeat() {
+        player.callWithCheck(Player.COMMAND_SET_REPEAT_MODE) {
+            repeatMode = Player.REPEAT_MODE_ALL
+        }
+    }
+
+    override fun disableRepeat() {
+        player.callWithCheck(Player.COMMAND_SET_REPEAT_MODE) {
+            repeatMode = Player.REPEAT_MODE_OFF
+        }
+    }
+
+    private fun isVideoVisibleInternal(videoSize: VideoSize = player.videoSize): Boolean =
+        videoSize.width > 0 && videoSize.height > 0
+
+    override var isVideoVisible: Boolean by mutableStateOf(isVideoVisibleInternal())
+        private set
+
+    override fun onVideoSizeChanged(videoSize: VideoSize) {
+        this.displayAspectRatio = displayAspectRatioInternal(videoSize)
+        this.isVideoVisible = isVideoVisibleInternal(videoSize)
+    }
+
     private fun displayAspectRatioInternal(videoSize: VideoSize = player.videoSize): Float {
         val width = videoSize.width.toFloat()
         val height = videoSize.height.toFloat()
@@ -165,17 +234,6 @@ private class MediaStateImpl(
 
     override var displayAspectRatio: Float by mutableFloatStateOf(displayAspectRatioInternal())
         private set
-
-    private fun isVideoVisibleInternal(videoSize: VideoSize = player.videoSize): Boolean =
-        videoSize.width > 0 && videoSize.height > 0
-
-    override var isVideoVisible: Boolean by mutableStateOf(isVideoVisibleInternal())
-        private set
-
-    override fun onVideoSizeChanged(videoSize: VideoSize) {
-        this.displayAspectRatio = displayAspectRatioInternal(videoSize)
-        this.isVideoVisible = isVideoVisibleInternal(videoSize)
-    }
 
     override fun setVideoView(view: TextureView) {
         player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
@@ -201,11 +259,21 @@ private class MediaStateImpl(
         this.position = positionInternal()
     }
 
-    private var timeSpecPeriodicUpdateJob: Job? = null
+    override fun seek(position: Float) {
+        player.callWithCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
+            val duration = callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
+                available = { contentDuration },
+                unavailable = { 0L })
+            seekTo((duration * position).toLong())
+            updatePosition()
+        }
+    }
 
-    private fun startTimeSpecPeriodicUpdate() {
-        timeSpecPeriodicUpdateJob?.cancel()
-        timeSpecPeriodicUpdateJob = coroutineScope.launch {
+    private var positionPeriodicUpdateJob: Job? = null
+
+    private fun startPositionPeriodicUpdate() {
+        positionPeriodicUpdateJob?.cancel()
+        positionPeriodicUpdateJob = coroutineScope.launch {
             while (isActive) {
                 delay(250L)
                 updatePosition()
@@ -213,9 +281,9 @@ private class MediaStateImpl(
         }
     }
 
-    private fun stopTimeSpecPeriodicUpdate() {
-        timeSpecPeriodicUpdateJob?.cancel()
-        timeSpecPeriodicUpdateJob = null
+    private fun stopPositionPeriodicUpdate() {
+        positionPeriodicUpdateJob?.cancel()
+        positionPeriodicUpdateJob = null
     }
 
     override fun open(
@@ -239,54 +307,15 @@ private class MediaStateImpl(
         }
     }
 
-    override fun seek(position: Float) {
-        player.callWithCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
-            val duration = callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
-                available = { contentDuration },
-                unavailable = { 0L })
-            seekTo((duration * position).toLong())
-        }
-    }
-
-    override fun play() {
-        player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
-            play()
-        }
-    }
-
-    override fun pause() {
-        player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
-            pause()
-        }
-    }
-
-    override fun stop() {
-        player.callWithCheck(Player.COMMAND_STOP) {
-            stop()
-        }
-    }
-
-    override fun enableVolume() {
-        player.callWithCheck(Player.COMMAND_SET_VOLUME) {
-            volume = 1f
-        }
-    }
-
-    override fun disableVolume() {
-        player.callWithCheck(Player.COMMAND_SET_VOLUME) {
-            volume = 0f
-        }
-    }
-
     override fun onAbandoned() {
-        stopTimeSpecPeriodicUpdate()
+        stopPositionPeriodicUpdate()
         player.callWithCheck(Player.COMMAND_RELEASE) {
             release()
         }
     }
 
     override fun onForgotten() {
-        stopTimeSpecPeriodicUpdate()
+        stopPositionPeriodicUpdate()
         player.callWithCheck(Player.COMMAND_RELEASE) {
             release()
         }

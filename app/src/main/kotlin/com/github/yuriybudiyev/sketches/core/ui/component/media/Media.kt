@@ -187,6 +187,9 @@ fun MediaController(
             modifier = Modifier.weight(1f),
             onValueChange = { value ->
                 coroutineScope.launch {
+                    if (state.isPlaying) {
+                        state.pause()
+                    }
                     state.seek(value)
                 }
             },
