@@ -41,7 +41,6 @@ import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -84,9 +83,7 @@ interface MediaState {
 
     val isVideoVisible: Boolean
 
-    val durationMillis: Long
-
-    val positionMillis: Long
+    val position: Float
 
     fun setVideoView(view: SurfaceView)
 
@@ -98,7 +95,7 @@ interface MediaState {
         volumeEnabled: Boolean = false
     )
 
-    fun seek(positionMillis: Long)
+    fun seek(position: Float)
 
     fun play()
 
@@ -136,11 +133,11 @@ private class MediaStateImpl(
     override fun onIsPlayingChanged(isPlaying: Boolean) {
         this.isPlaying = isPlaying
         if (isPlaying) {
-            updateTimeSpec()
+            updatePosition()
             startTimeSpecPeriodicUpdate()
         } else {
             stopTimeSpecPeriodicUpdate()
-            updateTimeSpec()
+            updatePosition()
         }
     }
 
@@ -192,25 +189,16 @@ private class MediaStateImpl(
         }
     }
 
-    private fun durationMillisInternal(): Long =
+    private fun positionInternal(): Float =
         player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
-            available = { contentDuration },
-            unavailable = { 0L })
+            available = { contentPosition.toFloat() / contentDuration.toFloat() },
+            unavailable = { 0f })
 
-    override var durationMillis: Long by mutableLongStateOf(durationMillisInternal())
+    override var position: Float by mutableFloatStateOf(positionInternal())
         private set
 
-    private fun positionMillisInternal(): Long =
-        player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
-            available = { contentPosition },
-            unavailable = { 0L })
-
-    override var positionMillis: Long by mutableLongStateOf(positionMillisInternal())
-        private set
-
-    private fun updateTimeSpec() {
-        durationMillis = durationMillisInternal()
-        positionMillis = positionMillisInternal()
+    private fun updatePosition() {
+        this.position = positionInternal()
     }
 
     private var timeSpecPeriodicUpdateJob: Job? = null
@@ -220,7 +208,7 @@ private class MediaStateImpl(
         timeSpecPeriodicUpdateJob = coroutineScope.launch {
             while (isActive) {
                 delay(250L)
-                updateTimeSpec()
+                updatePosition()
             }
         }
     }
@@ -251,9 +239,12 @@ private class MediaStateImpl(
         }
     }
 
-    override fun seek(positionMillis: Long) {
+    override fun seek(position: Float) {
         player.callWithCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
-            seekTo(positionMillis)
+            val duration = callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
+                available = { contentDuration },
+                unavailable = { 0L })
+            seekTo((duration * position).toLong())
         }
     }
 

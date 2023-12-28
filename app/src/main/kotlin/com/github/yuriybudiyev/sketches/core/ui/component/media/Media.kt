@@ -24,6 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.component.media
 
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import android.net.Uri
 import android.view.SurfaceView
@@ -44,6 +46,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -97,13 +100,13 @@ fun MediaDisplay(
     backgroundColor: Color = MaterialTheme.colorScheme.background
 ) {
     val context = LocalContext.current
-    val displayAspectRatio = state.displayAspectRatio
-    val isVideoVisible = state.isVideoVisible
-    key(
-        displayAspectRatio,
-        isVideoVisible
-    ) {
-        Box(modifier = modifier) {
+    Box(modifier = modifier) {
+        val displayAspectRatio = state.displayAspectRatio
+        val isVideoVisible = state.isVideoVisible
+        key(
+            displayAspectRatio,
+            isVideoVisible
+        ) {
             Box(
                 modifier = Modifier
                     .matchParentSize()
@@ -135,6 +138,7 @@ fun MediaDisplay(
     }
 }
 
+@OptIn(FlowPreview::class)
 @Composable
 fun MediaController(
     state: MediaState,
@@ -142,8 +146,6 @@ fun MediaController(
     color: Color = MaterialTheme.colorScheme.onBackground
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val duration = state.durationMillis.toFloat()
-    val position = state.positionMillis.toFloat() / duration
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -152,21 +154,35 @@ fun MediaController(
             .size(size = 48.dp)
             .clip(shape = CircleShape)
             .clickable {
-                coroutineScope.launch {}
+                coroutineScope.launch {
+                    if (state.isPlaying) {
+                        state.pause()
+                    } else {
+                        state.play()
+                    }
+                }
             },
             contentAlignment = Alignment.Center,
             content = {
                 Icon(
-                    imageVector = SketchesIcons.Pause,
+                    imageVector = if (state.isPlaying) {
+                        SketchesIcons.Pause
+                    } else {
+                        SketchesIcons.Play
+                    },
                     contentDescription = null,
                     modifier = Modifier.size(size = 24.dp)
                 )
             })
         Slider(
-            value = position,
+            value = state.position,
             modifier = Modifier.weight(1f),
-            onValueChange = { value ->
-                state.seek((duration * value).toLong())
+            onValueChange = { position ->
+                coroutineScope.launch {
+                    snapshotFlow { position }
+                        .debounce { 1000L }
+                        .collect { state.seek(position) }
+                }
             },
             colors = SliderDefaults.colors(
                 thumbColor = color,
@@ -186,13 +202,21 @@ fun MediaController(
             .clip(shape = CircleShape)
             .clickable {
                 coroutineScope.launch {
-
+                    if (state.isVolumeEnabled) {
+                        state.disableVolume()
+                    } else {
+                        state.enableVolume()
+                    }
                 }
             },
             contentAlignment = Alignment.Center,
             content = {
                 Icon(
-                    imageVector = SketchesIcons.VolumeOn,
+                    imageVector = if (state.isVolumeEnabled) {
+                        SketchesIcons.VolumeEnabled
+                    } else {
+                        SketchesIcons.VolumeDisabled
+                    },
                     contentDescription = null,
                     modifier = Modifier.size(size = 24.dp)
                 )
