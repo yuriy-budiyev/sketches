@@ -128,6 +128,13 @@ private class MediaStateImpl(
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
         this.isPlaying = isPlaying
+        if (isPlaying) {
+            updateTimeSpec()
+            startTimeSpecPeriodicUpdate()
+        } else {
+            stopTimeSpecPeriodicUpdate()
+            updateTimeSpec()
+        }
     }
 
     private fun displayAspectRatioInternal(videoSize: VideoSize = player.videoSize): Float {
@@ -192,7 +199,7 @@ private class MediaStateImpl(
     private fun startTimeSpecPeriodicUpdate() {
         timeSpecPeriodicUpdateJob?.cancel()
         timeSpecPeriodicUpdateJob = coroutineScope.launch {
-            while (isActive && isPlaying) {
+            while (isActive) {
                 delay(250L)
                 updateTimeSpec()
             }
@@ -216,37 +223,28 @@ private class MediaStateImpl(
         }
         player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
             setPlayWhenReady(playWhenReady)
-            if (playWhenReady) {
-                startTimeSpecPeriodicUpdate()
-            }
         }
     }
 
     override fun seek(positionMillis: Long) {
         player.callWithCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
             seekTo(positionMillis)
-            updateTimeSpec()
         }
     }
 
     override fun play() {
         player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
             play()
-            updateTimeSpec()
-            startTimeSpecPeriodicUpdate()
         }
     }
 
     override fun pause() {
-        stopTimeSpecPeriodicUpdate()
         player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
             pause()
-            updateTimeSpec()
         }
     }
 
     override fun stop() {
-        stopTimeSpecPeriodicUpdate()
         player.callWithCheck(Player.COMMAND_STOP) {
             stop()
         }

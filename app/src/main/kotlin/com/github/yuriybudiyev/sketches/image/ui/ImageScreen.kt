@@ -71,8 +71,7 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
-import com.github.yuriybudiyev.sketches.core.ui.component.media.MediaDisplay
-import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberMediaState
+import com.github.yuriybudiyev.sketches.core.ui.component.media.MediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
@@ -249,14 +248,9 @@ private fun ImageLayout(
                             )
                         }
                         MediaStoreFile.Type.VIDEO -> {
-                            val mediaState = rememberMediaState()
-                            MediaDisplay(
-                                state = mediaState,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                            mediaState.open(
-                                file.uri,
-                                playWhenReady = true
+                            MediaPlayer(
+                                uri = file.uri,
+                                Modifier.fillMaxSize()
                             )
                         }
                     }
