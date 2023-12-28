@@ -252,6 +252,7 @@ private fun ImageLayout(
                                 uri = file.uri,
                                 playWhenReady = true,
                                 volumeEnabled = false,
+                                repeatEnabled = false,
                                 modifier = Modifier.fillMaxSize()
                             )
                         }

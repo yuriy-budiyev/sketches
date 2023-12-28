@@ -58,6 +58,7 @@ fun MediaPlayer(
     uri: Uri,
     playWhenReady: Boolean,
     volumeEnabled: Boolean,
+    repeatEnabled: Boolean,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     controlsBackgroundColor: Color = backgroundColor.copy(alpha = 0.5f),
@@ -75,7 +76,8 @@ fun MediaPlayer(
         state.open(
             uri = uri,
             playWhenReady = playWhenReady,
-            volumeEnabled = volumeEnabled
+            volumeEnabled = volumeEnabled,
+            repeatEnabled = repeatEnabled
         )
     }
 }

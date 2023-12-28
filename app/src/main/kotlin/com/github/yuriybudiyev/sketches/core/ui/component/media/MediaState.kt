@@ -77,41 +77,42 @@ interface MediaState {
 
     val isPlaying: Boolean
 
-    val isVolumeEnabled: Boolean
-
-    val isRepeatEnabled: Boolean
-
-    val isVideoVisible: Boolean
-
-    val displayAspectRatio: Float
-
-    val position: Float
-
-    fun setVideoView(view: TextureView)
-
-    fun clearVideoView()
-
-    fun open(
-        uri: Uri,
-        playWhenReady: Boolean = false,
-        volumeEnabled: Boolean = false
-    )
-
-    fun seek(position: Float)
-
     fun play()
 
     fun pause()
 
     fun stop()
 
+    val isVolumeEnabled: Boolean
+
     fun enableVolume()
 
     fun disableVolume()
 
+    val isRepeatEnabled: Boolean
+
     fun enableRepeat()
 
     fun disableRepeat()
+
+    val isVideoVisible: Boolean
+
+    val displayAspectRatio: Float
+
+    fun setVideoView(view: TextureView)
+
+    fun clearVideoView()
+
+    val position: Float
+
+    fun seek(position: Float)
+
+    fun open(
+        uri: Uri,
+        playWhenReady: Boolean = false,
+        volumeEnabled: Boolean = false,
+        repeatEnabled: Boolean = false
+    )
 }
 
 @Stable
@@ -289,7 +290,8 @@ private class MediaStateImpl(
     override fun open(
         uri: Uri,
         playWhenReady: Boolean,
-        volumeEnabled: Boolean
+        volumeEnabled: Boolean,
+        repeatEnabled: Boolean
     ) {
         player.callWithCheck(Player.COMMAND_CHANGE_MEDIA_ITEMS) {
             setMediaItem(MediaItem.fromUri(uri))
@@ -301,6 +303,11 @@ private class MediaStateImpl(
             enableVolume()
         } else {
             disableVolume()
+        }
+        if (repeatEnabled) {
+            disableRepeat()
+        } else {
+            enableRepeat()
         }
         player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
             setPlayWhenReady(playWhenReady)
