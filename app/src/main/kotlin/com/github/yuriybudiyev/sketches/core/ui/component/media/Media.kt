@@ -99,7 +99,6 @@ fun MediaDisplay(
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.background
 ) {
-    val context = LocalContext.current
     Box(modifier = modifier) {
         val displayAspectRatio = state.displayAspectRatio
         val isVideoVisible = state.isVideoVisible
@@ -115,6 +114,7 @@ fun MediaDisplay(
                         shape = RectangleShape
                     )
             ) {
+                val context = LocalContext.current
                 AndroidView(modifier = Modifier
                     .aspectRatio(
                         ratio = displayAspectRatio,
