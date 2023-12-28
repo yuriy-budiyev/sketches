@@ -42,7 +42,12 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -103,18 +108,17 @@ fun MediaDisplay(
                     color = backgroundColor,
                     shape = RectangleShape
                 )
-        ) {
-            val context = LocalContext.current
-            val displayAspectRatio = state.displayAspectRatio
-            AndroidView(modifier = Modifier
-                .aspectRatio(
-                    ratio = displayAspectRatio,
-                    matchHeightConstraintsFirst = displayAspectRatio < 1f
-                )
-                .align(Alignment.Center),
-                factory = { TextureView(context) },
-                update = { view -> state.setVideoView(view) })
-        }
+        )
+        val context = LocalContext.current
+        val aspectRatio = state.displayAspectRatio
+        AndroidView(modifier = Modifier
+            .aspectRatio(
+                ratio = aspectRatio,
+                matchHeightConstraintsFirst = aspectRatio < 1f
+            )
+            .align(Alignment.Center),
+            factory = { TextureView(context) },
+            update = { view -> state.setVideoView(view) })
         if (!state.isVideoVisible) {
             Box(
                 modifier = Modifier
@@ -163,13 +167,19 @@ fun MediaController(
                     modifier = Modifier.size(size = 24.dp)
                 )
             })
-        Slider(
-            value = state.position,
-            modifier = Modifier.weight(1f),
-            onValueChange = { position ->
+        var position by remember { mutableFloatStateOf(state.position) }
+        LaunchedEffect(position) {
+            snapshotFlow { position }.collect { position ->
                 coroutineScope.launch {
                     state.seek(position)
                 }
+            }
+        }
+        Slider(
+            value = position,
+            modifier = Modifier.weight(1f),
+            onValueChange = { value ->
+                position = value
             },
             colors = SliderDefaults.colors(
                 thumbColor = color,
