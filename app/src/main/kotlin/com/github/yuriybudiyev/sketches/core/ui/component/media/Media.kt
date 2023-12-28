@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.core.ui.component.media
 
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import android.net.Uri
 import android.view.SurfaceView
@@ -44,9 +43,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -100,12 +97,26 @@ fun MediaDisplay(
     backgroundColor: Color = MaterialTheme.colorScheme.background
 ) {
     Box(modifier = modifier) {
-        val displayAspectRatio = state.displayAspectRatio
-        val isVideoVisible = state.isVideoVisible
-        key(
-            displayAspectRatio,
-            isVideoVisible
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(
+                    color = backgroundColor,
+                    shape = RectangleShape
+                )
         ) {
+            val context = LocalContext.current
+            val ratio = state.displayAspectRatio
+            AndroidView(modifier = Modifier
+                .aspectRatio(
+                    ratio = ratio,
+                    matchHeightConstraintsFirst = ratio < 1f
+                )
+                .align(Alignment.Center),
+                factory = { SurfaceView(context) },
+                update = { view -> state.setVideoView(view) })
+        }
+        if (!state.isVideoVisible) {
             Box(
                 modifier = Modifier
                     .matchParentSize()
@@ -113,28 +124,9 @@ fun MediaDisplay(
                         color = backgroundColor,
                         shape = RectangleShape
                     )
-            ) {
-                val context = LocalContext.current
-                AndroidView(modifier = Modifier
-                    .aspectRatio(
-                        ratio = displayAspectRatio,
-                        matchHeightConstraintsFirst = displayAspectRatio < 1f
-                    )
-                    .align(Alignment.Center),
-                    factory = { SurfaceView(context) },
-                    update = { view -> state.setVideoView(view) })
-            }
-            if (!isVideoVisible) {
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .background(
-                            color = backgroundColor,
-                            shape = RectangleShape
-                        )
-                )
-            }
+            )
         }
+
     }
 }
 
@@ -179,9 +171,7 @@ fun MediaController(
             modifier = Modifier.weight(1f),
             onValueChange = { position ->
                 coroutineScope.launch {
-                    snapshotFlow { position }
-                        .debounce { 1000L }
-                        .collect { state.seek(position) }
+                    state.seek(position)
                 }
             },
             colors = SliderDefaults.colors(
