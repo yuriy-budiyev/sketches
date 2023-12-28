@@ -60,7 +60,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -145,7 +144,6 @@ private fun ImageLayout(
     onImageShare: ImageShareListener,
 ) {
     val data by rememberUpdatedState(newValue = images)
-    val context by rememberUpdatedState(newValue = LocalContext.current)
     val pagerState = rememberPagerState(initialPage = index) { data.size }
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = index)
     val coroutineScope = rememberCoroutineScope()
