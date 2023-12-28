@@ -78,6 +78,8 @@ interface MediaState {
 
     val isPlaying: Boolean
 
+    val isVolumeEnabled: Boolean
+
     val displayAspectRatio: Float
 
     val isVideoVisible: Boolean
@@ -92,7 +94,8 @@ interface MediaState {
 
     fun open(
         uri: Uri,
-        playWhenReady: Boolean = false
+        playWhenReady: Boolean = false,
+        volumeEnabled: Boolean = false
     )
 
     fun seek(positionMillis: Long)
@@ -102,6 +105,10 @@ interface MediaState {
     fun pause()
 
     fun stop()
+
+    fun enableVolume()
+
+    fun disableVolume()
 }
 
 @Stable
@@ -135,6 +142,18 @@ private class MediaStateImpl(
             stopTimeSpecPeriodicUpdate()
             updateTimeSpec()
         }
+    }
+
+    private fun isVolumeEnabledInternal(): Boolean =
+        player.callWithCheck(Player.COMMAND_GET_VOLUME,
+            available = { volume > 0f },
+            unavailable = { false })
+
+    override var isVolumeEnabled: Boolean by mutableStateOf(isVolumeEnabledInternal())
+        private set
+
+    override fun onVolumeChanged(volume: Float) {
+        this.isVolumeEnabled = isVolumeEnabledInternal()
     }
 
     private fun displayAspectRatioInternal(videoSize: VideoSize = player.videoSize): Float {
@@ -213,13 +232,19 @@ private class MediaStateImpl(
 
     override fun open(
         uri: Uri,
-        playWhenReady: Boolean
+        playWhenReady: Boolean,
+        volumeEnabled: Boolean
     ) {
         player.callWithCheck(Player.COMMAND_CHANGE_MEDIA_ITEMS) {
             setMediaItem(MediaItem.fromUri(uri))
         }
         player.callWithCheck(Player.COMMAND_PREPARE) {
             prepare()
+        }
+        if (volumeEnabled) {
+            enableVolume()
+        } else {
+            disableVolume()
         }
         player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
             setPlayWhenReady(playWhenReady)
@@ -247,6 +272,18 @@ private class MediaStateImpl(
     override fun stop() {
         player.callWithCheck(Player.COMMAND_STOP) {
             stop()
+        }
+    }
+
+    override fun enableVolume() {
+        player.callWithCheck(Player.COMMAND_SET_VOLUME) {
+            volume = 1f
+        }
+    }
+
+    override fun disableVolume() {
+        player.callWithCheck(Player.COMMAND_SET_VOLUME) {
+            volume = 0f
         }
     }
 
