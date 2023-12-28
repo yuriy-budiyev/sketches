@@ -42,12 +42,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -187,19 +182,13 @@ fun MediaController(
                     modifier = Modifier.size(size = 24.dp)
                 )
             })
-        var position by remember { mutableFloatStateOf(state.position) }
-        LaunchedEffect(position) {
-            snapshotFlow { position }.collect { position ->
-                coroutineScope.launch {
-                    state.seek(position)
-                }
-            }
-        }
         Slider(
-            value = position,
+            value = state.position,
             modifier = Modifier.weight(1f),
             onValueChange = { value ->
-                position = value
+                coroutineScope.launch {
+                    state.seek(value)
+                }
             },
             colors = SliderDefaults.colors(
                 thumbColor = color,
