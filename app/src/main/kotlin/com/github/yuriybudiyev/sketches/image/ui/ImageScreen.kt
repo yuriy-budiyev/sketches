@@ -30,13 +30,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -60,6 +58,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -147,6 +146,8 @@ private fun ImageLayout(
     val pagerState = rememberPagerState(initialPage = index) { data.size }
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = index)
     val coroutineScope = rememberCoroutineScope()
+    val listItemSize = 80.dp
+    val listItemSizePx = with(LocalDensity.current) { listItemSize.roundToPx() }
     LaunchedEffect(
         data,
         pagerState,
@@ -161,7 +162,9 @@ private fun ImageLayout(
                     image
                 )
             }
-            val scrollOffset = calculateScrollOffset(listState)
+            val layoutInfo = listState.layoutInfo
+            val viewportSize = layoutInfo.viewportEndOffset - layoutInfo.viewportStartOffset
+            val scrollOffset = listItemSizePx / 2 - viewportSize / 2
             coroutineScope.launch {
                 listState.animateScrollToItem(
                     page,
@@ -203,8 +206,8 @@ private fun ImageLayout(
         bottomBar = {
             LazyRow(state = listState,
                 modifier = Modifier
-                    .height(height = 96.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
                 contentPadding = PaddingValues(vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(space = 4.dp),
                 content = {
@@ -214,10 +217,7 @@ private fun ImageLayout(
                             SketchesMediaItem(file = data[item],
                                 iconPadding = 2.dp,
                                 modifier = Modifier
-                                    .aspectRatio(
-                                        ratio = 1f,
-                                        matchHeightConstraintsFirst = true
-                                    )
+                                    .size(listItemSize)
                                     .clip(shape = RoundedCornerShape(8.dp))
                                     .clickable {
                                         coroutineScope.launch {
@@ -257,18 +257,4 @@ private fun ImageLayout(
                     }
                 })
         })
-}
-
-/**
- * Works only if all items have the same size.
- */
-private fun calculateScrollOffset(listState: LazyListState): Int {
-    val layoutInfo = listState.layoutInfo
-    val itemsInfo = layoutInfo.visibleItemsInfo
-    return if (itemsInfo.isNotEmpty()) {
-        val viewportSize = layoutInfo.viewportEndOffset - layoutInfo.viewportStartOffset
-        itemsInfo.first().size / 2 - viewportSize / 2
-    } else {
-        0
-    }
 }
