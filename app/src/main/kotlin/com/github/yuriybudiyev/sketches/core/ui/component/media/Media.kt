@@ -61,12 +61,38 @@ import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 @Composable
 fun MediaPlayer(
     uri: Uri,
+    playWhenReady: Boolean,
+    volumeEnabled: Boolean,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     controlsBackgroundColor: Color = backgroundColor.copy(alpha = 0.5f),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground
 ) {
     val state = rememberMediaState()
+    MediaPlayer(
+        state = rememberMediaState(),
+        modifier = modifier,
+        backgroundColor = backgroundColor,
+        controlsBackgroundColor = controlsBackgroundColor,
+        controlsColor = controlsColor
+    )
+    LaunchedEffect(uri) {
+        state.open(
+            uri = uri,
+            playWhenReady = playWhenReady,
+            volumeEnabled = volumeEnabled
+        )
+    }
+}
+
+@Composable
+fun MediaPlayer(
+    state: MediaState,
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = MaterialTheme.colorScheme.background,
+    controlsBackgroundColor: Color = backgroundColor.copy(alpha = 0.5f),
+    controlsColor: Color = MaterialTheme.colorScheme.onBackground
+) {
     Box(modifier = modifier) {
         MediaDisplay(
             state = state,
@@ -84,12 +110,6 @@ fun MediaPlayer(
                 )
                 .align(alignment = Alignment.BottomCenter),
             color = controlsColor
-        )
-    }
-    LaunchedEffect(uri) {
-        state.open(
-            uri = uri,
-            playWhenReady = true
         )
     }
 }
