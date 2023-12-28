@@ -70,7 +70,7 @@ fun MediaPlayer(
 ) {
     val state = rememberMediaState()
     MediaPlayer(
-        state = rememberMediaState(),
+        state = state,
         modifier = modifier,
         backgroundColor = backgroundColor,
         controlsBackgroundColor = controlsBackgroundColor,
