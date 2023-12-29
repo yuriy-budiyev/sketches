@@ -24,9 +24,13 @@
 
 package com.github.yuriybudiyev.sketches.main.navigation
 
+import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
+import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.bucket.navigation.BucketNavigationDestination
 import com.github.yuriybudiyev.sketches.bucket.ui.BucketRoute
 import com.github.yuriybudiyev.sketches.buckets.navigation.BucketsNavigationDestination
@@ -102,10 +106,27 @@ fun SketchesNavHost(
                 ImageNavigationDestination.Arguments.BUCKET_ID,
                 -1L
             ) ?: -1L
+            val context = LocalContext.current
+            val shareTitle = stringResource(id = R.string.share_image)
             ImageRoute(imageIndex = imageIndex,
                 imageId = imageId,
                 bucketId = bucketId,
-                onImageShare = { image -> })
+                onImageShare = { image ->
+                    context.startActivity(
+                        Intent
+                            .createChooser(
+                                Intent(Intent.ACTION_SEND).apply {
+                                    putExtra(
+                                        Intent.EXTRA_STREAM,
+                                        image.uri
+                                    )
+                                    type = image.mimeType
+                                },
+                                shareTitle
+                            )
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    )
+                })
         }
     }
 }

@@ -10,4 +10,5 @@
     <string name="buckets_screen_label">Альбомы</string>
     <string name="no_buckets_found">Альбомов не найдено</string>
     <string name="open_settings">Настройки</string>
+    <string name="share_image">Поделиться изображением</string>
 </resources>
