@@ -52,16 +52,16 @@ interface ZoomState {
         y: Float
     )
 
-    val offsetX: Float
+    val translationX: Float
 
-    val offsetY: Float
+    val translationY: Float
 
-    suspend fun offset(
+    suspend fun translation(
         x: Float,
         y: Float
     )
 
-    suspend fun animateOffset(
+    suspend fun animateTranslation(
         x: Float,
         y: Float
     )
@@ -91,21 +91,21 @@ private class ZoomStateImpl(): ZoomState {
         TODO("Not yet implemented")
     }
 
-    override var offsetX: Float by mutableFloatStateOf(0f)
+    override var translationX: Float by mutableFloatStateOf(0f)
         private set
 
-    override var offsetY: Float by mutableFloatStateOf(0f)
+    override var translationY: Float by mutableFloatStateOf(0f)
         private set
 
-    override suspend fun offset(
+    override suspend fun translation(
         x: Float,
         y: Float
     ) {
-        this.offsetX = x
-        this.offsetY = y
+        this.translationX = x
+        this.translationY = y
     }
 
-    override suspend fun animateOffset(
+    override suspend fun animateTranslation(
         x: Float,
         y: Float
     ) {
