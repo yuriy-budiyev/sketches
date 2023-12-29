@@ -178,7 +178,12 @@ fun MediaController(
                         state.pause()
                     } else {
                         isPausedByUser = false
-                        state.play()
+                        if (state.position == 1f) {
+                            state.seek(0f)
+                        }
+                        if (!state.isPlaying) {
+                            state.play()
+                        }
                     }
                 }
             },
