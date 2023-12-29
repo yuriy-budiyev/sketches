@@ -148,11 +148,19 @@ private class MediaStateImpl(
         } else {
             stopPositionPeriodicUpdate()
             updatePosition()
+            if (position == 1f) {
+                player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
+                    playWhenReady = false
+                }
+            }
         }
     }
 
     override fun play() {
         player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
+            if (position == 1f) {
+                seek(0f)
+            }
             play()
         }
     }
@@ -277,13 +285,21 @@ private class MediaStateImpl(
         this.position = positionInternal()
     }
 
+    var seekJob: Job? = null
+
     override fun seek(position: Float) {
         player.callWithCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
             val duration = callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
                 available = { contentDuration },
                 unavailable = { 0L })
+            if (isPlaying) {
+                stopPositionPeriodicUpdate()
+            }
             seekTo((duration * position).toLong())
             updatePosition()
+            if (isPlaying) {
+                startPositionPeriodicUpdate()
+            }
         }
     }
 

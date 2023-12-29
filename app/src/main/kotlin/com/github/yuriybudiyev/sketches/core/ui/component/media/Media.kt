@@ -24,9 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.component.media
 
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import android.net.Uri
 import android.view.TextureView
@@ -45,11 +42,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -167,23 +160,15 @@ fun MediaController(
         verticalAlignment = Alignment.CenterVertically
     ) {
         val coroutineScope = rememberCoroutineScope()
-        var isPausedByUser by remember { mutableStateOf(false) }
         Box(modifier = Modifier
             .size(size = 48.dp)
             .clip(shape = CircleShape)
             .clickable {
                 coroutineScope.launch {
                     if (state.isPlaying) {
-                        isPausedByUser = true
                         state.pause()
                     } else {
-                        isPausedByUser = false
-                        if (state.position == 1f) {
-                            state.seek(0f)
-                        }
-                        if (!state.isPlaying) {
-                            state.play()
-                        }
+                        state.play()
                     }
                 }
             },
@@ -199,21 +184,12 @@ fun MediaController(
                     modifier = Modifier.size(size = 24.dp)
                 )
             })
-        var seekJob by remember { mutableStateOf<Job?>(null) }
         Slider(
             value = state.position,
             modifier = Modifier.weight(1f),
             onValueChange = { value ->
-                seekJob?.cancel()
-                seekJob = coroutineScope.launch {
-                    if (state.isPlaying) {
-                        state.pause()
-                    }
+                coroutineScope.launch {
                     state.seek(value)
-                    delay(500L)
-                    if (isActive && !state.isPlaying && !isPausedByUser) {
-                        state.play()
-                    }
                 }
             },
             colors = SliderDefaults.colors(
