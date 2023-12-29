@@ -345,10 +345,10 @@ private class MediaStateImpl(
     }
 
     @kotlin.OptIn(ExperimentalContracts::class)
-    private inline fun <R, T> R.callWithCheck(
+    private inline fun <T> Player.callWithCheck(
         @Player.Command command: Int,
-        available: R.() -> T,
-        unavailable: R.() -> T
+        available: Player.() -> T,
+        unavailable: Player.() -> T
     ): T {
         contract {
             callsInPlace(
@@ -360,7 +360,7 @@ private class MediaStateImpl(
                 InvocationKind.UNKNOWN
             )
         }
-        return if (player.isCommandAvailable(command)) {
+        return if (isCommandAvailable(command)) {
             available()
         } else {
             unavailable()
@@ -368,9 +368,9 @@ private class MediaStateImpl(
     }
 
     @kotlin.OptIn(ExperimentalContracts::class)
-    private inline fun <R> R.callWithCheck(
+    private inline fun Player.callWithCheck(
         @Player.Command command: Int,
-        available: R.() -> Unit
+        available: Player.() -> Unit
     ) {
         contract {
             callsInPlace(
@@ -378,7 +378,7 @@ private class MediaStateImpl(
                 InvocationKind.UNKNOWN
             )
         }
-        if (player.isCommandAvailable(command)) {
+        if (isCommandAvailable(command)) {
             available()
         }
     }
