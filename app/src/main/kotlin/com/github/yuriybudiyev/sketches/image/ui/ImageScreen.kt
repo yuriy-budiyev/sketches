@@ -70,6 +70,7 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessag
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.component.media.MediaPlayer
+import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberMediaState
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
@@ -236,23 +237,39 @@ private fun ImageLayout(
                 key = { page -> data[page].id },
                 pageContent = { page ->
                     val file = data[page]
+                    val fileUri = file.uri
                     when (file.type) {
                         MediaStoreFile.Type.IMAGE -> {
                             SketchesAsyncImage(
-                                uri = file.uri,
+                                uri = fileUri,
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Fit,
                                 filterQuality = FilterQuality.High
                             )
                         }
                         MediaStoreFile.Type.VIDEO -> {
+                            val mediaState = rememberMediaState()
                             MediaPlayer(
-                                uri = file.uri,
-                                playWhenReady = true,
-                                volumeEnabled = false,
-                                repeatEnabled = false,
+                                state = mediaState,
                                 modifier = Modifier.fillMaxSize()
                             )
+                            LaunchedEffect(fileUri) {
+                                mediaState.open(
+                                    uri = fileUri,
+                                    playWhenReady = false,
+                                    volumeEnabled = false,
+                                    repeatEnabled = false
+                                )
+                            }
+                            val isCurrentPage = page == pagerState.currentPage
+                            LaunchedEffect(isCurrentPage) {
+                                if (isCurrentPage) {
+                                    mediaState.play()
+                                } else {
+                                    mediaState.pause()
+                                    mediaState.seek(position = 0f)
+                                }
+                            }
                         }
                     }
                 })
