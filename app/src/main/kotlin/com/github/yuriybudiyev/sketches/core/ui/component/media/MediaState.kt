@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.core.ui.component.media
 
 import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -373,14 +372,8 @@ private class MediaStateImpl(
         unavailable: Player.() -> T
     ): T {
         contract {
-            callsInPlace(
-                available,
-                InvocationKind.UNKNOWN
-            )
-            callsInPlace(
-                unavailable,
-                InvocationKind.UNKNOWN
-            )
+            callsInPlace(available)
+            callsInPlace(unavailable)
         }
         return if (isCommandAvailable(command)) {
             available()
@@ -395,10 +388,7 @@ private class MediaStateImpl(
         available: Player.() -> Unit
     ) {
         contract {
-            callsInPlace(
-                available,
-                InvocationKind.UNKNOWN
-            )
+            callsInPlace(available)
         }
         if (isCommandAvailable(command)) {
             available()
