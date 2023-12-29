@@ -314,9 +314,9 @@ private class MediaStateImpl(
             disableVolume()
         }
         if (repeatEnabled) {
-            disableRepeat()
-        } else {
             enableRepeat()
+        } else {
+            disableRepeat()
         }
         player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
             setPlayWhenReady(playWhenReady)
