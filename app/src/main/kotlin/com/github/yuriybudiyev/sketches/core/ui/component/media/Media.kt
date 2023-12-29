@@ -167,7 +167,7 @@ fun MediaController(
         verticalAlignment = Alignment.CenterVertically
     ) {
         val coroutineScope = rememberCoroutineScope()
-        var isPausedByUser by remember { mutableStateOf(!state.isPlaying) }
+        var isPausedByUser by remember { mutableStateOf(false) }
         Box(modifier = Modifier
             .size(size = 48.dp)
             .clip(shape = CircleShape)
