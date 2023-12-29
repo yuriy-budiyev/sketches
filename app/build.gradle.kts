@@ -76,6 +76,7 @@ dependencies {
     implementation(sketches.bundles.androidx.lifecycle)
     implementation(sketches.bundles.androidx.window)
     implementation(sketches.bundles.androidx.work)
+    implementation(sketches.bundles.androidx.sqlite)
     implementation(sketches.bundles.androidx.room)
     implementation(sketches.bundles.androidx.media3)
     implementation(sketches.bundles.hilt)
