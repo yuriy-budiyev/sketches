@@ -34,6 +34,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import android.content.Context
 import android.net.Uri
+import android.view.SurfaceView
 import android.view.TextureView
 import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
@@ -98,6 +99,8 @@ interface MediaState {
     val isVideoVisible: Boolean
 
     val displayAspectRatio: Float
+
+    fun setVideoView(view: SurfaceView)
 
     fun setVideoView(view: TextureView)
 
@@ -235,6 +238,12 @@ private class MediaStateImpl(
 
     override var displayAspectRatio: Float by mutableFloatStateOf(displayAspectRatioInternal())
         private set
+
+    override fun setVideoView(view: SurfaceView) {
+        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+            setVideoSurfaceView(view)
+        }
+    }
 
     override fun setVideoView(view: TextureView) {
         player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
