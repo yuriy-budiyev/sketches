@@ -285,8 +285,6 @@ private class MediaStateImpl(
         this.position = positionInternal()
     }
 
-    var seekJob: Job? = null
-
     override fun seek(position: Float) {
         player.callWithCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
             val duration = callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
