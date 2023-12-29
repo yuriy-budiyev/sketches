@@ -248,7 +248,7 @@ private fun ImageLayout(
                         MediaStoreFile.Type.VIDEO -> {
                             MediaPlayer(
                                 uri = file.uri,
-                                playWhenReady = false,
+                                playWhenReady = true,
                                 volumeEnabled = false,
                                 repeatEnabled = false,
                                 modifier = Modifier.fillMaxSize()
