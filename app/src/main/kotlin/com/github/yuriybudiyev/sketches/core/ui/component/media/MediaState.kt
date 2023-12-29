@@ -257,10 +257,18 @@ private class MediaStateImpl(
         }
     }
 
-    private fun positionInternal(): Float =
-        player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
+    private fun positionInternal(): Float {
+        var position = player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
             available = { contentPosition.toFloat() / contentDuration.toFloat() },
             unavailable = { 0f })
+        if (position < 0f) {
+            position = 0f
+        }
+        if (position > 1f) {
+            position = 1f
+        }
+        return position
+    }
 
     override var position: Float by mutableFloatStateOf(positionInternal())
         private set
