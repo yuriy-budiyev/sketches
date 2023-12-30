@@ -24,9 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.core.di
 
-import javax.inject.Singleton
 import android.content.Context
 import android.os.Build
+import javax.inject.Singleton
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder

@@ -24,8 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.images.di
 
-import javax.inject.Singleton
 import android.content.Context
+import javax.inject.Singleton
 import com.github.yuriybudiyev.sketches.images.data.reository.MediaRepository
 import com.github.yuriybudiyev.sketches.images.data.reository.implementation.MediaRepositoryImpl
 import dagger.Module

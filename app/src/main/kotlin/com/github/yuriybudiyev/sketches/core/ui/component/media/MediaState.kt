@@ -26,15 +26,15 @@ package com.github.yuriybudiyev.sketches.core.ui.component.media
 
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
+import android.content.Context
+import android.net.Uri
+import android.view.SurfaceView
+import android.view.TextureView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import android.content.Context
-import android.net.Uri
-import android.view.SurfaceView
-import android.view.TextureView
 import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.RememberObserver

@@ -24,8 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.buckets.di
 
-import javax.inject.Singleton
 import android.content.Context
+import javax.inject.Singleton
 import com.github.yuriybudiyev.sketches.buckets.data.repository.BucketsRepository
 import com.github.yuriybudiyev.sketches.buckets.data.repository.implementation.BucketsRepositoryImpl
 import dagger.Module
