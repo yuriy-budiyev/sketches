@@ -270,6 +270,11 @@ private fun ImageLayout(
                                     mediaState.seek(position = 0f)
                                 }
                             }
+                            LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+                                if (mediaState.isPlaying) {
+                                    mediaState.pause()
+                                }
+                            }
                         }
                     }
                 })
