@@ -24,9 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.component.media
 
-import android.net.Uri
-import android.view.TextureView
 import kotlinx.coroutines.launch
+import android.view.TextureView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -41,7 +40,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,35 +50,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
-
-@Composable
-fun MediaPlayer(
-    uri: Uri,
-    playWhenReady: Boolean,
-    volumeEnabled: Boolean,
-    repeatEnabled: Boolean,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colorScheme.background,
-    controlsBackgroundColor: Color = backgroundColor.copy(alpha = 0.5f),
-    controlsColor: Color = MaterialTheme.colorScheme.onBackground
-) {
-    val state = rememberMediaState()
-    MediaPlayer(
-        state = state,
-        modifier = modifier,
-        backgroundColor = backgroundColor,
-        controlsBackgroundColor = controlsBackgroundColor,
-        controlsColor = controlsColor
-    )
-    LaunchedEffect(uri) {
-        state.open(
-            uri = uri,
-            playWhenReady = playWhenReady,
-            volumeEnabled = volumeEnabled,
-            repeatEnabled = repeatEnabled
-        )
-    }
-}
 
 @Composable
 fun MediaPlayer(
