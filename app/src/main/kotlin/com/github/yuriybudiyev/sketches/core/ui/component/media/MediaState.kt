@@ -28,6 +28,7 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import android.content.Context
 import android.net.Uri
+import android.os.Bundle
 import android.view.SurfaceView
 import android.view.TextureView
 import kotlinx.coroutines.CoroutineScope
@@ -44,6 +45,8 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.MediaItem
@@ -390,5 +393,34 @@ private class MediaStateImpl(
         if (isCommandAvailable(command)) {
             available()
         }
+    }
+}
+
+@UnstableApi
+private class MediaStateSaver(
+    private val context: Context,
+    private val coroutineScope: CoroutineScope
+): Saver<MediaStateImpl, Bundle> {
+
+    override fun restore(value: Bundle): MediaStateImpl =
+        MediaStateImpl(
+            context,
+            coroutineScope
+        ).apply {
+
+        }
+
+    override fun SaverScope.save(value: MediaStateImpl): Bundle =
+        Bundle().apply {
+
+        }
+
+    companion object {
+
+        const val IS_PLAYING = "is_playing"
+        const val IS_VOLUME_ENABLED = "is_playing"
+        const val IS_REPEAT_ENABLED = "is_playing"
+        const val POSITION = "is_playing"
+        const val URI = "is_playing"
     }
 }
