@@ -167,7 +167,7 @@ fun MediaController(
         val duration = state.duration
         Slider(
             value = if (position != MediaState.TIME_UNKNOWN && duration != MediaState.TIME_UNKNOWN) {
-                position.toFloat() / duration.toFloat()
+                (position.toDouble() / duration.toDouble()).toFloat()
             } else {
                 0f
             },
@@ -175,7 +175,7 @@ fun MediaController(
             onValueChange = { value ->
                 coroutineScope.launch {
                     if (duration != MediaState.TIME_UNKNOWN) {
-                        state.seek((duration.toFloat() * value).roundToLong())
+                        state.seek((duration.toDouble() * value.toDouble()).roundToLong())
                     }
                 }
             },
