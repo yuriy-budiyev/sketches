@@ -252,11 +252,6 @@ private class MediaStateImpl(
     override var isVideoVisible: Boolean by mutableStateOf(isVideoVisibleInternal())
         private set
 
-    override fun onVideoSizeChanged(videoSize: VideoSize) {
-        this.displayAspectRatio = displayAspectRatioInternal(videoSize)
-        this.isVideoVisible = isVideoVisibleInternal(videoSize)
-    }
-
     private fun displayAspectRatioInternal(videoSize: VideoSize = player.videoSize): Float {
         val width = videoSize.width.toFloat()
         val height = videoSize.height.toFloat()
@@ -269,6 +264,11 @@ private class MediaStateImpl(
 
     override var displayAspectRatio: Float by mutableFloatStateOf(displayAspectRatioInternal())
         private set
+
+    override fun onVideoSizeChanged(videoSize: VideoSize) {
+        this.displayAspectRatio = displayAspectRatioInternal(videoSize)
+        this.isVideoVisible = isVideoVisibleInternal(videoSize)
+    }
 
     override fun setVideoView(view: SurfaceView) {
         player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {

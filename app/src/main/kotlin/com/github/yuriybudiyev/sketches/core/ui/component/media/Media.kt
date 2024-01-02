@@ -40,7 +40,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -95,25 +98,31 @@ fun MediaDisplay(
                     shape = RectangleShape
                 )
         )
-        val context = LocalContext.current
-        val aspectRatio = state.displayAspectRatio
-        AndroidView(modifier = Modifier
-            .aspectRatio(
-                ratio = aspectRatio,
-                matchHeightConstraintsFirst = aspectRatio < 1f
-            )
-            .align(Alignment.Center),
-            factory = { TextureView(context) },
-            update = { view -> state.setVideoView(view) })
-        if (!state.isVideoVisible) {
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .background(
-                        color = backgroundColor,
-                        shape = RectangleShape
-                    )
-            )
+        val displayAspectRatio = state.displayAspectRatio
+        val isVideoVisible = state.isVideoVisible
+        key(
+            displayAspectRatio,
+            isVideoVisible
+        ) {
+            val context by rememberUpdatedState(LocalContext.current)
+            AndroidView(modifier = Modifier
+                .aspectRatio(
+                    ratio = displayAspectRatio,
+                    matchHeightConstraintsFirst = displayAspectRatio < 1f
+                )
+                .align(Alignment.Center),
+                factory = { TextureView(context) },
+                update = { view -> state.setVideoView(view) })
+            if (!isVideoVisible) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(
+                            color = backgroundColor,
+                            shape = RectangleShape
+                        )
+                )
+            }
         }
     }
 }
