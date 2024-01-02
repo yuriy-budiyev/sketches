@@ -300,6 +300,7 @@ private class MediaStateImpl(
         timeline: Timeline,
         @Player.TimelineChangeReason reason: Int
     ) {
+        this.duration = durationInternal()
     }
 
     private fun positionInternal(): Long =

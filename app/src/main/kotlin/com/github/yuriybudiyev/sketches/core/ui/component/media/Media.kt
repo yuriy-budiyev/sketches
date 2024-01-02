@@ -24,8 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.component.media
 
-import kotlinx.coroutines.launch
 import android.view.TextureView
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -154,11 +154,14 @@ fun MediaController(
                 )
             })
         Slider(
-            value = state.position,
+            value = (state.position.toFloat() / state.duration.toFloat()).coerceIn(
+                minimumValue = 0f,
+                maximumValue = 1f
+            ),
             modifier = Modifier.weight(1f),
             onValueChange = { value ->
                 coroutineScope.launch {
-                    state.seek(value)
+                    state.seek((state.duration.toFloat() * value).toLong())
                 }
             },
             colors = SliderDefaults.colors(
