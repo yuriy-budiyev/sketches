@@ -290,7 +290,14 @@ private class SketchesMediaStateImpl(
 
     private fun durationInternal(): Long =
         player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
-            available = { contentDuration },
+            available = {
+                val contentDuration = contentDuration
+                if (contentDuration != C.TIME_UNSET) {
+                    contentDuration
+                } else {
+                    SketchesMediaState.TIME_UNKNOWN
+                }
+            },
             unavailable = { SketchesMediaState.TIME_UNKNOWN })
 
     override var duration: Long by mutableLongStateOf(durationInternal())
