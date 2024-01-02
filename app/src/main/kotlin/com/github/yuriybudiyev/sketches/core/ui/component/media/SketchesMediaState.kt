@@ -170,7 +170,7 @@ private class SketchesMediaStateImpl(
         } else {
             stopPositionPeriodicUpdate()
             updatePosition()
-            if (position == duration) {
+            if (checkEndOfContent()) {
                 player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
                     playWhenReady = false
                 }
@@ -180,7 +180,7 @@ private class SketchesMediaStateImpl(
 
     override fun play() {
         player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
-            if (position == duration) {
+            if (checkEndOfContent()) {
                 seek(0L)
             }
             play()
@@ -303,6 +303,10 @@ private class SketchesMediaStateImpl(
     override var duration: Long by mutableLongStateOf(durationInternal())
         private set
 
+    private fun updateDuration(duration: Long = durationInternal()) {
+        this.duration = duration
+    }
+
     private fun positionInternal(): Long =
         player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
             available = {
@@ -328,25 +332,33 @@ private class SketchesMediaStateImpl(
     override var position: Long by mutableLongStateOf(positionInternal())
         private set
 
-    private fun updatePosition() {
-        this.position = positionInternal()
+    private fun updatePosition(position: Long = positionInternal()) {
+        this.position = position
     }
 
     override fun onTimelineChanged(
         timeline: Timeline,
         @Player.TimelineChangeReason reason: Int
     ) {
-        this.duration = durationInternal()
-        this.position = positionInternal()
+        updateDuration()
+        updatePosition()
     }
+
+    private fun checkEndOfContent(
+        position: Long = this.position,
+        duration: Long = this.duration
+    ): Boolean =
+        if (position != SketchesMediaState.TIME_UNKNOWN && duration != SketchesMediaState.TIME_UNKNOWN) {
+            position == duration
+        } else {
+            false
+        }
 
     override fun seek(position: Long) {
         player.callWithCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
-            if (isPlaying) {
-                stopPositionPeriodicUpdate()
-            }
+            stopPositionPeriodicUpdate()
             seekTo(position)
-            updatePosition()
+            updatePosition(position)
             if (isPlaying) {
                 startPositionPeriodicUpdate()
             }
