@@ -308,13 +308,19 @@ private class MediaStateImpl(
             available = {
                 val contentPosition = contentPosition
                 val contentDuration = contentDuration
-                if (contentPosition != C.TIME_UNSET && contentDuration != C.TIME_UNSET) {
-                    contentPosition.coerceIn(
-                        minimumValue = 0L,
-                        maximumValue = contentDuration
-                    )
-                } else {
-                    MediaState.TIME_UNKNOWN
+                when {
+                    contentPosition != C.TIME_UNSET && contentDuration != C.TIME_UNSET -> {
+                        contentPosition.coerceIn(
+                            minimumValue = 0L,
+                            maximumValue = contentDuration
+                        )
+                    }
+                    contentPosition != C.TIME_UNSET -> {
+                        contentPosition
+                    }
+                    else -> {
+                        MediaState.TIME_UNKNOWN
+                    }
                 }
             },
             unavailable = { MediaState.TIME_UNKNOWN })
