@@ -153,15 +153,21 @@ fun MediaController(
                     modifier = Modifier.size(size = 24.dp)
                 )
             })
+        val position = state.position
+        val duration = state.duration
         Slider(
-            value = (state.position.toFloat() / state.duration.toFloat()).coerceIn(
-                minimumValue = 0f,
-                maximumValue = 1f
-            ),
+            value = if (position != MediaState.TIME_UNKNOWN && duration != MediaState.TIME_UNKNOWN) {
+                position.toFloat() / duration.toFloat()
+            } else {
+                0f
+            },
+            steps = 100,
             modifier = Modifier.weight(1f),
             onValueChange = { value ->
                 coroutineScope.launch {
-                    state.seek((state.duration.toFloat() * value).toLong())
+                    if (duration != MediaState.TIME_UNKNOWN) {
+                        state.seek((duration.toFloat() * value).toLong())
+                    }
                 }
             },
             colors = SliderDefaults.colors(

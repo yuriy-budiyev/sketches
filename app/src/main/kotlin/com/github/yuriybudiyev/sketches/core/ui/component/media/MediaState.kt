@@ -170,7 +170,7 @@ private class MediaStateImpl(
         } else {
             stopPositionPeriodicUpdate()
             updatePosition()
-            if (duration != MediaState.TIME_UNKNOWN && position == duration) {
+            if (position == duration) {
                 player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
                     playWhenReady = false
                 }
@@ -180,7 +180,7 @@ private class MediaStateImpl(
 
     override fun play() {
         player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
-            if (this@MediaStateImpl.duration != MediaState.TIME_UNKNOWN && position == duration) {
+            if (position == duration) {
                 seek(0L)
             }
             play()
@@ -305,7 +305,18 @@ private class MediaStateImpl(
 
     private fun positionInternal(): Long =
         player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
-            available = { contentPosition },
+            available = {
+                val contentPosition = contentPosition
+                val contentDuration = contentDuration
+                if (contentPosition != C.TIME_UNSET && contentDuration != C.TIME_UNSET) {
+                    contentPosition.coerceIn(
+                        minimumValue = 0L,
+                        maximumValue = contentDuration
+                    )
+                } else {
+                    MediaState.TIME_UNKNOWN
+                }
+            },
             unavailable = { MediaState.TIME_UNKNOWN })
 
     override var position: Long by mutableLongStateOf(positionInternal())
@@ -334,7 +345,7 @@ private class MediaStateImpl(
         positionPeriodicUpdateJob?.cancel()
         positionPeriodicUpdateJob = coroutineScope.launch {
             while (isActive) {
-                delay(250L)
+                delay(100L)
                 updatePosition()
             }
         }
