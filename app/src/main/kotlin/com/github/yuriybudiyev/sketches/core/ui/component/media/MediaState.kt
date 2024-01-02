@@ -296,13 +296,6 @@ private class MediaStateImpl(
     override var duration: Long by mutableLongStateOf(durationInternal())
         private set
 
-    override fun onTimelineChanged(
-        timeline: Timeline,
-        @Player.TimelineChangeReason reason: Int
-    ) {
-        this.duration = durationInternal()
-    }
-
     private fun positionInternal(): Long =
         player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
             available = {
@@ -329,6 +322,14 @@ private class MediaStateImpl(
         private set
 
     private fun updatePosition() {
+        this.position = positionInternal()
+    }
+
+    override fun onTimelineChanged(
+        timeline: Timeline,
+        @Player.TimelineChangeReason reason: Int
+    ) {
+        this.duration = durationInternal()
         this.position = positionInternal()
     }
 

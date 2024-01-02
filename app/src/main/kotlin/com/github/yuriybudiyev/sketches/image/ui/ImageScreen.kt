@@ -263,7 +263,7 @@ private fun ImageLayout(
                                 if (isCurrentPage) {
                                     mediaState.play()
                                 } else {
-                                    mediaState.pause()
+                                    mediaState.stop()
                                 }
                             }
                             LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
