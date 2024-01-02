@@ -63,18 +63,18 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource
 
 @Composable
 @OptIn(UnstableApi::class)
-fun rememberMediaState(): MediaState {
+fun rememberSketchesMediaState(): SketchesMediaState {
     val appContext = LocalContext.current.applicationContext
     val coroutineScope = rememberCoroutineScope()
     return rememberSaveable(
         appContext,
         coroutineScope,
-        saver = MediaStateSaver(
+        saver = SketchesMediaStateImplSaver(
             appContext,
             coroutineScope
         )
     ) {
-        MediaStateImpl(
+        SketchesMediaStateImpl(
             appContext,
             coroutineScope
         )
@@ -82,7 +82,7 @@ fun rememberMediaState(): MediaState {
 }
 
 @Stable
-interface MediaState {
+interface SketchesMediaState {
 
     val isLoading: Boolean
 
@@ -142,10 +142,10 @@ interface MediaState {
 
 @Stable
 @UnstableApi
-private class MediaStateImpl(
+private class SketchesMediaStateImpl(
     context: Context,
     private val coroutineScope: CoroutineScope
-): MediaState, Player.Listener, RememberObserver {
+): SketchesMediaState, Player.Listener, RememberObserver {
 
     private val player: Player = ExoPlayer
         .Builder(context)
@@ -291,7 +291,7 @@ private class MediaStateImpl(
     private fun durationInternal(): Long =
         player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
             available = { contentDuration },
-            unavailable = { MediaState.TIME_UNKNOWN })
+            unavailable = { SketchesMediaState.TIME_UNKNOWN })
 
     override var duration: Long by mutableLongStateOf(durationInternal())
         private set
@@ -312,11 +312,11 @@ private class MediaStateImpl(
                         contentPosition
                     }
                     else -> {
-                        MediaState.TIME_UNKNOWN
+                        SketchesMediaState.TIME_UNKNOWN
                     }
                 }
             },
-            unavailable = { MediaState.TIME_UNKNOWN })
+            unavailable = { SketchesMediaState.TIME_UNKNOWN })
 
     override var position: Long by mutableLongStateOf(positionInternal())
         private set
@@ -378,7 +378,7 @@ private class MediaStateImpl(
                 MediaItem.fromUri(uri),
                 position
             )
-            this@MediaStateImpl.uri = uri
+            this@SketchesMediaStateImpl.uri = uri
         }
         player.callWithCheck(Player.COMMAND_PREPARE) {
             prepare()
@@ -430,47 +430,17 @@ private class MediaStateImpl(
     init {
         player.addListener(this)
     }
-
-    @kotlin.OptIn(ExperimentalContracts::class)
-    private inline fun Player.callWithCheck(
-        @Player.Command command: Int,
-        crossinline available: Player.() -> Unit
-    ) {
-        contract {
-            callsInPlace(available)
-        }
-        if (isCommandAvailable(command)) {
-            available()
-        }
-    }
-
-    @kotlin.OptIn(ExperimentalContracts::class)
-    private inline fun <T> Player.callWithCheck(
-        @Player.Command command: Int,
-        available: Player.() -> T,
-        unavailable: Player.() -> T
-    ): T {
-        contract {
-            callsInPlace(available)
-            callsInPlace(unavailable)
-        }
-        return if (isCommandAvailable(command)) {
-            available()
-        } else {
-            unavailable()
-        }
-    }
 }
 
 @UnstableApi
-private class MediaStateSaver(
+private class SketchesMediaStateImplSaver(
     private val context: Context,
     private val coroutineScope: CoroutineScope
-): Saver<MediaStateImpl, Bundle> {
+): Saver<SketchesMediaStateImpl, Bundle> {
 
     @Suppress("DEPRECATION")
-    override fun restore(value: Bundle): MediaStateImpl =
-        MediaStateImpl(
+    override fun restore(value: Bundle): SketchesMediaStateImpl =
+        SketchesMediaStateImpl(
             context,
             coroutineScope
         ).apply {
@@ -520,7 +490,7 @@ private class MediaStateSaver(
             }
         }
 
-    override fun SaverScope.save(value: MediaStateImpl): Bundle =
+    override fun SaverScope.save(value: SketchesMediaStateImpl): Bundle =
         Bundle().apply {
             putBoolean(
                 IS_PLAYING,
@@ -551,5 +521,35 @@ private class MediaStateSaver(
         const val IS_REPEAT_ENABLED = "is_repeat_enabled"
         const val POSITION = "position"
         const val URI = "uri"
+    }
+}
+
+@kotlin.OptIn(ExperimentalContracts::class)
+private inline fun Player.callWithCheck(
+    @Player.Command command: Int,
+    crossinline available: Player.() -> Unit
+) {
+    contract {
+        callsInPlace(available)
+    }
+    if (isCommandAvailable(command)) {
+        available()
+    }
+}
+
+@kotlin.OptIn(ExperimentalContracts::class)
+private inline fun <T> Player.callWithCheck(
+    @Player.Command command: Int,
+    available: Player.() -> T,
+    unavailable: Player.() -> T
+): T {
+    contract {
+        callsInPlace(available)
+        callsInPlace(unavailable)
+    }
+    return if (isCommandAvailable(command)) {
+        available()
+    } else {
+        unavailable()
     }
 }

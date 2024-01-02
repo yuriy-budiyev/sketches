@@ -55,20 +55,20 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
 @Composable
-fun MediaPlayer(
-    state: MediaState,
+fun SketchesMediaPlayer(
+    state: SketchesMediaState,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     controlsBackgroundColor: Color = backgroundColor.copy(alpha = 0.5f),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground
 ) {
     Box(modifier = modifier) {
-        MediaDisplay(
+        SketchesMediaDisplay(
             state = state,
             modifier = Modifier.matchParentSize(),
             backgroundColor = backgroundColor
         )
-        MediaController(
+        SketchesMediaController(
             state = state,
             modifier = Modifier
                 .height(height = 56.dp)
@@ -84,8 +84,8 @@ fun MediaPlayer(
 }
 
 @Composable
-fun MediaDisplay(
-    state: MediaState,
+fun SketchesMediaDisplay(
+    state: SketchesMediaState,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.background
 ) {
@@ -122,8 +122,8 @@ fun MediaDisplay(
 }
 
 @Composable
-fun MediaController(
-    state: MediaState,
+fun SketchesMediaController(
+    state: SketchesMediaState,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.onBackground
 ) {
@@ -159,7 +159,7 @@ fun MediaController(
         val position = state.position
         val duration = state.duration
         Slider(
-            value = if (position != MediaState.TIME_UNKNOWN && duration != MediaState.TIME_UNKNOWN) {
+            value = if (position != SketchesMediaState.TIME_UNKNOWN && duration != SketchesMediaState.TIME_UNKNOWN) {
                 (position.toDouble() / duration.toDouble()).toFloat()
             } else {
                 0f
@@ -167,7 +167,7 @@ fun MediaController(
             modifier = Modifier.weight(1f),
             onValueChange = { value ->
                 coroutineScope.launch {
-                    if (duration != MediaState.TIME_UNKNOWN) {
+                    if (duration != SketchesMediaState.TIME_UNKNOWN) {
                         state.seek((duration.toDouble() * value.toDouble()).roundToLong())
                     }
                 }
