@@ -42,7 +42,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
@@ -100,30 +99,24 @@ fun MediaDisplay(
                 )
         )
         val displayAspectRatio = state.displayAspectRatio
-        val isVideoVisible = state.isVideoVisible
-        key(
-            displayAspectRatio,
-            isVideoVisible
-        ) {
-            val context by rememberUpdatedState(LocalContext.current)
-            AndroidView(modifier = Modifier
-                .aspectRatio(
-                    ratio = displayAspectRatio,
-                    matchHeightConstraintsFirst = displayAspectRatio < 1f
-                )
-                .align(Alignment.Center),
-                factory = { TextureView(context) },
-                update = { view -> state.setVideoView(view) })
-            if (!isVideoVisible) {
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .background(
-                            color = backgroundColor,
-                            shape = RectangleShape
-                        )
-                )
-            }
+        val context by rememberUpdatedState(LocalContext.current)
+        AndroidView(modifier = Modifier
+            .aspectRatio(
+                ratio = displayAspectRatio,
+                matchHeightConstraintsFirst = displayAspectRatio < 1f
+            )
+            .align(Alignment.Center),
+            factory = { TextureView(context) },
+            update = { view -> state.setVideoView(view) })
+        if (!state.isVideoVisible) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(
+                        color = backgroundColor,
+                        shape = RectangleShape
+                    )
+            )
         }
     }
 }
@@ -165,38 +158,33 @@ fun MediaController(
             })
         val position = state.position
         val duration = state.duration
-        key(
-            position,
-            duration
-        ) {
-            Slider(
-                value = if (position != MediaState.TIME_UNKNOWN && duration != MediaState.TIME_UNKNOWN) {
-                    (position.toDouble() / duration.toDouble()).toFloat()
-                } else {
-                    0f
-                },
-                modifier = Modifier.weight(1f),
-                onValueChange = { value ->
-                    coroutineScope.launch {
-                        if (duration != MediaState.TIME_UNKNOWN) {
-                            state.seek((duration.toDouble() * value.toDouble()).roundToLong())
-                        }
+        Slider(
+            value = if (position != MediaState.TIME_UNKNOWN && duration != MediaState.TIME_UNKNOWN) {
+                (position.toDouble() / duration.toDouble()).toFloat()
+            } else {
+                0f
+            },
+            modifier = Modifier.weight(1f),
+            onValueChange = { value ->
+                coroutineScope.launch {
+                    if (duration != MediaState.TIME_UNKNOWN) {
+                        state.seek((duration.toDouble() * value.toDouble()).roundToLong())
                     }
-                },
-                colors = SliderDefaults.colors(
-                    thumbColor = color,
-                    activeTrackColor = color,
-                    activeTickColor = color,
-                    inactiveTrackColor = color,
-                    inactiveTickColor = color,
-                    disabledThumbColor = color,
-                    disabledActiveTrackColor = color,
-                    disabledActiveTickColor = color,
-                    disabledInactiveTrackColor = color,
-                    disabledInactiveTickColor = color
-                )
+                }
+            },
+            colors = SliderDefaults.colors(
+                thumbColor = color,
+                activeTrackColor = color,
+                activeTickColor = color,
+                inactiveTrackColor = color,
+                inactiveTickColor = color,
+                disabledThumbColor = color,
+                disabledActiveTrackColor = color,
+                disabledActiveTickColor = color,
+                disabledInactiveTrackColor = color,
+                disabledInactiveTickColor = color
             )
-        }
+        )
         Box(modifier = Modifier
             .size(size = 48.dp)
             .clip(shape = CircleShape)
