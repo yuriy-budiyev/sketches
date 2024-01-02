@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.component.media
 
+import kotlin.math.roundToLong
 import android.view.TextureView
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
@@ -170,12 +171,11 @@ fun MediaController(
             } else {
                 0f
             },
-            steps = 100,
             modifier = Modifier.weight(1f),
             onValueChange = { value ->
                 coroutineScope.launch {
                     if (duration != MediaState.TIME_UNKNOWN) {
-                        state.seek((duration.toFloat() * value).toLong())
+                        state.seek((duration.toFloat() * value).roundToLong())
                     }
                 }
             },
