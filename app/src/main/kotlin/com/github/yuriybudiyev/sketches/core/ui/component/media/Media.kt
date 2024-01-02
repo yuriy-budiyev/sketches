@@ -165,33 +165,38 @@ fun MediaController(
             })
         val position = state.position
         val duration = state.duration
-        Slider(
-            value = if (position != MediaState.TIME_UNKNOWN && duration != MediaState.TIME_UNKNOWN) {
-                (position.toDouble() / duration.toDouble()).toFloat()
-            } else {
-                0f
-            },
-            modifier = Modifier.weight(1f),
-            onValueChange = { value ->
-                coroutineScope.launch {
-                    if (duration != MediaState.TIME_UNKNOWN) {
-                        state.seek((duration.toDouble() * value.toDouble()).roundToLong())
+        key(
+            position,
+            duration
+        ) {
+            Slider(
+                value = if (position != MediaState.TIME_UNKNOWN && duration != MediaState.TIME_UNKNOWN) {
+                    (position.toDouble() / duration.toDouble()).toFloat()
+                } else {
+                    0f
+                },
+                modifier = Modifier.weight(1f),
+                onValueChange = { value ->
+                    coroutineScope.launch {
+                        if (duration != MediaState.TIME_UNKNOWN) {
+                            state.seek((duration.toDouble() * value.toDouble()).roundToLong())
+                        }
                     }
-                }
-            },
-            colors = SliderDefaults.colors(
-                thumbColor = color,
-                activeTrackColor = color,
-                activeTickColor = color,
-                inactiveTrackColor = color,
-                inactiveTickColor = color,
-                disabledThumbColor = color,
-                disabledActiveTrackColor = color,
-                disabledActiveTickColor = color,
-                disabledInactiveTrackColor = color,
-                disabledInactiveTickColor = color
+                },
+                colors = SliderDefaults.colors(
+                    thumbColor = color,
+                    activeTrackColor = color,
+                    activeTickColor = color,
+                    inactiveTrackColor = color,
+                    inactiveTickColor = color,
+                    disabledThumbColor = color,
+                    disabledActiveTrackColor = color,
+                    disabledActiveTickColor = color,
+                    disabledInactiveTrackColor = color,
+                    disabledInactiveTickColor = color
+                )
             )
-        )
+        }
         Box(modifier = Modifier
             .size(size = 48.dp)
             .clip(shape = CircleShape)
