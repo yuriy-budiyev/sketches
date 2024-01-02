@@ -263,6 +263,7 @@ private fun ImageLayout(
                                 if (isCurrentPage) {
                                     mediaState.play()
                                 } else {
+                                    mediaState.disableVolume()
                                     mediaState.stop()
                                 }
                             }
