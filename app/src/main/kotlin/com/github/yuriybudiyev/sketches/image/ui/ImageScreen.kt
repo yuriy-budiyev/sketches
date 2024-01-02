@@ -255,15 +255,14 @@ private fun ImageLayout(
                             )
                             LaunchedEffect(fileUri) {
                                 if (mediaState.uri != fileUri) {
-                                    mediaState.open(
-                                        uri = fileUri,
-                                        playWhenReady = true
-                                    )
+                                    mediaState.open(uri = fileUri)
                                 }
                             }
                             val isCurrentPage = page == pagerState.currentPage
                             LaunchedEffect(isCurrentPage) {
-                                if (!isCurrentPage) {
+                                if (isCurrentPage) {
+                                    mediaState.play()
+                                } else {
                                     mediaState.pause()
                                 }
                             }
