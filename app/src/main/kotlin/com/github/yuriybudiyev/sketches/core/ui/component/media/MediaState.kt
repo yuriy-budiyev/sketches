@@ -352,7 +352,7 @@ private class MediaStateImpl(
         positionPeriodicUpdateJob?.cancel()
         positionPeriodicUpdateJob = coroutineScope.launch {
             while (isActive) {
-                delay(100L)
+                delay(timeMillis = 33L)
                 updatePosition()
             }
         }
