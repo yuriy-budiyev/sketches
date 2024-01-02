@@ -136,7 +136,7 @@ interface SketchesMediaState {
 
     companion object {
 
-        const val TIME_UNKNOWN = C.TIME_UNSET
+        const val TIME_UNKNOWN = -1L
     }
 }
 
@@ -310,21 +310,15 @@ private class SketchesMediaStateImpl(
     private fun positionInternal(): Long =
         player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
             available = {
-                val contentPosition = contentPosition
-                val contentDuration = contentDuration
-                when {
-                    contentPosition != C.TIME_UNSET && contentDuration != C.TIME_UNSET -> {
-                        contentPosition.coerceIn(
-                            minimumValue = 0L,
-                            maximumValue = contentDuration
-                        )
-                    }
-                    contentPosition != C.TIME_UNSET -> {
-                        contentPosition
-                    }
-                    else -> {
-                        SketchesMediaState.TIME_UNKNOWN
-                    }
+                val correctedPosition = correctPosition(
+                    contentPosition,
+                    contentDuration,
+                    C.TIME_UNSET
+                )
+                if (correctedPosition != C.TIME_UNSET) {
+                    correctedPosition
+                } else {
+                    SketchesMediaState.TIME_UNKNOWN
                 }
             },
             unavailable = { SketchesMediaState.TIME_UNKNOWN })
@@ -354,11 +348,34 @@ private class SketchesMediaStateImpl(
             false
         }
 
+    private fun correctPosition(
+        position: Long = this.position,
+        duration: Long = this.duration,
+        unknown: Long = SketchesMediaState.TIME_UNKNOWN
+    ): Long =
+        when {
+            position != unknown && duration != unknown -> {
+                position.coerceIn(
+                    0L,
+                    duration
+                )
+            }
+            position != unknown -> {
+                position
+            }
+            else -> {
+                unknown
+            }
+        }
+
     override fun seek(position: Long) {
         player.callWithCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
             stopPositionPeriodicUpdate()
-            seekTo(position)
-            updatePosition(position)
+            val correctedPosition = correctPosition(position)
+            if (correctedPosition != SketchesMediaState.TIME_UNKNOWN) {
+                seekTo(correctedPosition)
+                updatePosition(correctedPosition)
+            }
             if (isPlaying) {
                 startPositionPeriodicUpdate()
             }
