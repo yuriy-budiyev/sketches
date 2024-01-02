@@ -51,6 +51,7 @@ import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
@@ -132,6 +133,11 @@ interface MediaState {
     )
 
     fun close()
+
+    companion object {
+
+        const val TIME_UNKNOWN = C.TIME_UNSET
+    }
 }
 
 @Stable
@@ -164,7 +170,7 @@ private class MediaStateImpl(
         } else {
             stopPositionPeriodicUpdate()
             updatePosition()
-            if (duration != 0L && position == duration) {
+            if (duration != MediaState.TIME_UNKNOWN && position == duration) {
                 player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
                     playWhenReady = false
                 }
@@ -174,7 +180,7 @@ private class MediaStateImpl(
 
     override fun play() {
         player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
-            if (duration != 0L && position == duration) {
+            if (this@MediaStateImpl.duration != MediaState.TIME_UNKNOWN && position == duration) {
                 seek(0L)
             }
             play()
@@ -285,7 +291,7 @@ private class MediaStateImpl(
     private fun durationInternal(): Long =
         player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
             available = { contentDuration },
-            unavailable = { 0L })
+            unavailable = { MediaState.TIME_UNKNOWN })
 
     override var duration: Long by mutableLongStateOf(durationInternal())
         private set
@@ -299,7 +305,7 @@ private class MediaStateImpl(
     private fun positionInternal(): Long =
         player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
             available = { contentPosition },
-            unavailable = { 0L })
+            unavailable = { MediaState.TIME_UNKNOWN })
 
     override var position: Long by mutableLongStateOf(positionInternal())
         private set
@@ -351,7 +357,7 @@ private class MediaStateImpl(
         player.callWithCheck(Player.COMMAND_CHANGE_MEDIA_ITEMS) {
             setMediaItem(
                 MediaItem.fromUri(uri),
-                this@MediaStateImpl.position
+                position
             )
             this@MediaStateImpl.uri = uri
         }
