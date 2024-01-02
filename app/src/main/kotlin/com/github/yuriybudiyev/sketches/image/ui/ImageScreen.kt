@@ -254,20 +254,17 @@ private fun ImageLayout(
                                 modifier = Modifier.fillMaxSize()
                             )
                             LaunchedEffect(fileUri) {
-                                mediaState.open(
-                                    uri = fileUri,
-                                    playWhenReady = false,
-                                    volumeEnabled = false,
-                                    repeatEnabled = false
-                                )
+                                if (mediaState.uri != fileUri) {
+                                    mediaState.open(
+                                        uri = fileUri,
+                                        playWhenReady = true
+                                    )
+                                }
                             }
                             val isCurrentPage = page == pagerState.currentPage
                             LaunchedEffect(isCurrentPage) {
-                                if (isCurrentPage) {
-                                    mediaState.play()
-                                } else {
+                                if (!isCurrentPage) {
                                     mediaState.pause()
-                                    mediaState.seek(position = 0f)
                                 }
                             }
                             LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {

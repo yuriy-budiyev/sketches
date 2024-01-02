@@ -28,6 +28,7 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.SurfaceView
 import android.view.TextureView
@@ -36,6 +37,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import androidx.annotation.FloatRange
 import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.RememberObserver
@@ -43,10 +45,10 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.MediaItem
@@ -62,9 +64,13 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource
 fun rememberMediaState(): MediaState {
     val appContext = LocalContext.current.applicationContext
     val coroutineScope = rememberCoroutineScope()
-    return remember(
+    return rememberSaveable(
         appContext,
-        coroutineScope
+        coroutineScope,
+        saver = MediaStateSaver(
+            appContext,
+            coroutineScope
+        )
     ) {
         MediaStateImpl(
             appContext,
@@ -108,12 +114,27 @@ interface MediaState {
 
     fun clearVideoView()
 
+    @get:FloatRange(
+        from = 0.0,
+        to = 1.0
+    )
     val position: Float
 
-    fun seek(position: Float)
+    fun seek(
+        @FloatRange(
+            from = 0.0,
+            to = 1.0
+        ) position: Float
+    )
+
+    val uri: Uri?
 
     fun open(
         uri: Uri,
+        @FloatRange(
+            from = 0.0,
+            to = 1.0
+        ) position: Float = 0f,
         playWhenReady: Boolean = false,
         volumeEnabled: Boolean = false,
         repeatEnabled: Boolean = false
@@ -151,7 +172,7 @@ private class MediaStateImpl(
             stopPositionPeriodicUpdate()
             updatePosition()
             if (position == 1f) {
-                player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
+                player.callWithCheckOrEnqueue(Player.COMMAND_PLAY_PAUSE) {
                     playWhenReady = false
                 }
             }
@@ -159,7 +180,7 @@ private class MediaStateImpl(
     }
 
     override fun play() {
-        player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
+        player.callWithCheckOrEnqueue(Player.COMMAND_PLAY_PAUSE) {
             if (position == 1f) {
                 seek(0f)
             }
@@ -168,14 +189,15 @@ private class MediaStateImpl(
     }
 
     override fun pause() {
-        player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
+        player.callWithCheckOrEnqueue(Player.COMMAND_PLAY_PAUSE) {
             pause()
         }
     }
 
     override fun stop() {
-        player.callWithCheck(Player.COMMAND_STOP) {
-            stop()
+        player.callWithCheckOrEnqueue(Player.COMMAND_STOP) {
+            pause()
+            seek(0f)
         }
     }
 
@@ -192,13 +214,13 @@ private class MediaStateImpl(
     }
 
     override fun enableVolume() {
-        player.callWithCheck(Player.COMMAND_SET_VOLUME) {
+        player.callWithCheckOrEnqueue(Player.COMMAND_SET_VOLUME) {
             volume = 1f
         }
     }
 
     override fun disableVolume() {
-        player.callWithCheck(Player.COMMAND_SET_VOLUME) {
+        player.callWithCheckOrEnqueue(Player.COMMAND_SET_VOLUME) {
             volume = 0f
         }
     }
@@ -214,13 +236,13 @@ private class MediaStateImpl(
     }
 
     override fun enableRepeat() {
-        player.callWithCheck(Player.COMMAND_SET_REPEAT_MODE) {
+        player.callWithCheckOrEnqueue(Player.COMMAND_SET_REPEAT_MODE) {
             repeatMode = Player.REPEAT_MODE_ALL
         }
     }
 
     override fun disableRepeat() {
-        player.callWithCheck(Player.COMMAND_SET_REPEAT_MODE) {
+        player.callWithCheckOrEnqueue(Player.COMMAND_SET_REPEAT_MODE) {
             repeatMode = Player.REPEAT_MODE_OFF
         }
     }
@@ -250,23 +272,27 @@ private class MediaStateImpl(
         private set
 
     override fun setVideoView(view: SurfaceView) {
-        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+        player.callWithCheckOrEnqueue(Player.COMMAND_SET_VIDEO_SURFACE) {
             setVideoSurfaceView(view)
         }
     }
 
     override fun setVideoView(view: TextureView) {
-        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+        player.callWithCheckOrEnqueue(Player.COMMAND_SET_VIDEO_SURFACE) {
             setVideoTextureView(view)
         }
     }
 
     override fun clearVideoView() {
-        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+        player.callWithCheckOrEnqueue(Player.COMMAND_SET_VIDEO_SURFACE) {
             clearVideoSurface()
         }
     }
 
+    @FloatRange(
+        from = 0.0,
+        to = 1.0
+    )
     private fun positionInternal(): Float =
         player
             .callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
@@ -277,6 +303,14 @@ private class MediaStateImpl(
                 maximumValue = 1f
             )
 
+    @get:FloatRange(
+        from = 0.0,
+        to = 1.0
+    )
+    @setparam:FloatRange(
+        from = 0.0,
+        to = 1.0
+    )
     override var position: Float by mutableFloatStateOf(positionInternal())
         private set
 
@@ -284,8 +318,14 @@ private class MediaStateImpl(
         this.position = positionInternal()
     }
 
-    override fun seek(position: Float) {
-        player.callWithCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
+    override fun seek(
+        @FloatRange(
+            from = 0.0,
+            to = 1.0
+        ) position: Float
+    ) {
+        check(position in 0f..1f) { "Position should be in range of 0..1" }
+        player.callWithCheckOrEnqueue(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
             val duration = callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
                 available = { contentDuration },
                 unavailable = { 0L })
@@ -317,17 +357,29 @@ private class MediaStateImpl(
         positionPeriodicUpdateJob = null
     }
 
+    override var uri: Uri? by mutableStateOf(null)
+        private set
+
     override fun open(
         uri: Uri,
+        @FloatRange(
+            from = 0.0,
+            to = 1.0
+        ) position: Float,
         playWhenReady: Boolean,
         volumeEnabled: Boolean,
         repeatEnabled: Boolean
     ) {
-        player.callWithCheck(Player.COMMAND_CHANGE_MEDIA_ITEMS) {
+        pendingCommands.clear()
+        player.callWithCheckOrEnqueue(Player.COMMAND_CHANGE_MEDIA_ITEMS) {
             setMediaItem(MediaItem.fromUri(uri))
+            this@MediaStateImpl.uri = uri
         }
-        player.callWithCheck(Player.COMMAND_PREPARE) {
+        player.callWithCheckOrEnqueue(Player.COMMAND_PREPARE) {
             prepare()
+        }
+        if (position != 0f) {
+            seek(position)
         }
         if (volumeEnabled) {
             enableVolume()
@@ -339,30 +391,63 @@ private class MediaStateImpl(
         } else {
             disableRepeat()
         }
-        player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
+        player.callWithCheckOrEnqueue(Player.COMMAND_PLAY_PAUSE) {
             setPlayWhenReady(playWhenReady)
         }
     }
 
     override fun onAbandoned() {
+        pendingCommands.clear()
         stopPositionPeriodicUpdate()
-        player.callWithCheck(Player.COMMAND_RELEASE) {
+        player.callWithCheckOrEnqueue(Player.COMMAND_RELEASE) {
             release()
+            uri = null
         }
     }
 
     override fun onForgotten() {
+        pendingCommands.clear()
         stopPositionPeriodicUpdate()
-        player.callWithCheck(Player.COMMAND_RELEASE) {
+        player.callWithCheckOrEnqueue(Player.COMMAND_RELEASE) {
             release()
+            uri = null
         }
     }
 
     override fun onRemembered() {
     }
 
-    init {
-        player.addListener(this)
+    override fun onAvailableCommandsChanged(availableCommands: Player.Commands) {
+        val iterator = pendingCommands.iterator()
+        while (iterator.hasNext()) {
+            val command = iterator.next()
+            if (command.command in availableCommands) {
+                iterator.remove()
+                command.call()
+            }
+        }
+    }
+
+    private val pendingCommands: MutableSet<PlayerCommand> = LinkedHashSet()
+
+    @kotlin.OptIn(ExperimentalContracts::class)
+    private inline fun Player.callWithCheckOrEnqueue(
+        @Player.Command command: Int,
+        crossinline available: Player.() -> Unit
+    ) {
+        contract {
+            callsInPlace(available)
+        }
+        if (isCommandAvailable(command)) {
+            available()
+        } else {
+            pendingCommands += object: PlayerCommand(command) {
+
+                override fun call() {
+                    available()
+                }
+            }
+        }
     }
 
     @kotlin.OptIn(ExperimentalContracts::class)
@@ -382,17 +467,23 @@ private class MediaStateImpl(
         }
     }
 
-    @kotlin.OptIn(ExperimentalContracts::class)
-    private inline fun Player.callWithCheck(
-        @Player.Command command: Int,
-        available: Player.() -> Unit
-    ) {
-        contract {
-            callsInPlace(available)
-        }
-        if (isCommandAvailable(command)) {
-            available()
-        }
+    init {
+        player.addListener(this)
+    }
+
+    private abstract inner class PlayerCommand(@Player.Command val command: Int) {
+
+        abstract fun call()
+
+        final override fun equals(other: Any?): Boolean =
+            when {
+                other === this -> true
+                other is PlayerCommand -> other.command == this.command
+                else -> false
+            }
+
+        final override fun hashCode(): Int =
+            command
     }
 }
 
@@ -402,25 +493,88 @@ private class MediaStateSaver(
     private val coroutineScope: CoroutineScope
 ): Saver<MediaStateImpl, Bundle> {
 
+    @Suppress("DEPRECATION")
     override fun restore(value: Bundle): MediaStateImpl =
         MediaStateImpl(
             context,
             coroutineScope
         ).apply {
-
+            val isVolumeEnabled = value.getBoolean(
+                IS_VOLUME_ENABLED,
+                false
+            )
+            val isRepeatEnabled = value.getBoolean(
+                IS_REPEAT_ENABLED,
+                false
+            )
+            val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                value.getParcelable(
+                    URI,
+                    Uri::class.java
+                )
+            } else {
+                value.getParcelable(URI)
+            }
+            if (uri != null) {
+                val isPlaying = value.getBoolean(
+                    IS_PLAYING,
+                    false
+                )
+                val position = value.getFloat(
+                    POSITION,
+                    0f
+                )
+                open(
+                    uri = uri,
+                    position = position,
+                    playWhenReady = isPlaying,
+                    volumeEnabled = isVolumeEnabled,
+                    repeatEnabled = isRepeatEnabled
+                )
+            } else {
+                if (isVolumeEnabled) {
+                    enableVolume()
+                } else {
+                    disableVolume()
+                }
+                if (isRepeatEnabled) {
+                    enableRepeat()
+                } else {
+                    disableRepeat()
+                }
+            }
         }
 
     override fun SaverScope.save(value: MediaStateImpl): Bundle =
         Bundle().apply {
-
+            putBoolean(
+                IS_PLAYING,
+                value.isPlaying
+            )
+            putBoolean(
+                IS_VOLUME_ENABLED,
+                value.isVolumeEnabled
+            )
+            putBoolean(
+                IS_REPEAT_ENABLED,
+                value.isRepeatEnabled
+            )
+            putFloat(
+                POSITION,
+                value.position
+            )
+            putParcelable(
+                URI,
+                value.uri
+            )
         }
 
     companion object {
 
         const val IS_PLAYING = "is_playing"
-        const val IS_VOLUME_ENABLED = "is_playing"
-        const val IS_REPEAT_ENABLED = "is_playing"
-        const val POSITION = "is_playing"
-        const val URI = "is_playing"
+        const val IS_VOLUME_ENABLED = "is_volume_enabled"
+        const val IS_REPEAT_ENABLED = "is_repeat_enabled"
+        const val POSITION = "position"
+        const val URI = "uri"
     }
 }
