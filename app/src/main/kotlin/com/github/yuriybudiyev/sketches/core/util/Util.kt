@@ -26,6 +26,8 @@ package com.github.yuriybudiyev.sketches.core.util
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
+import com.github.yuriybudiyev.sketches.BuildConfig
 
 fun Context.checkPermissionGranted(permission: String): Boolean =
     checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
@@ -46,4 +48,17 @@ fun checkAllPermissionsGranted(permissions: Map<String, Boolean>): Boolean {
         }
     }
     return true
+}
+
+inline fun log(
+    throwable: Throwable? = null,
+    lazyMessage: () -> String
+) {
+    if (BuildConfig.DEBUG) {
+        Log.d(
+            "SketchesDebug",
+            lazyMessage(),
+            throwable
+        )
+    }
 }
