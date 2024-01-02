@@ -310,16 +310,12 @@ private class SketchesMediaStateImpl(
     private fun positionInternal(): Long =
         player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
             available = {
-                val correctedPosition = correctPosition(
-                    contentPosition,
-                    contentDuration,
-                    C.TIME_UNSET
+                correctPosition(
+                    position = contentPosition,
+                    duration = contentDuration,
+                    unknownToCheck = C.TIME_UNSET,
+                    unknownToReturn = SketchesMediaState.TIME_UNKNOWN
                 )
-                if (correctedPosition != C.TIME_UNSET) {
-                    correctedPosition
-                } else {
-                    SketchesMediaState.TIME_UNKNOWN
-                }
             },
             unavailable = { SketchesMediaState.TIME_UNKNOWN })
 
@@ -329,6 +325,27 @@ private class SketchesMediaStateImpl(
     private fun updatePosition(position: Long = positionInternal()) {
         this.position = position
     }
+
+    private fun correctPosition(
+        position: Long = this.position,
+        duration: Long = this.duration,
+        unknownToCheck: Long = SketchesMediaState.TIME_UNKNOWN,
+        unknownToReturn: Long = SketchesMediaState.TIME_UNKNOWN
+    ): Long =
+        when {
+            position != unknownToCheck && duration != unknownToCheck -> {
+                position.coerceIn(
+                    0L,
+                    duration
+                )
+            }
+            position != unknownToCheck -> {
+                position
+            }
+            else -> {
+                unknownToReturn
+            }
+        }
 
     override fun onTimelineChanged(
         timeline: Timeline,
@@ -346,26 +363,6 @@ private class SketchesMediaStateImpl(
             position == duration
         } else {
             false
-        }
-
-    private fun correctPosition(
-        position: Long = this.position,
-        duration: Long = this.duration,
-        unknown: Long = SketchesMediaState.TIME_UNKNOWN
-    ): Long =
-        when {
-            position != unknown && duration != unknown -> {
-                position.coerceIn(
-                    0L,
-                    duration
-                )
-            }
-            position != unknown -> {
-                position
-            }
-            else -> {
-                unknown
-            }
         }
 
     override fun seek(position: Long) {
