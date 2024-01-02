@@ -166,9 +166,10 @@ fun SketchesMediaController(
             },
             modifier = Modifier.weight(1f),
             onValueChange = { value ->
-                coroutineScope.launch {
-                    if (duration != SketchesMediaState.TIME_UNKNOWN) {
-                        state.seek((duration.toDouble() * value.toDouble()).roundToLong())
+                if (duration != SketchesMediaState.TIME_UNKNOWN) {
+                    val newPosition = (duration.toDouble() * value.toDouble()).roundToLong()
+                    coroutineScope.launch {
+                        state.seek(newPosition)
                     }
                 }
             },
