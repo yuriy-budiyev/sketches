@@ -41,15 +41,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
@@ -99,24 +97,33 @@ fun SketchesMediaDisplay(
                 )
         )
         val displayAspectRatio = state.displayAspectRatio
-        val context by rememberUpdatedState(LocalContext.current)
-        AndroidView(modifier = Modifier
-            .aspectRatio(
-                ratio = displayAspectRatio,
-                matchHeightConstraintsFirst = displayAspectRatio < 1f
-            )
-            .align(Alignment.Center),
-            factory = { TextureView(context) },
-            update = { view -> state.setVideoView(view) })
-        if (!state.isVideoVisible) {
-            Box(
+        val isVideoVisible = state.isVideoVisible
+        key(
+            displayAspectRatio,
+            isVideoVisible
+        ) {
+            AndroidView(
                 modifier = Modifier
-                    .matchParentSize()
-                    .background(
-                        color = backgroundColor,
-                        shape = RectangleShape
+                    .aspectRatio(
+                        ratio = displayAspectRatio,
+                        matchHeightConstraintsFirst = displayAspectRatio < 1f
                     )
+                    .align(Alignment.Center),
+                factory = { context -> TextureView(context) },
+                onReset = { view -> state.clearVideoView(view) },
+                onRelease = { view -> state.clearVideoView(view) },
+                update = { view -> state.setVideoView(view) },
             )
+            if (!isVideoVisible) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(
+                            color = backgroundColor,
+                            shape = RectangleShape
+                        )
+                )
+            }
         }
     }
 }

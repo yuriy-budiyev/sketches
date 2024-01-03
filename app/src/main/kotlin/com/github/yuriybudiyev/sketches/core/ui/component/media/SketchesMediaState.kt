@@ -114,6 +114,10 @@ interface SketchesMediaState {
 
     fun setVideoView(view: TextureView)
 
+    fun clearVideoView(view: SurfaceView)
+
+    fun clearVideoView(view: TextureView)
+
     fun clearVideoView()
 
     val duration: Long
@@ -279,6 +283,18 @@ private class SketchesMediaStateImpl(
     override fun setVideoView(view: TextureView) {
         player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
             setVideoTextureView(view)
+        }
+    }
+
+    override fun clearVideoView(view: SurfaceView) {
+        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+            clearVideoSurfaceView(view)
+        }
+    }
+
+    override fun clearVideoView(view: TextureView) {
+        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+            clearVideoTextureView(view)
         }
     }
 
