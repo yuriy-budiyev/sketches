@@ -24,25 +24,12 @@
 
 package com.github.yuriybudiyev.sketches.image.ui
 
+import android.net.Uri
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,14 +40,10 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -68,17 +51,10 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
-import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
-import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.images.ui.component.SketchesMediaItem
-
-typealias ImageShareListener = (image: MediaStoreFile) -> Unit
-
-typealias ImageChangeListener = (index: Int, image: MediaStoreFile) -> Unit
 
 @Composable
 fun ImageRoute(
@@ -86,7 +62,7 @@ fun ImageRoute(
     imageId: Long,
     bucketId: Long,
     viewModel: ImageScreenViewModel = hiltViewModel(),
-    onImageShare: ImageShareListener
+    onShare: (file: MediaStoreFile) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var currentImageIndex by rememberSaveable { mutableIntStateOf(imageIndex) }
@@ -104,15 +80,15 @@ fun ImageRoute(
             currentImageIndex = index
             currentImageId = image.id
         },
-        onImageShare = onImageShare
+        onShare = onShare
     )
 }
 
 @Composable
 fun ImageScreen(
     uiState: ImageScreenUiState,
-    onImageChanged: ImageChangeListener,
-    onImageShare: ImageShareListener
+    onChange: (index: Int, file: MediaStoreFile) -> Unit,
+    onShare: (file: MediaStoreFile) -> Unit
 ) {
     when (uiState) {
         ImageScreenUiState.Empty -> {
@@ -122,12 +98,6 @@ fun ImageScreen(
             SketchesLoadingIndicator()
         }
         is ImageScreenUiState.Image -> {
-            ImageLayout(
-                index = uiState.imageIndex,
-                images = uiState.images,
-                onImageChanged = onImageChanged,
-                onImageShare = onImageShare
-            )
         }
         is ImageScreenUiState.Error -> {
             SketchesCenteredMessage(text = stringResource(id = R.string.unexpected_error))
@@ -137,143 +107,94 @@ fun ImageScreen(
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
-private fun ImageLayout(
+private fun ImagePager(
     index: Int,
-    images: List<MediaStoreFile>,
-    onImageChanged: ImageChangeListener,
-    onImageShare: ImageShareListener,
+    files: List<MediaStoreFile>,
+    onChange: (index: Int, file: MediaStoreFile) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val data by rememberUpdatedState(newValue = images)
-    val pagerState = rememberPagerState(initialPage = index) { data.size }
-    val listState = rememberLazyListState(initialFirstVisibleItemIndex = index)
+    val data by rememberUpdatedState(files)
+    val state = rememberPagerState(index) { data.size }
     val coroutineScope = rememberCoroutineScope()
-    val listItemSize = 80.dp
-    val listItemSizePx = with(LocalDensity.current) { listItemSize.roundToPx() }
-    LaunchedEffect(
-        data,
-        pagerState,
-        listState,
-        coroutineScope
-    ) {
-        snapshotFlow { pagerState.currentPage }.collect { page ->
-            val image = data[page]
+    LaunchedEffect(state) {
+        snapshotFlow { state.currentPage }.collect { page ->
+            val file = data[page]
             coroutineScope.launch {
-                onImageChanged(
+                onChange(
                     page,
-                    image
-                )
-            }
-            val layoutInfo = listState.layoutInfo
-            val viewportSize = layoutInfo.viewportEndOffset - layoutInfo.viewportStartOffset
-            val scrollOffset = listItemSizePx / 2 - viewportSize / 2
-            coroutineScope.launch {
-                listState.animateScrollToItem(
-                    page,
-                    scrollOffset
+                    file
                 )
             }
         }
     }
-    LaunchedEffect(
-        index,
-        pagerState
-    ) {
+    LaunchedEffect(index) {
         snapshotFlow { index }.collect { index ->
-            pagerState.scrollToPage(index)
+            state.scrollToPage(index)
         }
     }
-    Scaffold(modifier = Modifier.fillMaxSize(),
-        topBar = {
-            SketchesTopAppBar(actions = {
-                Box(modifier = Modifier
-                    .size(size = 48.dp)
-                    .clip(shape = CircleShape)
-                    .clickable {
-                        val image = data[pagerState.currentPage]
-                        coroutineScope.launch {
-                            onImageShare(image)
-                        }
-                    },
-                    contentAlignment = Alignment.Center,
-                    content = {
-                        Icon(
-                            imageVector = SketchesIcons.Share,
-                            contentDescription = null,
-                            modifier = Modifier.size(size = 24.dp)
-                        )
-                    })
-            })
-        },
-        bottomBar = {
-            LazyRow(state = listState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                contentPadding = PaddingValues(vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(space = 4.dp),
-                content = {
-                    items(count = data.size,
-                        key = { item -> data[item].id },
-                        itemContent = { item ->
-                            SketchesMediaItem(file = data[item],
-                                iconPadding = 2.dp,
-                                modifier = Modifier
-                                    .size(listItemSize)
-                                    .clip(shape = RoundedCornerShape(8.dp))
-                                    .clickable {
-                                        coroutineScope.launch {
-                                            pagerState.animateScrollToPage(item)
-                                        }
-                                    })
-                        })
-                })
-        },
-        content = { contentPadding ->
-            HorizontalPager(state = pagerState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(contentPadding),
-                pageSpacing = 8.dp,
-                key = { page -> data[page].id },
-                pageContent = { page ->
-                    val file = data[page]
-                    val fileUri = file.uri
-                    when (file.type) {
-                        MediaStoreFile.Type.IMAGE -> {
-                            SketchesAsyncImage(
-                                uri = fileUri,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Fit,
-                                filterQuality = FilterQuality.High
-                            )
-                        }
-                        MediaStoreFile.Type.VIDEO -> {
-                            val mediaState = rememberSketchesMediaState()
-                            SketchesMediaPlayer(
-                                state = mediaState,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                            LaunchedEffect(fileUri) {
-                                if (mediaState.uri != fileUri) {
-                                    mediaState.open(uri = fileUri)
-                                }
-                            }
-                            val isCurrentPage = page == pagerState.currentPage
-                            LaunchedEffect(isCurrentPage) {
-                                if (isCurrentPage) {
-                                    mediaState.play()
-                                } else {
-                                    mediaState.disableVolume()
-                                    mediaState.stop()
-                                }
-                            }
-                            LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
-                                if (mediaState.isPlaying) {
-                                    mediaState.pause()
-                                }
-                            }
-                        }
-                    }
-                })
+    HorizontalPager(state = state,
+        modifier = modifier,
+        key = { page -> data[page].id },
+        pageContent = { page ->
+            ImagePage(
+                file = data[page],
+                modifier = Modifier.fillMaxSize()
+            )
         })
+}
+
+@Composable
+private fun ImagePage(
+    file: MediaStoreFile,
+    modifier: Modifier = Modifier
+) {
+    when (file.type) {
+        MediaStoreFile.Type.IMAGE -> {
+            ImageLayout(
+                uri = file.uri,
+                modifier = modifier
+            )
+        }
+        MediaStoreFile.Type.VIDEO -> {
+            VideoLayout(
+                uri = file.uri,
+                modifier = modifier
+            )
+        }
+    }
+}
+
+@Composable
+private fun ImageLayout(
+    uri: Uri,
+    modifier: Modifier = Modifier
+) {
+    SketchesAsyncImage(
+        uri = uri,
+        modifier = modifier,
+        contentScale = ContentScale.Fit,
+        filterQuality = FilterQuality.High
+    )
+}
+
+@Composable
+private fun VideoLayout(
+    uri: Uri,
+    modifier: Modifier = Modifier
+) {
+    val state = rememberSketchesMediaState()
+    SketchesMediaPlayer(
+        state = state,
+        modifier = modifier
+    )
+    LaunchedEffect(uri) {
+        if (state.uri != uri) {
+            state.open(uri)
+        }
+    }
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+        if (state.isPlaying) {
+            state.pause()
+        }
+    }
 }
