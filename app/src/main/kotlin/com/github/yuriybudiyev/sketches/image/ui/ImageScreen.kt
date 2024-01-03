@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.image.ui
 
 import android.net.Uri
-import kotlinx.coroutines.launch
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
@@ -35,7 +34,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -115,16 +113,12 @@ private fun ImagePager(
 ) {
     val data by rememberUpdatedState(files)
     val state = rememberPagerState(index) { data.size }
-    val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(state) {
         snapshotFlow { state.currentPage }.collect { page ->
-            val file = data[page]
-            coroutineScope.launch {
-                onChange(
-                    page,
-                    file
-                )
-            }
+            onChange(
+                page,
+                data[page]
+            )
         }
     }
     LaunchedEffect(index) {
