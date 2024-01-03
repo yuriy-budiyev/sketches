@@ -26,22 +26,33 @@ package com.github.yuriybudiyev.sketches.image.ui
 
 import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,9 +60,11 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
+import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
 
 @Composable
@@ -96,10 +109,67 @@ fun ImageScreen(
             SketchesLoadingIndicator()
         }
         is ImageScreenUiState.Image -> {
+            ImageScreenLayout(
+                index = uiState.imageIndex,
+                files = uiState.images,
+                onChange = onChange,
+                onShare = onShare
+            )
         }
         is ImageScreenUiState.Error -> {
             SketchesCenteredMessage(text = stringResource(id = R.string.unexpected_error))
         }
+    }
+}
+
+@Composable
+private fun ImageScreenLayout(
+    index: Int,
+    files: List<MediaStoreFile>,
+    onChange: (index: Int, file: MediaStoreFile) -> Unit,
+    onShare: (file: MediaStoreFile) -> Unit
+) {
+    var currentFile by remember { mutableStateOf(files[index]) }
+    Box(modifier = Modifier.fillMaxSize()) {
+        TopBar(
+            onShareClick = { onShare(currentFile) },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .fillMaxWidth()
+        )
+        ImagePager(
+            index = index,
+            files = files,
+            onChange = { index, file ->
+                currentFile = file
+                onChange(
+                    index,
+                    file
+                )
+            },
+            modifier = Modifier.matchParentSize()
+        )
+    }
+}
+
+@Composable
+private fun TopBar(
+    onShareClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    SketchesTopAppBar(modifier = modifier) {
+        Box(modifier = Modifier
+            .size(size = 48.dp)
+            .clip(shape = CircleShape)
+            .clickable(onClick = onShareClick),
+            contentAlignment = Alignment.Center,
+            content = {
+                Icon(
+                    imageVector = SketchesIcons.Share,
+                    contentDescription = null,
+                    modifier = Modifier.size(size = 24.dp)
+                )
+            })
     }
 }
 

@@ -25,7 +25,9 @@
 package com.github.yuriybudiyev.sketches.main.navigation
 
 import android.content.Intent
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -108,24 +110,27 @@ fun SketchesNavHost(
             ) ?: -1L
             val context = LocalContext.current
             val shareTitle = stringResource(id = R.string.share_image)
+            val coroutineScope = rememberCoroutineScope()
             ImageRoute(imageIndex = imageIndex,
                 imageId = imageId,
                 bucketId = bucketId,
-                onImageShare = { image ->
-                    context.startActivity(
-                        Intent
-                            .createChooser(
-                                Intent(Intent.ACTION_SEND).apply {
-                                    putExtra(
-                                        Intent.EXTRA_STREAM,
-                                        image.uri
-                                    )
-                                    type = image.mimeType
-                                },
-                                shareTitle
-                            )
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    )
+                onShare = { image ->
+                    coroutineScope.launch {
+                        context.startActivity(
+                            Intent
+                                .createChooser(
+                                    Intent(Intent.ACTION_SEND).apply {
+                                        putExtra(
+                                            Intent.EXTRA_STREAM,
+                                            image.uri
+                                        )
+                                        type = image.mimeType
+                                    },
+                                    shareTitle
+                                )
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        )
+                    }
                 })
         }
     }
