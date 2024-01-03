@@ -164,7 +164,7 @@ fun SketchesMediaController(
             } else {
                 0f
             },
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(weight = 1f),
             onValueChange = { value ->
                 if (duration != SketchesMediaState.TIME_UNKNOWN) {
                     val newPosition = (duration.toDouble() * value.toDouble()).roundToLong()
