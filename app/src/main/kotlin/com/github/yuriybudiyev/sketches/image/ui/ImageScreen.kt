@@ -25,6 +25,9 @@
 package com.github.yuriybudiyev.sketches.image.ui
 
 import android.net.Uri
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -32,10 +35,10 @@ import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -56,6 +59,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -68,7 +72,6 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicat
 import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
-import com.github.yuriybudiyev.sketches.core.util.coroutines.collectIn
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.images.ui.component.SketchesMediaItem
 
@@ -139,19 +142,36 @@ private fun ImageScreenLayout(
     val pagerState = rememberPagerState(index) { data.size }
     val bottomBarState = rememberLazyListState(index)
     val coroutineScope = rememberCoroutineScope()
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }.collectIn(coroutineScope) { page ->
-            onChange(
-                page,
-                data[page].id
-            )
-            bottomBarState.animateScrollToItem(page)
-        }
+    val bottomBarItemSize = 64.dp
+    val bottomBarItemSizePx = with(LocalDensity.current) { bottomBarItemSize.roundToPx() }
+    LaunchedEffect(
+        pagerState,
+        bottomBarState,
+        data
+    ) {
+        snapshotFlow { pagerState.currentPage }
+            .distinctUntilChanged()
+            .onEach { page ->
+                onChange(
+                    page,
+                    data[page].id
+                )
+                with(bottomBarState) {
+                    animateScrollToItem(
+                        page,
+                        bottomBarItemSizePx / 2 - layoutInfo.viewportSize.width / 2
+                    )
+                }
+            }
+            .launchIn(coroutineScope)
     }
     LaunchedEffect(index) {
-        snapshotFlow { index }.collectIn(coroutineScope) { page ->
-            pagerState.scrollToPage(page)
-        }
+        snapshotFlow { index }
+            .distinctUntilChanged()
+            .onEach { page ->
+                pagerState.scrollToPage(page)
+            }
+            .launchIn(coroutineScope)
     }
     Column(modifier = Modifier.fillMaxSize()) {
         HorizontalPager(
@@ -188,7 +208,7 @@ private fun ImageScreenLayout(
         }
         LazyRow(
             state = bottomBarState,
-            contentPadding = PaddingValues(horizontal = 4.dp),
+            contentPadding = PaddingValues(),
             horizontalArrangement = Arrangement.spacedBy(
                 space = 4.dp,
                 alignment = Alignment.CenterHorizontally
@@ -197,7 +217,7 @@ private fun ImageScreenLayout(
             flingBehavior = rememberSnapFlingBehavior(bottomBarState),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(64.dp),
+                .wrapContentHeight(),
         ) {
             items(
                 count = data.size,
@@ -207,7 +227,7 @@ private fun ImageScreenLayout(
                     file = data[page],
                     iconPadding = 2.dp,
                     modifier = Modifier
-                        .aspectRatio(1f)
+                        .size(bottomBarItemSize)
                         .clip(RoundedCornerShape(8.dp))
                         .clickable {
                             coroutineScope.launch {
