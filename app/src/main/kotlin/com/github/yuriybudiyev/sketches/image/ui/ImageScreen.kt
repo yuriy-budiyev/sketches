@@ -28,12 +28,16 @@ import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -145,7 +149,7 @@ private fun ImageScreenLayout(
             modifier = Modifier.matchParentSize()
         )
         TopBar(
-            onShareClick = { onShare(currentFile) },
+            onShare = { onShare(currentFile) },
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .fillMaxWidth()
@@ -155,7 +159,7 @@ private fun ImageScreenLayout(
 
 @Composable
 private fun TopBar(
-    onShareClick: () -> Unit,
+    onShare: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     SketchesTopAppBar(
@@ -166,7 +170,7 @@ private fun TopBar(
         Box(modifier = Modifier
             .size(size = 48.dp)
             .clip(shape = CircleShape)
-            .clickable(onClick = onShareClick),
+            .clickable(onClick = onShare),
             contentAlignment = Alignment.Center,
             content = {
                 Icon(
@@ -177,6 +181,64 @@ private fun TopBar(
             })
     }
 }
+
+@Composable
+private fun BottomBar(
+    index: Int,
+    offset: Int,
+    files: List<MediaStoreFile>,
+    onChange: (index: Int, file: MediaStoreFile) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val data by rememberUpdatedState(files)
+    val state = rememberLazyListState(
+        index,
+        offset
+    )
+    LaunchedEffect(
+        index,
+        offset
+    ) {
+        snapshotFlow {
+            Pair(
+                index,
+                offset
+            )
+        }.collect { (index, offset) ->
+            state.scrollToItem(
+                index,
+                offset
+            )
+        }
+    }
+    LazyRow(state = state,
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        content = {
+            items(count = data.size,
+                key = { index -> data[index].id },
+                itemContent = { index ->
+                    val file = data[index]
+                    SketchesAsyncImage(
+                        uri = file.uri,
+                        modifier = Modifier
+                            .size(bottomItemSize)
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable {
+                                onChange(
+                                    index,
+                                    file
+                                )
+                            },
+                        contentScale = ContentScale.Fit,
+                        filterQuality = FilterQuality.High
+                    )
+                })
+        })
+}
+
+private val bottomItemSize = 56.dp
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
