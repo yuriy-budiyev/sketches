@@ -62,7 +62,7 @@ import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavi
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesOutlinedButton
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
-import com.github.yuriybudiyev.sketches.core.util.checkAllPermissionsGranted
+import com.github.yuriybudiyev.sketches.core.util.permissions.checkAllPermissionsGranted
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 
 @Composable

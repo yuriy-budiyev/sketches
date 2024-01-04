@@ -41,10 +41,6 @@ import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
 
 typealias MediaItemClickListener = (index: Int, file: MediaStoreFile) -> Unit
 
-enum class MediaItemMode {
-
-}
-
 @Composable
 fun SketchesMediaItem(
     file: MediaStoreFile,

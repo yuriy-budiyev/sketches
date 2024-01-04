@@ -25,25 +25,52 @@
 package com.github.yuriybudiyev.sketches.image.ui
 
 import android.net.Uri
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
+import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
+import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
+import com.github.yuriybudiyev.sketches.core.util.coroutines.collectIn
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.images.ui.component.SketchesMediaItem
 
 @Composable
 fun ImageRoute(
@@ -51,7 +78,7 @@ fun ImageRoute(
     fileId: Long,
     bucketId: Long,
     viewModel: ImageScreenViewModel = hiltViewModel(),
-    onShare: (uri: Uri, type: String) -> Unit
+    onShare: (uri: Uri, type: String) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var currentFileIndex by rememberSaveable { mutableIntStateOf(fileIndex) }
@@ -77,7 +104,7 @@ fun ImageRoute(
 fun ImageScreen(
     uiState: ImageScreenUiState,
     onChange: (index: Int, id: Long) -> Unit,
-    onShare: (uri: Uri, type: String) -> Unit
+    onShare: (uri: Uri, type: String) -> Unit,
 ) {
     when (uiState) {
         ImageScreenUiState.Empty -> {
@@ -106,9 +133,89 @@ private fun ImageScreenLayout(
     index: Int,
     files: List<MediaStoreFile>,
     onChange: (index: Int, id: Long) -> Unit,
-    onShare: (uri: Uri, type: String) -> Unit
+    onShare: (uri: Uri, type: String) -> Unit,
 ) {
     val data by rememberUpdatedState(files)
+    val pagerState = rememberPagerState(index) { data.size }
     val bottomBarState = rememberLazyListState(index)
-    val imagePagerState = rememberPagerState(index) { data.size }
+    val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collectIn(coroutineScope) { page ->
+            onChange(
+                page,
+                data[page].id
+            )
+            bottomBarState.animateScrollToItem(page)
+        }
+    }
+    LaunchedEffect(index) {
+        snapshotFlow { index }.collectIn(coroutineScope) { page ->
+            pagerState.scrollToPage(page)
+        }
+    }
+    Column(modifier = Modifier.fillMaxSize()) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            key = { page -> data[page].id },
+        ) { page ->
+            val file = data[page]
+            when (file.type) {
+                MediaStoreFile.Type.IMAGE -> {
+                    SketchesAsyncImage(
+                        uri = file.uri,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Fit,
+                        filterQuality = FilterQuality.High
+                    )
+                }
+                MediaStoreFile.Type.VIDEO -> {
+                    val mediaState = rememberSketchesMediaState()
+                    SketchesMediaPlayer(
+                        state = mediaState,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+                        if (mediaState.isPlaying) {
+                            mediaState.pause()
+                        }
+                    }
+                    mediaState.open(file.uri)
+                }
+            }
+        }
+        LazyRow(
+            state = bottomBarState,
+            contentPadding = PaddingValues(horizontal = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(
+                space = 4.dp,
+                alignment = Alignment.CenterHorizontally
+            ),
+            verticalAlignment = Alignment.CenterVertically,
+            flingBehavior = rememberSnapFlingBehavior(bottomBarState),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(64.dp),
+        ) {
+            items(
+                count = data.size,
+                key = { page -> data[page].id },
+            ) { page ->
+                SketchesMediaItem(
+                    file = data[page],
+                    iconPadding = 2.dp,
+                    modifier = Modifier
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable {
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(page)
+                            }
+                        },
+                )
+            }
+        }
+    }
 }
