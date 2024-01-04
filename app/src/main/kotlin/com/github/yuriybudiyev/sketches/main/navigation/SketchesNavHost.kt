@@ -111,21 +111,20 @@ fun SketchesNavHost(
             val context = LocalContext.current
             val shareTitle = stringResource(id = R.string.share_image)
             val coroutineScope = rememberCoroutineScope()
-            ImageRoute(imageIndex = imageIndex,
-                imageId = imageId,
+            ImageRoute(fileIndex = imageIndex,
+                fileId = imageId,
                 bucketId = bucketId,
-                onShare = { image ->
+                onShare = { uri, type ->
                     coroutineScope.launch {
                         context.startActivity(
                             Intent
                                 .createChooser(
-                                    Intent(Intent.ACTION_SEND).apply {
-                                        putExtra(
+                                    Intent(Intent.ACTION_SEND)
+                                        .putExtra(
                                             Intent.EXTRA_STREAM,
-                                            image.uri
+                                            uri
                                         )
-                                        type = image.mimeType
-                                    },
+                                        .setType(type),
                                     shareTitle
                                 )
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

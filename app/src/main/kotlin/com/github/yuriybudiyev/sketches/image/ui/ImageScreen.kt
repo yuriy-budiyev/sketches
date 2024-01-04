@@ -26,75 +26,48 @@ package com.github.yuriybudiyev.sketches.image.ui
 
 import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
-import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
-import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
-import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
-import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
 
 @Composable
 fun ImageRoute(
-    imageIndex: Int,
-    imageId: Long,
+    fileIndex: Int,
+    fileId: Long,
     bucketId: Long,
     viewModel: ImageScreenViewModel = hiltViewModel(),
-    onShare: (file: MediaStoreFile) -> Unit
+    onShare: (uri: Uri, type: String) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var currentImageIndex by rememberSaveable { mutableIntStateOf(imageIndex) }
-    var currentImageId by rememberSaveable { mutableLongStateOf(imageId) }
+    var currentFileIndex by rememberSaveable { mutableIntStateOf(fileIndex) }
+    var currentFileId by rememberSaveable { mutableLongStateOf(fileId) }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.updateImages(
-            imageIndex = currentImageIndex,
-            imageId = currentImageId,
+            imageIndex = currentFileIndex,
+            imageId = currentFileId,
             bucketId = bucketId
         )
     }
     ImageScreen(
         uiState = uiState,
-        { index, image ->
-            currentImageIndex = index
-            currentImageId = image.id
+        { index, id ->
+            currentFileIndex = index
+            currentFileId = id
         },
         onShare = onShare
     )
@@ -103,8 +76,8 @@ fun ImageRoute(
 @Composable
 fun ImageScreen(
     uiState: ImageScreenUiState,
-    onChange: (index: Int, file: MediaStoreFile) -> Unit,
-    onShare: (file: MediaStoreFile) -> Unit
+    onChange: (index: Int, id: Long) -> Unit,
+    onShare: (uri: Uri, type: String) -> Unit
 ) {
     when (uiState) {
         ImageScreenUiState.Empty -> {
@@ -115,8 +88,8 @@ fun ImageScreen(
         }
         is ImageScreenUiState.Image -> {
             ImageScreenLayout(
-                index = uiState.imageIndex,
-                files = uiState.images,
+                index = uiState.fileIndex,
+                files = uiState.files,
                 onChange = onChange,
                 onShare = onShare
             )
@@ -128,204 +101,14 @@ fun ImageScreen(
 }
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 private fun ImageScreenLayout(
     index: Int,
     files: List<MediaStoreFile>,
-    onChange: (index: Int, file: MediaStoreFile) -> Unit,
-    onShare: (file: MediaStoreFile) -> Unit
-) {
-    var currentFile by remember { mutableStateOf(files[index]) }
-    Box(modifier = Modifier.fillMaxSize()) {
-        ImagePager(
-            index = index,
-            files = files,
-            onChange = { index, file ->
-                currentFile = file
-                onChange(
-                    index,
-                    file
-                )
-            },
-            modifier = Modifier.matchParentSize()
-        )
-        TopBar(
-            onShare = { onShare(currentFile) },
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-private fun TopBar(
-    onShare: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    SketchesTopAppBar(
-        modifier = modifier,
-        backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
-        contentColor = MaterialTheme.colorScheme.onBackground
-    ) {
-        Box(modifier = Modifier
-            .size(size = 48.dp)
-            .clip(shape = CircleShape)
-            .clickable(onClick = onShare),
-            contentAlignment = Alignment.Center,
-            content = {
-                Icon(
-                    imageVector = SketchesIcons.Share,
-                    contentDescription = null,
-                    modifier = Modifier.size(size = 24.dp)
-                )
-            })
-    }
-}
-
-@Composable
-private fun BottomBar(
-    index: Int,
-    offset: Int,
-    files: List<MediaStoreFile>,
-    onChange: (index: Int, file: MediaStoreFile) -> Unit,
-    modifier: Modifier = Modifier
+    onChange: (index: Int, id: Long) -> Unit,
+    onShare: (uri: Uri, type: String) -> Unit
 ) {
     val data by rememberUpdatedState(files)
-    val state = rememberLazyListState(
-        index,
-        offset
-    )
-    LaunchedEffect(
-        index,
-        offset
-    ) {
-        snapshotFlow {
-            Pair(
-                index,
-                offset
-            )
-        }.collect { (index, offset) ->
-            state.scrollToItem(
-                index,
-                offset
-            )
-        }
-    }
-    LazyRow(state = state,
-        modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        content = {
-            items(count = data.size,
-                key = { index -> data[index].id },
-                itemContent = { index ->
-                    val file = data[index]
-                    SketchesAsyncImage(
-                        uri = file.uri,
-                        modifier = Modifier
-                            .size(bottomItemSize)
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable {
-                                onChange(
-                                    index,
-                                    file
-                                )
-                            },
-                        contentScale = ContentScale.Fit,
-                        filterQuality = FilterQuality.High
-                    )
-                })
-        })
-}
-
-private val bottomItemSize = 56.dp
-
-@Composable
-@OptIn(ExperimentalFoundationApi::class)
-private fun ImagePager(
-    index: Int,
-    files: List<MediaStoreFile>,
-    onChange: (index: Int, file: MediaStoreFile) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val data by rememberUpdatedState(files)
-    val state = rememberPagerState(index) { data.size }
-    LaunchedEffect(state) {
-        snapshotFlow { state.currentPage }.collect { page ->
-            onChange(
-                page,
-                data[page]
-            )
-        }
-    }
-    LaunchedEffect(index) {
-        snapshotFlow { index }.collect { index ->
-            state.scrollToPage(index)
-        }
-    }
-    HorizontalPager(state = state,
-        modifier = modifier,
-        key = { page -> data[page].id },
-        pageContent = { page ->
-            ImagePage(
-                file = data[page],
-                modifier = Modifier.fillMaxSize()
-            )
-        })
-}
-
-@Composable
-private fun ImagePage(
-    file: MediaStoreFile,
-    modifier: Modifier = Modifier
-) {
-    when (file.type) {
-        MediaStoreFile.Type.IMAGE -> {
-            ImageLayout(
-                uri = file.uri,
-                modifier = modifier
-            )
-        }
-        MediaStoreFile.Type.VIDEO -> {
-            VideoLayout(
-                uri = file.uri,
-                modifier = modifier
-            )
-        }
-    }
-}
-
-@Composable
-private fun ImageLayout(
-    uri: Uri,
-    modifier: Modifier = Modifier
-) {
-    SketchesAsyncImage(
-        uri = uri,
-        modifier = modifier,
-        contentScale = ContentScale.Fit,
-        filterQuality = FilterQuality.High
-    )
-}
-
-@Composable
-private fun VideoLayout(
-    uri: Uri,
-    modifier: Modifier = Modifier
-) {
-    val state = rememberSketchesMediaState()
-    SketchesMediaPlayer(
-        state = state,
-        modifier = modifier
-    )
-    LaunchedEffect(uri) {
-        if (state.uri != uri) {
-            state.open(uri)
-        }
-    }
-    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
-        if (state.isPlaying) {
-            state.pause()
-        }
-    }
+    val bottomBarState = rememberLazyListState(index)
+    val imagePagerState = rememberPagerState(index) { data.size }
 }
