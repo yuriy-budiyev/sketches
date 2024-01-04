@@ -69,12 +69,12 @@ fun SketchesMediaPlayer(
         SketchesMediaController(
             state = state,
             modifier = Modifier
-                .height(height = 56.dp)
-                .padding(horizontal = 4.dp)
                 .background(
                     color = controlsBackgroundColor,
                     shape = RectangleShape
                 )
+                .height(height = 64.dp)
+                .padding(horizontal = 4.dp)
                 .align(alignment = Alignment.BottomCenter),
             color = controlsColor
         )

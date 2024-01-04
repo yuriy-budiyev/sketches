@@ -35,6 +35,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -131,12 +132,6 @@ private fun ImageScreenLayout(
 ) {
     var currentFile by remember { mutableStateOf(files[index]) }
     Box(modifier = Modifier.fillMaxSize()) {
-        TopBar(
-            onShareClick = { onShare(currentFile) },
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .fillMaxWidth()
-        )
         ImagePager(
             index = index,
             files = files,
@@ -149,6 +144,12 @@ private fun ImageScreenLayout(
             },
             modifier = Modifier.matchParentSize()
         )
+        TopBar(
+            onShareClick = { onShare(currentFile) },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .fillMaxWidth()
+        )
     }
 }
 
@@ -157,7 +158,11 @@ private fun TopBar(
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    SketchesTopAppBar(modifier = modifier) {
+    SketchesTopAppBar(
+        modifier = modifier,
+        backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+        contentColor = MaterialTheme.colorScheme.onBackground
+    ) {
         Box(modifier = Modifier
             .size(size = 48.dp)
             .clip(shape = CircleShape)
