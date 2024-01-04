@@ -72,6 +72,7 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicat
 import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
+import com.github.yuriybudiyev.sketches.core.util.ui.animateScrollToItemCentered
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.images.ui.component.SketchesMediaItem
 
@@ -156,21 +157,20 @@ private fun ImageScreenLayout(
                     page,
                     data[page].id
                 )
-                with(bottomBarState) {
-                    animateScrollToItem(
-                        page,
-                        bottomBarItemSizePx / 2 - layoutInfo.viewportSize.width / 2
-                    )
-                }
+                bottomBarState.animateScrollToItemCentered(
+                    page,
+                    bottomBarItemSizePx
+                )
             }
             .launchIn(coroutineScope)
     }
-    LaunchedEffect(index) {
+    LaunchedEffect(
+        pagerState,
+        index
+    ) {
         snapshotFlow { index }
             .distinctUntilChanged()
-            .onEach { page ->
-                pagerState.scrollToPage(page)
-            }
+            .onEach { page -> pagerState.scrollToPage(page) }
             .launchIn(coroutineScope)
     }
     Column(modifier = Modifier.fillMaxSize()) {
@@ -208,7 +208,7 @@ private fun ImageScreenLayout(
         }
         LazyRow(
             state = bottomBarState,
-            contentPadding = PaddingValues(),
+            contentPadding = PaddingValues(horizontal = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(
                 space = 4.dp,
                 alignment = Alignment.CenterHorizontally
