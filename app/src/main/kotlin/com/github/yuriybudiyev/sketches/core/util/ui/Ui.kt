@@ -34,7 +34,7 @@ suspend fun LazyListState.animateScrollToItemCentered(
     with(layoutInfo) {
         animateScrollToItem(
             index,
-            beforeContentPadding - sizePx / 2 - when (orientation) {
+            beforeContentPadding + sizePx / 2 - when (orientation) {
                 Orientation.Vertical -> viewportSize.height
                 Orientation.Horizontal -> viewportSize.width
             } / 2
