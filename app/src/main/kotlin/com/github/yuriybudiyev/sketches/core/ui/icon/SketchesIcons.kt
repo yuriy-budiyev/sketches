@@ -8,10 +8,10 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.VolumeOff
 import androidx.compose.material.icons.filled.VolumeUp
-import androidx.compose.material.icons.outlined.BrokenImage
 import androidx.compose.material.icons.outlined.Photo
 import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.rounded.BrokenImage
 
 object SketchesIcons {
 
@@ -19,7 +19,7 @@ object SketchesIcons {
     val ImagesUnselected = Icons.Outlined.Photo
     val BucketsSelected = Icons.Filled.PhotoLibrary
     val BucketsUnselected = Icons.Outlined.PhotoLibrary
-    val ImageLoadError = Icons.Outlined.BrokenImage
+    val ImageLoadError = Icons.Rounded.BrokenImage
     val Share = Icons.Filled.Share
     val Video = Icons.Outlined.PlayCircle
     val Play = Icons.Filled.PlayArrow
