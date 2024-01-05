@@ -25,9 +25,7 @@
 package com.github.yuriybudiyev.sketches.main.navigation
 
 import android.content.Intent
-import kotlinx.coroutines.launch
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -50,7 +48,7 @@ import com.github.yuriybudiyev.sketches.main.ui.SketchesAppState
 @Composable
 fun SketchesNavHost(
     appState: SketchesAppState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     NavHost(
         modifier = modifier,
@@ -110,27 +108,26 @@ fun SketchesNavHost(
             ) ?: -1L
             val context = LocalContext.current
             val shareTitle = stringResource(id = R.string.share_image)
-            val coroutineScope = rememberCoroutineScope()
-            ImageRoute(fileIndex = imageIndex,
+            ImageRoute(
+                fileIndex = imageIndex,
                 fileId = imageId,
                 bucketId = bucketId,
                 onShare = { uri, type ->
-                    coroutineScope.launch {
-                        context.startActivity(
-                            Intent
-                                .createChooser(
-                                    Intent(Intent.ACTION_SEND)
-                                        .putExtra(
-                                            Intent.EXTRA_STREAM,
-                                            uri
-                                        )
-                                        .setType(type),
-                                    shareTitle
-                                )
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        )
-                    }
-                })
+                    context.startActivity(
+                        Intent
+                            .createChooser(
+                                Intent(Intent.ACTION_SEND)
+                                    .putExtra(
+                                        Intent.EXTRA_STREAM,
+                                        uri
+                                    )
+                                    .setType(type),
+                                shareTitle
+                            )
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    )
+                },
+            )
         }
     }
 }

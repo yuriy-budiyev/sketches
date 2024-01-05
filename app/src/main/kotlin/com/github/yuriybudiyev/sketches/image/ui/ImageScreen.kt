@@ -31,6 +31,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,12 +42,17 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -67,9 +73,11 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
+import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.util.ui.animateScrollToItemCentered
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.images.ui.component.SketchesMediaItem
@@ -141,6 +149,7 @@ private fun ImageScreenLayout(
     val pagerState = rememberPagerState(index) { data.size }
     val bottomBarState = rememberLazyListState(index)
     val imageScreenScope = rememberCoroutineScope()
+    var currentMediaFile by remember { mutableStateOf(data[index]) }
     val bottomBarItemSize = 64.dp
     val bottomBarItemSizePx = with(LocalDensity.current) { bottomBarItemSize.roundToPx() }
     LaunchedEffect(
@@ -152,10 +161,14 @@ private fun ImageScreenLayout(
         snapshotFlow { pagerState.currentPage }
             .distinctUntilChanged()
             .collect { page ->
-                onChange(
-                    page,
-                    data[page].id
-                )
+                val file = data[page]
+                currentMediaFile = file
+                imageScreenScope.launch {
+                    onChange(
+                        page,
+                        file.id
+                    )
+                }
                 imageScreenScope.launch {
                     bottomBarState.animateScrollToItemCentered(
                         page,
@@ -178,68 +191,100 @@ private fun ImageScreenLayout(
             }
     }
     Column(modifier = Modifier.fillMaxSize()) {
-        HorizontalPager(
-            state = pagerState,
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f),
-            key = { page -> data[page].id },
-        ) { page ->
-            val file = data[page]
-            val fileUri = file.uri
-            when (file.type) {
-                MediaStoreFile.Type.IMAGE -> {
-                    SketchesAsyncImage(
-                        uri = fileUri,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Fit,
-                        filterQuality = FilterQuality.High
-                    )
-                }
-                MediaStoreFile.Type.VIDEO -> {
-                    val mediaState = rememberSketchesMediaState()
-                    val mediaScope = rememberCoroutineScope()
-                    SketchesMediaPlayer(
-                        state = mediaState,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
-                        if (mediaState.isPlaying) {
-                            mediaState.pause()
-                        }
+                .weight(1f)
+        ) {
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.matchParentSize(),
+                key = { page -> data[page].id },
+            ) { page ->
+                val file = data[page]
+                val fileUri = file.uri
+                when (file.type) {
+                    MediaStoreFile.Type.IMAGE -> {
+                        SketchesAsyncImage(
+                            uri = fileUri,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit,
+                            filterQuality = FilterQuality.High
+                        )
                     }
-                    LaunchedEffect(
-                        mediaState,
-                        mediaScope,
-                        fileUri
-                    ) {
-                        if (mediaState.uri != fileUri) {
-                            mediaScope.launch {
-                                mediaState.open(fileUri)
+                    MediaStoreFile.Type.VIDEO -> {
+                        val mediaState = rememberSketchesMediaState()
+                        val mediaScope = rememberCoroutineScope()
+                        SketchesMediaPlayer(
+                            state = mediaState,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+                            if (mediaState.isPlaying) {
+                                mediaState.pause()
                             }
                         }
-                    }
-                    LaunchedEffect(
-                        pagerState,
-                        mediaState,
-                        mediaScope,
-                        page
-                    ) {
-                        snapshotFlow { pagerState.currentPage }
-                            .distinctUntilChanged()
-                            .collect { currentPage ->
-                                if (page == currentPage) {
-                                    mediaScope.launch {
-                                        mediaState.play()
-                                    }
-                                } else {
-                                    mediaScope.launch {
-                                        mediaState.stop()
-                                        mediaState.disableVolume()
-                                    }
+                        LaunchedEffect(
+                            mediaState,
+                            mediaScope,
+                            fileUri
+                        ) {
+                            if (mediaState.uri != fileUri) {
+                                mediaScope.launch {
+                                    mediaState.open(fileUri)
                                 }
                             }
+                        }
+                        LaunchedEffect(
+                            pagerState,
+                            mediaState,
+                            mediaScope,
+                            page
+                        ) {
+                            snapshotFlow { pagerState.currentPage }
+                                .distinctUntilChanged()
+                                .collect { currentPage ->
+                                    if (page == currentPage) {
+                                        mediaScope.launch {
+                                            mediaState.play()
+                                        }
+                                    } else {
+                                        mediaScope.launch {
+                                            mediaState.stop()
+                                            mediaState.disableVolume()
+                                        }
+                                    }
+                                }
+                        }
                     }
+                }
+            }
+            SketchesTopAppBar(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .fillMaxWidth(),
+                backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.5f)
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(size = 48.dp)
+                        .clip(shape = CircleShape)
+                        .clickable {
+                            val file = currentMediaFile
+                            imageScreenScope.launch {
+                                onShare(
+                                    file.uri,
+                                    file.mimeType
+                                )
+                            }
+                        },
+                ) {
+                    Icon(
+                        imageVector = SketchesIcons.Share,
+                        contentDescription = null,
+                        modifier = Modifier.size(size = 24.dp)
+                    )
                 }
             }
         }
