@@ -25,9 +25,11 @@
 package com.github.yuriybudiyev.sketches.images.ui.component
 
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -56,6 +58,11 @@ fun SketchesMediaVerticalGrid(
                     modifier = Modifier
                         .aspectRatio(ratio = 1f)
                         .clip(shape = RoundedCornerShape(8.dp))
+                        .border(
+                            width = 0.5.dp,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            shape = RoundedCornerShape(8.dp)
+                        )
                         .clickable {
                             coroutineScope.launch {
                                 onItemClick(

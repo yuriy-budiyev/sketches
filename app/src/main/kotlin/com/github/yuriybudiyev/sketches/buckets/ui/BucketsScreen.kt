@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.buckets.ui
 
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -32,6 +33,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -87,7 +90,7 @@ fun BucketsScreen(
                 SketchesLoadingIndicator()
             }
             is BucketsScreenUiState.Buckets -> {
-                BucketsLayout(
+                BucketsScreenLayout(
                     buckets = uiState.buckets,
                     onBucketClick = onBucketClick
                 )
@@ -100,58 +103,68 @@ fun BucketsScreen(
 }
 
 @Composable
-private fun BucketsLayout(
+private fun BucketsScreenLayout(
     buckets: List<MediaStoreBucket>,
     onBucketClick: BucketClickListener,
 ) {
     val data by rememberUpdatedState(buckets)
-    val coroutineScope = rememberCoroutineScope()
+    val bucketsScreenScope = rememberCoroutineScope()
     SketchesLazyVerticalGrid(modifier = Modifier.fillMaxSize()) {
-        items(count = data.size,
+        items(
+            count = data.size,
             key = { index -> data[index].id },
-            itemContent = { index ->
-                val item = data[index]
-                Column(
+        ) { index ->
+            val item = data[index]
+            Column(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(8.dp))
+                    .clickable {
+                        bucketsScreenScope.launch {
+                            onBucketClick(
+                                index,
+                                item
+                            )
+                        }
+                    },
+            ) {
+                SketchesAsyncImage(
+                    uri = item.coverUri,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(ratio = 1f)
                         .clip(shape = RoundedCornerShape(8.dp))
-                        .clickable {
-                            coroutineScope.launch {
-                                onBucketClick(
-                                    index,
-                                    item
-                                )
-                            }
-                        },
-                ) {
-                    SketchesAsyncImage(
-                        uri = item.coverUri,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(ratio = 1f)
-                            .clip(shape = RoundedCornerShape(8.dp))
-                    )
-                    Text(
-                        text = item.name,
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(
-                            start = 4.dp,
-                            top = 4.dp,
-                            end = 4.dp,
-                            bottom = 0.dp
+                        .border(
+                            width = 0.5.dp,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            shape = RoundedCornerShape(8.dp)
                         )
-                    )
-                    Text(
-                        text = item.size.toString(),
-                        fontSize = 16.sp,
-                        modifier = Modifier.padding(
-                            start = 4.dp,
-                            top = 0.dp,
-                            end = 4.dp,
-                            bottom = 4.dp
-                        )
-                    )
-                }
-            })
+                )
+                Text(
+                    text = item.name,
+                    modifier = Modifier.padding(
+                        start = 4.dp,
+                        top = 4.dp,
+                        end = 4.dp,
+                        bottom = 0.dp
+                    ),
+                    fontSize = 16.sp,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
+                )
+                Text(
+                    text = item.size.toString(),
+                    modifier = Modifier.padding(
+                        start = 4.dp,
+                        top = 0.dp,
+                        end = 4.dp,
+                        bottom = 4.dp
+                    ),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    fontSize = 14.sp
+                )
+            }
+        }
     }
 }

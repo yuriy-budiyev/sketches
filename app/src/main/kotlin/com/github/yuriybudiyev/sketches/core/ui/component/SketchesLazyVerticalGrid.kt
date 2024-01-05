@@ -41,9 +41,9 @@ fun SketchesLazyVerticalGrid(
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 110.dp),
         modifier = modifier,
-        contentPadding = PaddingValues(all = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(space = 4.dp),
-        verticalArrangement = Arrangement.spacedBy(space = 4.dp),
+        contentPadding = PaddingValues(horizontal = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(space = 8.dp),
         content = content
     )
 }
