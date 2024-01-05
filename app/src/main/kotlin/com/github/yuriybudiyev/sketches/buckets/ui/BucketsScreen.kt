@@ -111,16 +111,18 @@ private fun BucketsLayout(
             key = { index -> data[index].id },
             itemContent = { index ->
                 val item = data[index]
-                Column(modifier = Modifier
-                    .clip(shape = RoundedCornerShape(8.dp))
-                    .clickable {
-                        coroutineScope.launch {
-                            onBucketClick(
-                                index,
-                                item
-                            )
-                        }
-                    }) {
+                Column(
+                    modifier = Modifier
+                        .clip(shape = RoundedCornerShape(8.dp))
+                        .clickable {
+                            coroutineScope.launch {
+                                onBucketClick(
+                                    index,
+                                    item
+                                )
+                            }
+                        },
+                ) {
                     SketchesAsyncImage(
                         uri = item.coverUri,
                         contentScale = ContentScale.Crop,
