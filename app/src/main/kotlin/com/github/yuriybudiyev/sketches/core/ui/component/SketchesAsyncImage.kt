@@ -56,7 +56,7 @@ fun SketchesAsyncImage(
                     imageVector = SketchesIcons.ImageLoadError,
                     contentDescription = null,
                     modifier = Modifier.size(60.dp),
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
         })
