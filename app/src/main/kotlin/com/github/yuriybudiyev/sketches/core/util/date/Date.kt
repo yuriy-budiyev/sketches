@@ -33,7 +33,7 @@ import android.content.Context
 fun String.toDateFormat(): DateFormat =
     SimpleDateFormat(
         this,
-        Locale.getDefault()
+        Locale.ROOT
     )
 
 fun Long.toDateString(pattern: String): String =
