@@ -52,6 +52,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,8 +70,8 @@ import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 
 @Composable
 fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
-    val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
+    val appContext by rememberUpdatedState(LocalContext.current.applicationContext)
+    val appScope = rememberCoroutineScope()
     val mediaPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         arrayOf(
             Manifest.permission.READ_MEDIA_IMAGES,
@@ -80,14 +81,59 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
         arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
     }
     var permissionsGranted by remember {
-        mutableStateOf(context.checkAllPermissionsGranted(mediaPermissions))
+        mutableStateOf(appContext.checkAllPermissionsGranted(mediaPermissions))
     }
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        color = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground
     ) {
         if (permissionsGranted) {
-            ContentLayout(appState = appState)
+            val currentDestinations = appState.topLevelNavigationDestinations
+            val currentDestination = appState.currentNavigationDestination
+            Box(modifier = Modifier.fillMaxSize()) {
+                SketchesNavHost(
+                    appState = appState,
+                    modifier = Modifier.matchParentSize()
+                )
+                if (currentDestination is TopLevelNavigationDestination) {
+                    NavigationBar(
+                        containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f),
+                        contentColor = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .fillMaxWidth()
+                            .height(64.dp)
+                    ) {
+                        currentDestinations.forEach { destination ->
+                            val selected = destination == currentDestination
+                            NavigationBarItem(
+                                selected = selected,
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                                    unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+                                    indicatorColor = MaterialTheme.colorScheme.primary
+                                ),
+                                onClick = {
+                                    appScope.launch {
+                                        appState.navigateToTopLevelDestination(destination)
+                                    }
+                                },
+                                icon = {
+                                    Icon(
+                                        imageVector = if (selected) {
+                                            destination.selectedIcon
+                                        } else {
+                                            destination.unselectedIcon
+                                        },
+                                        contentDescription = null
+                                    )
+                                },
+                            )
+                        }
+                    }
+                }
+            }
         } else {
             val message = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 stringResource(id = R.string.no_images_permission)
@@ -102,7 +148,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
             val settingsLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartActivityForResult()
             ) {
-                permissionsGranted = context.checkAllPermissionsGranted(mediaPermissions)
+                permissionsGranted = appContext.checkAllPermissionsGranted(mediaPermissions)
             }
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -117,11 +163,11 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 SketchesOutlinedButton(text = stringResource(id = R.string.open_settings)) {
-                    coroutineScope.launch {
+                    appScope.launch {
                         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                         intent.data = Uri.fromParts(
                             "package",
-                            context.packageName,
+                            appContext.packageName,
                             null
                         )
                         settingsLauncher.launch(intent)
@@ -129,58 +175,11 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                 }
             }
             LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-                permissionsGranted = context.checkAllPermissionsGranted(mediaPermissions)
+                permissionsGranted = appContext.checkAllPermissionsGranted(mediaPermissions)
             }
             LaunchedEffect(Unit) {
-                coroutineScope.launch {
+                appScope.launch {
                     mediaPermissionsLauncher.launch(mediaPermissions)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ContentLayout(appState: SketchesAppState) {
-    val currentDestinations = appState.topLevelNavigationDestinations
-    val currentDestination = appState.currentNavigationDestination
-    Box(modifier = Modifier.fillMaxSize()) {
-        SketchesNavHost(
-            appState = appState,
-            modifier = Modifier.matchParentSize()
-        )
-        if (currentDestination is TopLevelNavigationDestination) {
-            NavigationBar(
-                containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f),
-                contentColor = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .fillMaxWidth()
-                    .height(64.dp)
-            ) {
-                currentDestinations.forEach { destination ->
-                    val selected = destination == currentDestination
-                    NavigationBarItem(
-                        selected = selected,
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                            unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-                            indicatorColor = MaterialTheme.colorScheme.primary
-                        ),
-                        onClick = {
-                            appState.navigateToTopLevelDestination(destination)
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = if (selected) {
-                                    destination.selectedIcon
-                                } else {
-                                    destination.unselectedIcon
-                                },
-                                contentDescription = null
-                            )
-                        },
-                    )
                 }
             }
         }

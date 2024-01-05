@@ -25,7 +25,9 @@
 package com.github.yuriybudiyev.sketches.main.navigation
 
 import android.content.Intent
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -50,6 +52,7 @@ fun SketchesNavHost(
     appState: SketchesAppState,
     modifier: Modifier = Modifier,
 ) {
+    val navScope = rememberCoroutineScope()
     NavHost(
         modifier = modifier,
         navController = appState.navController,
@@ -58,23 +61,27 @@ fun SketchesNavHost(
         composable(ImagesNavigationDestination.registerIn(appState)) {
             ImagesRoute(
                 onImageClick = { index, image ->
-                    appState.navController.navigate(
-                        ImageNavigationDestination,
-                        index,
-                        image.id,
-                        -1L
-                    )
+                    navScope.launch {
+                        appState.navController.navigate(
+                            ImageNavigationDestination,
+                            index,
+                            image.id,
+                            -1L
+                        )
+                    }
                 },
             )
         }
         composable(BucketsNavigationDestination.registerIn(appState)) {
             BucketsRoute(
                 onBucketClick = { _, bucket ->
-                    appState.navController.navigate(
-                        BucketNavigationDestination,
-                        bucket.id,
-                        bucket.name
-                    )
+                    navScope.launch {
+                        appState.navController.navigate(
+                            BucketNavigationDestination,
+                            bucket.id,
+                            bucket.name
+                        )
+                    }
                 },
             )
         }
@@ -89,12 +96,14 @@ fun SketchesNavHost(
                 id = bucketId,
                 name = bucketName,
                 onImageClick = { index, image ->
-                    appState.navController.navigate(
-                        ImageNavigationDestination,
-                        index,
-                        image.id,
-                        image.bucketId
-                    )
+                    navScope.launch {
+                        appState.navController.navigate(
+                            ImageNavigationDestination,
+                            index,
+                            image.id,
+                            image.bucketId
+                        )
+                    }
                 },
             )
         }
@@ -118,19 +127,21 @@ fun SketchesNavHost(
                 fileId = imageId,
                 bucketId = bucketId,
                 onShare = { uri, type ->
-                    context.startActivity(
-                        Intent
-                            .createChooser(
-                                Intent(Intent.ACTION_SEND)
-                                    .putExtra(
-                                        Intent.EXTRA_STREAM,
-                                        uri
-                                    )
-                                    .setType(type),
-                                shareTitle
-                            )
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    )
+                    navScope.launch {
+                        context.startActivity(
+                            Intent
+                                .createChooser(
+                                    Intent(Intent.ACTION_SEND)
+                                        .putExtra(
+                                            Intent.EXTRA_STREAM,
+                                            uri
+                                        )
+                                        .setType(type),
+                                    shareTitle
+                                )
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        )
+                    }
                 },
             )
         }

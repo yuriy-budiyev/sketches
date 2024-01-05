@@ -47,7 +47,7 @@ fun SketchesMediaVerticalGrid(
     onItemClick: MediaItemClickListener,
 ) {
     val data by rememberUpdatedState(images)
-    val coroutineScope = rememberCoroutineScope()
+    val gridScope = rememberCoroutineScope()
     SketchesLazyVerticalGrid(modifier = modifier) {
         items(
             count = data.size,
@@ -65,7 +65,7 @@ fun SketchesMediaVerticalGrid(
                         shape = RoundedCornerShape(8.dp)
                     )
                     .clickable {
-                        coroutineScope.launch {
+                        gridScope.launch {
                             onItemClick(
                                 index,
                                 file
