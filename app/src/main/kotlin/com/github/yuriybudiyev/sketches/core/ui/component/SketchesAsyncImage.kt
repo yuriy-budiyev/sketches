@@ -55,7 +55,7 @@ fun SketchesAsyncImage(
                 Icon(
                     imageVector = SketchesIcons.ImageLoadError,
                     contentDescription = null,
-                    modifier = Modifier.size(60.dp),
+                    modifier = Modifier.size(56.dp),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
