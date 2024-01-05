@@ -51,7 +51,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -71,7 +70,7 @@ import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 @Composable
 fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
     val appContext by rememberUpdatedState(LocalContext.current.applicationContext)
-    val appScope = rememberCoroutineScope()
+    val appScope by rememberUpdatedState(appState.coroutineScope)
     val mediaPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         arrayOf(
             Manifest.permission.READ_MEDIA_IMAGES,

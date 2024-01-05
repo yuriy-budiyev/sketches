@@ -27,7 +27,8 @@ package com.github.yuriybudiyev.sketches.main.navigation
 import android.content.Intent
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -52,7 +53,7 @@ fun SketchesNavHost(
     appState: SketchesAppState,
     modifier: Modifier = Modifier,
 ) {
-    val navScope = rememberCoroutineScope()
+    val appScope by rememberUpdatedState(appState.coroutineScope)
     NavHost(
         modifier = modifier,
         navController = appState.navController,
@@ -61,7 +62,7 @@ fun SketchesNavHost(
         composable(ImagesNavigationDestination.registerIn(appState)) {
             ImagesRoute(
                 onImageClick = { index, image ->
-                    navScope.launch {
+                    appScope.launch {
                         appState.navController.navigate(
                             ImageNavigationDestination,
                             index,
@@ -75,7 +76,7 @@ fun SketchesNavHost(
         composable(BucketsNavigationDestination.registerIn(appState)) {
             BucketsRoute(
                 onBucketClick = { _, bucket ->
-                    navScope.launch {
+                    appScope.launch {
                         appState.navController.navigate(
                             BucketNavigationDestination,
                             bucket.id,
@@ -96,7 +97,7 @@ fun SketchesNavHost(
                 id = bucketId,
                 name = bucketName,
                 onImageClick = { index, image ->
-                    navScope.launch {
+                    appScope.launch {
                         appState.navController.navigate(
                             ImageNavigationDestination,
                             index,
@@ -127,7 +128,7 @@ fun SketchesNavHost(
                 fileId = imageId,
                 bucketId = bucketId,
                 onShare = { uri, type ->
-                    navScope.launch {
+                    appScope.launch {
                         context.startActivity(
                             Intent
                                 .createChooser(

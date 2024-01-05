@@ -24,9 +24,11 @@
 
 package com.github.yuriybudiyev.sketches.main.ui
 
+import kotlinx.coroutines.CoroutineScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -39,26 +41,29 @@ import com.github.yuriybudiyev.sketches.core.navigation.navigate
 @Composable
 fun rememberSketchesAppState(
     navController: NavHostController = rememberNavController(),
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): SketchesAppState =
-    remember(navController) {
-        SketchesAppState(navController)
+    remember(
+        navController,
+        coroutineScope
+    ) {
+        SketchesAppState(
+            navController,
+            coroutineScope
+        )
     }
 
 @Stable
-class SketchesAppState(val navController: NavHostController) {
+class SketchesAppState(
+    val navController: NavHostController,
+    val coroutineScope: CoroutineScope,
+) {
 
     val currentNavigationDestination: NavigationDestination?
         @Composable get() {
             val route = navController.currentBackStackEntryAsState().value?.destination?.route
                 ?: return null
             return navigationDestinationsInternal[route]
-        }
-
-    val currentTopLevelNavigationDestination: TopLevelNavigationDestination?
-        @Composable get() {
-            val destination = currentNavigationDestination ?: return null
-            if (destination is TopLevelNavigationDestination) return destination
-            return null
         }
 
     val topLevelNavigationDestinations: List<TopLevelNavigationDestination>
