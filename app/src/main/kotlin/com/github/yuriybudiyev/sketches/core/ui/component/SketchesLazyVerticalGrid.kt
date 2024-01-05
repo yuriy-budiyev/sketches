@@ -39,7 +39,7 @@ fun SketchesLazyVerticalGrid(
     content: LazyGridScope.() -> Unit,
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = 110.dp),
+        columns = GridCells.Adaptive(minSize = 96.dp),
         modifier = modifier,
         contentPadding = PaddingValues(
             horizontal = 8.dp,
