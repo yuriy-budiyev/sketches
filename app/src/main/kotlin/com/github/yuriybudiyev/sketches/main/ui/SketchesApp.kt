@@ -80,7 +80,10 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
     var permissionsGranted by remember {
         mutableStateOf(context.checkAllPermissionsGranted(mediaPermissions))
     }
-    Surface(color = MaterialTheme.colorScheme.background) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
         if (permissionsGranted) {
             ContentLayout(appState = appState)
         } else {

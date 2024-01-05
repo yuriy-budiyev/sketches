@@ -63,7 +63,6 @@ fun SketchesNavHost(
                     image.id,
                     -1L
                 )
-
             })
         }
         composable(BucketsNavigationDestination.registerIn(appState)) {
