@@ -43,6 +43,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -153,7 +154,12 @@ private fun ContentLayout(appState: SketchesAppState) {
             ) {
                 currentDestinations.forEach { destination ->
                     val selected = destination == currentDestination
-                    NavigationBarItem(selected = selected,
+                    NavigationBarItem(
+                        selected = selected,
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = MaterialTheme.colorScheme.onBackground,
+                            unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+                        ),
                         onClick = {
                             appState.navigateToTopLevelDestination(destination)
                         },
@@ -166,7 +172,8 @@ private fun ContentLayout(appState: SketchesAppState) {
                                 },
                                 contentDescription = null
                             )
-                        })
+                        },
+                    )
                 }
             }
         }
