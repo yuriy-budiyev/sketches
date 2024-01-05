@@ -49,28 +49,29 @@ fun SketchesMediaVerticalGrid(
     val data by rememberUpdatedState(images)
     val coroutineScope = rememberCoroutineScope()
     SketchesLazyVerticalGrid(modifier = modifier) {
-        items(count = data.size,
+        items(
+            count = data.size,
             key = { index -> data[index].id },
-            itemContent = { index ->
-                val file = data[index]
-                SketchesMediaItem(file = data[index],
-                    iconPadding = 4.dp,
-                    modifier = Modifier
-                        .aspectRatio(ratio = 1f)
-                        .clip(shape = RoundedCornerShape(8.dp))
-                        .border(
-                            width = 0.5.dp,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .clickable {
-                            coroutineScope.launch {
-                                onItemClick(
-                                    index,
-                                    file
-                                )
-                            }
-                        })
-            })
+        ) { index ->
+            val file = data[index]
+            SketchesMediaItem(file = data[index],
+                iconPadding = 4.dp,
+                modifier = Modifier
+                    .aspectRatio(ratio = 1f)
+                    .clip(shape = RoundedCornerShape(8.dp))
+                    .border(
+                        width = 0.5.dp,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clickable {
+                        coroutineScope.launch {
+                            onItemClick(
+                                index,
+                                file
+                            )
+                        }
+                    })
+        }
     }
 }
