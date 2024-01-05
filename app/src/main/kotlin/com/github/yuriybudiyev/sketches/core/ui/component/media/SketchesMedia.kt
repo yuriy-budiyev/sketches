@@ -58,7 +58,7 @@ fun SketchesMediaPlayer(
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     controlsBackgroundColor: Color = backgroundColor.copy(alpha = 0.5f),
-    controlsColor: Color = MaterialTheme.colorScheme.onBackground
+    controlsColor: Color = MaterialTheme.colorScheme.onBackground,
 ) {
     Box(modifier = modifier) {
         SketchesMediaDisplay(
@@ -85,7 +85,7 @@ fun SketchesMediaPlayer(
 fun SketchesMediaDisplay(
     state: SketchesMediaState,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colorScheme.background
+    backgroundColor: Color = MaterialTheme.colorScheme.background,
 ) {
     Box(modifier = modifier) {
         Box(
@@ -132,18 +132,18 @@ fun SketchesMediaDisplay(
 fun SketchesMediaController(
     state: SketchesMediaState,
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.onBackground
+    color: Color = MaterialTheme.colorScheme.onBackground,
 ) {
+    val mediaControllerScope = rememberCoroutineScope()
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val coroutineScope = rememberCoroutineScope()
         Box(modifier = Modifier
             .size(size = 48.dp)
             .clip(shape = CircleShape)
             .clickable {
-                coroutineScope.launch {
+                mediaControllerScope.launch {
                     if (state.isPlaying) {
                         state.pause()
                     } else {
@@ -175,7 +175,7 @@ fun SketchesMediaController(
             onValueChange = { value ->
                 if (duration != SketchesMediaState.TIME_UNKNOWN) {
                     val newPosition = (duration.toDouble() * value.toDouble()).roundToLong()
-                    coroutineScope.launch {
+                    mediaControllerScope.launch {
                         state.seek(newPosition)
                     }
                 }
@@ -197,7 +197,7 @@ fun SketchesMediaController(
             .size(size = 48.dp)
             .clip(shape = CircleShape)
             .clickable {
-                coroutineScope.launch {
+                mediaControllerScope.launch {
                     if (state.isVolumeEnabled) {
                         state.disableVolume()
                     } else {
