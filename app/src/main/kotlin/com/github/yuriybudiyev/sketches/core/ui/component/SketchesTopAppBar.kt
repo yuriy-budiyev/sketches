@@ -46,7 +46,10 @@ fun SketchesTopAppBar(
     TopAppBar(
         title = {
             if (!text.isNullOrEmpty()) {
-                Text(text = text)
+                Text(
+                    text = text,
+                    color = contentColor,
+                )
             }
         },
         modifier = modifier,

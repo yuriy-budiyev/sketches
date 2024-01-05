@@ -85,10 +85,13 @@ fun BucketsScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {
             BucketsScreenUiState.Empty -> {
-                SketchesCenteredMessage(text = stringResource(id = R.string.no_buckets_found))
+                SketchesCenteredMessage(
+                    text = stringResource(id = R.string.no_buckets_found),
+                    modifier = Modifier.matchParentSize()
+                )
             }
             BucketsScreenUiState.Loading -> {
-                SketchesLoadingIndicator()
+                SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
             }
             is BucketsScreenUiState.Buckets -> {
                 BucketsScreenLayout(
@@ -98,7 +101,10 @@ fun BucketsScreen(
                 )
             }
             is BucketsScreenUiState.Error -> {
-                SketchesCenteredMessage(text = stringResource(id = R.string.unexpected_error))
+                SketchesCenteredMessage(
+                    text = stringResource(id = R.string.unexpected_error),
+                    modifier = Modifier.matchParentSize()
+                )
             }
         }
         SketchesTopAppBar(
@@ -158,6 +164,7 @@ private fun BucketsScreenLayout(
                         end = 4.dp,
                         bottom = 0.dp
                     ),
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 16.sp,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1
@@ -170,6 +177,7 @@ private fun BucketsScreenLayout(
                         end = 4.dp,
                         bottom = 4.dp
                     ),
+                    color = MaterialTheme.colorScheme.onBackground,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
                     fontSize = 14.sp

@@ -25,9 +25,9 @@
 package com.github.yuriybudiyev.sketches.core.ui.component
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,23 +37,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun SketchesMessage(text: String) {
+fun SketchesMessage(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
     Text(
         text = text,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+        modifier = modifier,
+        color = MaterialTheme.colorScheme.onBackground,
         fontSize = 18.sp,
         textAlign = TextAlign.Center
     )
 }
 
 @Composable
-fun SketchesCenteredMessage(text: String) {
+fun SketchesCenteredMessage(
+    text: String,
+    modifier: Modifier,
+) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        SketchesMessage(text = text)
+        SketchesMessage(
+            text = text,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        )
     }
 }

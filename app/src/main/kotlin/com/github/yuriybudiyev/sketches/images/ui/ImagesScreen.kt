@@ -67,10 +67,13 @@ fun ImagesScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {
             ImagesScreenUiState.Empty -> {
-                SketchesCenteredMessage(text = stringResource(id = R.string.no_images_found))
+                SketchesCenteredMessage(
+                    text = stringResource(id = R.string.no_images_found),
+                    modifier = Modifier.matchParentSize()
+                )
             }
             ImagesScreenUiState.Loading -> {
-                SketchesLoadingIndicator()
+                SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
             }
             is ImagesScreenUiState.Images -> {
                 SketchesMediaVerticalGrid(
@@ -80,7 +83,10 @@ fun ImagesScreen(
                 )
             }
             is ImagesScreenUiState.Error -> {
-                SketchesCenteredMessage(text = stringResource(id = R.string.unexpected_error))
+                SketchesCenteredMessage(
+                    text = stringResource(id = R.string.unexpected_error),
+                    modifier = Modifier.matchParentSize()
+                )
             }
         }
         SketchesTopAppBar(

@@ -117,23 +117,32 @@ fun ImageScreen(
     onChange: (index: Int, id: Long) -> Unit,
     onShare: (uri: Uri, type: String) -> Unit,
 ) {
-    when (uiState) {
-        ImageScreenUiState.Empty -> {
-            SketchesCenteredMessage(text = stringResource(id = R.string.no_images_found))
-        }
-        ImageScreenUiState.Loading -> {
-            SketchesLoadingIndicator()
-        }
-        is ImageScreenUiState.Image -> {
-            ImageScreenLayout(
-                index = uiState.fileIndex,
-                files = uiState.files,
-                onChange = onChange,
-                onShare = onShare
-            )
-        }
-        is ImageScreenUiState.Error -> {
-            SketchesCenteredMessage(text = stringResource(id = R.string.unexpected_error))
+    Box(modifier = Modifier.fillMaxSize()) {
+        when (uiState) {
+            ImageScreenUiState.Empty -> {
+                SketchesCenteredMessage(
+                    text = stringResource(id = R.string.no_images_found),
+                    modifier = Modifier.matchParentSize()
+                )
+            }
+            ImageScreenUiState.Loading -> {
+                SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
+            }
+            is ImageScreenUiState.Image -> {
+                ImageScreenLayout(
+                    index = uiState.fileIndex,
+                    files = uiState.files,
+                    onChange = onChange,
+                    onShare = onShare,
+                    modifier = Modifier.matchParentSize()
+                )
+            }
+            is ImageScreenUiState.Error -> {
+                SketchesCenteredMessage(
+                    text = stringResource(id = R.string.unexpected_error),
+                    modifier = Modifier.matchParentSize()
+                )
+            }
         }
     }
 }
@@ -145,6 +154,7 @@ private fun ImageScreenLayout(
     files: List<MediaStoreFile>,
     onChange: (index: Int, id: Long) -> Unit,
     onShare: (uri: Uri, type: String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val data by rememberUpdatedState(files)
     val pagerState = rememberPagerState(index) { data.size }
@@ -191,7 +201,7 @@ private fun ImageScreenLayout(
                 }
             }
     }
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()

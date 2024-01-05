@@ -71,10 +71,13 @@ fun BucketScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {
             BucketScreenUiState.Empty -> {
-                SketchesCenteredMessage(text = stringResource(id = R.string.no_images_found))
+                SketchesCenteredMessage(
+                    text = stringResource(id = R.string.no_images_found),
+                    modifier = Modifier.matchParentSize()
+                )
             }
             BucketScreenUiState.Loading -> {
-                SketchesLoadingIndicator()
+                SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
             }
             is BucketScreenUiState.Bucket -> {
                 SketchesMediaVerticalGrid(
@@ -84,7 +87,10 @@ fun BucketScreen(
                 )
             }
             is BucketScreenUiState.Error -> {
-                SketchesCenteredMessage(text = stringResource(id = R.string.unexpected_error))
+                SketchesCenteredMessage(
+                    text = stringResource(id = R.string.unexpected_error),
+                    modifier = Modifier.matchParentSize()
+                )
             }
         }
         SketchesTopAppBar(

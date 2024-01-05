@@ -26,7 +26,7 @@ package com.github.yuriybudiyev.sketches.core.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
@@ -39,9 +39,9 @@ import androidx.compose.ui.unit.dp
 import com.github.yuriybudiyev.sketches.R
 
 @Composable
-fun SketchesLoadingIndicator() {
+fun SketchesLoadingIndicator(modifier: Modifier=Modifier) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -51,6 +51,11 @@ fun SketchesLoadingIndicator() {
                 .padding(16.dp),
             color = MaterialTheme.colorScheme.primary
         )
-        SketchesMessage(text = stringResource(id = R.string.loading_message))
+        SketchesMessage(
+            text = stringResource(id = R.string.loading_message),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        )
     }
 }

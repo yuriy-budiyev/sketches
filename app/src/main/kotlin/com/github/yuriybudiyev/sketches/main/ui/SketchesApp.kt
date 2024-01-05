@@ -39,6 +39,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -108,7 +109,12 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                SketchesMessage(text = message)
+                SketchesMessage(
+                    text = message,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
                 Spacer(modifier = Modifier.height(16.dp))
                 SketchesOutlinedButton(text = stringResource(id = R.string.open_settings)) {
                     coroutineScope.launch {
