@@ -29,12 +29,14 @@ import androidx.compose.ui.graphics.Color
 object SketchesColors {
 
     val Primary = Color(0xFF6B69D6)
+    val OnPrimary = Color(0xFFFFFFFF)
 
     object Light {
 
         val Secondary = Color(0xFF7F7DDB)
         val Tertiary = Color(0xFF9391E1)
         val Background = Color(0xFFEFEFEF)
+        val OnBackground = Color(0xFF000000)
     }
 
     object Dark {
@@ -42,5 +44,6 @@ object SketchesColors {
         val Secondary = Color(0xFF5755D1)
         val Tertiary = Color(0xFF4341CB)
         val Background = Color(0xFF0F0F0F)
+        val OnBackground = Color(0xFFFFFFFF)
     }
 }

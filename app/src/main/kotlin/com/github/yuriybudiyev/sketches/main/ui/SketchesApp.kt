@@ -157,8 +157,9 @@ private fun ContentLayout(appState: SketchesAppState) {
                     NavigationBarItem(
                         selected = selected,
                         colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.onBackground,
+                            selectedIconColor = MaterialTheme.colorScheme.onPrimary,
                             unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+                            indicatorColor = MaterialTheme.colorScheme.primary
                         ),
                         onClick = {
                             appState.navigateToTopLevelDestination(destination)
