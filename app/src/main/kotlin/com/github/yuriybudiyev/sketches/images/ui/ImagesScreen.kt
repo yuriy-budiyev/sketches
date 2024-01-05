@@ -44,7 +44,7 @@ import com.github.yuriybudiyev.sketches.images.ui.component.SketchesMediaVertica
 @Composable
 fun ImagesRoute(
     onImageClick: MediaItemClickListener,
-    viewModel: ImagesScreenViewModel = hiltViewModel()
+    viewModel: ImagesScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
@@ -59,7 +59,7 @@ fun ImagesRoute(
 @Composable
 fun ImagesScreen(
     uiState: ImagesScreenUiState,
-    onImageClick: MediaItemClickListener
+    onImageClick: MediaItemClickListener,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         SketchesTopAppBar(text = stringResource(id = R.string.images_screen_label))

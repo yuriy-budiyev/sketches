@@ -46,7 +46,7 @@ fun BucketRoute(
     id: Long,
     name: String?,
     onImageClick: MediaItemClickListener,
-    viewModel: BucketScreenViewModel = hiltViewModel()
+    viewModel: BucketScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
@@ -63,7 +63,7 @@ fun BucketRoute(
 fun BucketScreen(
     name: String?,
     uiState: BucketScreenUiState,
-    onImageClick: MediaItemClickListener
+    onImageClick: MediaItemClickListener,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         if (!name.isNullOrEmpty()) {

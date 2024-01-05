@@ -67,7 +67,7 @@ class MediaRepositoryImpl(private val context: Context): MediaRepository {
     private suspend fun getMedia(
         contentUri: Uri,
         mediaType: MediaStoreFile.Type,
-        bucketId: Long
+        bucketId: Long,
     ): List<MediaStoreFile> {
         val cursor = withContext(Dispatchers.IO) {
             context.contentResolver.query(

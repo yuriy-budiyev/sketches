@@ -33,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
@@ -45,13 +46,14 @@ typealias MediaItemClickListener = (index: Int, file: MediaStoreFile) -> Unit
 fun SketchesMediaItem(
     file: MediaStoreFile,
     iconPadding: Dp,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
         SketchesAsyncImage(
             uri = file.uri,
+            modifier = Modifier.matchParentSize(),
             contentScale = ContentScale.Crop,
-            modifier = Modifier.matchParentSize()
+            filterQuality = FilterQuality.Low
         )
         if (file.type == MediaStoreFile.Type.VIDEO) {
             Box(

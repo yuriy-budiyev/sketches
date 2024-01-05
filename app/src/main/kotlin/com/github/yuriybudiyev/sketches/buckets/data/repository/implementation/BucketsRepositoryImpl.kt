@@ -72,7 +72,7 @@ class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
 
     private suspend fun getBucketsInfoTo(
         contentUri: Uri,
-        bucketsInfo: MutableMap<Long, BucketInfo>
+        bucketsInfo: MutableMap<Long, BucketInfo>,
     ) {
         val cursor = withContext(Dispatchers.IO) {
             context.contentResolver.query(
@@ -124,6 +124,6 @@ class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
         val name: String,
         var coverUri: Uri,
         var coverDateAdded: Long,
-        var imagesCount: Int
+        var imagesCount: Int,
     )
 }

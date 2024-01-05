@@ -41,7 +41,7 @@ fun SketchesTopAppBar(
     text: String? = null,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = MaterialTheme.colorScheme.onBackground,
-    actions: @Composable RowScope.() -> Unit = {}
+    actions: @Composable RowScope.() -> Unit = {},
 ) {
     TopAppBar(
         title = {
@@ -49,13 +49,13 @@ fun SketchesTopAppBar(
                 Text(text = text)
             }
         },
+        modifier = modifier,
         actions = actions,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = backgroundColor,
             titleContentColor = contentColor,
             navigationIconContentColor = contentColor,
             actionIconContentColor = contentColor
-        ),
-        modifier = modifier
+        )
     )
 }

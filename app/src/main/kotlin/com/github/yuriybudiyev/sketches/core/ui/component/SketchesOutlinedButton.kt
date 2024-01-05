@@ -35,11 +35,11 @@ import androidx.compose.ui.unit.sp
 fun SketchesOutlinedButton(
     text: String,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     OutlinedButton(
-        modifier = modifier,
-        onClick = onClick
+        onClick = onClick,
+        modifier = modifier
     ) {
         Text(
             text = text,

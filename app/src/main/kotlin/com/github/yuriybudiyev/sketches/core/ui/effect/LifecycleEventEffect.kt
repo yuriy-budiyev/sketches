@@ -36,7 +36,7 @@ import androidx.lifecycle.LifecycleOwner
 @Composable
 inline fun LifecycleEventEffect(
     event: Lifecycle.Event,
-    crossinline effect: () -> Unit
+    crossinline effect: () -> Unit,
 ) {
     val lifecycleOwner by rememberUpdatedState(LocalLifecycleOwner.current)
     DisposableEffect(lifecycleOwner) {

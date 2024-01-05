@@ -133,7 +133,7 @@ interface SketchesMediaState {
         position: Long = 0L,
         playWhenReady: Boolean = false,
         volumeEnabled: Boolean = false,
-        repeatEnabled: Boolean = false
+        repeatEnabled: Boolean = false,
     )
 
     fun close()
@@ -148,7 +148,7 @@ interface SketchesMediaState {
 @UnstableApi
 private class SketchesMediaStateImpl(
     context: Context,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
 ): SketchesMediaState, Player.Listener, RememberObserver {
 
     private val player: Player = ExoPlayer
@@ -346,7 +346,7 @@ private class SketchesMediaStateImpl(
         position: Long = this.position,
         duration: Long = this.duration,
         unknownToCheck: Long = SketchesMediaState.TIME_UNKNOWN,
-        unknownToReturn: Long = SketchesMediaState.TIME_UNKNOWN
+        unknownToReturn: Long = SketchesMediaState.TIME_UNKNOWN,
     ): Long =
         when {
             position != unknownToCheck && duration != unknownToCheck -> {
@@ -365,7 +365,7 @@ private class SketchesMediaStateImpl(
 
     override fun onTimelineChanged(
         timeline: Timeline,
-        @Player.TimelineChangeReason reason: Int
+        @Player.TimelineChangeReason reason: Int,
     ) {
         updateDuration()
         updatePosition()
@@ -373,7 +373,7 @@ private class SketchesMediaStateImpl(
 
     private fun checkEndOfContent(
         position: Long = this.position,
-        duration: Long = this.duration
+        duration: Long = this.duration,
     ): Boolean =
         if (position != SketchesMediaState.TIME_UNKNOWN && duration != SketchesMediaState.TIME_UNKNOWN) {
             position == duration
@@ -420,7 +420,7 @@ private class SketchesMediaStateImpl(
         position: Long,
         playWhenReady: Boolean,
         volumeEnabled: Boolean,
-        repeatEnabled: Boolean
+        repeatEnabled: Boolean,
     ) {
         player.callWithCheck(Player.COMMAND_CHANGE_MEDIA_ITEMS) {
             setMediaItem(
@@ -484,7 +484,7 @@ private class SketchesMediaStateImpl(
 @UnstableApi
 private class SketchesMediaStateImplSaver(
     private val context: Context,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
 ): Saver<SketchesMediaStateImpl, Bundle> {
 
     @Suppress("DEPRECATION")
@@ -576,7 +576,7 @@ private class SketchesMediaStateImplSaver(
 @kotlin.OptIn(ExperimentalContracts::class)
 private inline fun Player.callWithCheck(
     @Player.Command command: Int,
-    crossinline available: Player.() -> Unit
+    crossinline available: Player.() -> Unit,
 ) {
     contract {
         callsInPlace(available)
@@ -590,7 +590,7 @@ private inline fun Player.callWithCheck(
 private inline fun <T> Player.callWithCheck(
     @Player.Command command: Int,
     available: Player.() -> T,
-    unavailable: Player.() -> T
+    unavailable: Player.() -> T,
 ): T {
     contract {
         callsInPlace(available)

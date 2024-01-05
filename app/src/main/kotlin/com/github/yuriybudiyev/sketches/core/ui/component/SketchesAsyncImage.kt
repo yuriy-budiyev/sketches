@@ -43,7 +43,7 @@ fun SketchesAsyncImage(
     uri: Uri,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
-    filterQuality: FilterQuality = FilterQuality.Low
+    filterQuality: FilterQuality = FilterQuality.Low,
 ) {
     SubcomposeAsyncImage(model = uri,
         contentDescription = null,
@@ -55,8 +55,8 @@ fun SketchesAsyncImage(
                 Icon(
                     imageVector = SketchesIcons.ImageLoadError,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(60.dp)
+                    modifier = Modifier.size(60.dp),
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         })

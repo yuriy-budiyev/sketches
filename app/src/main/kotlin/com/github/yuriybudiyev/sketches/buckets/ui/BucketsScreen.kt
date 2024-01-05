@@ -60,7 +60,7 @@ typealias BucketClickListener = (index: Int, bucket: MediaStoreBucket) -> Unit
 @Composable
 fun BucketsRoute(
     onBucketClick: BucketClickListener,
-    viewModel: BucketsScreenViewModel = hiltViewModel()
+    viewModel: BucketsScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
@@ -75,7 +75,7 @@ fun BucketsRoute(
 @Composable
 fun BucketsScreen(
     uiState: BucketsScreenUiState,
-    onBucketClick: BucketClickListener
+    onBucketClick: BucketClickListener,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         SketchesTopAppBar(text = stringResource(id = R.string.buckets_screen_label))
@@ -102,7 +102,7 @@ fun BucketsScreen(
 @Composable
 private fun BucketsLayout(
     buckets: List<MediaStoreBucket>,
-    onBucketClick: BucketClickListener
+    onBucketClick: BucketClickListener,
 ) {
     val data by rememberUpdatedState(buckets)
     val coroutineScope = rememberCoroutineScope()

@@ -47,7 +47,7 @@ class ImageScreenViewModel @Inject constructor(private val imagesRepository: Med
         imageIndex: Int,
         imageId: Long,
         bucketId: Long,
-        silent: Boolean = uiState.value is ImageScreenUiState.Image
+        silent: Boolean = uiState.value is ImageScreenUiState.Image,
     ) {
         currentJob?.cancel()
         currentJob = viewModelScope.launch {

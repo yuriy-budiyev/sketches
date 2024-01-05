@@ -40,19 +40,19 @@ import androidx.compose.ui.unit.sp
 fun SketchesMessage(text: String) {
     Text(
         text = text,
-        fontSize = 18.sp,
-        textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
+        fontSize = 18.sp,
+        textAlign = TextAlign.Center
     )
 }
 
 @Composable
 fun SketchesCenteredMessage(text: String) {
     Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
         SketchesMessage(text = text)
     }

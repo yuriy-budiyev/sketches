@@ -266,7 +266,6 @@ private fun ImageScreenLayout(
                 backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.5f)
             ) {
                 Box(
-                    contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .size(size = 48.dp)
                         .clip(shape = CircleShape)
@@ -279,6 +278,7 @@ private fun ImageScreenLayout(
                                 )
                             }
                         },
+                    contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         imageVector = SketchesIcons.Share,
@@ -290,6 +290,9 @@ private fun ImageScreenLayout(
         }
         LazyRow(
             state = bottomBarState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
             contentPadding = PaddingValues(horizontal = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(
                 space = 4.dp,
@@ -297,9 +300,6 @@ private fun ImageScreenLayout(
             ),
             verticalAlignment = Alignment.CenterVertically,
             flingBehavior = rememberSnapFlingBehavior(bottomBarState),
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
         ) {
             items(
                 count = data.size,

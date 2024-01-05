@@ -34,7 +34,7 @@ sealed interface BucketScreenUiState {
 
     data class Bucket(
         val id: Long,
-        val images: List<MediaStoreFile>
+        val images: List<MediaStoreFile>,
     ): BucketScreenUiState
 
     data class Error(val thrown: Exception): BucketScreenUiState

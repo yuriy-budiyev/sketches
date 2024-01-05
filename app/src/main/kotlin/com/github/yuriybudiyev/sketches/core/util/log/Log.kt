@@ -29,7 +29,7 @@ import com.github.yuriybudiyev.sketches.BuildConfig
 
 inline fun log(
     throwable: Throwable? = null,
-    lazyMessage: () -> String
+    lazyMessage: () -> String,
 ) {
     if (BuildConfig.DEBUG) {
         Log.d(

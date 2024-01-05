@@ -45,7 +45,7 @@ class BucketScreenViewModel @Inject constructor(private val imagesRepository: Me
 
     fun updateImages(
         bucketId: Long,
-        silent: Boolean = uiState.value is BucketScreenUiState.Bucket
+        silent: Boolean = uiState.value is BucketScreenUiState.Bucket,
     ) {
         currentJob?.cancel()
         currentJob = viewModelScope.launch {

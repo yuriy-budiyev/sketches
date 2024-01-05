@@ -34,7 +34,7 @@ data class MediaStoreFile(
     val bucketName: String,
     val dateAdded: Long,
     val mimeType: String,
-    val uri: Uri
+    val uri: Uri,
 ) {
 
     enum class Type {

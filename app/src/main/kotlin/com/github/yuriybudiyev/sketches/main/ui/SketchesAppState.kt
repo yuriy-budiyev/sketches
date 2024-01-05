@@ -38,7 +38,7 @@ import com.github.yuriybudiyev.sketches.core.navigation.navigate
 
 @Composable
 fun rememberSketchesAppState(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
 ): SketchesAppState =
     remember(navController) {
         SketchesAppState(navController)

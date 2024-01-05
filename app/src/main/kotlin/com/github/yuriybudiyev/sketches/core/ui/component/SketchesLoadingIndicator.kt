@@ -41,15 +41,15 @@ import com.github.yuriybudiyev.sketches.R
 @Composable
 fun SketchesLoadingIndicator() {
     Column(
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         CircularProgressIndicator(
-            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .size(80.dp)
-                .padding(16.dp)
+                .padding(16.dp),
+            color = MaterialTheme.colorScheme.primary
         )
         SketchesMessage(text = stringResource(id = R.string.loading_message))
     }

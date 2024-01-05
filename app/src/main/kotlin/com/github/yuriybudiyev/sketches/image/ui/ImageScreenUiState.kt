@@ -36,7 +36,7 @@ sealed interface ImageScreenUiState {
         val fileIndex: Int,
         val fileId: Long,
         val bucketId: Long,
-        val files: List<MediaStoreFile>
+        val files: List<MediaStoreFile>,
     ): ImageScreenUiState
 
     data class Error(val thrown: Exception): ImageScreenUiState

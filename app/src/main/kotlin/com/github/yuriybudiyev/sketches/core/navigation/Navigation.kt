@@ -39,7 +39,7 @@ import com.github.yuriybudiyev.sketches.main.ui.SketchesAppState
 
 fun NavGraphBuilder.composable(
     destination: NavigationDestination,
-    content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit
+    content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
 ) {
     composable(
         route = destination.buildRoute(),
@@ -54,7 +54,7 @@ fun NavGraphBuilder.composable(
 fun NavController.navigate(
     destination: NavigationDestination,
     vararg args: Any,
-    optionsBuilder: NavOptionsBuilder.() -> Unit = {}
+    optionsBuilder: NavOptionsBuilder.() -> Unit = {},
 ) {
     navigate(
         destination.buildRouteWithArgs(*args),
