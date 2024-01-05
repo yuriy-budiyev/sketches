@@ -26,8 +26,6 @@ package com.github.yuriybudiyev.sketches.image.ui
 
 import android.net.Uri
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -142,36 +140,42 @@ private fun ImageScreenLayout(
     val data by rememberUpdatedState(files)
     val pagerState = rememberPagerState(index) { data.size }
     val bottomBarState = rememberLazyListState(index)
-    val coroutineScope = rememberCoroutineScope()
+    val imageScreenScope = rememberCoroutineScope()
     val bottomBarItemSize = 64.dp
     val bottomBarItemSizePx = with(LocalDensity.current) { bottomBarItemSize.roundToPx() }
     LaunchedEffect(
         pagerState,
         bottomBarState,
+        imageScreenScope,
         data
     ) {
         snapshotFlow { pagerState.currentPage }
             .distinctUntilChanged()
-            .onEach { page ->
+            .collect { page ->
                 onChange(
                     page,
                     data[page].id
                 )
-                bottomBarState.animateScrollToItemCentered(
-                    page,
-                    bottomBarItemSizePx
-                )
+                imageScreenScope.launch {
+                    bottomBarState.animateScrollToItemCentered(
+                        page,
+                        bottomBarItemSizePx
+                    )
+                }
             }
-            .launchIn(coroutineScope)
     }
     LaunchedEffect(
         pagerState,
+        imageScreenScope,
         index
     ) {
         snapshotFlow { index }
             .distinctUntilChanged()
-            .onEach { page -> pagerState.scrollToPage(page) }
-            .launchIn(coroutineScope)
+            .collect { page ->
+                imageScreenScope.launch {
+                    pagerState.scrollToPage(page)
+                }
+            }
     }
     Column(modifier = Modifier.fillMaxSize()) {
         HorizontalPager(
@@ -182,10 +186,11 @@ private fun ImageScreenLayout(
             key = { page -> data[page].id },
         ) { page ->
             val file = data[page]
+            val fileUri = file.uri
             when (file.type) {
                 MediaStoreFile.Type.IMAGE -> {
                     SketchesAsyncImage(
-                        uri = file.uri,
+                        uri = fileUri,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Fit,
                         filterQuality = FilterQuality.High
@@ -193,6 +198,7 @@ private fun ImageScreenLayout(
                 }
                 MediaStoreFile.Type.VIDEO -> {
                     val mediaState = rememberSketchesMediaState()
+                    val mediaScope = rememberCoroutineScope()
                     SketchesMediaPlayer(
                         state = mediaState,
                         modifier = Modifier.fillMaxSize()
@@ -202,7 +208,38 @@ private fun ImageScreenLayout(
                             mediaState.pause()
                         }
                     }
-                    mediaState.open(file.uri)
+                    LaunchedEffect(
+                        mediaState,
+                        mediaScope,
+                        fileUri
+                    ) {
+                        if (mediaState.uri != fileUri) {
+                            mediaScope.launch {
+                                mediaState.open(fileUri)
+                            }
+                        }
+                    }
+                    LaunchedEffect(
+                        pagerState,
+                        mediaState,
+                        mediaScope,
+                        page
+                    ) {
+                        snapshotFlow { pagerState.currentPage }
+                            .distinctUntilChanged()
+                            .collect { currentPage ->
+                                if (page == currentPage) {
+                                    mediaScope.launch {
+                                        mediaState.play()
+                                    }
+                                } else {
+                                    mediaScope.launch {
+                                        mediaState.stop()
+                                        mediaState.disableVolume()
+                                    }
+                                }
+                            }
+                    }
                 }
             }
         }
@@ -230,7 +267,7 @@ private fun ImageScreenLayout(
                         .size(bottomBarItemSize)
                         .clip(RoundedCornerShape(8.dp))
                         .clickable {
-                            coroutineScope.launch {
+                            imageScreenScope.launch {
                                 pagerState.animateScrollToPage(page)
                             }
                         },
