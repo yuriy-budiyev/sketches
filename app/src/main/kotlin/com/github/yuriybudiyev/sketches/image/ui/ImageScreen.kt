@@ -257,6 +257,7 @@ private fun ImageScreenLayout(
                                 .collect { currentPage ->
                                     if (page == currentPage) {
                                         mediaScope.launch {
+                                            mediaState.disableVolume()
                                             mediaState.play()
                                         }
                                     } else {
