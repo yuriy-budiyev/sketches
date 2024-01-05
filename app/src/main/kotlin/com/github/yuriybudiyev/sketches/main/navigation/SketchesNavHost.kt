@@ -56,23 +56,27 @@ fun SketchesNavHost(
         startDestination = ImagesNavigationDestination.buildRoute()
     ) {
         composable(ImagesNavigationDestination.registerIn(appState)) {
-            ImagesRoute(onImageClick = { index, image ->
-                appState.navController.navigate(
-                    ImageNavigationDestination,
-                    index,
-                    image.id,
-                    -1L
-                )
-            })
+            ImagesRoute(
+                onImageClick = { index, image ->
+                    appState.navController.navigate(
+                        ImageNavigationDestination,
+                        index,
+                        image.id,
+                        -1L
+                    )
+                },
+            )
         }
         composable(BucketsNavigationDestination.registerIn(appState)) {
-            BucketsRoute(onBucketClick = { _, bucket ->
-                appState.navController.navigate(
-                    BucketNavigationDestination,
-                    bucket.id,
-                    bucket.name
-                )
-            })
+            BucketsRoute(
+                onBucketClick = { _, bucket ->
+                    appState.navController.navigate(
+                        BucketNavigationDestination,
+                        bucket.id,
+                        bucket.name
+                    )
+                },
+            )
         }
         composable(BucketNavigationDestination.registerIn(appState)) { backStackEntry ->
             val bucketId = backStackEntry.arguments?.getLong(
@@ -81,7 +85,8 @@ fun SketchesNavHost(
             ) ?: -1L
             val bucketName =
                 backStackEntry.arguments?.getString(BucketNavigationDestination.Arguments.BUCKET_NAME)
-            BucketRoute(id = bucketId,
+            BucketRoute(
+                id = bucketId,
                 name = bucketName,
                 onImageClick = { index, image ->
                     appState.navController.navigate(
@@ -90,7 +95,8 @@ fun SketchesNavHost(
                         image.id,
                         image.bucketId
                     )
-                })
+                },
+            )
         }
         composable(ImageNavigationDestination.registerIn(appState)) { backStackEntry ->
             val imageIndex = backStackEntry.arguments?.getInt(
