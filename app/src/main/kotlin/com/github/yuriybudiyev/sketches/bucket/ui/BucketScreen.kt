@@ -24,10 +24,13 @@
 
 package com.github.yuriybudiyev.sketches.bucket.ui
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -65,10 +68,7 @@ fun BucketScreen(
     uiState: BucketScreenUiState,
     onImageClick: MediaItemClickListener,
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        if (!name.isNullOrEmpty()) {
-            SketchesTopAppBar(text = name)
-        }
+    Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {
             BucketScreenUiState.Empty -> {
                 SketchesCenteredMessage(text = stringResource(id = R.string.no_images_found))
@@ -79,7 +79,7 @@ fun BucketScreen(
             is BucketScreenUiState.Bucket -> {
                 SketchesMediaVerticalGrid(
                     images = uiState.images,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.matchParentSize(),
                     onItemClick = onImageClick
                 )
             }
@@ -87,5 +87,12 @@ fun BucketScreen(
                 SketchesCenteredMessage(text = stringResource(id = R.string.unexpected_error))
             }
         }
+        SketchesTopAppBar(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .fillMaxWidth(),
+            text = name,
+            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f)
+        )
     }
 }

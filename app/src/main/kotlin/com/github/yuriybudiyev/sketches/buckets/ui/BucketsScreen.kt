@@ -27,6 +27,7 @@ package com.github.yuriybudiyev.sketches.buckets.ui
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,6 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -80,8 +82,7 @@ fun BucketsScreen(
     uiState: BucketsScreenUiState,
     onBucketClick: BucketClickListener,
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        SketchesTopAppBar(text = stringResource(id = R.string.buckets_screen_label))
+    Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {
             BucketsScreenUiState.Empty -> {
                 SketchesCenteredMessage(text = stringResource(id = R.string.no_buckets_found))
@@ -92,13 +93,21 @@ fun BucketsScreen(
             is BucketsScreenUiState.Buckets -> {
                 BucketsScreenLayout(
                     buckets = uiState.buckets,
-                    onBucketClick = onBucketClick
+                    onBucketClick = onBucketClick,
+                    modifier = Modifier.matchParentSize()
                 )
             }
             is BucketsScreenUiState.Error -> {
                 SketchesCenteredMessage(text = stringResource(id = R.string.unexpected_error))
             }
         }
+        SketchesTopAppBar(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .fillMaxWidth(),
+            text = stringResource(id = R.string.buckets_screen_label),
+            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f)
+        )
     }
 }
 
@@ -106,10 +115,11 @@ fun BucketsScreen(
 private fun BucketsScreenLayout(
     buckets: List<MediaStoreBucket>,
     onBucketClick: BucketClickListener,
+    modifier: Modifier = Modifier,
 ) {
     val data by rememberUpdatedState(buckets)
     val bucketsScreenScope = rememberCoroutineScope()
-    SketchesLazyVerticalGrid(modifier = Modifier.fillMaxSize()) {
+    SketchesLazyVerticalGrid(modifier = modifier) {
         items(
             count = data.size,
             key = { index -> data[index].id },

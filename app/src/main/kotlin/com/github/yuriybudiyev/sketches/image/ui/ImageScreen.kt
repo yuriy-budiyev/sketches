@@ -28,6 +28,7 @@ import android.net.Uri
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
@@ -263,7 +264,7 @@ private fun ImageScreenLayout(
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .fillMaxWidth(),
-                backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.5f)
+                backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f)
             ) {
                 Box(
                     modifier = Modifier
@@ -311,6 +312,11 @@ private fun ImageScreenLayout(
                     modifier = Modifier
                         .size(bottomBarItemSize)
                         .clip(RoundedCornerShape(8.dp))
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            shape = RoundedCornerShape(8.dp)
+                        )
                         .clickable {
                             imageScreenScope.launch {
                                 pagerState.animateScrollToPage(page)

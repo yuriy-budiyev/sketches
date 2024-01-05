@@ -57,7 +57,7 @@ fun SketchesMediaPlayer(
     state: SketchesMediaState,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
-    controlsBackgroundColor: Color = backgroundColor.copy(alpha = 0.5f),
+    controlsBackgroundColor: Color = backgroundColor.copy(alpha = 0.75f),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
 ) {
     Box(modifier = modifier) {
