@@ -118,4 +118,13 @@ class MediaRepositoryImpl(private val context: Context): MediaRepository {
         }
         return files
     }
+
+    override suspend fun deleteMedia(uri: Uri): Boolean =
+        withContext(Dispatchers.IO) {
+            context.contentResolver.delete(
+                uri,
+                null,
+                null
+            ) > 0
+        }
 }

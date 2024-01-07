@@ -11,4 +11,5 @@
     <string name="no_buckets_found">Альбомов не найдено</string>
     <string name="open_settings">Настройки</string>
     <string name="share_image">Поделиться изображением</string>
+    <string name="delete_image">Удалить изображение</string>
 </resources>

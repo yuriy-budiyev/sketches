@@ -71,6 +71,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.ui.component.AppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
@@ -277,27 +278,26 @@ private fun ImageScreenLayout(
                     .fillMaxWidth(),
                 backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(size = 48.dp)
-                        .clip(shape = CircleShape)
-                        .clickable {
-                            val file = currentMediaFile
-                            imageScreenScope.launch {
-                                onShare(
-                                    file.uri,
-                                    file.mimeType
-                                )
-                            }
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        imageVector = SketchesIcons.Share,
-                        contentDescription = null,
-                        modifier = Modifier.size(size = 24.dp)
-                    )
-                }
+                AppBarActionButton(
+                    icon = SketchesIcons.Delete,
+                    description = stringResource(id = R.string.delete_image),
+                    onClick = {
+
+                    }
+                )
+                AppBarActionButton(
+                    icon = SketchesIcons.Share,
+                    description = stringResource(id = R.string.share_image),
+                    onClick = {
+                        val file = currentMediaFile
+                        imageScreenScope.launch {
+                            onShare(
+                                file.uri,
+                                file.mimeType
+                            )
+                        }
+                    },
+                )
             }
         }
         LazyRow(

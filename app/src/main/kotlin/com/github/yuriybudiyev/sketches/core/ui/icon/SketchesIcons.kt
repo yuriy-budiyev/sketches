@@ -1,6 +1,7 @@
 package com.github.yuriybudiyev.sketches.core.ui.icon
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.PhotoLibrary
@@ -21,6 +22,7 @@ object SketchesIcons {
     val BucketsUnselected = Icons.Outlined.PhotoLibrary
     val ImageLoadError = Icons.Rounded.BrokenImage
     val Share = Icons.Filled.Share
+    val Delete = Icons.Filled.DeleteForever
     val Video = Icons.Outlined.PlayCircle
     val Play = Icons.Filled.PlayArrow
     val Pause = Icons.Filled.Pause
