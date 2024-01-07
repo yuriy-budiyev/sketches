@@ -48,8 +48,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
 @Composable
@@ -159,7 +161,13 @@ fun SketchesMediaController(
                     } else {
                         SketchesIcons.Play
                     },
-                    contentDescription = null,
+                    contentDescription = stringResource(
+                        id = if (state.isPlaying) {
+                            R.string.pause
+                        } else {
+                            R.string.play
+                        }
+                    ),
                     modifier = Modifier.size(size = 24.dp)
                 )
             })
@@ -213,7 +221,13 @@ fun SketchesMediaController(
                     } else {
                         SketchesIcons.VolumeDisabled
                     },
-                    contentDescription = null,
+                    contentDescription = stringResource(
+                        id = if (state.isVolumeEnabled) {
+                            R.string.disable_volume
+                        } else {
+                            R.string.enable_volume
+                        }
+                    ),
                     modifier = Modifier.size(size = 24.dp)
                 )
             })
