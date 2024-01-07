@@ -205,9 +205,11 @@ private class SketchesMediaStateImpl(
     }
 
     private fun isVolumeEnabledInternal(): Boolean =
-        player.callWithCheck(Player.COMMAND_GET_VOLUME,
+        player.callWithCheck(
+            Player.COMMAND_GET_VOLUME,
             available = { volume > 0f },
-            unavailable = { false })
+            unavailable = { false },
+        )
 
     override var isVolumeEnabled: Boolean by mutableStateOf(isVolumeEnabledInternal())
         private set
@@ -305,7 +307,8 @@ private class SketchesMediaStateImpl(
     }
 
     private fun durationInternal(): Long =
-        player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
+        player.callWithCheck(
+            Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
             available = {
                 val contentDuration = contentDuration
                 if (contentDuration != C.TIME_UNSET) {
@@ -314,7 +317,8 @@ private class SketchesMediaStateImpl(
                     SketchesMediaState.TIME_UNKNOWN
                 }
             },
-            unavailable = { SketchesMediaState.TIME_UNKNOWN })
+            unavailable = { SketchesMediaState.TIME_UNKNOWN },
+        )
 
     override var duration: Long by mutableLongStateOf(durationInternal())
         private set
@@ -324,7 +328,8 @@ private class SketchesMediaStateImpl(
     }
 
     private fun positionInternal(): Long =
-        player.callWithCheck(Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
+        player.callWithCheck(
+            Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
             available = {
                 correctPosition(
                     position = contentPosition,
@@ -333,7 +338,8 @@ private class SketchesMediaStateImpl(
                     unknownToReturn = SketchesMediaState.TIME_UNKNOWN
                 )
             },
-            unavailable = { SketchesMediaState.TIME_UNKNOWN })
+            unavailable = { SketchesMediaState.TIME_UNKNOWN },
+        )
 
     override var position: Long by mutableLongStateOf(positionInternal())
         private set
