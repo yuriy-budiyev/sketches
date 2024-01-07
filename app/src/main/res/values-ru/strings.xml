@@ -12,4 +12,11 @@
     <string name="open_settings">Настройки</string>
     <string name="share_image">Поделиться изображением</string>
     <string name="delete_image">Удалить изображение</string>
+    <string name="bucket_cover">Обложка альбома</string>
+    <string name="image">Изображение</string>
+    <string name="video">Видео</string>
+    <string name="play">Воспроизвести</string>
+    <string name="pause">Приостановить</string>
+    <string name="enable_volume">Включить звук</string>
+    <string name="disable_volume">Выключить звук</string>
 </resources>

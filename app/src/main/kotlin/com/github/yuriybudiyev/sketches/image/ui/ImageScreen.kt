@@ -219,6 +219,7 @@ private fun ImageScreenLayout(
                     MediaStoreFile.Type.IMAGE -> {
                         SketchesAsyncImage(
                             uri = fileUri,
+                            description = stringResource(id = R.string.image),
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Fit,
                             filterQuality = FilterQuality.High

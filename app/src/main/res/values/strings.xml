@@ -11,4 +11,11 @@
     <string name="open_settings">Settings</string>
     <string name="share_image">Share image</string>
     <string name="delete_image">Delete image</string>
+    <string name="bucket_cover">Album cover</string>
+    <string name="image">Image</string>
+    <string name="video">Video</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="enable_volume">Unmute</string>
+    <string name="disable_volume">Mute</string>
 </resources>

@@ -145,6 +145,7 @@ private fun BucketsScreenLayout(
             ) {
                 SketchesAsyncImage(
                     uri = item.coverUri,
+                    description = stringResource(id = R.string.bucket_cover),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()

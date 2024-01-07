@@ -35,7 +35,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
+import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
@@ -51,6 +53,7 @@ fun SketchesMediaItem(
     Box(modifier = modifier) {
         SketchesAsyncImage(
             uri = file.uri,
+            description = stringResource(id = R.string.image),
             modifier = Modifier.matchParentSize(),
             contentScale = ContentScale.Crop,
             filterQuality = FilterQuality.Low
@@ -67,7 +70,7 @@ fun SketchesMediaItem(
             ) {
                 Icon(
                     imageVector = SketchesIcons.Video,
-                    contentDescription = null,
+                    contentDescription = stringResource(id = R.string.video),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }

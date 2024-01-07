@@ -41,12 +41,14 @@ import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 @Composable
 fun SketchesAsyncImage(
     uri: Uri,
+    description: String,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = FilterQuality.Low,
 ) {
-    SubcomposeAsyncImage(model = uri,
-        contentDescription = null,
+    SubcomposeAsyncImage(
+        model = uri,
+        contentDescription = description,
         modifier = modifier,
         contentScale = contentScale,
         filterQuality = filterQuality,
@@ -59,5 +61,6 @@ fun SketchesAsyncImage(
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
-        })
+        },
+    )
 }
