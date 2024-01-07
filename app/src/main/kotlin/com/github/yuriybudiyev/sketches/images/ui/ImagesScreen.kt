@@ -41,6 +41,7 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessag
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
+import com.github.yuriybudiyev.sketches.images.navigation.ImagesNavigationDestination
 import com.github.yuriybudiyev.sketches.images.ui.component.MediaItemClickListener
 import com.github.yuriybudiyev.sketches.images.ui.component.SketchesMediaVerticalGrid
 
@@ -93,7 +94,7 @@ fun ImagesScreen(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
-            text = stringResource(id = R.string.images_screen_label),
+            text = stringResource(id = ImagesNavigationDestination.titleRes),
             backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f)
         )
     }

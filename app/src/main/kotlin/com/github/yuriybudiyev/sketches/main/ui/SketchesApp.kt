@@ -125,7 +125,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                                         } else {
                                             destination.unselectedIcon
                                         },
-                                        contentDescription = null
+                                        contentDescription = stringResource(id = destination.titleRes)
                                     )
                                 },
                             )

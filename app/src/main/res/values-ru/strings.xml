@@ -6,8 +6,8 @@
     <string name="no_images_permission">Необходимо разрешение на доступ к изображениям и видео</string>
     <string name="no_storage_permission">Необходимо разрешение на доступ к хранилищу</string>
     <string name="unexpected_error">Произошла неожиданная ошибка</string>
-    <string name="images_screen_label">Изображения</string>
-    <string name="buckets_screen_label">Альбомы</string>
+    <string name="images">Изображения</string>
+    <string name="buckets">Альбомы</string>
     <string name="no_buckets_found">Альбомов не найдено</string>
     <string name="open_settings">Настройки</string>
     <string name="share_image">Поделиться изображением</string>
@@ -19,4 +19,5 @@
     <string name="pause">Приостановить</string>
     <string name="enable_volume">Включить звук</string>
     <string name="disable_volume">Выключить звук</string>
+    <string name="image_load_error">Ошибка загрузки изображения</string>
 </resources>

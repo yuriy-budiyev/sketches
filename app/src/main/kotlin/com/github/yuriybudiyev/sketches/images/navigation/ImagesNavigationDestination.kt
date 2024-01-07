@@ -24,9 +24,11 @@
 
 package com.github.yuriybudiyev.sketches.images.navigation
 
+import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavDeepLink
+import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
@@ -37,6 +39,9 @@ object ImagesNavigationDestination: TopLevelNavigationDestination {
     override val arguments: List<NamedNavArgument> = emptyList()
 
     override val deepLinks: List<NavDeepLink> = emptyList()
+
+    @get:StringRes
+    override val titleRes: Int = R.string.images
 
     override val selectedIcon: ImageVector = SketchesIcons.ImagesSelected
 

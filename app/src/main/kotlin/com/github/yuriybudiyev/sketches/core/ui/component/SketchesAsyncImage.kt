@@ -34,8 +34,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
+import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
 @Composable
@@ -56,7 +58,7 @@ fun SketchesAsyncImage(
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = SketchesIcons.ImageLoadError,
-                    contentDescription = null,
+                    contentDescription = stringResource(id = R.string.image_load_error),
                     modifier = Modifier.size(48.dp),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
