@@ -40,6 +40,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 class ImageScreenViewModel @Inject constructor(private val imagesRepository: MediaRepository):
     ViewModel() {
 
+    private val uiStateInternal: MutableStateFlow<ImageScreenUiState> =
+        MutableStateFlow(ImageScreenUiState.Loading)
+
     val uiState: StateFlow<ImageScreenUiState>
         get() = uiStateInternal
 
@@ -106,7 +109,5 @@ class ImageScreenViewModel @Inject constructor(private val imagesRepository: Med
         }
     }
 
-    private val uiStateInternal: MutableStateFlow<ImageScreenUiState> =
-        MutableStateFlow(ImageScreenUiState.Loading)
     private var currentJob: Job? = null
 }
