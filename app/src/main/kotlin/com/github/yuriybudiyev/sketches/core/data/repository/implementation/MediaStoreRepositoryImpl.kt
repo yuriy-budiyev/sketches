@@ -38,20 +38,6 @@ import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepositor
 
 class MediaStoreRepositoryImpl(private val context: Context): MediaStoreRepository {
 
-    override suspend fun getFiles(bucketId: Long): List<MediaStoreFile> {
-        val files = ArrayList<MediaStoreFile>()
-        MediaType.entries.forEach { type ->
-            collectFiles(
-                bucketId,
-                type,
-                files
-            )
-        }
-        files.sortByDescending { file -> file.dateAdded }
-        files.trimToSize()
-        return files
-    }
-
     private suspend fun collectFiles(
         bucketId: Long,
         mediaType: MediaType,
@@ -106,6 +92,20 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
         }
     }
 
+    override suspend fun getFiles(bucketId: Long): List<MediaStoreFile> {
+        val files = ArrayList<MediaStoreFile>()
+        MediaType.entries.forEach { type ->
+            collectFiles(
+                bucketId,
+                type,
+                files
+            )
+        }
+        files.sortByDescending { file -> file.dateAdded }
+        files.trimToSize()
+        return files
+    }
+
     override suspend fun deleteFile(uri: Uri): Boolean =
         withContext(Dispatchers.IO) {
             context.contentResolver.delete(
@@ -114,19 +114,6 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
                 null
             ) > 0
         }
-
-    override suspend fun getBuckets(): List<MediaStoreBucket> {
-        val bucketsInfo = LinkedHashMap<Long, BucketInfo>()
-        MediaType.entries.forEach { mediaType ->
-            collectBucketsInfo(
-                mediaType,
-                bucketsInfo
-            )
-        }
-        return bucketsInfo
-            .mapTo(ArrayList(bucketsInfo.size)) { (_, info) -> info.toBucket() }
-            .also { buckets -> buckets.sortByDescending { bucket -> bucket.coverDateAdded } }
-    }
 
     private suspend fun collectBucketsInfo(
         mediaType: MediaType,
@@ -176,6 +163,19 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
                 )
             }
         }
+    }
+
+    override suspend fun getBuckets(): List<MediaStoreBucket> {
+        val bucketsInfo = LinkedHashMap<Long, BucketInfo>()
+        MediaType.entries.forEach { mediaType ->
+            collectBucketsInfo(
+                mediaType,
+                bucketsInfo
+            )
+        }
+        return bucketsInfo
+            .mapTo(ArrayList(bucketsInfo.size)) { (_, info) -> info.toBucket() }
+            .also { buckets -> buckets.sortByDescending { bucket -> bucket.coverDateAdded } }
     }
 
     private fun contentUriFor(mediaType: MediaType): Uri =
