@@ -69,8 +69,11 @@ fun BucketsRoute(
     viewModel: BucketsScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val bucketsRouteScope = rememberCoroutineScope()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        viewModel.updateBuckets()
+        bucketsRouteScope.launch {
+            viewModel.updateBuckets()
+        }
     }
     BucketsScreen(
         uiState = uiState,

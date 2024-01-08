@@ -94,12 +94,15 @@ fun ImageRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var currentFileIndex by rememberSaveable { mutableIntStateOf(fileIndex) }
     var currentFileId by rememberSaveable { mutableLongStateOf(fileId) }
+    val imageRouteScope = rememberCoroutineScope()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        viewModel.updateImages(
-            imageIndex = currentFileIndex,
-            imageId = currentFileId,
-            bucketId = bucketId
-        )
+        imageRouteScope.launch {
+            viewModel.updateImages(
+                imageIndex = currentFileIndex,
+                imageId = currentFileId,
+                bucketId = bucketId
+            )
+        }
     }
     ImageScreen(
         uiState = uiState,
