@@ -34,18 +34,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.bucket.navigation.BucketNavigationDestination
-import com.github.yuriybudiyev.sketches.bucket.ui.BucketRoute
-import com.github.yuriybudiyev.sketches.buckets.navigation.BucketsNavigationDestination
-import com.github.yuriybudiyev.sketches.buckets.ui.BucketsRoute
 import com.github.yuriybudiyev.sketches.core.navigation.buildRoute
 import com.github.yuriybudiyev.sketches.core.navigation.composable
 import com.github.yuriybudiyev.sketches.core.navigation.navigate
 import com.github.yuriybudiyev.sketches.core.navigation.registerIn
-import com.github.yuriybudiyev.sketches.image.navigation.ImageNavigationDestination
-import com.github.yuriybudiyev.sketches.image.ui.ImageRoute
-import com.github.yuriybudiyev.sketches.images.navigation.ImagesNavigationDestination
-import com.github.yuriybudiyev.sketches.images.ui.ImagesRoute
+import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavigationDestination
+import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
+import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavigationDestination
+import com.github.yuriybudiyev.sketches.feature.buckets.ui.BucketsRoute
+import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageNavigationDestination
+import com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute
+import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavigationDestination
+import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
 import com.github.yuriybudiyev.sketches.main.ui.SketchesAppState
 
 @Composable

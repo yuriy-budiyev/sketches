@@ -22,8 +22,9 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.images.ui.component
+package com.github.yuriybudiyev.sketches.core.ui.component
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -40,26 +41,26 @@ import androidx.compose.ui.unit.Dp
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
-import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
 typealias MediaItemClickListener = (index: Int, file: MediaStoreFile) -> Unit
 
 @Composable
 fun SketchesMediaItem(
-    file: MediaStoreFile,
+    uri: Uri,
+    type: MediaType,
     iconPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
         SketchesAsyncImage(
-            uri = file.uri,
+            uri = uri,
             description = stringResource(id = R.string.image),
             modifier = Modifier.matchParentSize(),
             contentScale = ContentScale.Crop,
             filterQuality = FilterQuality.Low
         )
-        if (file.mediaType == MediaType.VIDEO) {
+        if (type == MediaType.VIDEO) {
             Box(
                 modifier = Modifier
                     .align(alignment = Alignment.BottomEnd)

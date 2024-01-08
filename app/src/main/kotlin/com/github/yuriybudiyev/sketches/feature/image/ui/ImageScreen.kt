@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.image.ui
+package com.github.yuriybudiyev.sketches.feature.image.ui
 
 import android.net.Uri
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -75,13 +75,13 @@ import com.github.yuriybudiyev.sketches.core.ui.component.AppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.util.ui.animateScrollToItemCentered
-import com.github.yuriybudiyev.sketches.images.ui.component.SketchesMediaItem
 
 @Composable
 fun ImageRoute(
@@ -317,8 +317,10 @@ private fun ImageScreenLayout(
                 count = data.size,
                 key = { page -> data[page].id },
             ) { page ->
+                val file = data[page]
                 SketchesMediaItem(
-                    file = data[page],
+                    uri = file.uri,
+                    type = file.mediaType,
                     iconPadding = 2.dp,
                     modifier = Modifier
                         .size(bottomBarItemSize)

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.buckets.ui
+package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.border
@@ -52,7 +52,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.buckets.navigation.BucketsNavigationDestination
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
@@ -60,6 +59,7 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLazyVerticalGr
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
+import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavigationDestination
 
 typealias BucketClickListener = (index: Int, bucket: MediaStoreBucket) -> Unit
 

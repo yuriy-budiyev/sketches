@@ -22,29 +22,28 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.image.navigation
+package com.github.yuriybudiyev.sketches.feature.buckets.navigation
 
+import androidx.annotation.StringRes
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavDeepLink
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
-import com.github.yuriybudiyev.sketches.core.navigation.destination.NavigationDestination
+import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
+import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
-object ImageNavigationDestination: NavigationDestination {
+object BucketsNavigationDestination: TopLevelNavigationDestination {
 
-    override val routeBase: String = "image"
+    override val routeBase: String = "buckets"
 
-    override val arguments: List<NamedNavArgument> =
-        listOf(navArgument(name = Arguments.IMAGE_INDEX) { type = NavType.IntType },
-            navArgument(name = Arguments.IMAGE_ID) { type = NavType.LongType },
-            navArgument(name = Arguments.BUCKET_ID) { type = NavType.LongType })
+    override val arguments: List<NamedNavArgument> = emptyList()
 
     override val deepLinks: List<NavDeepLink> = emptyList()
 
-    object Arguments {
+    @get:StringRes
+    override val titleRes: Int = R.string.buckets
 
-        const val IMAGE_INDEX = "image_index"
-        const val IMAGE_ID = "image_id"
-        const val BUCKET_ID = "bucket_id"
-    }
+    override val selectedIcon: ImageVector = SketchesIcons.BucketsSelected
+
+    override val unselectedIcon: ImageVector = SketchesIcons.BucketsUnselected
 }

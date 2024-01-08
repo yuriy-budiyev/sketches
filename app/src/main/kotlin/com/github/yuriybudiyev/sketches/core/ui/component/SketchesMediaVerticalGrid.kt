@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.images.ui.component
+package com.github.yuriybudiyev.sketches.core.ui.component
 
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.border
@@ -38,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLazyVerticalGrid
 
 @Composable
 fun SketchesMediaVerticalGrid(
@@ -54,7 +53,9 @@ fun SketchesMediaVerticalGrid(
             key = { index -> data[index].id },
         ) { index ->
             val file = data[index]
-            SketchesMediaItem(file = data[index],
+            SketchesMediaItem(
+                uri = file.uri,
+                type = file.mediaType,
                 iconPadding = 4.dp,
                 modifier = Modifier
                     .aspectRatio(ratio = 1f)
@@ -71,7 +72,8 @@ fun SketchesMediaVerticalGrid(
                                 file
                             )
                         }
-                    })
+                    },
+            )
         }
     }
 }

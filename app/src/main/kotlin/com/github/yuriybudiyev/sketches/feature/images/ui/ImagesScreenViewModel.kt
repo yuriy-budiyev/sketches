@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.images.ui
+package com.github.yuriybudiyev.sketches.feature.images.ui
 
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers

@@ -22,27 +22,22 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.bucket.navigation
+package com.github.yuriybudiyev.sketches.feature.image.ui
 
-import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavDeepLink
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
-import com.github.yuriybudiyev.sketches.core.navigation.destination.NavigationDestination
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
-object BucketNavigationDestination: NavigationDestination {
+sealed interface ImageScreenUiState {
 
-    override val routeBase: String = "bucket"
+    data object Empty: ImageScreenUiState
 
-    override val arguments: List<NamedNavArgument> =
-        listOf(navArgument(name = Arguments.BUCKET_ID) { type = NavType.LongType },
-            navArgument(name = Arguments.BUCKET_NAME) { type = NavType.StringType })
+    data object Loading: ImageScreenUiState
 
-    override val deepLinks: List<NavDeepLink> = emptyList()
+    data class Image(
+        val fileIndex: Int,
+        val fileId: Long,
+        val bucketId: Long,
+        val files: List<MediaStoreFile>,
+    ): ImageScreenUiState
 
-    object Arguments {
-
-        const val BUCKET_ID = "id"
-        const val BUCKET_NAME = "name"
-    }
+    data class Error(val thrown: Exception): ImageScreenUiState
 }

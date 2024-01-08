@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.images.ui
+package com.github.yuriybudiyev.sketches.feature.bucket.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,53 +37,56 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.ui.component.MediaItemClickListener
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesMediaVerticalGrid
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
-import com.github.yuriybudiyev.sketches.images.navigation.ImagesNavigationDestination
-import com.github.yuriybudiyev.sketches.images.ui.component.MediaItemClickListener
-import com.github.yuriybudiyev.sketches.images.ui.component.SketchesMediaVerticalGrid
 
 @Composable
-fun ImagesRoute(
+fun BucketRoute(
+    id: Long,
+    name: String?,
     onImageClick: MediaItemClickListener,
-    viewModel: ImagesScreenViewModel = hiltViewModel(),
+    viewModel: BucketScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        viewModel.updateImages()
+        viewModel.updateImages(id)
     }
-    ImagesScreen(
+    BucketScreen(
+        name = name,
         uiState = uiState,
         onImageClick = onImageClick
     )
 }
 
 @Composable
-fun ImagesScreen(
-    uiState: ImagesScreenUiState,
+fun BucketScreen(
+    name: String?,
+    uiState: BucketScreenUiState,
     onImageClick: MediaItemClickListener,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {
-            ImagesScreenUiState.Empty -> {
+            BucketScreenUiState.Empty -> {
                 SketchesCenteredMessage(
                     text = stringResource(id = R.string.no_images_found),
                     modifier = Modifier.matchParentSize()
                 )
             }
-            ImagesScreenUiState.Loading -> {
+            BucketScreenUiState.Loading -> {
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
             }
-            is ImagesScreenUiState.Images -> {
+            is BucketScreenUiState.Bucket -> {
                 SketchesMediaVerticalGrid(
                     images = uiState.images,
                     modifier = Modifier.matchParentSize(),
                     onItemClick = onImageClick
                 )
             }
-            is ImagesScreenUiState.Error -> {
+            is BucketScreenUiState.Error -> {
                 SketchesCenteredMessage(
                     text = stringResource(id = R.string.unexpected_error),
                     modifier = Modifier.matchParentSize()
@@ -94,7 +97,7 @@ fun ImagesScreen(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
-            text = stringResource(id = ImagesNavigationDestination.titleRes),
+            text = name,
             backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f)
         )
     }

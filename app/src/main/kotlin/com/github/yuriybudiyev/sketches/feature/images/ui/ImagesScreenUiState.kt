@@ -22,20 +22,17 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.bucket.ui
+package com.github.yuriybudiyev.sketches.feature.images.ui
 
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
-sealed interface BucketScreenUiState {
+sealed interface ImagesScreenUiState {
 
-    data object Empty: BucketScreenUiState
+    data object Empty: ImagesScreenUiState
 
-    data object Loading: BucketScreenUiState
+    data object Loading: ImagesScreenUiState
 
-    data class Bucket(
-        val id: Long,
-        val images: List<MediaStoreFile>,
-    ): BucketScreenUiState
+    data class Images(val images: List<MediaStoreFile>): ImagesScreenUiState
 
-    data class Error(val thrown: Exception): BucketScreenUiState
+    data class Error(val thrown: Exception): ImagesScreenUiState
 }

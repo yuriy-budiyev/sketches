@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.buckets.ui
+package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers

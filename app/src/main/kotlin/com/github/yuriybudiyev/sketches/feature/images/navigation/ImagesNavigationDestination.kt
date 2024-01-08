@@ -22,17 +22,28 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.images.ui
+package com.github.yuriybudiyev.sketches.feature.images.navigation
 
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import androidx.annotation.StringRes
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavDeepLink
+import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
+import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
-sealed interface ImagesScreenUiState {
+object ImagesNavigationDestination: TopLevelNavigationDestination {
 
-    data object Empty: ImagesScreenUiState
+    override val routeBase: String = "images"
 
-    data object Loading: ImagesScreenUiState
+    override val arguments: List<NamedNavArgument> = emptyList()
 
-    data class Images(val images: List<MediaStoreFile>): ImagesScreenUiState
+    override val deepLinks: List<NavDeepLink> = emptyList()
 
-    data class Error(val thrown: Exception): ImagesScreenUiState
+    @get:StringRes
+    override val titleRes: Int = R.string.images
+
+    override val selectedIcon: ImageVector = SketchesIcons.ImagesSelected
+
+    override val unselectedIcon: ImageVector = SketchesIcons.ImagesUnselected
 }

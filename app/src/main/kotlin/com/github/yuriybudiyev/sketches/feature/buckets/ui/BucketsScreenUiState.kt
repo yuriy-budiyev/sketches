@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.buckets.ui
+package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 
