@@ -38,10 +38,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
-import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
+import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
 typealias MediaItemClickListener = (index: Int, file: MediaStoreFile) -> Unit
 

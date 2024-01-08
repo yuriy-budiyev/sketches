@@ -33,11 +33,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.images.data.reository.MediaRepository
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 @HiltViewModel
-class ImageScreenViewModel @Inject constructor(private val mediaRepository: MediaRepository):
+class ImageScreenViewModel @Inject constructor(private val repository: MediaStoreRepository):
     ViewModel() {
 
     private val uiStateInternal: MutableStateFlow<ImageScreenUiState> =
@@ -58,31 +58,30 @@ class ImageScreenViewModel @Inject constructor(private val mediaRepository: Medi
                 uiStateInternal.value = ImageScreenUiState.Loading
             }
             try {
-                val images =
-                    withContext(Dispatchers.Default) { mediaRepository.getMedia(bucketId) }
-                if (images.isNotEmpty()) {
-                    if (images[imageIndex].id == imageId) {
+                val files = withContext(Dispatchers.Default) { repository.getFiles(bucketId) }
+                if (files.isNotEmpty()) {
+                    if (files[imageIndex].id == imageId) {
                         uiStateInternal.value = ImageScreenUiState.Image(
                             imageIndex,
                             imageId,
                             bucketId,
-                            images
+                            files
                         )
                     } else {
                         var backwardIndex = imageIndex - 1
                         var forwardIndex = imageIndex + 1
                         var actualIndex = 0
-                        val imagesSize = images.size
+                        val imagesSize = files.size
                         while (backwardIndex > -1 || forwardIndex < imagesSize) {
                             if (backwardIndex > -1) {
-                                if (images[backwardIndex].id == imageId) {
+                                if (files[backwardIndex].id == imageId) {
                                     actualIndex = backwardIndex
                                     break
                                 }
                                 backwardIndex--
                             }
                             if (forwardIndex < imagesSize) {
-                                if (images[forwardIndex].id == imageId) {
+                                if (files[forwardIndex].id == imageId) {
                                     actualIndex = forwardIndex
                                     break
                                 }
@@ -93,7 +92,7 @@ class ImageScreenViewModel @Inject constructor(private val mediaRepository: Medi
                             actualIndex,
                             imageId,
                             bucketId,
-                            images
+                            files
                         )
                     }
                 } else {

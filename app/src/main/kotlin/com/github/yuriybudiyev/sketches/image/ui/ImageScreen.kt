@@ -69,6 +69,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.ui.component.AppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
@@ -79,8 +81,6 @@ import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketches
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.util.ui.animateScrollToItemCentered
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.images.ui.component.SketchesMediaItem
 
 @Composable

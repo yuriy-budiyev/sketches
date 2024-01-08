@@ -29,7 +29,7 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
 interface MediaStoreRepository {
 
-     suspend fun getFiles(bucketId: Long = -1L): List<MediaStoreFile>
+    suspend fun getFiles(bucketId: Long = -1L): List<MediaStoreFile>
 
-     suspend fun getBuckets(): List<MediaStoreBucket>
+    suspend fun getBuckets(): List<MediaStoreBucket>
 }

@@ -33,12 +33,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.images.data.reository.MediaRepository
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 @HiltViewModel
-class ImagesScreenViewModel @Inject constructor(private val repository: MediaRepository):
+class ImagesScreenViewModel @Inject constructor(private val repository: MediaStoreRepository):
     ViewModel() {
+
+    private val uiStateInternal: MutableStateFlow<ImagesScreenUiState> =
+        MutableStateFlow(ImagesScreenUiState.Loading)
 
     val uiState: StateFlow<ImagesScreenUiState>
         get() = uiStateInternal
@@ -50,9 +53,9 @@ class ImagesScreenViewModel @Inject constructor(private val repository: MediaRep
                 uiStateInternal.value = ImagesScreenUiState.Loading
             }
             try {
-                val images = withContext(Dispatchers.Default) { repository.getMedia() }
-                if (images.isNotEmpty()) {
-                    uiStateInternal.value = ImagesScreenUiState.Images(images)
+                val files = withContext(Dispatchers.Default) { repository.getFiles() }
+                if (files.isNotEmpty()) {
+                    uiStateInternal.value = ImagesScreenUiState.Images(files)
                 } else {
                     if (!silent) {
                         uiStateInternal.value = ImagesScreenUiState.Empty
@@ -66,7 +69,5 @@ class ImagesScreenViewModel @Inject constructor(private val repository: MediaRep
         }
     }
 
-    private val uiStateInternal: MutableStateFlow<ImagesScreenUiState> =
-        MutableStateFlow(ImagesScreenUiState.Loading)
     private var currentJob: Job? = null
 }

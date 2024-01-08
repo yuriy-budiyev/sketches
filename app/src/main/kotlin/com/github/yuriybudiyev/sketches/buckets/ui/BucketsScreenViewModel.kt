@@ -33,12 +33,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.buckets.data.repository.BucketsRepository
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 @HiltViewModel
-class BucketsScreenViewModel @Inject constructor(private val bucketsRepository: BucketsRepository):
+class BucketsScreenViewModel @Inject constructor(private val repository: MediaStoreRepository):
     ViewModel() {
+
+    private val uiStateInternal: MutableStateFlow<BucketsScreenUiState> =
+        MutableStateFlow(BucketsScreenUiState.Loading)
 
     val uiState: StateFlow<BucketsScreenUiState>
         get() = uiStateInternal
@@ -51,7 +54,7 @@ class BucketsScreenViewModel @Inject constructor(private val bucketsRepository: 
             }
             try {
                 val buckets = withContext(Dispatchers.Default) {
-                    bucketsRepository.getBuckets()
+                    repository.getBuckets()
                 }
                 if (buckets.isNotEmpty()) {
                     uiStateInternal.value = BucketsScreenUiState.Buckets(buckets)
@@ -68,7 +71,5 @@ class BucketsScreenViewModel @Inject constructor(private val bucketsRepository: 
         }
     }
 
-    private val uiStateInternal: MutableStateFlow<BucketsScreenUiState> =
-        MutableStateFlow(BucketsScreenUiState.Loading)
     private var currentJob: Job? = null
 }
