@@ -32,7 +32,7 @@ sealed interface ImagesScreenUiState {
 
     data object Loading: ImagesScreenUiState
 
-    data class Images(val images: List<MediaStoreFile>): ImagesScreenUiState
+    data class Images(val files: List<MediaStoreFile>): ImagesScreenUiState
 
     data class Error(val thrown: Exception): ImagesScreenUiState
 }
