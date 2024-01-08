@@ -43,9 +43,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -284,7 +282,7 @@ private fun ImageScreenLayout(
                     description = stringResource(id = R.string.delete_image),
                     onClick = {
 
-                    }
+                    },
                 )
                 AppBarActionButton(
                     icon = SketchesIcons.Share,
