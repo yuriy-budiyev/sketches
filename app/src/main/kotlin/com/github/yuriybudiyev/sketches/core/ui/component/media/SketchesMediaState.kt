@@ -37,6 +37,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import androidx.annotation.FloatRange
 import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.RememberObserver
@@ -108,6 +109,10 @@ interface SketchesMediaState {
 
     val isVideoVisible: Boolean
 
+    @get:FloatRange(
+        from = 0.0,
+        fromInclusive = false
+    )
     val displayAspectRatio: Float
 
     fun setVideoView(view: SurfaceView)
@@ -258,6 +263,10 @@ private class SketchesMediaStateImpl(
     override var isVideoVisible: Boolean by mutableStateOf(isVideoVisibleInternal())
         private set
 
+    @FloatRange(
+        from = 0.0,
+        fromInclusive = false
+    )
     private fun displayAspectRatioInternal(videoSize: VideoSize = player.videoSize): Float {
         val width = videoSize.width.toFloat()
         val height = videoSize.height.toFloat()
@@ -268,6 +277,14 @@ private class SketchesMediaStateImpl(
         }
     }
 
+    @get:FloatRange(
+        from = 0.0,
+        fromInclusive = false
+    )
+    @setparam:FloatRange(
+        from = 0.0,
+        fromInclusive = false
+    )
     override var displayAspectRatio: Float by mutableFloatStateOf(displayAspectRatioInternal())
         private set
 
