@@ -37,7 +37,7 @@ import com.github.yuriybudiyev.sketches.images.data.reository.MediaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 @HiltViewModel
-class ImageScreenViewModel @Inject constructor(private val imagesRepository: MediaRepository):
+class ImageScreenViewModel @Inject constructor(private val mediaRepository: MediaRepository):
     ViewModel() {
 
     private val uiStateInternal: MutableStateFlow<ImageScreenUiState> =
@@ -59,7 +59,7 @@ class ImageScreenViewModel @Inject constructor(private val imagesRepository: Med
             }
             try {
                 val images =
-                    withContext(Dispatchers.Default) { imagesRepository.getMedia(bucketId) }
+                    withContext(Dispatchers.Default) { mediaRepository.getMedia(bucketId) }
                 if (images.isNotEmpty()) {
                     if (images[imageIndex].id == imageId) {
                         uiStateInternal.value = ImageScreenUiState.Image(
