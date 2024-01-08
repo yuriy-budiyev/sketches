@@ -41,11 +41,11 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
 @Composable
 fun SketchesMediaVerticalGrid(
-    images: List<MediaStoreFile>,
+    files: List<MediaStoreFile>,
     modifier: Modifier = Modifier,
     onItemClick: MediaItemClickListener,
 ) {
-    val data by rememberUpdatedState(images)
+    val data by rememberUpdatedState(files)
     val gridScope = rememberCoroutineScope()
     SketchesLazyVerticalGrid(modifier = modifier) {
         items(

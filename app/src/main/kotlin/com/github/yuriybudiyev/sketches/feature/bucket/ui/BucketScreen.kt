@@ -81,7 +81,7 @@ fun BucketScreen(
             }
             is BucketScreenUiState.Bucket -> {
                 SketchesMediaVerticalGrid(
-                    images = uiState.files,
+                    files = uiState.files,
                     modifier = Modifier.matchParentSize(),
                     onItemClick = onImageClick
                 )
