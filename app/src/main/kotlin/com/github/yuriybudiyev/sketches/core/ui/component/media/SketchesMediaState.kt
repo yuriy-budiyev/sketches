@@ -329,7 +329,10 @@ private class SketchesMediaStateImpl(
             available = {
                 val contentDuration = contentDuration
                 if (contentDuration != C.TIME_UNSET) {
-                    contentDuration
+                    contentDuration.coerceIn(
+                        minimumValue = 0L,
+                        maximumValue = Long.MAX_VALUE
+                    )
                 } else {
                     SketchesMediaState.TIME_UNKNOWN
                 }
@@ -374,8 +377,8 @@ private class SketchesMediaStateImpl(
         when {
             position != unknownToCheck && duration != unknownToCheck -> {
                 position.coerceIn(
-                    0L,
-                    duration
+                    minimumValue = 0L,
+                    maximumValue = duration
                 )
             }
             position != unknownToCheck -> {
