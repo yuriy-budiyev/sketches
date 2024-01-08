@@ -31,7 +31,8 @@ import android.os.Build
 import android.provider.MediaStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.images.data.reository.MediaRepository
 
 class MediaRepositoryImpl(private val context: Context): MediaRepository {
@@ -49,12 +50,12 @@ class MediaRepositoryImpl(private val context: Context): MediaRepository {
         }
         val images = getMedia(
             imagesUri,
-            MediaStoreFile.Type.IMAGE,
+            MediaType.IMAGE,
             bucketId
         )
         val video = getMedia(
             videoUri,
-            MediaStoreFile.Type.VIDEO,
+            MediaType.VIDEO,
             bucketId
         )
         val media = ArrayList<MediaStoreFile>(images.size + video.size)
@@ -66,7 +67,7 @@ class MediaRepositoryImpl(private val context: Context): MediaRepository {
 
     private suspend fun getMedia(
         contentUri: Uri,
-        mediaType: MediaStoreFile.Type,
+        mediaType: MediaType,
         bucketId: Long,
     ): List<MediaStoreFile> {
         val cursor = withContext(Dispatchers.IO) {
@@ -105,7 +106,7 @@ class MediaRepositoryImpl(private val context: Context): MediaRepository {
             files += MediaStoreFile(
                 id = id,
                 name = cursor.getString(nameColumn),
-                type = mediaType,
+                mediaType = mediaType,
                 bucketId = cursor.getLong(bucketIdColumn),
                 bucketName = cursor.getString(bucketNameColumn),
                 dateAdded = cursor.getLong(dateAddedColumn) * 1000L,

@@ -22,24 +22,14 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.images.data.model
+package com.github.yuriybudiyev.sketches.core.data.repository
 
-import android.net.Uri
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
-data class MediaStoreFile(
-    val id: Long,
-    val name: String,
-    val type: Type,
-    val bucketId: Long,
-    val bucketName: String,
-    val dateAdded: Long,
-    val mimeType: String,
-    val uri: Uri,
-) {
+interface MediaStoreRepository {
 
-    enum class Type {
+     suspend fun getFiles(bucketId: Long = -1L): List<MediaStoreFile>
 
-        IMAGE,
-        VIDEO
-    }
+     suspend fun getBuckets(): List<MediaStoreBucket>
 }

@@ -24,7 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.buckets.data.repository
 
-import com.github.yuriybudiyev.sketches.buckets.data.model.MediaStoreBucket
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 
 interface BucketsRepository {
 

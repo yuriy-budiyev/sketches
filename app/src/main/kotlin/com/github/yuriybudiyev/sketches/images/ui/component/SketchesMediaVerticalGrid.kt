@@ -38,7 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLazyVerticalGrid
-import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
 @Composable
 fun SketchesMediaVerticalGrid(

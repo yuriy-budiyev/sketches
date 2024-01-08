@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.buckets.data.repository.implementation
+package com.github.yuriybudiyev.sketches.core.data.repository.implementation
 
 import android.content.ContentUris
 import android.content.Context
@@ -32,71 +32,57 @@ import android.provider.MediaStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
-import com.github.yuriybudiyev.sketches.buckets.data.repository.BucketsRepository
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaType
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 
-class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
+class MediaStoreRepositoryImpl(private val context: Context): MediaStoreRepository {
 
-    override suspend fun getBuckets(): List<MediaStoreBucket> {
-        val imagesUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-        } else {
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        }
-        val videoUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-        } else {
-            MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-        }
-        val bucketsInfo = LinkedHashMap<Long, BucketInfo>()
-        getBucketsInfoTo(
-            imagesUri,
-            bucketsInfo
-        )
-        getBucketsInfoTo(
-            videoUri,
-            bucketsInfo
-        )
-        val buckets = ArrayList<MediaStoreBucket>(bucketsInfo.size)
-        bucketsInfo.forEach { (_, info) ->
-            buckets += MediaStoreBucket(
-                id = info.id,
-                name = info.name,
-                size = info.imagesCount,
-                coverUri = info.coverUri,
-                coverDateAdded = info.coverDateAdded
-            )
-        }
-        buckets.sortByDescending { bucket -> bucket.coverDateAdded }
-        return buckets
+    override suspend fun getFiles(bucketId: Long): List<MediaStoreFile> {
+        TODO("Not yet implemented")
     }
 
-    private suspend fun getBucketsInfoTo(
-        contentUri: Uri,
-        bucketsInfo: MutableMap<Long, BucketInfo>,
+    override suspend fun getBuckets(): List<MediaStoreBucket> {
+        val bucketsInfo = LinkedHashMap<Long, BucketInfo>()
+        MediaType.entries.forEach { mediaType ->
+            collectBucketsInfo(
+                mediaType,
+                bucketsInfo
+            )
+        }
+        return bucketsInfo
+            .mapTo(ArrayList(bucketsInfo.size)) { (_, info) -> info.toBucket() }
+            .also { buckets -> buckets.sortByDescending { bucket -> bucket.coverDateAdded } }
+    }
+
+    private suspend fun collectBucketsInfo(
+        mediaType: MediaType,
+        destination: MutableMap<Long, BucketInfo>,
     ) {
+        val contentUri = contentUriFor(mediaType)
         val cursor = withContext(Dispatchers.IO) {
             context.contentResolver.query(
                 contentUri,
                 arrayOf(
                     MediaStore.MediaColumns._ID,
-                    MediaStore.Images.Media.BUCKET_ID,
-                    MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-                    MediaStore.Images.Media.DATE_ADDED,
+                    MediaStore.MediaColumns.BUCKET_ID,
+                    MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
+                    MediaStore.MediaColumns.DATE_ADDED,
                 ),
                 null,
                 null,
                 null
             )
         } ?: return
-        val idColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID)
-        val bucketIdColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID)
-        val bucketNameColumn = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
-        val dateAddedColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED)
+        val idColumn = cursor.getColumnIndex(MediaStore.MediaColumns._ID)
+        val bucketIdColumn = cursor.getColumnIndex(MediaStore.MediaColumns.BUCKET_ID)
+        val bucketNameColumn = cursor.getColumnIndex(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME)
+        val dateAddedColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DATE_ADDED)
         while (cursor.moveToNext()) {
             val id = cursor.getLong(idColumn)
             val bucketId = cursor.getLong(bucketIdColumn)
             val dateAdded = cursor.getLong(dateAddedColumn) * 1000L
-            val bucketInfo = bucketsInfo.getOrPut(bucketId) {
+            val bucketInfo = destination.getOrPut(bucketId) {
                 BucketInfo(
                     id = bucketId,
                     name = cursor.getString(bucketNameColumn),
@@ -105,10 +91,10 @@ class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
                         id
                     ),
                     coverDateAdded = dateAdded,
-                    imagesCount = 0
+                    size = 0
                 )
             }
-            bucketInfo.imagesCount++
+            bucketInfo.size++
             if (bucketInfo.coverDateAdded < dateAdded) {
                 bucketInfo.coverDateAdded = dateAdded
                 bucketInfo.coverUri = ContentUris.withAppendedId(
@@ -119,11 +105,38 @@ class BucketsRepositoryImpl(private val context: Context): BucketsRepository {
         }
     }
 
-    private class BucketInfo(
+    private fun contentUriFor(mediaType: MediaType): Uri =
+        when (mediaType) {
+            MediaType.IMAGE -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+                } else {
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                }
+            }
+            MediaType.VIDEO -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+                } else {
+                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                }
+            }
+        }
+
+    private fun BucketInfo.toBucket(): MediaStoreBucket =
+        MediaStoreBucket(
+            id,
+            name,
+            size,
+            coverUri,
+            coverDateAdded
+        )
+
+    private data class BucketInfo(
         val id: Long,
         val name: String,
+        var size: Int,
         var coverUri: Uri,
         var coverDateAdded: Long,
-        var imagesCount: Int,
     )
 }

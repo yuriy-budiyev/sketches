@@ -22,14 +22,10 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.buckets.data.model
+package com.github.yuriybudiyev.sketches.core.data.model
 
-import android.net.Uri
+enum class MediaType {
 
-data class MediaStoreBucket(
-    val id: Long,
-    val name: String,
-    val size: Int,
-    val coverUri: Uri,
-    val coverDateAdded: Long,
-)
+    IMAGE,
+    VIDEO
+}

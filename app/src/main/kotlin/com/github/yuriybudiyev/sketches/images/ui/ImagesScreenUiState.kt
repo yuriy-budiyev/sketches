@@ -24,7 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.images.ui
 
-import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
 sealed interface ImagesScreenUiState {
 

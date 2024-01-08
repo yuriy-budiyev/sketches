@@ -22,22 +22,14 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.image.ui
+package com.github.yuriybudiyev.sketches.core.data.model
 
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import android.net.Uri
 
-sealed interface ImageScreenUiState {
-
-    data object Empty: ImageScreenUiState
-
-    data object Loading: ImageScreenUiState
-
-    data class Image(
-        val fileIndex: Int,
-        val fileId: Long,
-        val bucketId: Long,
-        val files: List<MediaStoreFile>,
-    ): ImageScreenUiState
-
-    data class Error(val thrown: Exception): ImageScreenUiState
-}
+data class MediaStoreBucket(
+    val id: Long,
+    val name: String,
+    val size: Int,
+    val coverUri: Uri,
+    val coverDateAdded: Long,
+)

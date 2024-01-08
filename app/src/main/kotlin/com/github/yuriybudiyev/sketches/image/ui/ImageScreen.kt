@@ -79,7 +79,8 @@ import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketches
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.util.ui.animateScrollToItemCentered
-import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.images.ui.component.SketchesMediaItem
 
 @Composable
@@ -213,8 +214,8 @@ private fun ImageScreenLayout(
             ) { page ->
                 val file = data[page]
                 val fileUri = file.uri
-                when (file.type) {
-                    MediaStoreFile.Type.IMAGE -> {
+                when (file.mediaType) {
+                    MediaType.IMAGE -> {
                         SketchesAsyncImage(
                             uri = fileUri,
                             description = stringResource(id = R.string.image),
@@ -223,7 +224,7 @@ private fun ImageScreenLayout(
                             filterQuality = FilterQuality.High
                         )
                     }
-                    MediaStoreFile.Type.VIDEO -> {
+                    MediaType.VIDEO -> {
                         val mediaState = rememberSketchesMediaState()
                         val mediaScope = rememberCoroutineScope()
                         SketchesMediaPlayer(

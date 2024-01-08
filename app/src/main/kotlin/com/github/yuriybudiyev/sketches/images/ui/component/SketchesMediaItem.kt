@@ -40,7 +40,8 @@ import androidx.compose.ui.unit.Dp
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
-import com.github.yuriybudiyev.sketches.images.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 
 typealias MediaItemClickListener = (index: Int, file: MediaStoreFile) -> Unit
 
@@ -58,7 +59,7 @@ fun SketchesMediaItem(
             contentScale = ContentScale.Crop,
             filterQuality = FilterQuality.Low
         )
-        if (file.type == MediaStoreFile.Type.VIDEO) {
+        if (file.mediaType == MediaType.VIDEO) {
             Box(
                 modifier = Modifier
                     .align(alignment = Alignment.BottomEnd)
