@@ -24,12 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.core.data.repository
 
+import android.net.Uri
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
 interface MediaStoreRepository {
 
     suspend fun getFiles(bucketId: Long = -1L): List<MediaStoreFile>
+
+    suspend fun deleteFile(uri: Uri): Boolean
 
     suspend fun getBuckets(): List<MediaStoreBucket>
 }

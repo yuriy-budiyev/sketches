@@ -106,6 +106,15 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
         }
     }
 
+    override suspend fun deleteFile(uri: Uri): Boolean =
+        withContext(Dispatchers.IO) {
+            context.contentResolver.delete(
+                uri,
+                null,
+                null
+            ) > 0
+        }
+
     override suspend fun getBuckets(): List<MediaStoreBucket> {
         val bucketsInfo = LinkedHashMap<Long, BucketInfo>()
         MediaType.entries.forEach { mediaType ->
