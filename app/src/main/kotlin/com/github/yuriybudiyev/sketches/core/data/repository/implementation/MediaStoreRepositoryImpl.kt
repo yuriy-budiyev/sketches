@@ -67,30 +67,32 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
                 null
             )
         } ?: return emptyList()
-        val files = ArrayList<MediaStoreFile>(cursor.count)
-        val idColumn = cursor.getColumnIndex(MediaStore.MediaColumns._ID)
-        val nameColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
-        val bucketIdColumn = cursor.getColumnIndex(MediaStore.MediaColumns.BUCKET_ID)
-        val bucketNameColumn = cursor.getColumnIndex(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME)
-        val dateAddedColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DATE_ADDED)
-        val mimeTypeColumn = cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)
-        while (cursor.moveToNext()) {
-            val id = cursor.getLong(idColumn)
-            files += MediaStoreFile(
-                id = id,
-                name = cursor.getString(nameColumn),
-                mediaType = mediaType,
-                bucketId = cursor.getLong(bucketIdColumn),
-                bucketName = cursor.getString(bucketNameColumn),
-                dateAdded = cursor.getLong(dateAddedColumn) * 1000L,
-                mimeType = cursor.getString(mimeTypeColumn),
-                uri = ContentUris.withAppendedId(
-                    contentUri,
-                    id
+        cursor.use { c ->
+            val files = ArrayList<MediaStoreFile>(c.count)
+            val idColumn = c.getColumnIndex(MediaStore.MediaColumns._ID)
+            val nameColumn = c.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
+            val bucketIdColumn = c.getColumnIndex(MediaStore.MediaColumns.BUCKET_ID)
+            val bucketNameColumn = c.getColumnIndex(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME)
+            val dateAddedColumn = c.getColumnIndex(MediaStore.MediaColumns.DATE_ADDED)
+            val mimeTypeColumn = c.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)
+            while (c.moveToNext()) {
+                val id = c.getLong(idColumn)
+                files += MediaStoreFile(
+                    id = id,
+                    name = c.getString(nameColumn),
+                    mediaType = mediaType,
+                    bucketId = c.getLong(bucketIdColumn),
+                    bucketName = c.getString(bucketNameColumn),
+                    dateAdded = c.getLong(dateAddedColumn) * 1000L,
+                    mimeType = c.getString(mimeTypeColumn),
+                    uri = ContentUris.withAppendedId(
+                        contentUri,
+                        id
+                    )
                 )
-            )
+            }
+            return files
         }
-        return files
     }
 
     override suspend fun getFiles(bucketId: Long): List<MediaStoreFile> {
@@ -137,33 +139,35 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
                 null
             )
         } ?: return
-        val idColumn = cursor.getColumnIndex(MediaStore.MediaColumns._ID)
-        val bucketIdColumn = cursor.getColumnIndex(MediaStore.MediaColumns.BUCKET_ID)
-        val bucketNameColumn = cursor.getColumnIndex(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME)
-        val dateAddedColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DATE_ADDED)
-        while (cursor.moveToNext()) {
-            val id = cursor.getLong(idColumn)
-            val bucketId = cursor.getLong(bucketIdColumn)
-            val dateAdded = cursor.getLong(dateAddedColumn) * 1000L
-            val bucketInfo = destination.getOrPut(bucketId) {
-                BucketInfo(
-                    id = bucketId,
-                    name = cursor.getString(bucketNameColumn),
-                    coverUri = ContentUris.withAppendedId(
+        cursor.use { c ->
+            val idColumn = c.getColumnIndex(MediaStore.MediaColumns._ID)
+            val bucketIdColumn = c.getColumnIndex(MediaStore.MediaColumns.BUCKET_ID)
+            val bucketNameColumn = c.getColumnIndex(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME)
+            val dateAddedColumn = c.getColumnIndex(MediaStore.MediaColumns.DATE_ADDED)
+            while (c.moveToNext()) {
+                val id = c.getLong(idColumn)
+                val bucketId = c.getLong(bucketIdColumn)
+                val dateAdded = c.getLong(dateAddedColumn) * 1000L
+                val bucketInfo = destination.getOrPut(bucketId) {
+                    BucketInfo(
+                        id = bucketId,
+                        name = c.getString(bucketNameColumn),
+                        coverUri = ContentUris.withAppendedId(
+                            contentUri,
+                            id
+                        ),
+                        coverDateAdded = dateAdded,
+                        size = 0
+                    )
+                }
+                bucketInfo.size++
+                if (bucketInfo.coverDateAdded < dateAdded) {
+                    bucketInfo.coverDateAdded = dateAdded
+                    bucketInfo.coverUri = ContentUris.withAppendedId(
                         contentUri,
                         id
-                    ),
-                    coverDateAdded = dateAdded,
-                    size = 0
-                )
-            }
-            bucketInfo.size++
-            if (bucketInfo.coverDateAdded < dateAdded) {
-                bucketInfo.coverDateAdded = dateAdded
-                bucketInfo.coverUri = ContentUris.withAppendedId(
-                    contentUri,
-                    id
-                )
+                    )
+                }
             }
         }
     }
