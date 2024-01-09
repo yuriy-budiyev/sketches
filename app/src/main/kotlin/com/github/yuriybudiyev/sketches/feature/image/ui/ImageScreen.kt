@@ -28,6 +28,7 @@ import android.net.Uri
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
@@ -42,7 +43,9 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import com.github.yuriybudiyev.sketches.R
@@ -52,6 +55,7 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
+import com.github.yuriybudiyev.sketches.core.util.ui.animateScrollToItemCentered
 
 @Composable
 fun ImageRoute(
@@ -68,6 +72,36 @@ fun ImageRoute(
         viewModel = viewModel,
         onShare = onShare,
     )
+}
+
+@Composable
+private fun MediaBar(
+    index: Int,
+    files: List<MediaStoreFile>,
+    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val indexUpdated by rememberUpdatedState(index)
+    val filesUpdated by rememberUpdatedState(files)
+    val onImageClickUpdated by rememberUpdatedState(onImageClick)
+    val barState = rememberLazyListState(indexUpdated)
+    val barScope = rememberCoroutineScope()
+    val itemSize = 56.dp
+    val itemSizePx = with(LocalDensity.current) { itemSize.roundToPx() }
+    LaunchedEffect(
+        barState,
+        barScope,
+        itemSizePx
+    ) {
+        snapshotFlow { indexUpdated }.collect { position ->
+            barScope.launch {
+                barState.animateScrollToItemCentered(
+                    position,
+                    itemSizePx
+                )
+            }
+        }
+    }
 }
 
 @Composable
