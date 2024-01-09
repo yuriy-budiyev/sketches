@@ -37,8 +37,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -164,7 +164,7 @@ private fun ImageScreenLayout(
     val bottomBarState = rememberLazyListState(index)
     val imageScreenScope = rememberCoroutineScope()
     var currentMediaFile by remember { mutableStateOf(data[index]) }
-    val bottomBarItemSize = 64.dp
+    val bottomBarItemSize = 56.dp
     val bottomBarItemSizePx = with(LocalDensity.current) { bottomBarItemSize.roundToPx() }
     LaunchedEffect(
         pagerState,
@@ -307,7 +307,7 @@ private fun ImageScreenLayout(
             state = bottomBarState,
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight(),
+                .height(64.dp),
             contentPadding = PaddingValues(horizontal = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(
                 space = 4.dp,
