@@ -30,7 +30,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.data.model.MediaType
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 
@@ -48,6 +54,44 @@ fun ImageRoute(
         bucketId = bucketId,
         viewModel = viewModel,
         onShare = onShare,
+    )
+}
+
+@Composable
+private fun FilePage(
+    fileUri: Uri,
+    fileType: MediaType,
+    isCurrentPage: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    when (fileType) {
+        MediaType.IMAGE -> {
+            ImagePage(
+                fileUri = fileUri,
+                modifier = modifier,
+            )
+        }
+        MediaType.VIDEO -> {
+            VideoPage(
+                fileUri = fileUri,
+                isCurrentPage = isCurrentPage,
+                modifier = modifier,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ImagePage(
+    fileUri: Uri,
+    modifier: Modifier = Modifier,
+) {
+    SketchesAsyncImage(
+        uri = fileUri,
+        description = stringResource(id = R.string.image),
+        contentScale = ContentScale.Fit,
+        filterQuality = FilterQuality.High,
+        modifier = modifier,
     )
 }
 
