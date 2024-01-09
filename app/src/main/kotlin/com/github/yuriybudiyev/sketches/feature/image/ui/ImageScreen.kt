@@ -25,8 +25,14 @@
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
 import android.net.Uri
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
+import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 
 @Composable
 fun ImageRoute(
@@ -42,5 +48,47 @@ fun ImageRoute(
         bucketId = bucketId,
         viewModel = viewModel,
         onShare = onShare,
+    )
+}
+
+@Composable
+private fun VideoPage(
+    fileUri: Uri,
+    isCurrentPage: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val mediaState = rememberSketchesMediaState()
+    val mediaScope = rememberCoroutineScope()
+    LaunchedEffect(
+        mediaState,
+        mediaScope,
+        fileUri,
+    ) {
+        if (mediaState.uri != fileUri) {
+            mediaScope.launch {
+                mediaState.open(fileUri)
+            }
+        }
+    }
+    LaunchedEffect(
+        mediaState,
+        mediaScope,
+        isCurrentPage,
+    ) {
+        if (isCurrentPage) {
+            mediaScope.launch {
+                mediaState.disableVolume()
+                mediaState.play()
+            }
+        } else {
+            mediaScope.launch {
+                mediaState.stop()
+                mediaState.disableVolume()
+            }
+        }
+    }
+    SketchesMediaPlayer(
+        state = mediaState,
+        modifier = modifier,
     )
 }
