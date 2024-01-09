@@ -230,7 +230,6 @@ private fun ImageScreenLayout(
                     }
                     MediaType.VIDEO -> {
                         val mediaState = rememberSketchesMediaState()
-                        val mediaScope = rememberCoroutineScope()
                         SketchesMediaPlayer(
                             state = mediaState,
                             modifier = Modifier.fillMaxSize()
@@ -242,11 +241,11 @@ private fun ImageScreenLayout(
                         }
                         LaunchedEffect(
                             mediaState,
-                            mediaScope,
+                            imageScreenScope,
                             fileUri
                         ) {
                             if (mediaState.uri != fileUri) {
-                                mediaScope.launch {
+                                imageScreenScope.launch {
                                     mediaState.open(fileUri)
                                 }
                             }
@@ -254,19 +253,19 @@ private fun ImageScreenLayout(
                         LaunchedEffect(
                             pagerState,
                             mediaState,
-                            mediaScope,
+                            imageScreenScope,
                             page
                         ) {
                             snapshotFlow { pagerState.currentPage }
                                 .distinctUntilChanged()
                                 .collect { currentPage ->
                                     if (page == currentPage) {
-                                        mediaScope.launch {
+                                        imageScreenScope.launch {
                                             mediaState.disableVolume()
                                             mediaState.play()
                                         }
                                     } else {
-                                        mediaScope.launch {
+                                        imageScreenScope.launch {
                                             mediaState.stop()
                                             mediaState.disableVolume()
                                         }
