@@ -55,7 +55,7 @@ fun SketchesMediaItem(
             description = stringResource(id = R.string.image),
             modifier = Modifier.matchParentSize(),
             contentScale = ContentScale.Crop,
-            filterQuality = FilterQuality.Low
+            filterQuality = FilterQuality.Low,
         )
         if (type == MediaType.VIDEO) {
             Box(
@@ -65,12 +65,12 @@ fun SketchesMediaItem(
                     .background(
                         color = MaterialTheme.colorScheme.background,
                         shape = CircleShape
-                    )
+                    ),
             ) {
                 Icon(
                     imageVector = SketchesIcons.Video,
                     contentDescription = stringResource(id = R.string.video),
-                    tint = MaterialTheme.colorScheme.onBackground
+                    tint = MaterialTheme.colorScheme.onBackground,
                 )
             }
         }

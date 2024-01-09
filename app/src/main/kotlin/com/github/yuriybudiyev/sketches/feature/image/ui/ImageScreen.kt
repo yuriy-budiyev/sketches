@@ -27,10 +27,19 @@ package com.github.yuriybudiyev.sketches.feature.image.ui
 import android.net.Uri
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,7 +49,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
@@ -52,6 +63,7 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
@@ -75,6 +87,7 @@ fun ImageRoute(
 }
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 private fun MediaBar(
     index: Int,
     files: List<MediaStoreFile>,
@@ -100,6 +113,45 @@ private fun MediaBar(
                     itemSizePx
                 )
             }
+        }
+    }
+    LazyRow(
+        state = barState,
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(
+            space = 4.dp,
+            alignment = Alignment.CenterHorizontally
+        ),
+        verticalAlignment = Alignment.CenterVertically,
+        flingBehavior = rememberSnapFlingBehavior(barState),
+    ) {
+        items(
+            count = filesUpdated.size,
+            key = { position -> filesUpdated[position].id },
+        ) { position ->
+            val file = filesUpdated[position]
+            SketchesMediaItem(
+                uri = file.uri,
+                type = file.mediaType,
+                iconPadding = 2.dp,
+                modifier = Modifier
+                    .size(itemSize)
+                    .clip(RoundedCornerShape(8.dp))
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clickable {
+                        barScope.launch {
+                            onImageClickUpdated(
+                                position,
+                                file
+                            )
+                        }
+                    },
+            )
         }
     }
 }

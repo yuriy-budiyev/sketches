@@ -45,14 +45,14 @@ fun SketchesMediaVerticalGrid(
     modifier: Modifier = Modifier,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
 ) {
-    val data by rememberUpdatedState(files)
+    val filesUpdated by rememberUpdatedState(files)
     val gridScope = rememberCoroutineScope()
     SketchesLazyVerticalGrid(modifier = modifier) {
         items(
-            count = data.size,
-            key = { index -> data[index].id },
+            count = filesUpdated.size,
+            key = { index -> filesUpdated[index].id },
         ) { index ->
-            val file = data[index]
+            val file = filesUpdated[index]
             SketchesMediaItem(
                 uri = file.uri,
                 type = file.mediaType,
