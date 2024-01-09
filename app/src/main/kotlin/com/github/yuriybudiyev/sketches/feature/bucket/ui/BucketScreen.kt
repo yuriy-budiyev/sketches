@@ -39,7 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.ui.component.MediaItemClickListener
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesMediaVerticalGrid
@@ -50,7 +50,7 @@ import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 fun BucketRoute(
     id: Long,
     name: String?,
-    onImageClick: MediaItemClickListener,
+    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
     viewModel: BucketScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -71,7 +71,7 @@ fun BucketRoute(
 fun BucketScreen(
     name: String?,
     uiState: BucketScreenUiState,
-    onImageClick: MediaItemClickListener,
+    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {

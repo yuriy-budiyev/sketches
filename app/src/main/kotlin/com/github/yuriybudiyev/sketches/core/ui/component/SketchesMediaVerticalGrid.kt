@@ -43,7 +43,7 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 fun SketchesMediaVerticalGrid(
     files: List<MediaStoreFile>,
     modifier: Modifier = Modifier,
-    onItemClick: MediaItemClickListener,
+    onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
 ) {
     val data by rememberUpdatedState(files)
     val gridScope = rememberCoroutineScope()
