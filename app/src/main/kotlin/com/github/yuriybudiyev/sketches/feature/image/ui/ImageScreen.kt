@@ -88,76 +88,6 @@ fun ImageRoute(
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
-private fun MediaBar(
-    index: Int,
-    files: List<MediaStoreFile>,
-    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val indexUpdated by rememberUpdatedState(index)
-    val filesUpdated by rememberUpdatedState(files)
-    val onImageClickUpdated by rememberUpdatedState(onImageClick)
-    val barState = rememberLazyListState(indexUpdated)
-    val barScope = rememberCoroutineScope()
-    val itemSize = 56.dp
-    val itemSizePx = with(LocalDensity.current) { itemSize.roundToPx() }
-    LaunchedEffect(
-        barState,
-        barScope,
-        itemSizePx
-    ) {
-        snapshotFlow { indexUpdated }.collect { position ->
-            barScope.launch {
-                barState.animateScrollToItemCentered(
-                    position,
-                    itemSizePx
-                )
-            }
-        }
-    }
-    LazyRow(
-        state = barState,
-        modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 4.dp),
-        horizontalArrangement = Arrangement.spacedBy(
-            space = 4.dp,
-            alignment = Alignment.CenterHorizontally
-        ),
-        verticalAlignment = Alignment.CenterVertically,
-        flingBehavior = rememberSnapFlingBehavior(barState),
-    ) {
-        items(
-            count = filesUpdated.size,
-            key = { position -> filesUpdated[position].id },
-        ) { position ->
-            val file = filesUpdated[position]
-            SketchesMediaItem(
-                uri = file.uri,
-                type = file.mediaType,
-                iconPadding = 2.dp,
-                modifier = Modifier
-                    .size(itemSize)
-                    .clip(RoundedCornerShape(8.dp))
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .clickable {
-                        barScope.launch {
-                            onImageClickUpdated(
-                                position,
-                                file
-                            )
-                        }
-                    },
-            )
-        }
-    }
-}
-
-@Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun MediaPager(
     index: Int,
     files: List<MediaStoreFile>,
@@ -298,4 +228,74 @@ private fun VideoPage(
         state = mediaState,
         modifier = modifier,
     )
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+private fun MediaBar(
+    index: Int,
+    files: List<MediaStoreFile>,
+    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val indexUpdated by rememberUpdatedState(index)
+    val filesUpdated by rememberUpdatedState(files)
+    val onImageClickUpdated by rememberUpdatedState(onImageClick)
+    val barState = rememberLazyListState(indexUpdated)
+    val barScope = rememberCoroutineScope()
+    val itemSize = 56.dp
+    val itemSizePx = with(LocalDensity.current) { itemSize.roundToPx() }
+    LaunchedEffect(
+        barState,
+        barScope,
+        itemSizePx
+    ) {
+        snapshotFlow { indexUpdated }.collect { position ->
+            barScope.launch {
+                barState.animateScrollToItemCentered(
+                    position,
+                    itemSizePx
+                )
+            }
+        }
+    }
+    LazyRow(
+        state = barState,
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(
+            space = 4.dp,
+            alignment = Alignment.CenterHorizontally
+        ),
+        verticalAlignment = Alignment.CenterVertically,
+        flingBehavior = rememberSnapFlingBehavior(barState),
+    ) {
+        items(
+            count = filesUpdated.size,
+            key = { position -> filesUpdated[position].id },
+        ) { position ->
+            val file = filesUpdated[position]
+            SketchesMediaItem(
+                uri = file.uri,
+                type = file.mediaType,
+                iconPadding = 2.dp,
+                modifier = Modifier
+                    .size(itemSize)
+                    .clip(RoundedCornerShape(8.dp))
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clickable {
+                        barScope.launch {
+                            onImageClickUpdated(
+                                position,
+                                file
+                            )
+                        }
+                    },
+            )
+        }
+    }
 }
