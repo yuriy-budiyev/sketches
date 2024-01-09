@@ -27,12 +27,17 @@ package com.github.yuriybudiyev.sketches.feature.image.ui
 import android.net.Uri
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
@@ -71,10 +76,12 @@ private fun FilePager(
     index: Int,
     files: List<MediaStoreFile>,
     onPageChanged: (index: Int, file: MediaStoreFile) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val indexUpdated by rememberUpdatedState(index)
     val filesUpdated by rememberUpdatedState(files)
     val onPageChangedUpdated by rememberUpdatedState(onPageChanged)
+    var currentPage by remember(indexUpdated) { mutableIntStateOf(indexUpdated) }
     val pagerState = rememberPagerState(indexUpdated) { filesUpdated.size }
     val pagerScope = rememberCoroutineScope()
     LaunchedEffect(
@@ -92,6 +99,7 @@ private fun FilePager(
         pagerScope
     ) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
+            currentPage = page
             val file = filesUpdated[page]
             pagerScope.launch {
                 onPageChangedUpdated(
@@ -100,6 +108,19 @@ private fun FilePager(
                 )
             }
         }
+    }
+    HorizontalPager(
+        state = pagerState,
+        key = { page -> filesUpdated[page].id },
+        modifier = modifier,
+    ) { page ->
+        val file = filesUpdated[page]
+        FilePage(
+            fileUri = file.uri,
+            fileType = file.mediaType,
+            isCurrentPage = page == currentPage,
+            modifier = Modifier.fillMaxSize(),
+        )
     }
 }
 
