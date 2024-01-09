@@ -72,7 +72,7 @@ fun ImageRoute(
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
-private fun FilePager(
+private fun MediaPager(
     index: Int,
     files: List<MediaStoreFile>,
     onPageChanged: (index: Int, file: MediaStoreFile) -> Unit,
@@ -115,7 +115,7 @@ private fun FilePager(
         modifier = modifier,
     ) { page ->
         val file = filesUpdated[page]
-        FilePage(
+        MediaPage(
             fileUri = file.uri,
             fileType = file.mediaType,
             isCurrentPage = page == currentPage,
@@ -125,7 +125,7 @@ private fun FilePager(
 }
 
 @Composable
-private fun FilePage(
+private fun MediaPage(
     fileUri: Uri,
     fileType: MediaType,
     isCurrentPage: Boolean,
