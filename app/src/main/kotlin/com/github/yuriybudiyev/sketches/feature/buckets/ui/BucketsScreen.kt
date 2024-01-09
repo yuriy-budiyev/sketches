@@ -61,11 +61,9 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavigationDestination
 
-typealias BucketClickListener = (index: Int, bucket: MediaStoreBucket) -> Unit
-
 @Composable
 fun BucketsRoute(
-    onBucketClick: BucketClickListener,
+    onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
     viewModel: BucketsScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -84,7 +82,7 @@ fun BucketsRoute(
 @Composable
 fun BucketsScreen(
     uiState: BucketsScreenUiState,
-    onBucketClick: BucketClickListener,
+    onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {
@@ -124,7 +122,7 @@ fun BucketsScreen(
 @Composable
 private fun BucketsScreenLayout(
     buckets: List<MediaStoreBucket>,
-    onBucketClick: BucketClickListener,
+    onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val data by rememberUpdatedState(buckets)
