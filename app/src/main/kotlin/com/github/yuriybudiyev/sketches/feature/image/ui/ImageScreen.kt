@@ -168,35 +168,40 @@ private fun VideoPage(
     isCurrentPage: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val fileUriUpdated by rememberUpdatedState(fileUri)
+    val isCurrentPageUpdated by rememberUpdatedState(isCurrentPage)
     val mediaState = rememberSketchesMediaState()
     val mediaScope = rememberCoroutineScope()
     LaunchedEffect(
         mediaState,
-        mediaScope,
-        fileUri,
+        mediaScope
     ) {
-        if (mediaState.uri != fileUri) {
-            mediaScope.launch {
-                mediaState.open(fileUri)
+        snapshotFlow { fileUriUpdated }.collect { uri ->
+            if (mediaState.uri != uri) {
+                mediaScope.launch {
+                    mediaState.open(uri)
+                }
             }
         }
     }
     LaunchedEffect(
         mediaState,
-        mediaScope,
-        isCurrentPage,
+        mediaScope
     ) {
-        if (isCurrentPage) {
-            mediaScope.launch {
-                mediaState.disableVolume()
-                mediaState.play()
-            }
-        } else {
-            mediaScope.launch {
-                mediaState.stop()
-                mediaState.disableVolume()
+        snapshotFlow { isCurrentPageUpdated }.collect { currentPage ->
+            if (currentPage) {
+                mediaScope.launch {
+                    mediaState.disableVolume()
+                    mediaState.play()
+                }
+            } else {
+                mediaScope.launch {
+                    mediaState.stop()
+                    mediaState.disableVolume()
+                }
             }
         }
+
     }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
         mediaScope.launch {
