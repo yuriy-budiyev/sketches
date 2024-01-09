@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
+import android.net.Uri
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -47,8 +48,8 @@ class ImageScreenViewModel @Inject constructor(private val repository: MediaStor
         get() = uiStateInternal
 
     fun updateImages(
-        imageIndex: Int,
-        imageId: Long,
+        fileIndex: Int,
+        fileId: Long,
         bucketId: Long,
         silent: Boolean = uiState.value is ImageScreenUiState.Image,
     ) {
@@ -60,28 +61,28 @@ class ImageScreenViewModel @Inject constructor(private val repository: MediaStor
             try {
                 val files = withContext(Dispatchers.Default) { repository.getFiles(bucketId) }
                 if (files.isNotEmpty()) {
-                    if (files[imageIndex].id == imageId) {
+                    if (files[fileIndex].id == fileId) {
                         uiStateInternal.value = ImageScreenUiState.Image(
-                            imageIndex,
-                            imageId,
+                            fileIndex,
+                            fileId,
                             bucketId,
                             files
                         )
                     } else {
-                        var backwardIndex = imageIndex - 1
-                        var forwardIndex = imageIndex + 1
+                        var backwardIndex = fileIndex - 1
+                        var forwardIndex = fileIndex + 1
                         var actualIndex = 0
                         val imagesSize = files.size
                         while (backwardIndex > -1 || forwardIndex < imagesSize) {
                             if (backwardIndex > -1) {
-                                if (files[backwardIndex].id == imageId) {
+                                if (files[backwardIndex].id == fileId) {
                                     actualIndex = backwardIndex
                                     break
                                 }
                                 backwardIndex--
                             }
                             if (forwardIndex < imagesSize) {
-                                if (files[forwardIndex].id == imageId) {
+                                if (files[forwardIndex].id == fileId) {
                                     actualIndex = forwardIndex
                                     break
                                 }
@@ -90,7 +91,7 @@ class ImageScreenViewModel @Inject constructor(private val repository: MediaStor
                         }
                         uiStateInternal.value = ImageScreenUiState.Image(
                             actualIndex,
-                            imageId,
+                            fileId,
                             bucketId,
                             files
                         )
@@ -104,6 +105,39 @@ class ImageScreenViewModel @Inject constructor(private val repository: MediaStor
                 if (!silent) {
                     uiStateInternal.value = ImageScreenUiState.Error(e)
                 }
+            }
+        }
+    }
+
+    fun deleteImage(
+        imageIndex: Int,
+        imageUri: Uri,
+        bucketId: Long,
+    ) {
+        currentJob?.cancel()
+        currentJob = viewModelScope.launch {
+            uiStateInternal.value = ImageScreenUiState.Loading
+            try {
+                val deleted = withContext(Dispatchers.Default) { repository.deleteFile(imageUri) }
+                if (deleted) {
+                    val files = withContext(Dispatchers.Default) { repository.getFiles(bucketId) }
+                    if (files.isNotEmpty()) {
+                        val index = imageIndex.coerceIn(
+                            0,
+                            files.size - 1
+                        )
+                        uiStateInternal.value = ImageScreenUiState.Image(
+                            index,
+                            files[index].id,
+                            bucketId,
+                            files
+                        )
+                    } else {
+                        uiStateInternal.value = ImageScreenUiState.Empty
+                    }
+                }
+            } catch (e: Exception) {
+                uiStateInternal.value = ImageScreenUiState.Error(e)
             }
         }
     }

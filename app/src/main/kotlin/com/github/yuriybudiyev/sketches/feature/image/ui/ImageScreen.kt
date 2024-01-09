@@ -98,8 +98,8 @@ fun ImageRoute(
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         imageRouteScope.launch {
             viewModel.updateImages(
-                imageIndex = currentFileIndex,
-                imageId = currentFileId,
+                fileIndex = currentFileIndex,
+                fileId = currentFileId,
                 bucketId = bucketId
             )
         }
