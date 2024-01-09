@@ -70,7 +70,6 @@ import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 @Composable
 fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
     val appContext by rememberUpdatedState(LocalContext.current.applicationContext)
-    val appScope by rememberUpdatedState(appState.coroutineScope)
     val mediaPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         arrayOf(
             Manifest.permission.READ_MEDIA_IMAGES,
@@ -114,7 +113,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                                     indicatorColor = MaterialTheme.colorScheme.primary
                                 ),
                                 onClick = {
-                                    appScope.launch {
+                                    appState.coroutineScope.launch {
                                         appState.navigateToTopLevelDestination(destination)
                                     }
                                 },
@@ -162,7 +161,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 SketchesOutlinedButton(text = stringResource(id = R.string.open_settings)) {
-                    appScope.launch {
+                    appState.coroutineScope.launch {
                         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                         intent.data = Uri.fromParts(
                             "package",
@@ -177,7 +176,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                 permissionsGranted = appContext.checkAllPermissionsGranted(mediaPermissions)
             }
             LaunchedEffect(Unit) {
-                appScope.launch {
+                appState.coroutineScope.launch {
                     mediaPermissionsLauncher.launch(mediaPermissions)
                 }
             }
