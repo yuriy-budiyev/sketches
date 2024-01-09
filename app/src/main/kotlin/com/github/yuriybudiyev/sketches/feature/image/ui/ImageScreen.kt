@@ -26,19 +26,27 @@ package com.github.yuriybudiyev.sketches.feature.image.ui
 
 import android.net.Uri
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
+import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 
 @Composable
 fun ImageRoute(
@@ -55,6 +63,44 @@ fun ImageRoute(
         viewModel = viewModel,
         onShare = onShare,
     )
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+private fun FilePager(
+    index: Int,
+    files: List<MediaStoreFile>,
+    onPageChanged: (index: Int, file: MediaStoreFile) -> Unit,
+) {
+    val indexUpdated by rememberUpdatedState(index)
+    val filesUpdated by rememberUpdatedState(files)
+    val onPageChangedUpdated by rememberUpdatedState(onPageChanged)
+    val pagerState = rememberPagerState(indexUpdated) { filesUpdated.size }
+    val pagerScope = rememberCoroutineScope()
+    LaunchedEffect(
+        pagerState,
+        pagerScope
+    ) {
+        snapshotFlow { indexUpdated }.collect { page ->
+            pagerScope.launch {
+                pagerState.scrollToPage(page)
+            }
+        }
+    }
+    LaunchedEffect(
+        pagerState,
+        pagerScope
+    ) {
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            val file = filesUpdated[page]
+            pagerScope.launch {
+                onPageChangedUpdated(
+                    page,
+                    file
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -129,6 +175,11 @@ private fun VideoPage(
                 mediaState.stop()
                 mediaState.disableVolume()
             }
+        }
+    }
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+        mediaScope.launch {
+            mediaState.pause()
         }
     }
     SketchesMediaPlayer(
