@@ -62,11 +62,14 @@ import androidx.lifecycle.Lifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
+import com.github.yuriybudiyev.sketches.core.ui.component.AppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesMediaItem
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
+import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.util.ui.animateScrollToItemCentered
 
 @Composable
@@ -84,6 +87,40 @@ fun ImageRoute(
         viewModel = viewModel,
         onShare = onShare,
     )
+}
+
+@Composable
+private fun TopBar(
+    onDelete: () -> Unit,
+    onShare: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val onDeleteUpdated by rememberUpdatedState(onDelete)
+    val onShareUpdated by rememberUpdatedState(onShare)
+    val barScope = rememberCoroutineScope()
+    SketchesTopAppBar(
+        modifier = modifier,
+        backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f),
+    ) {
+        AppBarActionButton(
+            icon = SketchesIcons.Delete,
+            description = stringResource(id = R.string.delete_image),
+            onClick = {
+                barScope.launch {
+                    onDeleteUpdated()
+                }
+            },
+        )
+        AppBarActionButton(
+            icon = SketchesIcons.Share,
+            description = stringResource(id = R.string.share_image),
+            onClick = {
+                barScope.launch {
+                    onShareUpdated()
+                }
+            },
+        )
+    }
 }
 
 @Composable
