@@ -39,10 +39,9 @@ import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepositor
 class MediaStoreRepositoryImpl(private val context: Context): MediaStoreRepository {
 
     private suspend fun collectFiles(
-        bucketId: Long,
         mediaType: MediaType,
-        destination: MutableCollection<MediaStoreFile>,
-    ) {
+        bucketId: Long,
+    ): List<MediaStoreFile> {
         val contentUri = contentUriFor(mediaType)
         val cursor = withContext(Dispatchers.IO) {
             context.contentResolver.query(
@@ -67,7 +66,8 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
                 },
                 null
             )
-        } ?: return
+        } ?: return emptyList()
+        val files = ArrayList<MediaStoreFile>(cursor.count)
         val idColumn = cursor.getColumnIndex(MediaStore.MediaColumns._ID)
         val nameColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
         val bucketIdColumn = cursor.getColumnIndex(MediaStore.MediaColumns.BUCKET_ID)
@@ -76,7 +76,7 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
         val mimeTypeColumn = cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)
         while (cursor.moveToNext()) {
             val id = cursor.getLong(idColumn)
-            destination += MediaStoreFile(
+            files += MediaStoreFile(
                 id = id,
                 name = cursor.getString(nameColumn),
                 mediaType = mediaType,
@@ -90,19 +90,22 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
                 )
             )
         }
+        return files
     }
 
     override suspend fun getFiles(bucketId: Long): List<MediaStoreFile> {
-        val files = ArrayList<MediaStoreFile>()
-        MediaType.entries.forEach { type ->
-            collectFiles(
-                bucketId,
-                type,
-                files
-            )
-        }
+        val imageFiles = collectFiles(
+            MediaType.IMAGE,
+            bucketId
+        )
+        val videoFiles = collectFiles(
+            MediaType.VIDEO,
+            bucketId
+        )
+        val files = ArrayList<MediaStoreFile>(imageFiles.size + videoFiles.size)
+        files.addAll(imageFiles)
+        files.addAll(videoFiles)
         files.sortByDescending { file -> file.dateAdded }
-        files.trimToSize()
         return files
     }
 
@@ -167,12 +170,14 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
 
     override suspend fun getBuckets(): List<MediaStoreBucket> {
         val bucketsInfo = LinkedHashMap<Long, BucketInfo>()
-        MediaType.entries.forEach { mediaType ->
-            collectBucketsInfo(
-                mediaType,
-                bucketsInfo
-            )
-        }
+        collectBucketsInfo(
+            MediaType.IMAGE,
+            bucketsInfo
+        )
+        collectBucketsInfo(
+            MediaType.VIDEO,
+            bucketsInfo
+        )
         return bucketsInfo
             .mapTo(ArrayList(bucketsInfo.size)) { (_, info) -> info.toBucket() }
             .also { buckets -> buckets.sortByDescending { bucket -> bucket.coverDateAdded } }
