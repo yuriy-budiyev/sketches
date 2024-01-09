@@ -159,23 +159,24 @@ private fun ImageScreenLayout(
     onShare: (uri: Uri, type: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val data by rememberUpdatedState(files)
-    val pagerState = rememberPagerState(index) { data.size }
-    val bottomBarState = rememberLazyListState(index)
+    val indexUpdated by rememberUpdatedState(index)
+    val filesUpdated by rememberUpdatedState(files)
+    val pagerState = rememberPagerState(indexUpdated) { filesUpdated.size }
+    val bottomBarState = rememberLazyListState(indexUpdated)
     val imageScreenScope = rememberCoroutineScope()
-    var currentMediaFile by remember { mutableStateOf(data[index]) }
+    var currentMediaFile by remember { mutableStateOf(filesUpdated[indexUpdated]) }
     val bottomBarItemSize = 56.dp
     val bottomBarItemSizePx = with(LocalDensity.current) { bottomBarItemSize.roundToPx() }
     LaunchedEffect(
         pagerState,
         bottomBarState,
         imageScreenScope,
-        data
+        filesUpdated
     ) {
         snapshotFlow { pagerState.currentPage }
             .distinctUntilChanged()
             .collect { page ->
-                val file = data[page]
+                val file = filesUpdated[page]
                 currentMediaFile = file
                 imageScreenScope.launch {
                     onChange(
@@ -194,9 +195,9 @@ private fun ImageScreenLayout(
     LaunchedEffect(
         pagerState,
         imageScreenScope,
-        index
+        indexUpdated
     ) {
-        snapshotFlow { index }
+        snapshotFlow { indexUpdated }
             .distinctUntilChanged()
             .collect { page ->
                 imageScreenScope.launch {
@@ -213,9 +214,9 @@ private fun ImageScreenLayout(
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.matchParentSize(),
-                key = { page -> data[page].id },
+                key = { page -> filesUpdated[page].id },
             ) { page ->
-                val file = data[page]
+                val file = filesUpdated[page]
                 val fileUri = file.uri
                 when (file.mediaType) {
                     MediaType.IMAGE -> {
@@ -317,10 +318,10 @@ private fun ImageScreenLayout(
             flingBehavior = rememberSnapFlingBehavior(bottomBarState),
         ) {
             items(
-                count = data.size,
-                key = { page -> data[page].id },
+                count = filesUpdated.size,
+                key = { page -> filesUpdated[page].id },
             ) { page ->
-                val file = data[page]
+                val file = filesUpdated[page]
                 SketchesMediaItem(
                     uri = file.uri,
                     type = file.mediaType,
