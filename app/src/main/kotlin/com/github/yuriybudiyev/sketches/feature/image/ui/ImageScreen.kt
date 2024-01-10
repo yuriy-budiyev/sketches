@@ -31,8 +31,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -44,9 +47,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -59,11 +65,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.ui.component.AppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
@@ -77,16 +86,143 @@ fun ImageRoute(
     fileIndex: Int,
     fileId: Long,
     bucketId: Long,
+    onShare: (index: Int, file: MediaStoreFile) -> Unit,
     viewModel: ImageScreenViewModel = hiltViewModel(),
-    onShare: (fileUri: Uri, mimeType: String) -> Unit,
 ) {
-    com.github.yuriybudiyev.sketches.feature.image.ui.old.ImageRoute(
-        fileIndex = fileIndex,
-        fileId = fileId,
-        bucketId = bucketId,
-        viewModel = viewModel,
-        onShare = onShare,
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var currentFileIndex by rememberSaveable { mutableIntStateOf(fileIndex) }
+    var currentFileId by rememberSaveable { mutableLongStateOf(fileId) }
+    val imageRouteScope = rememberCoroutineScope()
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        imageRouteScope.launch {
+            viewModel.updateImages(
+                fileIndex = currentFileIndex,
+                fileId = currentFileId,
+                bucketId = bucketId
+            )
+        }
+    }
+    ImageScreen(
+        uiState = uiState,
+        { index, file ->
+            currentFileIndex = index
+            currentFileId = file.id
+        },
+        onDelete = { index, file ->
+
+        },
+        onShare = onShare
     )
+}
+
+@Composable
+fun ImageScreen(
+    uiState: ImageScreenUiState,
+    onChange: (index: Int, file: MediaStoreFile) -> Unit,
+    onDelete: (index: Int, file: MediaStoreFile) -> Unit,
+    onShare: (index: Int, file: MediaStoreFile) -> Unit,
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        when (uiState) {
+            ImageScreenUiState.Empty -> {
+                SketchesCenteredMessage(
+                    text = stringResource(id = R.string.no_images_found),
+                    modifier = Modifier.matchParentSize()
+                )
+            }
+            ImageScreenUiState.Loading -> {
+                SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
+            }
+            is ImageScreenUiState.Image -> {
+                ImageScreenLayout(
+                    index = uiState.fileIndex,
+                    files = uiState.files,
+                    onChange = onChange,
+                    onDelete = onDelete,
+                    onShare = onShare,
+                    modifier = Modifier.matchParentSize()
+                )
+            }
+            is ImageScreenUiState.Error -> {
+                SketchesCenteredMessage(
+                    text = stringResource(id = R.string.unexpected_error),
+                    modifier = Modifier.matchParentSize()
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ImageScreenLayout(
+    index: Int,
+    files: List<MediaStoreFile>,
+    onChange: (index: Int, file: MediaStoreFile) -> Unit,
+    onDelete: (index: Int, file: MediaStoreFile) -> Unit,
+    onShare: (index: Int, file: MediaStoreFile) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var currentPagerIndex by remember(index) { mutableIntStateOf(index) }
+    var currentBarIndex by remember(index) { mutableIntStateOf(index) }
+    var currentFile by remember(
+        index,
+        files,
+    ) {
+        mutableStateOf(files[index])
+    }
+    val filesUpdated by rememberUpdatedState(files)
+    val onChangeUpdated by rememberUpdatedState(onChange)
+    val onDeleteUpdated by rememberUpdatedState(onDelete)
+    val onShareUpdated by rememberUpdatedState(onShare)
+    val imageScreenScope = rememberCoroutineScope()
+    Box(modifier = modifier) {
+        Column(modifier = Modifier.matchParentSize()) {
+            MediaPager(
+                index = currentBarIndex,
+                files = filesUpdated,
+                onPageChanged = { index, file ->
+                    currentPagerIndex = index
+                    currentFile = file
+                    imageScreenScope.launch {
+                        onChangeUpdated(
+                            index,
+                            file
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            )
+            MediaBar(
+                index = currentPagerIndex,
+                files = filesUpdated,
+                onImageClick = { index, file ->
+                    currentBarIndex = index
+                    currentFile = file
+                },
+            )
+        }
+        TopBar(
+            onDelete = {
+                imageScreenScope.launch {
+                    onDeleteUpdated(
+                        currentPagerIndex,
+                        currentFile
+                    )
+                }
+            },
+            onShare = {
+                onShareUpdated(
+                    currentPagerIndex,
+                    currentFile
+                )
+            },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .fillMaxWidth(),
+        )
+    }
 }
 
 @Composable
@@ -143,7 +279,7 @@ private fun MediaPager(
     ) {
         snapshotFlow { indexUpdated }.collect { page ->
             pagerScope.launch {
-                pagerState.scrollToPage(page)
+                pagerState.animateScrollToPage(page)
             }
         }
     }

@@ -124,7 +124,7 @@ fun SketchesNavHost(
                 fileIndex = imageIndex,
                 fileId = imageId,
                 bucketId = bucketId,
-                onShare = { uri, type ->
+                onShare = { _, file ->
                     appState.coroutineScope.launch {
                         context.startActivity(
                             Intent
@@ -132,9 +132,9 @@ fun SketchesNavHost(
                                     Intent(Intent.ACTION_SEND)
                                         .putExtra(
                                             Intent.EXTRA_STREAM,
-                                            uri
+                                            file.uri
                                         )
-                                        .setType(type),
+                                        .setType(file.mimeType),
                                     shareTitle
                                 )
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
