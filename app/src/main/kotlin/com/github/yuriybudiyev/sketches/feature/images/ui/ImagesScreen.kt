@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.images.ui
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -53,14 +54,15 @@ fun ImagesRoute(
     viewModel: ImagesScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val imagesRouteScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        imagesRouteScope.launch {
+        coroutineScope.launch {
             viewModel.updateImages()
         }
     }
     ImagesScreen(
         uiState = uiState,
+        coroutineScope = coroutineScope,
         onImageClick = onImageClick
     )
 }
@@ -68,6 +70,7 @@ fun ImagesRoute(
 @Composable
 fun ImagesScreen(
     uiState: ImagesScreenUiState,
+    coroutineScope: CoroutineScope,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -85,6 +88,7 @@ fun ImagesScreen(
                 SketchesMediaVerticalGrid(
                     files = uiState.files,
                     modifier = Modifier.matchParentSize(),
+                    coroutineScope = coroutineScope,
                     onItemClick = onImageClick
                 )
             }

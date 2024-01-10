@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.bucket.ui
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -54,15 +55,16 @@ fun BucketRoute(
     viewModel: BucketScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val bucketRouteScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        bucketRouteScope.launch {
+        coroutineScope.launch {
             viewModel.updateImages(id)
         }
     }
     BucketScreen(
         name = name,
         uiState = uiState,
+        coroutineScope = coroutineScope,
         onImageClick = onImageClick
     )
 }
@@ -71,6 +73,7 @@ fun BucketRoute(
 fun BucketScreen(
     name: String?,
     uiState: BucketScreenUiState,
+    coroutineScope: CoroutineScope,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -88,6 +91,7 @@ fun BucketScreen(
                 SketchesMediaVerticalGrid(
                     files = uiState.files,
                     modifier = Modifier.matchParentSize(),
+                    coroutineScope = coroutineScope,
                     onItemClick = onImageClick
                 )
             }

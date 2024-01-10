@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
 import android.net.Uri
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
@@ -36,7 +37,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -63,6 +66,7 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -93,9 +97,9 @@ fun ImageRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var currentFileIndex by rememberSaveable { mutableIntStateOf(fileIndex) }
     var currentFileId by rememberSaveable { mutableLongStateOf(fileId) }
-    val imageRouteScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        imageRouteScope.launch {
+        coroutineScope.launch {
             viewModel.updateImages(
                 fileIndex = currentFileIndex,
                 fileId = currentFileId,
@@ -105,6 +109,7 @@ fun ImageRoute(
     }
     ImageScreen(
         uiState = uiState,
+        coroutineScope,
         { index, file ->
             currentFileIndex = index
             currentFileId = file.id
@@ -119,6 +124,7 @@ fun ImageRoute(
 @Composable
 fun ImageScreen(
     uiState: ImageScreenUiState,
+    coroutineScope: CoroutineScope,
     onChange: (index: Int, file: MediaStoreFile) -> Unit,
     onDelete: (index: Int, file: MediaStoreFile) -> Unit,
     onShare: (index: Int, file: MediaStoreFile) -> Unit,
@@ -138,6 +144,7 @@ fun ImageScreen(
                 ImageScreenLayout(
                     index = uiState.fileIndex,
                     files = uiState.files,
+                    coroutineScope = coroutineScope,
                     onChange = onChange,
                     onDelete = onDelete,
                     onShare = onShare,
@@ -155,67 +162,102 @@ fun ImageScreen(
 }
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 private fun ImageScreenLayout(
     index: Int,
     files: List<MediaStoreFile>,
+    coroutineScope: CoroutineScope,
     onChange: (index: Int, file: MediaStoreFile) -> Unit,
     onDelete: (index: Int, file: MediaStoreFile) -> Unit,
     onShare: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var currentPagerIndex by remember(index) { mutableIntStateOf(index) }
-    var currentBarIndex by remember(index) { mutableIntStateOf(index) }
+    var currentIndex by remember(index) { mutableIntStateOf(index) }
     var currentFile by remember(
         index,
         files,
     ) {
         mutableStateOf(files[index])
     }
+    val indexUpdated by rememberUpdatedState(index)
     val filesUpdated by rememberUpdatedState(files)
     val onChangeUpdated by rememberUpdatedState(onChange)
     val onDeleteUpdated by rememberUpdatedState(onDelete)
     val onShareUpdated by rememberUpdatedState(onShare)
-    val imageScreenScope = rememberCoroutineScope()
+    val pagerState = rememberPagerState(currentIndex) { filesUpdated.size }
+    val barState = rememberLazyListState(currentIndex)
+    val barItemSize = 56.dp
+    val barItemSizePx = with(LocalDensity.current) { barItemSize.roundToPx() }
+    LaunchedEffect(
+        pagerState,
+        coroutineScope
+    ) {
+        snapshotFlow { indexUpdated }.collect { page ->
+            coroutineScope.launch {
+                pagerState.scrollToPage(page)
+            }
+        }
+    }
+    LaunchedEffect(
+        pagerState,
+        barState,
+        coroutineScope,
+    ) {
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            currentIndex = page
+            val file = filesUpdated[page]
+            currentFile = file
+            coroutineScope.launch {
+                onChangeUpdated(
+                    page,
+                    file
+                )
+            }
+            coroutineScope.launch {
+                barState.animateScrollToItemCentered(
+                    page,
+                    barItemSizePx
+                )
+            }
+        }
+    }
     Box(modifier = modifier) {
         Column(modifier = Modifier.matchParentSize()) {
             MediaPager(
-                index = currentBarIndex,
-                files = filesUpdated,
-                onPageChanged = { index, file ->
-                    currentPagerIndex = index
-                    currentFile = file
-                    imageScreenScope.launch {
-                        onChangeUpdated(
-                            index,
-                            file,
-                        )
-                    }
-                },
+                state = pagerState,
+                items = filesUpdated,
+                coroutineScope = coroutineScope,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
+                    .weight(1f),
             )
             MediaBar(
-                index = currentPagerIndex,
-                files = filesUpdated,
-                onItemClick = { index, file ->
-                    currentBarIndex = index
-                    currentFile = file
+                state = barState,
+                items = filesUpdated,
+                itemSize = barItemSize,
+                onItemClick = { index, _ ->
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(index)
+                    }
                 },
+                coroutineScope = coroutineScope,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp),
             )
         }
         TopBar(
             onDelete = {
-                imageScreenScope.launch {
+                coroutineScope.launch {
                     onDeleteUpdated(
-                        currentPagerIndex,
+                        currentIndex,
                         currentFile,
                     )
                 }
             },
             onShare = {
                 onShareUpdated(
-                    currentPagerIndex,
+                    currentIndex,
                     currentFile,
                 )
             },
@@ -263,53 +305,24 @@ private fun TopBar(
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 private fun MediaPager(
-    index: Int,
-    files: List<MediaStoreFile>,
-    onPageChanged: (index: Int, file: MediaStoreFile) -> Unit,
+    state: PagerState,
+    items: List<MediaStoreFile>,
+    coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
-    val indexUpdated by rememberUpdatedState(index)
-    val filesUpdated by rememberUpdatedState(files)
-    val onPageChangedUpdated by rememberUpdatedState(onPageChanged)
-    var currentPage by remember(indexUpdated) { mutableIntStateOf(indexUpdated) }
-    val pagerState = rememberPagerState(indexUpdated) { filesUpdated.size }
-    val pagerScope = rememberCoroutineScope()
-    LaunchedEffect(
-        pagerState,
-        pagerScope,
-    ) {
-        snapshotFlow { indexUpdated }.collect { page ->
-            pagerScope.launch {
-                pagerState.animateScrollToPage(page)
-            }
-        }
-    }
-    LaunchedEffect(
-        pagerState,
-        pagerScope,
-    ) {
-        snapshotFlow { pagerState.currentPage }.collect { page ->
-            currentPage = page
-            val file = filesUpdated[page]
-            pagerScope.launch {
-                onPageChangedUpdated(
-                    page,
-                    file,
-                )
-            }
-        }
-    }
+    val filesUpdated by rememberUpdatedState(items)
     HorizontalPager(
-        state = pagerState,
+        state = state,
         key = { page -> filesUpdated[page].id },
         modifier = modifier,
     ) { page ->
         val file = filesUpdated[page]
         MediaPage(
-            pagerState,
-            page,
+            state = state,
+            number = page,
             fileUri = file.uri,
             fileType = file.mediaType,
+            coroutineScope = coroutineScope,
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -318,10 +331,11 @@ private fun MediaPager(
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 private fun MediaPage(
-    pagerState: PagerState,
-    page: Int,
+    state: PagerState,
+    number: Int,
     fileUri: Uri,
     fileType: MediaType,
+    coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
     when (fileType) {
@@ -333,9 +347,10 @@ private fun MediaPage(
         }
         MediaType.VIDEO -> {
             VideoPage(
-                pagerState,
-                page,
+                state,
+                number,
                 fileUri = fileUri,
+                coroutineScope,
                 modifier = modifier,
             )
         }
@@ -359,40 +374,40 @@ private fun ImagePage(
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 private fun VideoPage(
-    pagerState: PagerState,
-    page: Int,
+    state: PagerState,
+    number: Int,
     fileUri: Uri,
+    coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
-    val pageUpdated by rememberUpdatedState(page)
+    val numberUpdated by rememberUpdatedState(number)
     val fileUriUpdated by rememberUpdatedState(fileUri)
     val mediaState = rememberSketchesMediaState()
-    val mediaScope = rememberCoroutineScope()
     LaunchedEffect(
         mediaState,
-        mediaScope,
+        coroutineScope,
     ) {
         snapshotFlow { fileUriUpdated }.collect { uri ->
             if (mediaState.uri != uri) {
-                mediaScope.launch {
+                coroutineScope.launch {
                     mediaState.open(uri)
                 }
             }
         }
     }
     LaunchedEffect(
-        pagerState,
         mediaState,
-        mediaScope,
+        state,
+        coroutineScope,
     ) {
-        snapshotFlow { pagerState.currentPage }.collect { currentPage ->
-            if (currentPage == pageUpdated) {
-                mediaScope.launch {
+        snapshotFlow { state.currentPage }.collect { currentPage ->
+            if (currentPage == numberUpdated) {
+                coroutineScope.launch {
                     mediaState.disableVolume()
                     mediaState.play()
                 }
             } else {
-                mediaScope.launch {
+                coroutineScope.launch {
                     mediaState.stop()
                     mediaState.disableVolume()
                 }
@@ -401,7 +416,7 @@ private fun VideoPage(
 
     }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
-        mediaScope.launch {
+        coroutineScope.launch {
             mediaState.pause()
         }
     }
@@ -414,34 +429,17 @@ private fun VideoPage(
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 private fun MediaBar(
-    index: Int,
-    files: List<MediaStoreFile>,
+    state: LazyListState,
+    items: List<MediaStoreFile>,
+    itemSize: Dp,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
+    coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
-    val indexUpdated by rememberUpdatedState(index)
-    val filesUpdated by rememberUpdatedState(files)
+    val itemsUpdated by rememberUpdatedState(items)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
-    val barState = rememberLazyListState(indexUpdated)
-    val barScope = rememberCoroutineScope()
-    val itemSize = 56.dp
-    val itemSizePx = with(LocalDensity.current) { itemSize.roundToPx() }
-    LaunchedEffect(
-        barState,
-        barScope,
-        itemSizePx,
-    ) {
-        snapshotFlow { indexUpdated }.collect { position ->
-            barScope.launch {
-                barState.animateScrollToItemCentered(
-                    position,
-                    itemSizePx,
-                )
-            }
-        }
-    }
     LazyRow(
-        state = barState,
+        state = state,
         modifier = modifier,
         contentPadding = PaddingValues(horizontal = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(
@@ -449,13 +447,13 @@ private fun MediaBar(
             alignment = Alignment.CenterHorizontally,
         ),
         verticalAlignment = Alignment.CenterVertically,
-        flingBehavior = rememberSnapFlingBehavior(barState),
+        flingBehavior = rememberSnapFlingBehavior(state),
     ) {
         items(
-            count = filesUpdated.size,
-            key = { position -> filesUpdated[position].id },
+            count = itemsUpdated.size,
+            key = { position -> itemsUpdated[position].id },
         ) { position ->
-            val file = filesUpdated[position]
+            val file = itemsUpdated[position]
             SketchesMediaItem(
                 uri = file.uri,
                 type = file.mediaType,
@@ -469,7 +467,7 @@ private fun MediaBar(
                         shape = RoundedCornerShape(8.dp),
                     )
                     .clickable {
-                        barScope.launch {
+                        coroutineScope.launch {
                             onItemClickUpdated(
                                 position,
                                 file,
