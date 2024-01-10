@@ -198,7 +198,7 @@ private fun ImageScreenLayout(
             MediaBar(
                 index = currentPagerIndex,
                 files = filesUpdated,
-                onImageClick = { index, file ->
+                onItemClick = { index, file ->
                     currentBarIndex = index
                     currentFile = file
                 },
@@ -416,12 +416,12 @@ private fun VideoPage(
 private fun MediaBar(
     index: Int,
     files: List<MediaStoreFile>,
-    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val indexUpdated by rememberUpdatedState(index)
     val filesUpdated by rememberUpdatedState(files)
-    val onImageClickUpdated by rememberUpdatedState(onImageClick)
+    val onItemClickUpdated by rememberUpdatedState(onItemClick)
     val barState = rememberLazyListState(indexUpdated)
     val barScope = rememberCoroutineScope()
     val itemSize = 56.dp
@@ -470,7 +470,7 @@ private fun MediaBar(
                     )
                     .clickable {
                         barScope.launch {
-                            onImageClickUpdated(
+                            onItemClickUpdated(
                                 position,
                                 file,
                             )
