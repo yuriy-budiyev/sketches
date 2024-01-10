@@ -40,6 +40,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -98,7 +99,7 @@ fun ImageRoute(
             viewModel.updateImages(
                 fileIndex = currentFileIndex,
                 fileId = currentFileId,
-                bucketId = bucketId
+                bucketId = bucketId,
             )
         }
     }
@@ -111,7 +112,7 @@ fun ImageRoute(
         onDelete = { index, file ->
 
         },
-        onShare = onShare
+        onShare = onShare,
     )
 }
 
@@ -127,7 +128,7 @@ fun ImageScreen(
             ImageScreenUiState.Empty -> {
                 SketchesCenteredMessage(
                     text = stringResource(id = R.string.no_images_found),
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier.matchParentSize(),
                 )
             }
             ImageScreenUiState.Loading -> {
@@ -140,13 +141,13 @@ fun ImageScreen(
                     onChange = onChange,
                     onDelete = onDelete,
                     onShare = onShare,
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier.matchParentSize(),
                 )
             }
             is ImageScreenUiState.Error -> {
                 SketchesCenteredMessage(
                     text = stringResource(id = R.string.unexpected_error),
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier.matchParentSize(),
                 )
             }
         }
@@ -186,7 +187,7 @@ private fun ImageScreenLayout(
                     imageScreenScope.launch {
                         onChangeUpdated(
                             index,
-                            file
+                            file,
                         )
                     }
                 },
@@ -208,14 +209,14 @@ private fun ImageScreenLayout(
                 imageScreenScope.launch {
                     onDeleteUpdated(
                         currentPagerIndex,
-                        currentFile
+                        currentFile,
                     )
                 }
             },
             onShare = {
                 onShareUpdated(
                     currentPagerIndex,
-                    currentFile
+                    currentFile,
                 )
             },
             modifier = Modifier
@@ -275,7 +276,7 @@ private fun MediaPager(
     val pagerScope = rememberCoroutineScope()
     LaunchedEffect(
         pagerState,
-        pagerScope
+        pagerScope,
     ) {
         snapshotFlow { indexUpdated }.collect { page ->
             pagerScope.launch {
@@ -285,7 +286,7 @@ private fun MediaPager(
     }
     LaunchedEffect(
         pagerState,
-        pagerScope
+        pagerScope,
     ) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
             currentPage = page
@@ -293,7 +294,7 @@ private fun MediaPager(
             pagerScope.launch {
                 onPageChangedUpdated(
                     page,
-                    file
+                    file,
                 )
             }
         }
@@ -305,19 +306,22 @@ private fun MediaPager(
     ) { page ->
         val file = filesUpdated[page]
         MediaPage(
+            pagerState,
+            page,
             fileUri = file.uri,
             fileType = file.mediaType,
-            isCurrentPage = page == currentPage,
             modifier = Modifier.fillMaxSize(),
         )
     }
 }
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 private fun MediaPage(
+    pagerState: PagerState,
+    page: Int,
     fileUri: Uri,
     fileType: MediaType,
-    isCurrentPage: Boolean,
     modifier: Modifier = Modifier,
 ) {
     when (fileType) {
@@ -329,8 +333,9 @@ private fun MediaPage(
         }
         MediaType.VIDEO -> {
             VideoPage(
+                pagerState,
+                page,
                 fileUri = fileUri,
-                isCurrentPage = isCurrentPage,
                 modifier = modifier,
             )
         }
@@ -352,18 +357,20 @@ private fun ImagePage(
 }
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 private fun VideoPage(
+    pagerState: PagerState,
+    page: Int,
     fileUri: Uri,
-    isCurrentPage: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val pageUpdated by rememberUpdatedState(page)
     val fileUriUpdated by rememberUpdatedState(fileUri)
-    val isCurrentPageUpdated by rememberUpdatedState(isCurrentPage)
     val mediaState = rememberSketchesMediaState()
     val mediaScope = rememberCoroutineScope()
     LaunchedEffect(
         mediaState,
-        mediaScope
+        mediaScope,
     ) {
         snapshotFlow { fileUriUpdated }.collect { uri ->
             if (mediaState.uri != uri) {
@@ -374,11 +381,12 @@ private fun VideoPage(
         }
     }
     LaunchedEffect(
+        pagerState,
         mediaState,
-        mediaScope
+        mediaScope,
     ) {
-        snapshotFlow { isCurrentPageUpdated }.collect { currentPage ->
-            if (currentPage) {
+        snapshotFlow { pagerState.currentPage }.collect { currentPage ->
+            if (currentPage == pageUpdated) {
                 mediaScope.launch {
                     mediaState.disableVolume()
                     mediaState.play()
@@ -421,13 +429,13 @@ private fun MediaBar(
     LaunchedEffect(
         barState,
         barScope,
-        itemSizePx
+        itemSizePx,
     ) {
         snapshotFlow { indexUpdated }.collect { position ->
             barScope.launch {
                 barState.animateScrollToItemCentered(
                     position,
-                    itemSizePx
+                    itemSizePx,
                 )
             }
         }
@@ -438,7 +446,7 @@ private fun MediaBar(
         contentPadding = PaddingValues(horizontal = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(
             space = 4.dp,
-            alignment = Alignment.CenterHorizontally
+            alignment = Alignment.CenterHorizontally,
         ),
         verticalAlignment = Alignment.CenterVertically,
         flingBehavior = rememberSnapFlingBehavior(barState),
@@ -458,13 +466,13 @@ private fun MediaBar(
                     .border(
                         width = 1.dp,
                         color = MaterialTheme.colorScheme.onBackground,
-                        shape = RoundedCornerShape(8.dp)
+                        shape = RoundedCornerShape(8.dp),
                     )
                     .clickable {
                         barScope.launch {
                             onImageClickUpdated(
                                 position,
-                                file
+                                file,
                             )
                         }
                     },
