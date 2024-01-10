@@ -87,9 +87,9 @@ fun ImagesScreen(
             is ImagesScreenUiState.Images -> {
                 SketchesMediaVerticalGrid(
                     files = uiState.files,
+                    onItemClick = onImageClick,
                     modifier = Modifier.matchParentSize(),
-                    coroutineScope = coroutineScope,
-                    onItemClick = onImageClick
+                    coroutineScope = coroutineScope
                 )
             }
             is ImagesScreenUiState.Error -> {

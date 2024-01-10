@@ -90,9 +90,9 @@ fun BucketScreen(
             is BucketScreenUiState.Bucket -> {
                 SketchesMediaVerticalGrid(
                     files = uiState.files,
+                    onItemClick = onImageClick,
                     modifier = Modifier.matchParentSize(),
-                    coroutineScope = coroutineScope,
-                    onItemClick = onImageClick
+                    coroutineScope = coroutineScope
                 )
             }
             is BucketScreenUiState.Error -> {

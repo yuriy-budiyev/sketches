@@ -33,6 +33,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,9 +43,9 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 @Composable
 fun SketchesMediaVerticalGrid(
     files: List<MediaStoreFile>,
-    modifier: Modifier = Modifier,
-    coroutineScope: CoroutineScope,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
+    modifier: Modifier = Modifier,
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ) {
     val filesUpdated by rememberUpdatedState(files)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)

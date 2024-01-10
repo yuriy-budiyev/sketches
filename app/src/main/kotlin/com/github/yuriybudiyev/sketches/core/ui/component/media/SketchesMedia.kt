@@ -26,6 +26,7 @@ package com.github.yuriybudiyev.sketches.core.ui.component.media
 
 import kotlin.math.roundToLong
 import android.view.TextureView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -58,6 +59,7 @@ import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 fun SketchesMediaPlayer(
     state: SketchesMediaState,
     modifier: Modifier = Modifier,
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     controlsBackgroundColor: Color = backgroundColor.copy(alpha = 0.75f),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
@@ -78,6 +80,7 @@ fun SketchesMediaPlayer(
                 .height(height = 64.dp)
                 .padding(horizontal = 4.dp)
                 .align(alignment = Alignment.BottomCenter),
+            coroutineScope = coroutineScope,
             color = controlsColor
         )
     }
@@ -134,9 +137,9 @@ fun SketchesMediaDisplay(
 fun SketchesMediaController(
     state: SketchesMediaState,
     modifier: Modifier = Modifier,
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
     color: Color = MaterialTheme.colorScheme.onBackground,
 ) {
-    val mediaControllerScope = rememberCoroutineScope()
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -145,7 +148,7 @@ fun SketchesMediaController(
             .size(size = 48.dp)
             .clip(shape = CircleShape)
             .clickable {
-                mediaControllerScope.launch {
+                coroutineScope.launch {
                     if (state.isPlaying) {
                         state.pause()
                     } else {
@@ -183,7 +186,7 @@ fun SketchesMediaController(
             onValueChange = { value ->
                 if (duration != SketchesMediaState.TIME_UNKNOWN) {
                     val newPosition = (duration.toDouble() * value.toDouble()).roundToLong()
-                    mediaControllerScope.launch {
+                    coroutineScope.launch {
                         state.seek(newPosition)
                     }
                 }
@@ -205,7 +208,7 @@ fun SketchesMediaController(
             .size(size = 48.dp)
             .clip(shape = CircleShape)
             .clickable {
-                mediaControllerScope.launch {
+                coroutineScope.launch {
                     if (state.isVolumeEnabled) {
                         state.disableVolume()
                     } else {

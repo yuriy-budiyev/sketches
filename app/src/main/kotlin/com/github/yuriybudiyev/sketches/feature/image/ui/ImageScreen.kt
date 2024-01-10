@@ -423,6 +423,7 @@ private fun VideoPage(
     SketchesMediaPlayer(
         state = mediaState,
         modifier = modifier,
+        coroutineScope = coroutineScope,
     )
 }
 
