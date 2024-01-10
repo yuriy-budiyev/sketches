@@ -31,11 +31,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -90,33 +87,6 @@ fun ImageRoute(
         viewModel = viewModel,
         onShare = onShare,
     )
-}
-
-@Composable
-private fun ImageScreenLayout(
-    index: Int,
-    files: List<MediaStoreFile>,
-    onChange: (index: Int, file: MediaStoreFile) -> Unit,
-    onDelete: (index: Int, file: MediaStoreFile) -> Unit,
-    onShare: (index: Int, file: MediaStoreFile) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Box(modifier = modifier) {
-        Column(modifier = Modifier.matchParentSize()) {
-
-        }
-        TopBar(
-            onDelete = {
-
-            },
-            onShare = {
-
-            },
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .fillMaxWidth(),
-        )
-    }
 }
 
 @Composable
