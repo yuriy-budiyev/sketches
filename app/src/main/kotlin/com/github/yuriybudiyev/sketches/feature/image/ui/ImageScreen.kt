@@ -190,7 +190,7 @@ private fun ImageScreenLayout(
     val barItemSizePx = with(LocalDensity.current) { barItemSize.roundToPx() }
     LaunchedEffect(
         pagerState,
-        coroutineScope
+        coroutineScope,
     ) {
         snapshotFlow { indexUpdated }.collect { page ->
             coroutineScope.launch {
@@ -210,13 +210,13 @@ private fun ImageScreenLayout(
             coroutineScope.launch {
                 onChangeUpdated(
                     page,
-                    file
+                    file,
                 )
             }
             coroutineScope.launch {
                 barState.animateScrollToItemCentered(
                     page,
-                    barItemSizePx
+                    barItemSizePx,
                 )
             }
         }
@@ -261,6 +261,7 @@ private fun ImageScreenLayout(
                     currentFile,
                 )
             },
+            coroutineScope = coroutineScope,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
@@ -272,11 +273,11 @@ private fun ImageScreenLayout(
 private fun TopBar(
     onDelete: () -> Unit,
     onShare: () -> Unit,
+    coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
     val onDeleteUpdated by rememberUpdatedState(onDelete)
     val onShareUpdated by rememberUpdatedState(onShare)
-    val barScope = rememberCoroutineScope()
     SketchesTopAppBar(
         modifier = modifier,
         backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f),
@@ -285,7 +286,7 @@ private fun TopBar(
             icon = SketchesIcons.Delete,
             description = stringResource(id = R.string.delete_image),
             onClick = {
-                barScope.launch {
+                coroutineScope.launch {
                     onDeleteUpdated()
                 }
             },
@@ -294,7 +295,7 @@ private fun TopBar(
             icon = SketchesIcons.Share,
             description = stringResource(id = R.string.share_image),
             onClick = {
-                barScope.launch {
+                coroutineScope.launch {
                     onShareUpdated()
                 }
             },
@@ -347,10 +348,10 @@ private fun MediaPage(
         }
         MediaType.VIDEO -> {
             VideoPage(
-                state,
-                number,
+                state = state,
+                number = number,
                 fileUri = fileUri,
-                coroutineScope,
+                coroutineScope = coroutineScope,
                 modifier = modifier,
             )
         }
@@ -396,20 +397,28 @@ private fun VideoPage(
         }
     }
     LaunchedEffect(
-        mediaState,
         state,
+        mediaState,
         coroutineScope,
     ) {
         snapshotFlow { state.currentPage }.collect { currentPage ->
             if (currentPage == numberUpdated) {
                 coroutineScope.launch {
-                    mediaState.disableVolume()
-                    mediaState.play()
+                    if (mediaState.isVolumeEnabled) {
+                        mediaState.disableVolume()
+                    }
+                    if (!mediaState.isPlaying) {
+                        mediaState.play()
+                    }
                 }
             } else {
                 coroutineScope.launch {
-                    mediaState.stop()
-                    mediaState.disableVolume()
+                    if (mediaState.isPlaying) {
+                        mediaState.stop()
+                    }
+                    if (mediaState.isVolumeEnabled) {
+                        mediaState.disableVolume()
+                    }
                 }
             }
         }
