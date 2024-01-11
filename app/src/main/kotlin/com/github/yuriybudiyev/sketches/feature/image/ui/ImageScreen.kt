@@ -101,6 +101,7 @@ fun ImageRoute(
     viewModel: ImageScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val bucketIdUpdated by rememberUpdatedState(bucketId)
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(
         fileIndex,
@@ -125,7 +126,7 @@ fun ImageRoute(
                 viewModel.setCurrentMediaData(
                     index,
                     file.id,
-                    file.bucketId
+                    bucketIdUpdated
                 )
             }
         },
