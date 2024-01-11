@@ -57,12 +57,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -103,9 +101,6 @@ fun ImageRoute(
     viewModel: ImageScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var currentFileIndex by rememberSaveable(fileIndex) { mutableIntStateOf(fileIndex) }
-    var currentFileId by rememberSaveable(fileId) { mutableLongStateOf(fileId) }
-    val bucketIdUpdated by rememberUpdatedState(bucketId)
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(
         fileIndex,
@@ -124,8 +119,13 @@ fun ImageRoute(
         uiState = uiState,
         coroutineScope,
         { index, file ->
-            currentFileIndex = index
-            currentFileId = file.id
+            coroutineScope.launch {
+                viewModel.setCurrentMediaData(
+                    index,
+                    file.id,
+                    file.bucketId
+                )
+            }
         },
         onDelete = { index, file ->
 

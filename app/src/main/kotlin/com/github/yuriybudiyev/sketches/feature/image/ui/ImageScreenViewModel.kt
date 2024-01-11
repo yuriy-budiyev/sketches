@@ -130,6 +130,16 @@ class ImageScreenViewModel @Inject constructor(
         }
     }
 
+    fun setCurrentMediaData(
+        fileIndex: Int,
+        fileId: Long,
+        bucketId: Long,
+    ) {
+        currentFileIndex = fileIndex
+        currentFileId = fileId
+        currentBucketId = bucketId
+    }
+
     override fun onCleared() {
         with(context.contentResolver) {
             unregisterContentObserver(imagesObserver)
