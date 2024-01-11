@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
+import android.Manifest
 import android.app.Activity
 import android.net.Uri
 import android.os.Build
@@ -90,6 +91,7 @@ import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPla
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
+import com.github.yuriybudiyev.sketches.core.util.permissions.checkPermissionGranted
 import com.github.yuriybudiyev.sketches.core.util.ui.animateScrollToItemCentered
 
 @Composable
@@ -131,7 +133,16 @@ fun ImageRoute(
             }
         },
         onDelete = { index, file ->
-
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                coroutineScope.launch {
+                    viewModel.deleteMedia(
+                        index,
+                        file.id,
+                        file.bucketId,
+                        file.uri
+                    )
+                }
+            }
         },
         onShare = onShare,
     )
@@ -205,13 +216,24 @@ private fun ImageScreenLayout(
     val barState = rememberLazyListState(currentIndex)
     val barItemSize = 56.dp
     val barItemSizePx = with(LocalDensity.current) { barItemSize.roundToPx() }
-    val deleteDialogLauncher = rememberLauncherForActivityResult(
+    val deletePermissionRequestLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) {
+                onDeleteUpdated(
+                    currentIndex,
+                    currentFile,
+                )
+            }
+        },
+    )
+    val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 onDeleteUpdated(
                     currentIndex,
-                    currentFile
+                    currentFile,
                 )
             }
         },
@@ -276,7 +298,7 @@ private fun ImageScreenLayout(
             onDelete = {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     coroutineScope.launch {
-                        deleteDialogLauncher.launch(
+                        deleteRequestLauncher.launch(
                             IntentSenderRequest
                                 .Builder(
                                     MediaStore.createDeleteRequest(
@@ -308,10 +330,16 @@ private fun ImageScreenLayout(
                 positiveButtonText = stringResource(id = R.string.delete_image_dialog_positive),
                 negativeButtonText = stringResource(id = R.string.delete_image_dialog_negative),
                 onPositiveResult = {
-                    onDeleteUpdated(
-                        currentIndex,
-                        currentFile
-                    )
+                    if (contextUpdated.checkPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        onDeleteUpdated(
+                            currentIndex,
+                            currentFile
+                        )
+                    } else {
+                        coroutineScope.launch {
+                            deletePermissionRequestLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        }
+                    }
                 },
                 onNegativeResult = {
                     isDeleteDialogVisible = false
