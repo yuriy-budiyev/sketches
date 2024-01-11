@@ -33,7 +33,6 @@ androidx-startup = "1.1.1"
 androidx-window = "1.2.0"
 androidx-work = "2.9.0"
 androidx-sqlite = "2.4.0"
-androidx-room = "2.6.1"
 androidx-media3 = "1.2.0"
 androidx-hilt = "1.1.0"
 hilt = "2.50"
@@ -41,16 +40,11 @@ material = "1.11.0"
 okhttp = "4.12.0"
 okio = "3.7.0"
 coil = "2.5.0"
-protobuf = "3.25.2"
-protobuf-plugin = "0.9.4"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-application" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
-protobuf = { id = "com.google.protobuf", version.ref = "protobuf-plugin" }
-room = { id = "androidx.room", version.ref = "androidx-room" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 
 [libraries]
@@ -136,14 +130,6 @@ androidx-window-core = { group = "androidx.window", name = "window-core", versio
 androidx-window-java = { group = "androidx.window", name = "window-java", version.ref = "androidx-window" }
 androidx-work-runtime = { group = "androidx.work", name = "work-runtime", version.ref = "androidx-work" }
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidx-work" }
-androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
-androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "androidx-room" }
-androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
-androidx-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "androidx-room" }
-androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidx-room" }
-androidx-sqlite = { group = "androidx.sqlite", name = "sqlite", version.ref = "androidx-sqlite" }
-androidx-sqlite-framework = { group = "androidx.sqlite", name = "sqlite-framework", version.ref = "androidx-sqlite" }
-androidx-sqlite-ktx = { group = "androidx.sqlite", name = "sqlite-ktx", version.ref = "androidx-sqlite" }
 androidx-media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "androidx-media3" }
 androidx-media3-database = { group = "androidx.media3", name = "media3-database", version.ref = "androidx-media3" }
 androidx-media3-datasource = { group = "androidx.media3", name = "media3-datasource", version.ref = "androidx-media3" }
@@ -168,9 +154,6 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
 coil-gif = { group = "io.coil-kt", name = "coil-gif", version.ref = "coil" }
 coil-video = { group = "io.coil-kt", name = "coil-video", version.ref = "coil" }
-protobuf-java = { group = "com.google.protobuf", name = "protobuf-java", version.ref = "protobuf" }
-protobuf-kotlin = { group = "com.google.protobuf", name = "protobuf-kotlin", version.ref = "protobuf" }
-protobuf-compiler = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
 
 [bundles]
 kotlin = ["kotlin-stdlib", "kotlin-stdlib-jdk7", "kotlin-stdlib-jdk8", "kotlin-reflect", "kotlin-coroutines-core", "kotlin-coroutines-android"]
@@ -191,10 +174,7 @@ androidx-fragment = ["androidx-fragment", "androidx-fragment-ktx"]
 androidx-lifecycle = ["androidx-lifecycle-common", "androidx-lifecycle-common-java8", "androidx-lifecycle-runtime", "androidx-lifecycle-runtime-compose", "androidx-lifecycle-runtime-ktx", "androidx-lifecycle-livedata", "androidx-lifecycle-livedata-ktx", "androidx-lifecycle-livedata-core", "androidx-lifecycle-livedata-core-ktx", "androidx-lifecycle-viewmodel", "androidx-lifecycle-viewmodel-savedstate", "androidx-lifecycle-viewmodel-compose", "androidx-lifecycle-viewmodel-ktx"]
 androidx-window = ["androidx-window", "androidx-window-core", "androidx-window-java"]
 androidx-work = ["androidx-work-runtime", "androidx-work-runtime-ktx"]
-androidx-sqlite = ["androidx-sqlite", "androidx-sqlite-framework", "androidx-sqlite-ktx"]
-androidx-room = ["androidx-room-common", "androidx-room-runtime", "androidx-room-paging", "androidx-room-ktx"]
 androidx-media3 = ["androidx-media3-common", "androidx-media3-database", "androidx-media3-datasource", "androidx-media3-datasource-okhttp", "androidx-media3-decoder", "androidx-media3-container", "androidx-media3-extractor", "androidx-media3-exoplayer"]
 hilt = ["hilt", "androidx-hilt-common", "androidx-hilt-work", "androidx-hilt-navigation", "androidx-hilt-navigation-fragment", "androidx-hilt-navigation-compose"]
 hilt-compiler = ["hilt-compiler", "androidx-hilt-compiler"]
 coil = ["coil", "coil-compose", "coil-gif", "coil-svg", "coil-video"]
-protobuf = ["protobuf-java", "protobuf-kotlin"]
