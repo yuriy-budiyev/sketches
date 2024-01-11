@@ -71,9 +71,11 @@ class ImageScreenViewModel @Inject constructor(private val repository: MediaStor
                     } else {
                         var backwardIndex = fileIndex - 1
                         var forwardIndex = fileIndex + 1
-                        var actualIndex = 0
+                        var actualIndex = fileIndex
                         val imagesSize = files.size
-                        while (backwardIndex > -1 || forwardIndex < imagesSize) {
+                        val startBound = (fileIndex - 8).coerceAtLeast(-1)
+                        val endBound = (fileIndex + 8).coerceAtMost(imagesSize)
+                        while (backwardIndex > startBound || forwardIndex < endBound) {
                             if (backwardIndex > -1) {
                                 if (files[backwardIndex].id == fileId) {
                                     actualIndex = backwardIndex
@@ -90,7 +92,10 @@ class ImageScreenViewModel @Inject constructor(private val repository: MediaStor
                             }
                         }
                         uiStateInternal.value = ImageScreenUiState.Image(
-                            actualIndex,
+                            actualIndex.coerceIn(
+                                0,
+                                imagesSize - 1
+                            ),
                             fileId,
                             bucketId,
                             files
