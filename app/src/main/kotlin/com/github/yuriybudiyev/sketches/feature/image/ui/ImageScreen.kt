@@ -107,12 +107,16 @@ fun ImageRoute(
     var currentFileId by rememberSaveable(fileId) { mutableLongStateOf(fileId) }
     val bucketIdUpdated by rememberUpdatedState(bucketId)
     val coroutineScope = rememberCoroutineScope()
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+    LaunchedEffect(
+        fileIndex,
+        fileId,
+        bucketId
+    ) {
         coroutineScope.launch {
-            viewModel.updateImages(
-                fileIndex = currentFileIndex,
-                fileId = currentFileId,
-                bucketId = bucketIdUpdated,
+            viewModel.updateMedia(
+                fileIndex,
+                fileId,
+                bucketId
             )
         }
     }
@@ -124,15 +128,7 @@ fun ImageRoute(
             currentFileId = file.id
         },
         onDelete = { index, file ->
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-                coroutineScope.launch {
-                    viewModel.deleteImage(
-                        index,
-                        file.uri,
-                        bucketIdUpdated
-                    )
-                }
-            }
+
         },
         onShare = onShare,
     )

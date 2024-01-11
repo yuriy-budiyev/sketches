@@ -24,7 +24,12 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.database.ContentObserver
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -34,12 +39,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import com.github.yuriybudiyev.sketches.core.util.coroutines.excludeCancellation
+import com.github.yuriybudiyev.sketches.core.util.data.contentUriFor
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 @HiltViewModel
-class ImageScreenViewModel @Inject constructor(private val repository: MediaStoreRepository):
-    ViewModel() {
+@SuppressLint("StaticFieldLeak")
+class ImageScreenViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val repository: MediaStoreRepository,
+): ViewModel() {
 
     private val uiStateInternal: MutableStateFlow<ImageScreenUiState> =
         MutableStateFlow(ImageScreenUiState.Loading)
@@ -47,12 +59,21 @@ class ImageScreenViewModel @Inject constructor(private val repository: MediaStor
     val uiState: StateFlow<ImageScreenUiState>
         get() = uiStateInternal
 
-    fun updateImages(
+    var currentFileIndex: Int = -1
+
+    var currentFileId: Long = -1L
+
+    var currentBucketId: Long = -1L
+
+    fun updateMedia(
         fileIndex: Int,
         fileId: Long,
         bucketId: Long,
         silent: Boolean = uiState.value is ImageScreenUiState.Image,
     ) {
+        currentFileIndex = fileIndex
+        currentFileId = fileId
+        currentBucketId = bucketId
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
             if (!silent) {
@@ -108,38 +129,24 @@ class ImageScreenViewModel @Inject constructor(private val repository: MediaStor
                 }
             } catch (e: Exception) {
                 if (!silent) {
-                    uiStateInternal.value = ImageScreenUiState.Error(e)
+                    excludeCancellation(e) {
+                        uiStateInternal.value = ImageScreenUiState.Error(e)
+                    }
                 }
             }
         }
     }
 
-    fun updateImages(
-        imageIndex: Int,
-        bucketId: Long,
-    ) {
-        currentJob?.cancel()
-        currentJob = viewModelScope.launch {
-            uiStateInternal.value = ImageScreenUiState.Loading
-            try {
-                val files = withContext(Dispatchers.Default) { repository.getFiles(bucketId) }
-                if (files.isNotEmpty()) {
-                    val index = imageIndex.coerceIn(
-                        0,
-                        files.size - 1
-                    )
-                    uiStateInternal.value = ImageScreenUiState.Image(
-                        index,
-                        files[index].id,
-                        bucketId,
-                        files
-                    )
-                } else {
-                    uiStateInternal.value = ImageScreenUiState.Empty
-                }
-            } catch (e: Exception) {
-                uiStateInternal.value = ImageScreenUiState.Error(e)
-            }
+    private fun updateMedia() {
+        val fileIndex = currentFileIndex
+        val fileId = currentFileId
+        val bucketId = currentBucketId
+        if (fileIndex != -1) {
+            updateMedia(
+                fileIndex,
+                fileId,
+                bucketId
+            )
         }
     }
 
@@ -148,33 +155,58 @@ class ImageScreenViewModel @Inject constructor(private val repository: MediaStor
         imageUri: Uri,
         bucketId: Long,
     ) {
+        currentFileIndex = imageIndex
+        currentFileId = -1L
+        currentBucketId = bucketId
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
-            uiStateInternal.value = ImageScreenUiState.Loading
             try {
-                val deleted = withContext(Dispatchers.Default) { repository.deleteFile(imageUri) }
-                if (deleted) {
-                    val files = withContext(Dispatchers.Default) { repository.getFiles(bucketId) }
-                    if (files.isNotEmpty()) {
-                        val index = imageIndex.coerceIn(
-                            0,
-                            files.size - 1
-                        )
-                        uiStateInternal.value = ImageScreenUiState.Image(
-                            index,
-                            files[index].id,
-                            bucketId,
-                            files
-                        )
-                    } else {
-                        uiStateInternal.value = ImageScreenUiState.Empty
-                    }
-                }
+                withContext(Dispatchers.Default) { repository.deleteFile(imageUri) }
             } catch (e: Exception) {
-                uiStateInternal.value = ImageScreenUiState.Error(e)
+                excludeCancellation(e) {
+                    uiStateInternal.value = ImageScreenUiState.Error(e)
+                }
             }
         }
     }
 
+    override fun onCleared() {
+        with(context.contentResolver) {
+            unregisterContentObserver(imagesObserver)
+            unregisterContentObserver(videoObserver)
+        }
+    }
+
     private var currentJob: Job? = null
+
+    private val imagesObserver: ContentObserver =
+        object: ContentObserver(Handler(Looper.getMainLooper())) {
+
+            override fun onChange(selfChange: Boolean) {
+                updateMedia()
+            }
+        }
+
+    private val videoObserver: ContentObserver =
+        object: ContentObserver(Handler(Looper.getMainLooper())) {
+
+            override fun onChange(selfChange: Boolean) {
+                updateMedia()
+            }
+        }
+
+    init {
+        with(context.contentResolver) {
+            registerContentObserver(
+                contentUriFor(MediaType.IMAGE),
+                true,
+                imagesObserver
+            )
+            registerContentObserver(
+                contentUriFor(MediaType.VIDEO),
+                true,
+                imagesObserver
+            )
+        }
+    }
 }

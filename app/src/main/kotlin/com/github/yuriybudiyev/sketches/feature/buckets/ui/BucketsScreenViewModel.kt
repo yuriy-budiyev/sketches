@@ -34,6 +34,7 @@ import kotlinx.coroutines.withContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import com.github.yuriybudiyev.sketches.core.util.coroutines.excludeCancellation
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 @HiltViewModel
@@ -65,7 +66,9 @@ class BucketsScreenViewModel @Inject constructor(private val repository: MediaSt
                 }
             } catch (e: Exception) {
                 if (!silent) {
-                    uiStateInternal.value = BucketsScreenUiState.Error(e)
+                    excludeCancellation(e) {
+                        uiStateInternal.value = BucketsScreenUiState.Error(e)
+                    }
                 }
             }
         }

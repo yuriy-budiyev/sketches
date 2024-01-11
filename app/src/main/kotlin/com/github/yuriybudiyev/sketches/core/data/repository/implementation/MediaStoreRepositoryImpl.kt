@@ -27,7 +27,6 @@ package com.github.yuriybudiyev.sketches.core.data.repository.implementation
 import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.provider.MediaStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -35,6 +34,7 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import com.github.yuriybudiyev.sketches.core.util.data.contentUriFor
 
 class MediaStoreRepositoryImpl(private val context: Context): MediaStoreRepository {
 
@@ -186,24 +186,6 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
             .mapTo(ArrayList(bucketsInfo.size)) { (_, info) -> info.toBucket() }
             .also { buckets -> buckets.sortByDescending { bucket -> bucket.coverDateAdded } }
     }
-
-    private fun contentUriFor(mediaType: MediaType): Uri =
-        when (mediaType) {
-            MediaType.IMAGE -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-                } else {
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                }
-            }
-            MediaType.VIDEO -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-                } else {
-                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-                }
-            }
-        }
 
     private fun BucketInfo.toBucket(): MediaStoreBucket =
         MediaStoreBucket(
