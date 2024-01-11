@@ -32,7 +32,6 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
 import coil.decode.VideoFrameDecoder
-import coil.transition.CrossfadeTransition
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,7 +47,6 @@ object ImageLoaderModule {
     fun provideImageLoader(@ApplicationContext context: Context): ImageLoader =
         ImageLoader
             .Builder(context)
-            .transitionFactory(CrossfadeTransition.Factory())
             .components {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     add(ImageDecoderDecoder.Factory())
