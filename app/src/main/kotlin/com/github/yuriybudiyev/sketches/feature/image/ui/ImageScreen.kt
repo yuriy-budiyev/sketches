@@ -74,6 +74,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAlertDialog
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
@@ -188,6 +189,7 @@ private fun ImageScreenLayout(
     val barState = rememberLazyListState(currentIndex)
     val barItemSize = 56.dp
     val barItemSizePx = with(LocalDensity.current) { barItemSize.roundToPx() }
+    var isDeleteDialogVisible by remember { mutableStateOf(false) }
     LaunchedEffect(
         pagerState,
         coroutineScope,
@@ -207,12 +209,10 @@ private fun ImageScreenLayout(
             currentIndex = page
             val file = filesUpdated[page]
             currentFile = file
-            coroutineScope.launch {
-                onChangeUpdated(
-                    page,
-                    file,
-                )
-            }
+            onChangeUpdated(
+                page,
+                file,
+            )
             coroutineScope.launch {
                 barState.animateScrollToItemCentered(
                     page,
@@ -240,7 +240,6 @@ private fun ImageScreenLayout(
                         pagerState.animateScrollToPage(index)
                     }
                 },
-                coroutineScope = coroutineScope,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(64.dp),
@@ -248,12 +247,7 @@ private fun ImageScreenLayout(
         }
         TopBar(
             onDelete = {
-                coroutineScope.launch {
-                    onDeleteUpdated(
-                        currentIndex,
-                        currentFile,
-                    )
-                }
+                isDeleteDialogVisible = true
             },
             onShare = {
                 onShareUpdated(
@@ -261,11 +255,27 @@ private fun ImageScreenLayout(
                     currentFile,
                 )
             },
-            coroutineScope = coroutineScope,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
         )
+        if (isDeleteDialogVisible) {
+            SketchesAlertDialog(
+                titleText = stringResource(id = R.string.delete_image_dialog_title),
+                contentText = stringResource(id = R.string.delete_image_dialog_content),
+                positiveButtonText = stringResource(id = R.string.delete_image_dialog_positive),
+                negativeButtonText = stringResource(id = R.string.delete_image_dialog_negative),
+                onPositiveResult = {
+                    onDeleteUpdated(
+                        currentIndex,
+                        currentFile
+                    )
+                },
+                onNegativeResult = {
+                    isDeleteDialogVisible = false
+                },
+            )
+        }
     }
 }
 
@@ -273,11 +283,8 @@ private fun ImageScreenLayout(
 private fun TopBar(
     onDelete: () -> Unit,
     onShare: () -> Unit,
-    coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
-    val onDeleteUpdated by rememberUpdatedState(onDelete)
-    val onShareUpdated by rememberUpdatedState(onShare)
     SketchesTopAppBar(
         modifier = modifier,
         backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f),
@@ -285,20 +292,12 @@ private fun TopBar(
         SketchesAppBarActionButton(
             icon = SketchesIcons.Delete,
             description = stringResource(id = R.string.delete_image),
-            onClick = {
-                coroutineScope.launch {
-                    onDeleteUpdated()
-                }
-            },
+            onClick = onDelete,
         )
         SketchesAppBarActionButton(
             icon = SketchesIcons.Share,
             description = stringResource(id = R.string.share_image),
-            onClick = {
-                coroutineScope.launch {
-                    onShareUpdated()
-                }
-            },
+            onClick = onShare,
         )
     }
 }
@@ -443,7 +442,6 @@ private fun MediaBar(
     items: List<MediaStoreFile>,
     itemSize: Dp,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
-    coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
     val itemsUpdated by rememberUpdatedState(items)
@@ -477,12 +475,10 @@ private fun MediaBar(
                         shape = RoundedCornerShape(8.dp),
                     )
                     .clickable {
-                        coroutineScope.launch {
-                            onItemClickUpdated(
-                                position,
-                                file,
-                            )
-                        }
+                        onItemClickUpdated(
+                            position,
+                            file,
+                        )
                     },
             )
         }

@@ -20,4 +20,8 @@
     <string name="enable_volume">Включить звук</string>
     <string name="disable_volume">Выключить звук</string>
     <string name="image_load_error">Ошибка загрузки изображения</string>
+    <string name="delete_image_dialog_title">Подтверждение</string>
+    <string name="delete_image_dialog_content">Вы действительно хотите удалить изображение?</string>
+    <string name="delete_image_dialog_positive">Удалить</string>
+    <string name="delete_image_dialog_negative">Отмена</string>
 </resources>

@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.feature.images.ui
 
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -62,7 +61,6 @@ fun ImagesRoute(
     }
     ImagesScreen(
         uiState = uiState,
-        coroutineScope = coroutineScope,
         onImageClick = onImageClick,
     )
 }
@@ -70,7 +68,6 @@ fun ImagesRoute(
 @Composable
 fun ImagesScreen(
     uiState: ImagesScreenUiState,
-    coroutineScope: CoroutineScope,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -89,7 +86,6 @@ fun ImagesScreen(
                     files = uiState.files,
                     onItemClick = onImageClick,
                     modifier = Modifier.matchParentSize(),
-                    coroutineScope = coroutineScope,
                 )
             }
             is ImagesScreenUiState.Error -> {

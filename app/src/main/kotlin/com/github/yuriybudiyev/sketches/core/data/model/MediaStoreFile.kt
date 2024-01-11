@@ -35,6 +35,4 @@ data class MediaStoreFile(
     val dateAdded: Long,
     val mimeType: String,
     val uri: Uri,
-) {
-
-}
+)

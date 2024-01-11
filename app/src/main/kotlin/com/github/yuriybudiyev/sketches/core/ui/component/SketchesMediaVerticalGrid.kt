@@ -24,8 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.component
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.aspectRatio
@@ -33,7 +31,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,7 +42,6 @@ fun SketchesMediaVerticalGrid(
     files: List<MediaStoreFile>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
-    coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ) {
     val filesUpdated by rememberUpdatedState(files)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
@@ -68,12 +64,10 @@ fun SketchesMediaVerticalGrid(
                         shape = RoundedCornerShape(8.dp)
                     )
                     .clickable {
-                        coroutineScope.launch {
-                            onItemClickUpdated(
-                                index,
-                                file
-                            )
-                        }
+                        onItemClickUpdated(
+                            index,
+                            file
+                        )
                     },
             )
         }

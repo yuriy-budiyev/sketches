@@ -19,4 +19,8 @@
     <string name="enable_volume">Unmute</string>
     <string name="disable_volume">Mute</string>
     <string name="image_load_error">Error loading image</string>
+    <string name="delete_image_dialog_title">Confirmation</string>
+    <string name="delete_image_dialog_content">Are you sure you want to delete the image?</string>
+    <string name="delete_image_dialog_positive">Delete</string>
+    <string name="delete_image_dialog_negative">Dismiss</string>
 </resources>

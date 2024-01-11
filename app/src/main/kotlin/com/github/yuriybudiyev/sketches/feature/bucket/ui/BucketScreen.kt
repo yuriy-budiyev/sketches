@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.feature.bucket.ui
 
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -64,7 +63,6 @@ fun BucketRoute(
     BucketScreen(
         name = name,
         uiState = uiState,
-        coroutineScope = coroutineScope,
         onImageClick = onImageClick
     )
 }
@@ -73,7 +71,6 @@ fun BucketRoute(
 fun BucketScreen(
     name: String?,
     uiState: BucketScreenUiState,
-    coroutineScope: CoroutineScope,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -92,7 +89,6 @@ fun BucketScreen(
                     files = uiState.files,
                     onItemClick = onImageClick,
                     modifier = Modifier.matchParentSize(),
-                    coroutineScope = coroutineScope
                 )
             }
             is BucketScreenUiState.Error -> {
