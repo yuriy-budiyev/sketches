@@ -27,7 +27,6 @@ package com.github.yuriybudiyev.sketches.feature.image.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.database.ContentObserver
-import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import javax.inject.Inject
@@ -58,12 +57,6 @@ class ImageScreenViewModel @Inject constructor(
 
     val uiState: StateFlow<ImageScreenUiState>
         get() = uiStateInternal
-
-    var currentFileIndex: Int = -1
-
-    var currentFileId: Long = -1L
-
-    var currentBucketId: Long = -1L
 
     fun updateMedia(
         fileIndex: Int,
@@ -137,39 +130,6 @@ class ImageScreenViewModel @Inject constructor(
         }
     }
 
-    private fun updateMedia() {
-        val fileIndex = currentFileIndex
-        val fileId = currentFileId
-        val bucketId = currentBucketId
-        if (fileIndex != -1) {
-            updateMedia(
-                fileIndex,
-                fileId,
-                bucketId
-            )
-        }
-    }
-
-    fun deleteImage(
-        imageIndex: Int,
-        imageUri: Uri,
-        bucketId: Long,
-    ) {
-        currentFileIndex = imageIndex
-        currentFileId = -1L
-        currentBucketId = bucketId
-        currentJob?.cancel()
-        currentJob = viewModelScope.launch {
-            try {
-                withContext(Dispatchers.Default) { repository.deleteFile(imageUri) }
-            } catch (e: Exception) {
-                excludeCancellation(e) {
-                    uiStateInternal.value = ImageScreenUiState.Error(e)
-                }
-            }
-        }
-    }
-
     override fun onCleared() {
         with(context.contentResolver) {
             unregisterContentObserver(imagesObserver)
@@ -178,12 +138,15 @@ class ImageScreenViewModel @Inject constructor(
     }
 
     private var currentJob: Job? = null
+    private var currentFileIndex: Int = -1
+    private var currentFileId: Long = -1L
+    private var currentBucketId: Long = -1L
 
     private val imagesObserver: ContentObserver =
         object: ContentObserver(Handler(Looper.getMainLooper())) {
 
             override fun onChange(selfChange: Boolean) {
-                updateMedia()
+                updateMediaInternal()
             }
         }
 
@@ -191,7 +154,7 @@ class ImageScreenViewModel @Inject constructor(
         object: ContentObserver(Handler(Looper.getMainLooper())) {
 
             override fun onChange(selfChange: Boolean) {
-                updateMedia()
+                updateMediaInternal()
             }
         }
 
@@ -206,6 +169,19 @@ class ImageScreenViewModel @Inject constructor(
                 contentUriFor(MediaType.VIDEO),
                 true,
                 imagesObserver
+            )
+        }
+    }
+
+    private fun updateMediaInternal() {
+        val fileIndex = currentFileIndex
+        val fileId = currentFileId
+        val bucketId = currentBucketId
+        if (fileIndex != -1) {
+            updateMedia(
+                fileIndex,
+                fileId,
+                bucketId
             )
         }
     }
