@@ -24,6 +24,11 @@
 
 package com.github.yuriybudiyev.sketches.feature.images.ui
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.database.ContentObserver
+import android.os.Handler
+import android.os.Looper
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -33,13 +38,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import com.github.yuriybudiyev.sketches.core.util.coroutines.excludeCancellation
+import com.github.yuriybudiyev.sketches.core.util.data.contentUriFor
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 @HiltViewModel
-class ImagesScreenViewModel @Inject constructor(private val repository: MediaStoreRepository):
-    ViewModel() {
+@SuppressLint("StaticFieldLeak")
+class ImagesScreenViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val repository: MediaStoreRepository,
+): ViewModel() {
 
     private val uiStateInternal: MutableStateFlow<ImagesScreenUiState> =
         MutableStateFlow(ImagesScreenUiState.Loading)
@@ -47,7 +58,7 @@ class ImagesScreenViewModel @Inject constructor(private val repository: MediaSto
     val uiState: StateFlow<ImagesScreenUiState>
         get() = uiStateInternal
 
-    fun updateImages(silent: Boolean = uiState.value is ImagesScreenUiState.Images) {
+    fun updateMedia(silent: Boolean = uiState.value is ImagesScreenUiState.Images) {
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
             if (!silent) {
@@ -72,5 +83,43 @@ class ImagesScreenViewModel @Inject constructor(private val repository: MediaSto
         }
     }
 
+    override fun onCleared() {
+        with(context.contentResolver) {
+            unregisterContentObserver(imagesObserver)
+            unregisterContentObserver(videoObserver)
+        }
+    }
+
     private var currentJob: Job? = null
+
+    private val imagesObserver: ContentObserver =
+        object: ContentObserver(Handler(Looper.getMainLooper())) {
+
+            override fun onChange(selfChange: Boolean) {
+                updateMedia()
+            }
+        }
+
+    private val videoObserver: ContentObserver =
+        object: ContentObserver(Handler(Looper.getMainLooper())) {
+
+            override fun onChange(selfChange: Boolean) {
+                updateMedia()
+            }
+        }
+
+    init {
+        with(context.contentResolver) {
+            registerContentObserver(
+                contentUriFor(MediaType.IMAGE),
+                true,
+                imagesObserver
+            )
+            registerContentObserver(
+                contentUriFor(MediaType.VIDEO),
+                true,
+                imagesObserver
+            )
+        }
+    }
 }
