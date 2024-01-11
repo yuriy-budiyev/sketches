@@ -43,20 +43,32 @@ fun SketchesAlertDialog(
 ) {
     AlertDialog(
         title = {
-            Text(text = titleText)
+            Text(
+                text = titleText,
+            )
         },
         text = {
             Text(
                 text = contentText,
-                fontSize = 16.sp,
+                fontSize = 18.sp,
             )
         },
         onDismissRequest = onNegativeResult,
         confirmButton = {
-            TextButton(onClick = onPositiveResult) { Text(text = positiveButtonText) }
+            TextButton(onClick = onPositiveResult) {
+                Text(
+                    text = positiveButtonText,
+                    fontSize = 16.sp,
+                )
+            }
         },
         dismissButton = {
-            TextButton(onClick = onNegativeResult) { Text(text = negativeButtonText) }
+            TextButton(onClick = onNegativeResult) {
+                Text(
+                    text = negativeButtonText,
+                    fontSize = 16.sp,
+                )
+            }
         },
         modifier = modifier,
     )
