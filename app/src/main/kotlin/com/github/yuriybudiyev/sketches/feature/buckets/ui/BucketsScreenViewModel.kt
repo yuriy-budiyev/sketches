@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
+import android.content.Context
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -31,15 +32,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import com.github.yuriybudiyev.sketches.core.util.coroutines.excludeCancellation
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 @HiltViewModel
-class BucketsScreenViewModel @Inject constructor(private val repository: MediaStoreRepository):
-    ViewModel() {
+class BucketsScreenViewModel @Inject constructor(
+    @ApplicationContext context: Context,
+    private val repository: MediaStoreRepository,
+): MediaObservingViewModel(context) {
 
     private val uiStateInternal: MutableStateFlow<BucketsScreenUiState> =
         MutableStateFlow(BucketsScreenUiState.Loading)
@@ -72,6 +76,10 @@ class BucketsScreenViewModel @Inject constructor(private val repository: MediaSt
                 }
             }
         }
+    }
+
+    override fun onMediaChanged() {
+        updateBuckets()
     }
 
     private var currentJob: Job? = null

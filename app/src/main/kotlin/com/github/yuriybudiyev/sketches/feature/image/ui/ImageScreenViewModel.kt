@@ -24,12 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.database.ContentObserver
 import android.net.Uri
-import android.os.Handler
-import android.os.Looper
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -37,21 +33,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import com.github.yuriybudiyev.sketches.core.util.coroutines.excludeCancellation
-import com.github.yuriybudiyev.sketches.core.util.data.contentUriFor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 
 @HiltViewModel
-@SuppressLint("StaticFieldLeak")
 class ImageScreenViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @ApplicationContext context: Context,
     private val repository: MediaStoreRepository,
-): ViewModel() {
+): MediaObservingViewModel(context) {
 
     private val uiStateInternal: MutableStateFlow<ImageScreenUiState> =
         MutableStateFlow(ImageScreenUiState.Loading)
@@ -168,48 +161,14 @@ class ImageScreenViewModel @Inject constructor(
         }
     }
 
-    override fun onCleared() {
-        with(context.contentResolver) {
-            unregisterContentObserver(imagesObserver)
-            unregisterContentObserver(videoObserver)
-        }
+    override fun onMediaChanged() {
+        updateMediaInternal()
     }
 
     private var currentJob: Job? = null
     private var currentFileIndex: Int = -1
     private var currentFileId: Long = -1L
     private var currentBucketId: Long = -1L
-
-    private val imagesObserver: ContentObserver =
-        object: ContentObserver(Handler(Looper.getMainLooper())) {
-
-            override fun onChange(selfChange: Boolean) {
-                updateMediaInternal()
-            }
-        }
-
-    private val videoObserver: ContentObserver =
-        object: ContentObserver(Handler(Looper.getMainLooper())) {
-
-            override fun onChange(selfChange: Boolean) {
-                updateMediaInternal()
-            }
-        }
-
-    init {
-        with(context.contentResolver) {
-            registerContentObserver(
-                contentUriFor(MediaType.IMAGE),
-                true,
-                imagesObserver
-            )
-            registerContentObserver(
-                contentUriFor(MediaType.VIDEO),
-                true,
-                imagesObserver
-            )
-        }
-    }
 
     private fun updateMediaInternal() {
         val fileIndex = currentFileIndex
