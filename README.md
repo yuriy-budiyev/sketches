@@ -1,3 +1,3 @@
 # Sketches
 
-Simple gallery app and playground
+Android gallery app based on Compose, Coil and Media3
