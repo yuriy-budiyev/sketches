@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -67,21 +68,23 @@ fun BucketsRoute(
     viewModel: BucketsScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val bucketsRouteScope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        bucketsRouteScope.launch {
+        coroutineScope.launch {
             viewModel.updateBuckets()
         }
     }
     BucketsScreen(
         uiState = uiState,
-        onBucketClick = onBucketClick
+        coroutineScope = coroutineScope,
+        onBucketClick = onBucketClick,
     )
 }
 
 @Composable
 fun BucketsScreen(
     uiState: BucketsScreenUiState,
+    coroutineScope: CoroutineScope,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -89,7 +92,7 @@ fun BucketsScreen(
             BucketsScreenUiState.Empty -> {
                 SketchesCenteredMessage(
                     text = stringResource(id = R.string.no_buckets_found),
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier.matchParentSize(),
                 )
             }
             BucketsScreenUiState.Loading -> {
@@ -99,13 +102,14 @@ fun BucketsScreen(
                 BucketsScreenLayout(
                     buckets = uiState.buckets,
                     onBucketClick = onBucketClick,
-                    modifier = Modifier.matchParentSize()
+                    coroutineScope = coroutineScope,
+                    modifier = Modifier.matchParentSize(),
                 )
             }
             is BucketsScreenUiState.Error -> {
                 SketchesCenteredMessage(
                     text = stringResource(id = R.string.unexpected_error),
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier.matchParentSize(),
                 )
             }
         }
@@ -114,7 +118,7 @@ fun BucketsScreen(
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
             text = stringResource(id = BucketsNavigationDestination.titleRes),
-            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f)
+            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f),
         )
     }
 }
@@ -123,24 +127,25 @@ fun BucketsScreen(
 private fun BucketsScreenLayout(
     buckets: List<MediaStoreBucket>,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
+    coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
-    val data by rememberUpdatedState(buckets)
-    val bucketsScreenScope = rememberCoroutineScope()
+    val bucketsUpdated by rememberUpdatedState(buckets)
+    val onBucketClickUpdated by rememberUpdatedState(onBucketClick)
     SketchesLazyVerticalGrid(modifier = modifier) {
         items(
-            count = data.size,
-            key = { index -> data[index].id },
+            count = bucketsUpdated.size,
+            key = { index -> bucketsUpdated[index].id },
         ) { index ->
-            val item = data[index]
+            val item = bucketsUpdated[index]
             Column(
                 modifier = Modifier
                     .clip(shape = RoundedCornerShape(8.dp))
                     .clickable {
-                        bucketsScreenScope.launch {
-                            onBucketClick(
+                        coroutineScope.launch {
+                            onBucketClickUpdated(
                                 index,
-                                item
+                                item,
                             )
                         }
                     },
@@ -156,8 +161,8 @@ private fun BucketsScreenLayout(
                         .border(
                             width = 0.5.dp,
                             color = MaterialTheme.colorScheme.onBackground,
-                            shape = RoundedCornerShape(8.dp)
-                        )
+                            shape = RoundedCornerShape(8.dp),
+                        ),
                 )
                 Text(
                     text = item.name,
@@ -165,12 +170,12 @@ private fun BucketsScreenLayout(
                         start = 4.dp,
                         top = 4.dp,
                         end = 4.dp,
-                        bottom = 0.dp
+                        bottom = 0.dp,
                     ),
                     color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 16.sp,
                     overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
+                    maxLines = 1,
                 )
                 Text(
                     text = item.size.toString(),
@@ -178,12 +183,12 @@ private fun BucketsScreenLayout(
                         start = 4.dp,
                         top = 0.dp,
                         end = 4.dp,
-                        bottom = 4.dp
+                        bottom = 4.dp,
                     ),
                     color = MaterialTheme.colorScheme.onBackground,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
                 )
             }
         }
