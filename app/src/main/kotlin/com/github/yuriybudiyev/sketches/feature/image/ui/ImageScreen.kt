@@ -330,6 +330,7 @@ private fun ImageScreenLayout(
                 positiveButtonText = stringResource(id = R.string.delete_image_dialog_positive),
                 negativeButtonText = stringResource(id = R.string.delete_image_dialog_negative),
                 onPositiveResult = {
+                    isDeleteDialogVisible = false
                     if (contextUpdated.checkPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                         onDeleteUpdated(
                             currentIndex,
