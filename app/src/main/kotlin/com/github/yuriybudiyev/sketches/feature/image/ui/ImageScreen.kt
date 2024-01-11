@@ -124,15 +124,13 @@ fun ImageRoute(
             currentFileId = file.id
         },
         onDelete = { index, file ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                coroutineScope.launch {
+            coroutineScope.launch {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     viewModel.updateImages(
                         index,
                         bucketIdUpdated
                     )
-                }
-            } else {
-                coroutineScope.launch {
+                } else {
                     viewModel.deleteImage(
                         index,
                         file.uri,
