@@ -35,8 +35,7 @@ import androidx.lifecycle.ViewModel
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.util.data.contentUriFor
 
-@SuppressLint("StaticFieldLeak")
-abstract class MediaObservingViewModel(private val context: Context): ViewModel() {
+abstract class MediaObservingViewModel(context: Context): ViewModel() {
 
     @MainThread
     abstract fun onMediaChanged()
@@ -48,6 +47,9 @@ abstract class MediaObservingViewModel(private val context: Context): ViewModel(
             unregisterContentObserver(videoObserver)
         }
     }
+
+    @SuppressLint("StaticFieldLeak")
+    private val context: Context = context.applicationContext
 
     private val imagesObserver: ContentObserver =
         object: ContentObserver(Handler(Looper.getMainLooper())) {

@@ -57,7 +57,7 @@ fun BucketRoute(
     val coroutineScope = rememberCoroutineScope()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         coroutineScope.launch {
-            viewModel.updateImages(id)
+            viewModel.updateMedia(id)
         }
     }
     BucketScreen(
