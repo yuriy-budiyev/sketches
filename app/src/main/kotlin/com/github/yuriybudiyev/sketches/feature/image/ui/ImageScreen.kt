@@ -105,7 +105,9 @@ fun ImageRoute(
     LaunchedEffect(
         fileIndex,
         fileId,
-        bucketId
+        bucketId,
+        viewModel,
+        coroutineScope
     ) {
         coroutineScope.launch {
             viewModel.updateMedia(
