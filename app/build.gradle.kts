@@ -79,7 +79,6 @@ dependencies {
     implementation(sketches.bundles.coil)
     implementation(sketches.androidx.recyclerview)
     implementation(sketches.androidx.viewpager2)
-    implementation(sketches.androidx.datastore)
     implementation(sketches.androidx.startup)
     implementation(sketches.material)
     implementation(sketches.okhttp)

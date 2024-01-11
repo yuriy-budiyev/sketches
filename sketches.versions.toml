@@ -9,7 +9,6 @@ androidx-arch-core = "2.2.0"
 androidx-annotation = "1.7.1"
 androidx-collection = "1.3.0"
 androidx-concurrent = "1.1.0"
-androidx-datastore = "1.0.0"
 androidx-appcompat = "1.6.1"
 androidx-loader = "1.1.0"
 androidx-localbroadcastmanager = "1.1.0"
@@ -64,7 +63,6 @@ androidx-collection = { group = "androidx.collection", name = "collection", vers
 androidx-collection-ktx = { group = "androidx.collection", name = "collection-ktx", version.ref = "androidx-collection" }
 androidx-concurrent-futures = { group = "androidx.concurrent", name = "concurrent-futures", version.ref = "androidx-concurrent" }
 androidx-concurrent-futures-ktx = { group = "androidx.concurrent", name = "concurrent-futures-ktx", version.ref = "androidx-concurrent" }
-androidx-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "androidx-datastore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-appcompat-resources = { group = "androidx.appcompat", name = "appcompat-resources", version.ref = "androidx-appcompat" }
 androidx-loader = { group = "androidx.loader", name = "loader", version.ref = "androidx-loader" }
