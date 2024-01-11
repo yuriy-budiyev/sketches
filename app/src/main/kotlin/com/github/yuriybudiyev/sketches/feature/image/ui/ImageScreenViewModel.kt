@@ -27,6 +27,7 @@ package com.github.yuriybudiyev.sketches.feature.image.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.database.ContentObserver
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import javax.inject.Inject
@@ -57,6 +58,16 @@ class ImageScreenViewModel @Inject constructor(
 
     val uiState: StateFlow<ImageScreenUiState>
         get() = uiStateInternal
+
+    fun setCurrentMediaData(
+        fileIndex: Int,
+        fileId: Long,
+        bucketId: Long,
+    ) {
+        currentFileIndex = fileIndex
+        currentFileId = fileId
+        currentBucketId = bucketId
+    }
 
     fun updateMedia(
         fileIndex: Int,
@@ -132,14 +143,28 @@ class ImageScreenViewModel @Inject constructor(
         }
     }
 
-    fun setCurrentMediaData(
-        fileIndex: Int,
-        fileId: Long,
+    fun deleteMedia(
+        index: Int,
+        uri: Uri,
         bucketId: Long,
     ) {
-        currentFileIndex = fileIndex
-        currentFileId = fileId
-        currentBucketId = bucketId
+        setCurrentMediaData(
+            index,
+            -1L,
+            bucketId
+        )
+        currentJob?.cancel()
+        currentJob = viewModelScope.launch {
+            try {
+                withContext(Dispatchers.Default) {
+                    repository.deleteFile(uri)
+                }
+            } catch (e: Exception) {
+                excludeCancellation(e) {
+                    uiStateInternal.value = ImageScreenUiState.Error(e)
+                }
+            }
+        }
     }
 
     override fun onCleared() {
