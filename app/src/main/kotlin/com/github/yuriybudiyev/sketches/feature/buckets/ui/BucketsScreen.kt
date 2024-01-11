@@ -38,6 +38,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -50,7 +51,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
@@ -59,7 +59,6 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessag
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLazyVerticalGrid
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
-import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavigationDestination
 
 @Composable
@@ -69,7 +68,10 @@ fun BucketsRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+    LaunchedEffect(
+        viewModel,
+        coroutineScope
+    ) {
         coroutineScope.launch {
             viewModel.updateBuckets()
         }
