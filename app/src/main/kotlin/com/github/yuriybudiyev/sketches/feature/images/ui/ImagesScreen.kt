@@ -63,7 +63,7 @@ fun ImagesRoute(
     ImagesScreen(
         uiState = uiState,
         coroutineScope = coroutineScope,
-        onImageClick = onImageClick
+        onImageClick = onImageClick,
     )
 }
 
@@ -89,13 +89,13 @@ fun ImagesScreen(
                     files = uiState.files,
                     onItemClick = onImageClick,
                     modifier = Modifier.matchParentSize(),
-                    coroutineScope = coroutineScope
+                    coroutineScope = coroutineScope,
                 )
             }
             is ImagesScreenUiState.Error -> {
                 SketchesCenteredMessage(
                     text = stringResource(id = R.string.unexpected_error),
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier.matchParentSize(),
                 )
             }
         }
@@ -104,7 +104,7 @@ fun ImagesScreen(
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
             text = stringResource(id = ImagesNavigationDestination.titleRes),
-            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f)
+            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f),
         )
     }
 }

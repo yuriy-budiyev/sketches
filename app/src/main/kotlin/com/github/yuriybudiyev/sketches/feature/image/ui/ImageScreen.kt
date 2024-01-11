@@ -74,7 +74,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
-import com.github.yuriybudiyev.sketches.core.ui.component.AppBarActionButton
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
@@ -282,7 +282,7 @@ private fun TopBar(
         modifier = modifier,
         backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f),
     ) {
-        AppBarActionButton(
+        SketchesAppBarActionButton(
             icon = SketchesIcons.Delete,
             description = stringResource(id = R.string.delete_image),
             onClick = {
@@ -291,7 +291,7 @@ private fun TopBar(
                 }
             },
         )
-        AppBarActionButton(
+        SketchesAppBarActionButton(
             icon = SketchesIcons.Share,
             description = stringResource(id = R.string.share_image),
             onClick = {

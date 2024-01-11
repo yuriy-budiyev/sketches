@@ -24,36 +24,36 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.component
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 
 @Composable
-fun AppBarActionButton(
-    icon: ImageVector,
-    description: String,
-    onClick: () -> Unit,
+fun SketchesAlertDialog(
+    titleText: String,
+    contentText: String,
+    positiveButtonText: String,
+    negativeButtonText: String,
+    onPositiveResult: () -> Unit,
+    onNegativeResult: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .size(size = 48.dp)
-            .clip(shape = CircleShape)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = description,
-            modifier = Modifier.size(size = 24.dp),
-        )
-    }
+    AlertDialog(
+        title = {
+            Text(text = titleText)
+        },
+        text = {
+            Text(text = contentText)
+        },
+        onDismissRequest = onNegativeResult,
+        confirmButton = {
+            TextButton(onClick = onPositiveResult) { Text(text = positiveButtonText) }
+        },
+        dismissButton = {
+            TextButton(onClick = onNegativeResult) { Text(text = negativeButtonText) }
+        },
+        modifier = modifier,
+    )
 }
