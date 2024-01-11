@@ -42,14 +42,14 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
 
     @CallSuper
     override fun onCleared() {
-        with(context.contentResolver) {
+        with(appContext.contentResolver) {
             unregisterContentObserver(imagesObserver)
             unregisterContentObserver(videoObserver)
         }
     }
 
     @SuppressLint("StaticFieldLeak")
-    private val context: Context = context.applicationContext
+    private val appContext: Context = context.applicationContext
 
     private val imagesObserver: ContentObserver =
         object: ContentObserver(Handler(Looper.getMainLooper())) {
@@ -68,7 +68,7 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
         }
 
     init {
-        with(context.contentResolver) {
+        with(appContext.contentResolver) {
             registerContentObserver(
                 contentUriFor(MediaType.IMAGE),
                 true,
