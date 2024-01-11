@@ -64,9 +64,11 @@ class ImageScreenViewModel @Inject constructor(
         bucketId: Long,
         silent: Boolean = uiState.value is ImageScreenUiState.Image,
     ) {
-        currentFileIndex = fileIndex
-        currentFileId = fileId
-        currentBucketId = bucketId
+        setCurrentMediaData(
+            fileIndex,
+            fileId,
+            bucketId
+        )
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
             if (!silent) {
