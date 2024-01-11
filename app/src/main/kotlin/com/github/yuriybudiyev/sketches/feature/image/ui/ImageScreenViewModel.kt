@@ -93,9 +93,7 @@ class ImageScreenViewModel @Inject constructor(
                         var forwardIndex = fileIndex + 1
                         var actualIndex = fileIndex
                         val imagesSize = files.size
-                        val startBound = (fileIndex - 8).coerceAtLeast(-1)
-                        val endBound = (fileIndex + 8).coerceAtMost(imagesSize)
-                        while (backwardIndex > startBound || forwardIndex < endBound) {
+                        while (backwardIndex > -1 || forwardIndex < imagesSize) {
                             if (backwardIndex > -1) {
                                 if (files[backwardIndex].id == fileId) {
                                     actualIndex = backwardIndex
