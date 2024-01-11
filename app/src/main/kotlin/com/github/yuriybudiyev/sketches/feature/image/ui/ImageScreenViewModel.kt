@@ -109,6 +109,35 @@ class ImageScreenViewModel @Inject constructor(private val repository: MediaStor
         }
     }
 
+    fun updateImages(
+        imageIndex: Int,
+        bucketId: Long,
+    ) {
+        currentJob?.cancel()
+        currentJob = viewModelScope.launch {
+            uiStateInternal.value = ImageScreenUiState.Loading
+            try {
+                val files = withContext(Dispatchers.Default) { repository.getFiles(bucketId) }
+                if (files.isNotEmpty()) {
+                    val index = imageIndex.coerceIn(
+                        0,
+                        files.size - 1
+                    )
+                    uiStateInternal.value = ImageScreenUiState.Image(
+                        index,
+                        files[index].id,
+                        bucketId,
+                        files
+                    )
+                } else {
+                    uiStateInternal.value = ImageScreenUiState.Empty
+                }
+            } catch (e: Exception) {
+                uiStateInternal.value = ImageScreenUiState.Error(e)
+            }
+        }
+    }
+
     fun deleteImage(
         imageIndex: Int,
         imageUri: Uri,

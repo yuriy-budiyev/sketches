@@ -24,9 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
+import android.app.Activity
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -64,6 +70,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -117,12 +124,21 @@ fun ImageRoute(
             currentFileId = file.id
         },
         onDelete = { index, file ->
-            coroutineScope.launch {
-                viewModel.deleteImage(
-                    index,
-                    file.uri,
-                    bucketIdUpdated
-                )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                coroutineScope.launch {
+                    viewModel.updateImages(
+                        index,
+                        bucketIdUpdated
+                    )
+                }
+            } else {
+                coroutineScope.launch {
+                    viewModel.deleteImage(
+                        index,
+                        file.uri,
+                        bucketIdUpdated
+                    )
+                }
             }
         },
         onShare = onShare,
@@ -187,6 +203,7 @@ private fun ImageScreenLayout(
     ) {
         mutableStateOf(files[index])
     }
+    val contextUpdated by rememberUpdatedState(LocalContext.current)
     val indexUpdated by rememberUpdatedState(index)
     val filesUpdated by rememberUpdatedState(files)
     val onChangeUpdated by rememberUpdatedState(onChange)
@@ -196,6 +213,17 @@ private fun ImageScreenLayout(
     val barState = rememberLazyListState(currentIndex)
     val barItemSize = 56.dp
     val barItemSizePx = with(LocalDensity.current) { barItemSize.roundToPx() }
+    val deleteDialogLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult(),
+        onResult = { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                onDeleteUpdated(
+                    currentIndex,
+                    currentFile
+                )
+            }
+        },
+    )
     var isDeleteDialogVisible by remember { mutableStateOf(false) }
     LaunchedEffect(
         pagerState,
@@ -254,7 +282,22 @@ private fun ImageScreenLayout(
         }
         TopBar(
             onDelete = {
-                isDeleteDialogVisible = true
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    coroutineScope.launch {
+                        deleteDialogLauncher.launch(
+                            IntentSenderRequest
+                                .Builder(
+                                    MediaStore.createDeleteRequest(
+                                        contextUpdated.contentResolver,
+                                        listOf(currentFile.uri)
+                                    ).intentSender
+                                )
+                                .build()
+                        )
+                    }
+                } else {
+                    isDeleteDialogVisible = true
+                }
             },
             onShare = {
                 onShareUpdated(

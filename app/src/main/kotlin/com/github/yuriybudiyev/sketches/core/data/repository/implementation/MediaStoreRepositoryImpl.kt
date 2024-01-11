@@ -117,8 +117,8 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
                 uri,
                 null,
                 null
-            ) > 0
-        }
+            )
+        } > 0
 
     private suspend fun collectBucketsInfo(
         mediaType: MediaType,
