@@ -96,15 +96,16 @@ fun ImageRoute(
     viewModel: ImageScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var currentFileIndex by rememberSaveable { mutableIntStateOf(fileIndex) }
-    var currentFileId by rememberSaveable { mutableLongStateOf(fileId) }
+    var currentFileIndex by rememberSaveable(fileIndex) { mutableIntStateOf(fileIndex) }
+    var currentFileId by rememberSaveable(fileId) { mutableLongStateOf(fileId) }
+    val bucketIdUpdated by rememberUpdatedState(bucketId)
     val coroutineScope = rememberCoroutineScope()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         coroutineScope.launch {
             viewModel.updateImages(
                 fileIndex = currentFileIndex,
                 fileId = currentFileId,
-                bucketId = bucketId,
+                bucketId = bucketIdUpdated,
             )
         }
     }
@@ -116,7 +117,13 @@ fun ImageRoute(
             currentFileId = file.id
         },
         onDelete = { index, file ->
-
+            coroutineScope.launch {
+                viewModel.deleteImage(
+                    index,
+                    file.uri,
+                    bucketIdUpdated
+                )
+            }
         },
         onShare = onShare,
     )
