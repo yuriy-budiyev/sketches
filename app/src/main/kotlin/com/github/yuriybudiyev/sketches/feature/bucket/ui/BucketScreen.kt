@@ -57,7 +57,7 @@ fun BucketRoute(
     LaunchedEffect(
         id,
         viewModel,
-        coroutineScope
+        coroutineScope,
     ) {
         coroutineScope.launch {
             viewModel.updateMedia(id)
@@ -66,7 +66,7 @@ fun BucketRoute(
     BucketScreen(
         name = name,
         uiState = uiState,
-        onImageClick = onImageClick
+        onImageClick = onImageClick,
     )
 }
 
@@ -81,7 +81,7 @@ fun BucketScreen(
             BucketScreenUiState.Empty -> {
                 SketchesCenteredMessage(
                     text = stringResource(id = R.string.no_images_found),
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier.matchParentSize(),
                 )
             }
             BucketScreenUiState.Loading -> {
@@ -97,7 +97,7 @@ fun BucketScreen(
             is BucketScreenUiState.Error -> {
                 SketchesCenteredMessage(
                     text = stringResource(id = R.string.unexpected_error),
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier.matchParentSize(),
                 )
             }
         }
@@ -106,7 +106,7 @@ fun BucketScreen(
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
             text = name,
-            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f)
+            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f),
         )
     }
 }

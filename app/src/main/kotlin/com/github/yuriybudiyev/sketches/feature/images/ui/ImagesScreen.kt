@@ -54,7 +54,7 @@ fun ImagesRoute(
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(
         viewModel,
-        coroutineScope
+        coroutineScope,
     ) {
         viewModel.updateMedia()
     }
@@ -74,7 +74,7 @@ fun ImagesScreen(
             ImagesScreenUiState.Empty -> {
                 SketchesCenteredMessage(
                     text = stringResource(id = R.string.no_images_found),
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier.matchParentSize(),
                 )
             }
             ImagesScreenUiState.Loading -> {

@@ -108,13 +108,13 @@ fun ImageRoute(
         fileId,
         bucketId,
         viewModel,
-        coroutineScope
+        coroutineScope,
     ) {
         coroutineScope.launch {
             viewModel.updateMedia(
                 fileIndex,
                 fileId,
-                bucketId
+                bucketId,
             )
         }
     }
@@ -126,7 +126,7 @@ fun ImageRoute(
                 viewModel.setCurrentMediaData(
                     index,
                     file.id,
-                    bucketIdUpdated
+                    bucketIdUpdated,
                 )
             }
         },

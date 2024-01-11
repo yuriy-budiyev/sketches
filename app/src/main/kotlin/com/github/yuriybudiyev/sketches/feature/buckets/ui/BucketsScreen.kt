@@ -70,7 +70,7 @@ fun BucketsRoute(
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(
         viewModel,
-        coroutineScope
+        coroutineScope,
     ) {
         coroutineScope.launch {
             viewModel.updateBuckets()
