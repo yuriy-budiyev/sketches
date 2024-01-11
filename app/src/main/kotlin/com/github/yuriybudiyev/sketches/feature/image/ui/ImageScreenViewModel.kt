@@ -144,13 +144,14 @@ class ImageScreenViewModel @Inject constructor(
     }
 
     fun deleteMedia(
-        index: Int,
-        uri: Uri,
+        fileIndex: Int,
+        fileId: Long,
         bucketId: Long,
+        uri: Uri,
     ) {
         setCurrentMediaData(
-            index,
-            -1L,
+            fileIndex,
+            fileId,
             bucketId
         )
         currentJob?.cancel()
