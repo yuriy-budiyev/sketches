@@ -50,7 +50,7 @@ fun SketchesErrorMessage(
 ) {
     if (BuildConfig.DEBUG) {
         val contextUpdated by rememberUpdatedState(LocalContext.current)
-        val clipboardManager by rememberUpdatedState(LocalClipboardManager.current)
+        val clipboardManagerUpdated by rememberUpdatedState(LocalClipboardManager.current)
         Column(
             modifier = modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -68,15 +68,16 @@ fun SketchesErrorMessage(
                     .fillMaxWidth()
                     .padding(16.dp)
                     .clickable {
-                        clipboardManager.setText(
+                        clipboardManagerUpdated.setText(
                             AnnotatedString
                                 .Builder(thrown.stackTraceToString())
                                 .toAnnotatedString(),
                         )
+                        val context = contextUpdated
                         Toast
                             .makeText(
-                                contextUpdated,
-                                contextUpdated.getString(R.string.stack_trace_copied),
+                                context,
+                                context.getString(R.string.stack_trace_copied),
                                 Toast.LENGTH_SHORT,
                             )
                             .show()
