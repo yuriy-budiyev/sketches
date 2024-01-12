@@ -366,6 +366,7 @@ private fun MediaPager(
     val filesUpdated by rememberUpdatedState(items)
     HorizontalPager(
         state = state,
+        beyondBoundsPageCount = 1,
         key = { page -> filesUpdated[page].id },
         modifier = modifier,
     ) { page ->
@@ -420,6 +421,9 @@ private fun ImagePage(
         description = stringResource(id = R.string.image),
         contentScale = ContentScale.Fit,
         filterQuality = FilterQuality.High,
+        enableLoadingIndicator = false,
+        enableErrorIndicator = true,
+        enableCrossfade = false,
         modifier = modifier,
     )
 }

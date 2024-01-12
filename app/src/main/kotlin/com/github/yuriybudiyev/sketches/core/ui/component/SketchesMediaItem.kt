@@ -56,6 +56,9 @@ fun SketchesMediaItem(
             modifier = Modifier.matchParentSize(),
             contentScale = ContentScale.Crop,
             filterQuality = FilterQuality.Low,
+            enableLoadingIndicator = true,
+            enableErrorIndicator = true,
+            enableCrossfade = true,
         )
         if (type == MediaType.VIDEO) {
             Box(

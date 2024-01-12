@@ -36,9 +36,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
+import coil.request.ImageRequest
+import coil.transition.CrossfadeTransition
+import coil.transition.Transition
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
@@ -49,26 +53,37 @@ fun SketchesAsyncImage(
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = FilterQuality.Low,
+    enableLoadingIndicator: Boolean = true,
+    enableErrorIndicator: Boolean = true,
+    enableCrossfade: Boolean = true,
 ) {
     SubcomposeAsyncImage(
-        model = uri,
+        model = ImageRequest
+            .Builder(LocalContext.current)
+            .crossfadeTransition(enableCrossfade)
+            .data(uri)
+            .build(),
         contentDescription = description,
         modifier = modifier,
         contentScale = contentScale,
         filterQuality = filterQuality,
         loading = {
-            StateIcon(
-                icon = SketchesIcons.ImageLoading,
-                description = stringResource(id = R.string.image_loading),
-                modifier = Modifier.fillMaxSize(),
-            )
+            if (enableLoadingIndicator) {
+                StateIcon(
+                    icon = SketchesIcons.ImageLoading,
+                    description = stringResource(id = R.string.image_loading),
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
         },
         error = {
-            StateIcon(
-                icon = SketchesIcons.ImageLoadError,
-                description = stringResource(id = R.string.image_load_error),
-                modifier = Modifier.fillMaxSize(),
-            )
+            if (enableErrorIndicator) {
+                StateIcon(
+                    icon = SketchesIcons.ImageLoadError,
+                    description = stringResource(id = R.string.image_load_error),
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
         },
     )
 }
@@ -91,3 +106,12 @@ private fun StateIcon(
         )
     }
 }
+
+private fun ImageRequest.Builder.crossfadeTransition(enabled: Boolean): ImageRequest.Builder =
+    if (enabled) {
+        transitionFactory(crossfadeTransitionFactory)
+    } else {
+        this
+    }
+
+private val crossfadeTransitionFactory: Transition.Factory = CrossfadeTransition.Factory()

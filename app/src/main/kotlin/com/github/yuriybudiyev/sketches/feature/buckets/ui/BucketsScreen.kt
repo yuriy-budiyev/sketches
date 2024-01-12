@@ -157,6 +157,9 @@ private fun BucketsScreenLayout(
                     uri = item.coverUri,
                     description = stringResource(id = R.string.bucket_cover),
                     contentScale = ContentScale.Crop,
+                    enableLoadingIndicator = true,
+                    enableErrorIndicator = true,
+                    enableCrossfade = true,
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(ratio = 1f)
