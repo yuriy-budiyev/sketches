@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
-import android.Manifest
 import android.app.Activity
 import android.net.Uri
 import android.os.Build
@@ -92,7 +91,6 @@ import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPla
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
-import com.github.yuriybudiyev.sketches.core.util.permissions.checkPermissionGranted
 import com.github.yuriybudiyev.sketches.core.util.ui.animateScrollToItemCentered
 
 @Composable
@@ -217,17 +215,6 @@ private fun ImageScreenLayout(
     val barState = rememberLazyListState(currentIndex)
     val barItemSize = 56.dp
     val barItemSizePx = with(LocalDensity.current) { barItemSize.roundToPx() }
-    val deletePermissionRequestLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { isGranted ->
-            if (isGranted) {
-                onDeleteUpdated(
-                    currentIndex,
-                    currentFile,
-                )
-            }
-        },
-    )
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { result ->
@@ -332,16 +319,10 @@ private fun ImageScreenLayout(
                 negativeButtonText = stringResource(id = R.string.delete_image_dialog_negative),
                 onPositiveResult = {
                     isDeleteDialogVisible = false
-                    if (contextUpdated.checkPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        onDeleteUpdated(
-                            currentIndex,
-                            currentFile
-                        )
-                    } else {
-                        coroutineScope.launch {
-                            deletePermissionRequestLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        }
-                    }
+                    onDeleteUpdated(
+                        currentIndex,
+                        currentFile
+                    )
                 },
                 onNegativeResult = {
                     isDeleteDialogVisible = false

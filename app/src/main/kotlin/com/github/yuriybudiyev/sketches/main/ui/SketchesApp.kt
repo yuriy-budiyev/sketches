@@ -69,24 +69,35 @@ import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 
 @Composable
 fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
-    val appContext by rememberUpdatedState(LocalContext.current.applicationContext)
-    val mediaPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        arrayOf(
-            Manifest.permission.READ_MEDIA_IMAGES,
-            Manifest.permission.READ_MEDIA_VIDEO
-        )
-    } else {
-        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-    }
-    var permissionsGranted by remember {
-        mutableStateOf(appContext.checkAllPermissionsGranted(mediaPermissions))
+    val appContextUpdated by rememberUpdatedState(LocalContext.current.applicationContext)
+    val mediaPermissionsUpdated by rememberUpdatedState(
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                arrayOf(
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO
+                )
+            }
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+            else -> {
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            }
+        }
+    )
+    var isPermissionsGranted by remember {
+        mutableStateOf(appContextUpdated.checkAllPermissionsGranted(mediaPermissionsUpdated))
     }
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground
     ) {
-        if (permissionsGranted) {
+        if (isPermissionsGranted) {
             val currentDestinations = appState.topLevelNavigationDestinations
             val currentDestination = appState.currentNavigationDestination
             Box(modifier = Modifier.fillMaxSize()) {
@@ -141,12 +152,13 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
             val mediaPermissionsLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestMultiplePermissions()
             ) { grantResult ->
-                permissionsGranted = checkAllPermissionsGranted(grantResult)
+                isPermissionsGranted = checkAllPermissionsGranted(grantResult)
             }
             val settingsLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartActivityForResult()
             ) {
-                permissionsGranted = appContext.checkAllPermissionsGranted(mediaPermissions)
+                isPermissionsGranted =
+                    appContextUpdated.checkAllPermissionsGranted(mediaPermissionsUpdated)
             }
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -165,7 +177,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                         intent.data = Uri.fromParts(
                             "package",
-                            appContext.packageName,
+                            appContextUpdated.packageName,
                             null
                         )
                         settingsLauncher.launch(intent)
@@ -173,11 +185,12 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                 }
             }
             LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-                permissionsGranted = appContext.checkAllPermissionsGranted(mediaPermissions)
+                isPermissionsGranted =
+                    appContextUpdated.checkAllPermissionsGranted(mediaPermissionsUpdated)
             }
             LaunchedEffect(Unit) {
                 appState.coroutineScope.launch {
-                    mediaPermissionsLauncher.launch(mediaPermissions)
+                    mediaPermissionsLauncher.launch(mediaPermissionsUpdated)
                 }
             }
         }
