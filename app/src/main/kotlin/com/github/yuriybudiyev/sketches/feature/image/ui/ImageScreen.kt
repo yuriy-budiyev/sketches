@@ -485,6 +485,8 @@ private fun VideoPage(
         state = mediaState,
         modifier = modifier,
         coroutineScope = coroutineScope,
+        loadingIcon = SketchesIcons.ImageLoading,
+        loadingDescription = stringResource(id = R.string.image_loading)
     )
 }
 

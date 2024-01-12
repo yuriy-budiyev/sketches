@@ -49,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -63,11 +64,16 @@ fun SketchesMediaPlayer(
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     controlsBackgroundColor: Color = backgroundColor.copy(alpha = 0.75f),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
+    loadingIcon: ImageVector? = null,
+    loadingDescription: String? = null,
 ) {
     Box(modifier = modifier) {
         SketchesMediaDisplay(
             state = state,
             modifier = Modifier.matchParentSize(),
+            loadingIcon = loadingIcon,
+            loadingDescription = loadingDescription,
+            loadingIconColor = controlsColor,
             backgroundColor = backgroundColor
         )
         SketchesMediaController(
@@ -90,6 +96,9 @@ fun SketchesMediaPlayer(
 fun SketchesMediaDisplay(
     state: SketchesMediaState,
     modifier: Modifier = Modifier,
+    loadingIcon: ImageVector? = null,
+    loadingDescription: String? = null,
+    loadingIconColor: Color = MaterialTheme.colorScheme.onBackground,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
 ) {
     Box(modifier = modifier) {
@@ -121,13 +130,23 @@ fun SketchesMediaDisplay(
             )
             if (!isVideoVisible) {
                 Box(
+                    contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .matchParentSize()
                         .background(
                             color = backgroundColor,
                             shape = RectangleShape
                         )
-                )
+                ) {
+                    if (loadingIcon != null) {
+                        Icon(
+                            imageVector = loadingIcon,
+                            contentDescription = loadingDescription,
+                            modifier = Modifier.size(48.dp),
+                            tint = loadingIconColor
+                        )
+                    }
+                }
             }
         }
     }

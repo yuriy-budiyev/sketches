@@ -13,6 +13,7 @@ import androidx.compose.material.icons.outlined.Photo
 import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.rounded.BrokenImage
+import androidx.compose.material.icons.rounded.Image
 
 object SketchesIcons {
 
@@ -20,6 +21,7 @@ object SketchesIcons {
     val ImagesUnselected = Icons.Outlined.Photo
     val BucketsSelected = Icons.Filled.PhotoLibrary
     val BucketsUnselected = Icons.Outlined.PhotoLibrary
+    val ImageLoading = Icons.Rounded.Image
     val ImageLoadError = Icons.Rounded.BrokenImage
     val Share = Icons.Filled.Share
     val Delete = Icons.Filled.DeleteForever

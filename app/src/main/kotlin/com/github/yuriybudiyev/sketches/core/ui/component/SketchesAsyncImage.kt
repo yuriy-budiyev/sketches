@@ -26,6 +26,7 @@ package com.github.yuriybudiyev.sketches.core.ui.component
 
 import android.net.Uri
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -54,15 +56,38 @@ fun SketchesAsyncImage(
         modifier = modifier,
         contentScale = contentScale,
         filterQuality = filterQuality,
+        loading = {
+            StateIcon(
+                icon = SketchesIcons.ImageLoading,
+                description = stringResource(id = R.string.image_loading),
+                modifier = Modifier.fillMaxSize(),
+            )
+        },
         error = {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(
-                    imageVector = SketchesIcons.ImageLoadError,
-                    contentDescription = stringResource(id = R.string.image_load_error),
-                    modifier = Modifier.size(48.dp),
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-            }
+            StateIcon(
+                icon = SketchesIcons.ImageLoadError,
+                description = stringResource(id = R.string.image_load_error),
+                modifier = Modifier.fillMaxSize(),
+            )
         },
     )
+}
+
+@Composable
+private fun StateIcon(
+    icon: ImageVector,
+    description: String,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = description,
+            modifier = Modifier.size(48.dp),
+            tint = MaterialTheme.colorScheme.onBackground
+        )
+    }
 }
