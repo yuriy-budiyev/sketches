@@ -27,6 +27,7 @@ package com.github.yuriybudiyev.sketches.core.di
 import android.content.Context
 import android.os.Build
 import javax.inject.Singleton
+import kotlinx.coroutines.Dispatchers
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
@@ -65,5 +66,8 @@ object ImageLoaderModule {
                 add(SvgDecoder.Factory())
                 add(VideoFrameDecoder.Factory())
             }
+            .decoderDispatcher(Dispatchers.IO)
+            .fetcherDispatcher(Dispatchers.Default)
+            .transformationDispatcher(Dispatchers.Default)
             .build()
 }
