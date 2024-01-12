@@ -80,8 +80,9 @@ class ImageScreenViewModel @Inject constructor(
             }
             try {
                 val files = withContext(Dispatchers.Default) { repository.getFiles(bucketId) }
-                if (files.isNotEmpty()) {
-                    if (files[fileIndex].id == fileId) {
+                val filesSize = files.size
+                if (filesSize != 0) {
+                    if (fileIndex < filesSize && files[fileIndex].id == fileId) {
                         uiStateInternal.value = ImageScreenUiState.Image(
                             fileIndex,
                             fileId,
@@ -92,8 +93,7 @@ class ImageScreenViewModel @Inject constructor(
                         var backwardIndex = fileIndex - 1
                         var forwardIndex = fileIndex + 1
                         var actualIndex = fileIndex
-                        val imagesSize = files.size
-                        while (backwardIndex > -1 || forwardIndex < imagesSize) {
+                        while (backwardIndex > -1 || forwardIndex < filesSize) {
                             if (backwardIndex > -1) {
                                 if (files[backwardIndex].id == fileId) {
                                     actualIndex = backwardIndex
@@ -101,7 +101,7 @@ class ImageScreenViewModel @Inject constructor(
                                 }
                                 backwardIndex--
                             }
-                            if (forwardIndex < imagesSize) {
+                            if (forwardIndex < filesSize) {
                                 if (files[forwardIndex].id == fileId) {
                                     actualIndex = forwardIndex
                                     break
@@ -112,7 +112,7 @@ class ImageScreenViewModel @Inject constructor(
                         uiStateInternal.value = ImageScreenUiState.Image(
                             actualIndex.coerceIn(
                                 0,
-                                imagesSize - 1
+                                filesSize - 1
                             ),
                             fileId,
                             bucketId,
