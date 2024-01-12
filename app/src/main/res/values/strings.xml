@@ -23,4 +23,5 @@
     <string name="delete_image_dialog_content">Are you sure you want to delete the image?</string>
     <string name="delete_image_dialog_positive">Delete</string>
     <string name="delete_image_dialog_negative">Dismiss</string>
+    <string name="stack_trace_copied">Stack trace copied to clipboard</string>
 </resources>
