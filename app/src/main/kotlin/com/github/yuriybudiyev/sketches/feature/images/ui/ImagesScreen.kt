@@ -40,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesMediaVerticalGrid
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
@@ -88,9 +89,9 @@ fun ImagesScreen(
                 )
             }
             is ImagesScreenUiState.Error -> {
-                SketchesCenteredMessage(
-                    text = stringResource(id = R.string.unexpected_error),
-                    modifier = Modifier.matchParentSize(),
+                SketchesErrorMessage(
+                    thrown = uiState.thrown,
+                    modifier = Modifier.matchParentSize()
                 )
             }
         }

@@ -56,6 +56,7 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLazyVerticalGrid
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
@@ -109,9 +110,9 @@ fun BucketsScreen(
                 )
             }
             is BucketsScreenUiState.Error -> {
-                SketchesCenteredMessage(
-                    text = stringResource(id = R.string.unexpected_error),
-                    modifier = Modifier.matchParentSize(),
+                SketchesErrorMessage(
+                    thrown = uiState.thrown,
+                    modifier = Modifier.matchParentSize()
                 )
             }
         }

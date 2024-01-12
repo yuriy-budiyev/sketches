@@ -84,6 +84,7 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAlertDialog
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
+import com.github.yuriybudiyev.sketches.core.ui.component.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
@@ -179,9 +180,9 @@ fun ImageScreen(
                 )
             }
             is ImageScreenUiState.Error -> {
-                SketchesCenteredMessage(
-                    text = stringResource(id = R.string.unexpected_error),
-                    modifier = Modifier.matchParentSize(),
+                SketchesErrorMessage(
+                    thrown = uiState.thrown,
+                    modifier = Modifier.matchParentSize()
                 )
             }
         }
