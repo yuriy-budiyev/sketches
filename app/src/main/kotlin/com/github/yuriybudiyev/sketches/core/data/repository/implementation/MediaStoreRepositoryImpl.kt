@@ -79,12 +79,13 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
                 val id = c.getLong(idColumn)
                 files += MediaStoreFile(
                     id = id,
-                    name = c.getString(nameColumn),
-                    mediaType = mediaType,
                     bucketId = c.getLong(bucketIdColumn),
-                    bucketName = c.getString(bucketNameColumn),
                     dateAdded = c.getLong(dateAddedColumn) * 1000L,
-                    mimeType = c.getString(mimeTypeColumn),
+                    mediaType = mediaType,
+                    mimeType = c.getString(mimeTypeColumn) ?: when (mediaType) {
+                        MediaType.IMAGE -> "image/*"
+                        MediaType.VIDEO -> "video/*"
+                    },
                     uri = ContentUris.withAppendedId(
                         contentUri,
                         id
@@ -151,7 +152,7 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
                 val bucketInfo = destination.getOrPut(bucketId) {
                     BucketInfo(
                         id = bucketId,
-                        name = c.getString(bucketNameColumn),
+                        name = c.getString(bucketNameColumn) ?: id.toString(),
                         coverUri = ContentUris.withAppendedId(
                             contentUri,
                             id

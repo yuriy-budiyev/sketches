@@ -28,11 +28,9 @@ import android.net.Uri
 
 data class MediaStoreFile(
     val id: Long,
-    val name: String,
-    val mediaType: MediaType,
     val bucketId: Long,
-    val bucketName: String,
     val dateAdded: Long,
+    val mediaType: MediaType,
     val mimeType: String,
     val uri: Uri,
 )
