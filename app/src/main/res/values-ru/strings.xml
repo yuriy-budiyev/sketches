@@ -24,5 +24,4 @@
     <string name="delete_image_dialog_content">Вы действительно хотите удалить изображение?</string>
     <string name="delete_image_dialog_positive">Удалить</string>
     <string name="delete_image_dialog_negative">Отмена</string>
-    <string name="stack_trace_copied">Трассировка стека скопирована в буфер обмена</string>
 </resources>
