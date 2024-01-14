@@ -91,7 +91,6 @@ import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPla
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
-import com.github.yuriybudiyev.sketches.core.util.log.log
 import com.github.yuriybudiyev.sketches.core.util.ui.animateScrollToItemCentered
 
 @Composable
@@ -438,7 +437,6 @@ private fun VideoPage(
         coroutineScope,
     ) {
         snapshotFlow { fileUriUpdated }.collect { uri ->
-            log { "file uri $numberUpdated $uri ${mediaState.uri}" }
             if (mediaState.uri != uri) {
                 coroutineScope.launch {
                     mediaState.open(uri)
@@ -452,7 +450,6 @@ private fun VideoPage(
         coroutineScope,
     ) {
         snapshotFlow { state.currentPage }.collect { currentPage ->
-            log { "current page $currentPage $numberUpdated" }
             if (currentPage == numberUpdated) {
                 coroutineScope.launch {
                     if (mediaState.isVolumeEnabled) {
@@ -475,11 +472,7 @@ private fun VideoPage(
         }
 
     }
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        log { "on resume $numberUpdated" }
-    }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
-        log { "on pause $numberUpdated" }
         coroutineScope.launch {
             mediaState.pause()
         }
