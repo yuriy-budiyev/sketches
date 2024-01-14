@@ -27,13 +27,11 @@ package com.github.yuriybudiyev.sketches.core.di
 import android.content.Context
 import android.os.Build
 import javax.inject.Singleton
-import kotlinx.coroutines.Dispatchers
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
 import coil.decode.VideoFrameDecoder
-import coil.memory.MemoryCache
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -49,14 +47,6 @@ object ImageLoaderModule {
     fun provideImageLoader(@ApplicationContext context: Context): ImageLoader =
         ImageLoader
             .Builder(context)
-            .memoryCache {
-                MemoryCache
-                    .Builder(context)
-                    .maxSizePercent(0.5)
-                    .weakReferencesEnabled(true)
-                    .strongReferencesEnabled(true)
-                    .build()
-            }
             .components {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     add(ImageDecoderDecoder.Factory())
@@ -66,8 +56,5 @@ object ImageLoaderModule {
                 add(SvgDecoder.Factory())
                 add(VideoFrameDecoder.Factory())
             }
-            .decoderDispatcher(Dispatchers.IO)
-            .fetcherDispatcher(Dispatchers.Default)
-            .transformationDispatcher(Dispatchers.Default)
             .build()
 }
