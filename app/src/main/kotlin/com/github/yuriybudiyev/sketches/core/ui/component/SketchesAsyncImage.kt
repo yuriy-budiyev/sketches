@@ -41,8 +41,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
-import coil.transition.CrossfadeTransition
-import coil.transition.Transition
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
@@ -60,7 +58,7 @@ fun SketchesAsyncImage(
     SubcomposeAsyncImage(
         model = ImageRequest
             .Builder(LocalContext.current)
-            .crossfadeTransition(enableCrossfade)
+            .crossfade(enableCrossfade)
             .data(uri)
             .build(),
         contentDescription = description,
@@ -106,12 +104,3 @@ private fun StateIcon(
         )
     }
 }
-
-private fun ImageRequest.Builder.crossfadeTransition(enabled: Boolean): ImageRequest.Builder =
-    if (enabled) {
-        transitionFactory(crossfadeTransitionFactory)
-    } else {
-        this
-    }
-
-private val crossfadeTransitionFactory: Transition.Factory = CrossfadeTransition.Factory()
