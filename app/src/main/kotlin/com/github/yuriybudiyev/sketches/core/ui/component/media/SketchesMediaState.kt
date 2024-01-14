@@ -146,7 +146,7 @@ interface SketchesMediaState {
 
     companion object {
 
-        const val TIME_UNKNOWN = -1L
+        const val TIME_UNKNOWN = Long.MIN_VALUE
     }
 }
 

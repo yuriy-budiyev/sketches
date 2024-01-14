@@ -64,7 +64,7 @@ fun SketchesNavHost(
                             ImageNavigationDestination,
                             index,
                             image.id,
-                            -1L
+                            Long.MIN_VALUE
                         )
                     }
                 },
@@ -86,8 +86,8 @@ fun SketchesNavHost(
         composable(BucketNavigationDestination.registerIn(appState)) { backStackEntry ->
             val bucketId = backStackEntry.arguments?.getLong(
                 BucketNavigationDestination.Arguments.BUCKET_ID,
-                -1L
-            ) ?: -1L
+                Long.MIN_VALUE
+            ) ?: Long.MIN_VALUE
             val bucketName =
                 backStackEntry.arguments?.getString(BucketNavigationDestination.Arguments.BUCKET_NAME)
             BucketRoute(
@@ -112,12 +112,12 @@ fun SketchesNavHost(
             ) ?: -1
             val imageId = backStackEntry.arguments?.getLong(
                 ImageNavigationDestination.Arguments.IMAGE_ID,
-                -1L
-            ) ?: -1L
+                Long.MIN_VALUE
+            ) ?: Long.MIN_VALUE
             val bucketId = backStackEntry.arguments?.getLong(
                 ImageNavigationDestination.Arguments.BUCKET_ID,
-                -1L
-            ) ?: -1L
+                Long.MIN_VALUE
+            ) ?: Long.MIN_VALUE
             val context = LocalContext.current
             val shareTitle = stringResource(id = R.string.share_image)
             ImageRoute(

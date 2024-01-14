@@ -165,8 +165,8 @@ class ImageScreenViewModel @Inject constructor(
 
     private var currentJob: Job? = null
     private var currentFileIndex: Int = -1
-    private var currentFileId: Long = -1L
-    private var currentBucketId: Long = -1L
+    private var currentFileId: Long = Long.MIN_VALUE
+    private var currentBucketId: Long = Long.MIN_VALUE
 
     private fun updateMediaInternal() {
         val fileIndex = currentFileIndex

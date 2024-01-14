@@ -88,5 +88,5 @@ class BucketScreenViewModel @Inject constructor(
     }
 
     private var currentJob: Job? = null
-    private var currentBucketId: Long = -1L
+    private var currentBucketId: Long = Long.MIN_VALUE
 }

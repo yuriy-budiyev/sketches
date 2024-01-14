@@ -54,12 +54,12 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
                     MediaStore.MediaColumns.DATE_ADDED,
                     MediaStore.MediaColumns.MIME_TYPE,
                 ),
-                if (bucketId != -1L) {
+                if (bucketId != Long.MIN_VALUE) {
                     "${MediaStore.MediaColumns.BUCKET_ID}=?"
                 } else {
                     null
                 },
-                if (bucketId != -1L) {
+                if (bucketId != Long.MIN_VALUE) {
                     arrayOf(bucketId.toString())
                 } else {
                     null
