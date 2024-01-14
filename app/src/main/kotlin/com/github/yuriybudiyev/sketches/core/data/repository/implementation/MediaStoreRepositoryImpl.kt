@@ -70,9 +70,7 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
         cursor.use { c ->
             val files = ArrayList<MediaStoreFile>(c.count)
             val idColumn = c.getColumnIndex(MediaStore.MediaColumns._ID)
-            val nameColumn = c.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
             val bucketIdColumn = c.getColumnIndex(MediaStore.MediaColumns.BUCKET_ID)
-            val bucketNameColumn = c.getColumnIndex(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME)
             val dateAddedColumn = c.getColumnIndex(MediaStore.MediaColumns.DATE_ADDED)
             val mimeTypeColumn = c.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)
             while (c.moveToNext()) {
