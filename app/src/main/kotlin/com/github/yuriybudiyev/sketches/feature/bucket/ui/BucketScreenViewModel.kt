@@ -69,9 +69,7 @@ class BucketScreenViewModel @Inject constructor(
                         files
                     )
                 } else {
-                    if (!silent) {
-                        uiStateInternal.value = BucketScreenUiState.Empty
-                    }
+                    uiStateInternal.value = BucketScreenUiState.Empty
                 }
             } catch (e: Exception) {
                 if (!silent) {

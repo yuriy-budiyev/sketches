@@ -62,9 +62,7 @@ class ImagesScreenViewModel @Inject constructor(
                 if (files.isNotEmpty()) {
                     uiStateInternal.value = ImagesScreenUiState.Images(files)
                 } else {
-                    if (!silent) {
-                        uiStateInternal.value = ImagesScreenUiState.Empty
-                    }
+                    uiStateInternal.value = ImagesScreenUiState.Empty
                 }
             } catch (e: Exception) {
                 if (!silent) {

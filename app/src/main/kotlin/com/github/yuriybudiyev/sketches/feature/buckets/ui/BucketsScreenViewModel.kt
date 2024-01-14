@@ -64,9 +64,7 @@ class BucketsScreenViewModel @Inject constructor(
                 if (buckets.isNotEmpty()) {
                     uiStateInternal.value = BucketsScreenUiState.Buckets(buckets)
                 } else {
-                    if (!silent) {
-                        uiStateInternal.value = BucketsScreenUiState.Empty
-                    }
+                    uiStateInternal.value = BucketsScreenUiState.Empty
                 }
             } catch (e: Exception) {
                 if (!silent) {

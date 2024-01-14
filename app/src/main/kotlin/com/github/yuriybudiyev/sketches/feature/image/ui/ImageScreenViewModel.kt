@@ -81,7 +81,7 @@ class ImageScreenViewModel @Inject constructor(
             try {
                 val files = withContext(Dispatchers.Default) { repository.getFiles(bucketId) }
                 val filesSize = files.size
-                if (filesSize != 0) {
+                if (filesSize > 0) {
                     if (fileIndex < filesSize && files[fileIndex].id == fileId) {
                         uiStateInternal.value = ImageScreenUiState.Image(
                             fileIndex,
@@ -120,9 +120,7 @@ class ImageScreenViewModel @Inject constructor(
                         )
                     }
                 } else {
-                    if (!silent) {
-                        uiStateInternal.value = ImageScreenUiState.Empty
-                    }
+                    uiStateInternal.value = ImageScreenUiState.Empty
                 }
             } catch (e: Exception) {
                 if (!silent) {
