@@ -2,8 +2,6 @@
 
 Android gallery app based on Compose, Coil and Media3.
 
-Note that Compose debug builds can be laggy.
-
 ### Screenshots
 
 #### Images
@@ -21,3 +19,5 @@ Note that Compose debug builds can be laggy.
 #### Video
 
 <img src="https://github.com/yuriy-budiyev/sketches/blob/main/screenshots/screenshot_video.png?raw=true" width="320" alt="Video screenshot">
+
+Note that Compose debug builds can be laggy.
