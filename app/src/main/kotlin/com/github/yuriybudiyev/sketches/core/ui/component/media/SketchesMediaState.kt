@@ -64,9 +64,10 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource
 
 @Composable
 @OptIn(UnstableApi::class)
-fun rememberSketchesMediaState(): SketchesMediaState {
+fun rememberSketchesMediaState(
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+): SketchesMediaState {
     val appContext = LocalContext.current.applicationContext
-    val coroutineScope = rememberCoroutineScope()
     return rememberSaveable(
         appContext,
         coroutineScope,

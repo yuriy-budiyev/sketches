@@ -439,7 +439,7 @@ private fun VideoPage(
 ) {
     val numberUpdated by rememberUpdatedState(number)
     val fileUriUpdated by rememberUpdatedState(fileUri)
-    val mediaState = rememberSketchesMediaState()
+    val mediaState = rememberSketchesMediaState(coroutineScope)
     LaunchedEffect(
         mediaState,
         coroutineScope,
