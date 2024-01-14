@@ -91,6 +91,7 @@ import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPla
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
+import com.github.yuriybudiyev.sketches.core.util.log.log
 import com.github.yuriybudiyev.sketches.core.util.ui.animateScrollToItemCentered
 
 @Composable
@@ -198,13 +199,7 @@ private fun ImageScreenLayout(
     onShare: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var currentIndex by remember(index) { mutableIntStateOf(index) }
-    var currentFile by remember(
-        index,
-        files,
-    ) {
-        mutableStateOf(files[index])
-    }
+    var currentIndex by remember { mutableIntStateOf(index) }
     val contextUpdated by rememberUpdatedState(LocalContext.current)
     val indexUpdated by rememberUpdatedState(index)
     val filesUpdated by rememberUpdatedState(files)
@@ -221,7 +216,7 @@ private fun ImageScreenLayout(
             if (result.resultCode == Activity.RESULT_OK) {
                 onDeleteUpdated(
                     currentIndex,
-                    currentFile,
+                    filesUpdated[currentIndex],
                 )
             }
         },
@@ -244,11 +239,9 @@ private fun ImageScreenLayout(
     ) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
             currentIndex = page
-            val file = filesUpdated[page]
-            currentFile = file
             onChangeUpdated(
                 page,
-                file,
+                filesUpdated[page],
             )
             coroutineScope.launch {
                 barState.animateScrollToItemCentered(
@@ -291,7 +284,7 @@ private fun ImageScreenLayout(
                                 .Builder(
                                     MediaStore.createDeleteRequest(
                                         contextUpdated.contentResolver,
-                                        listOf(currentFile.uri)
+                                        listOf(filesUpdated[currentIndex].uri)
                                     ).intentSender
                                 )
                                 .build()
@@ -304,7 +297,7 @@ private fun ImageScreenLayout(
             onShare = {
                 onShareUpdated(
                     currentIndex,
-                    currentFile,
+                    filesUpdated[currentIndex],
                 )
             },
             modifier = Modifier
@@ -321,7 +314,7 @@ private fun ImageScreenLayout(
                     isDeleteDialogVisible = false
                     onDeleteUpdated(
                         currentIndex,
-                        currentFile
+                        filesUpdated[currentIndex]
                     )
                 },
                 onNegativeResult = {
@@ -445,6 +438,7 @@ private fun VideoPage(
         coroutineScope,
     ) {
         snapshotFlow { fileUriUpdated }.collect { uri ->
+            log { "file uri $numberUpdated $uri ${mediaState.uri}" }
             if (mediaState.uri != uri) {
                 coroutineScope.launch {
                     mediaState.open(uri)
@@ -458,6 +452,7 @@ private fun VideoPage(
         coroutineScope,
     ) {
         snapshotFlow { state.currentPage }.collect { currentPage ->
+            log { "current page $currentPage $numberUpdated" }
             if (currentPage == numberUpdated) {
                 coroutineScope.launch {
                     if (mediaState.isVolumeEnabled) {
@@ -480,7 +475,11 @@ private fun VideoPage(
         }
 
     }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        log { "on resume $numberUpdated" }
+    }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+        log { "on pause $numberUpdated" }
         coroutineScope.launch {
             mediaState.pause()
         }
