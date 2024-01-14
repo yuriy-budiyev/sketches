@@ -42,10 +42,16 @@ fun SketchesMediaVerticalGrid(
     files: List<MediaStoreFile>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
+    overlayTop: Boolean = false,
+    overlayBottom: Boolean = false,
 ) {
     val filesUpdated by rememberUpdatedState(files)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
-    SketchesLazyVerticalGrid(modifier = modifier) {
+    SketchesLazyVerticalGrid(
+        modifier = modifier,
+        overlayTop = overlayTop,
+        overlayBottom = overlayBottom,
+    ) {
         items(
             count = filesUpdated.size,
             key = { index -> filesUpdated[index].id },

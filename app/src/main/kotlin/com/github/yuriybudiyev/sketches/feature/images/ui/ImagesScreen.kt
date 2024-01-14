@@ -86,6 +86,8 @@ fun ImagesScreen(
                     files = uiState.files,
                     onItemClick = onImageClick,
                     modifier = Modifier.matchParentSize(),
+                    overlayTop = true,
+                    overlayBottom = true,
                 )
             }
             is ImagesScreenUiState.Error -> {

@@ -135,7 +135,11 @@ private fun BucketsScreenLayout(
 ) {
     val bucketsUpdated by rememberUpdatedState(buckets)
     val onBucketClickUpdated by rememberUpdatedState(onBucketClick)
-    SketchesLazyVerticalGrid(modifier = modifier) {
+    SketchesLazyVerticalGrid(
+        modifier = modifier,
+        overlayTop = true,
+        overlayBottom = true,
+    ) {
         items(
             count = bucketsUpdated.size,
             key = { index -> bucketsUpdated[index].id },

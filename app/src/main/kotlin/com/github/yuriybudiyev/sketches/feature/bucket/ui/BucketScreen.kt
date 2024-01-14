@@ -93,6 +93,8 @@ fun BucketScreen(
                     files = uiState.files,
                     onItemClick = onImageClick,
                     modifier = Modifier.matchParentSize(),
+                    overlayTop = true,
+                    overlayBottom = false,
                 )
             }
             is BucketScreenUiState.Error -> {
