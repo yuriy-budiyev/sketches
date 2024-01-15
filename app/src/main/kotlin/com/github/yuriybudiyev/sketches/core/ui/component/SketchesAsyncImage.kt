@@ -70,8 +70,8 @@ fun SketchesAsyncImage(
         error = {
             if (enableErrorIndicator) {
                 StateIcon(
-                    icon = SketchesIcons.ImageLoadError,
-                    description = stringResource(id = R.string.image_load_error),
+                    icon = SketchesIcons.ImageError,
+                    description = stringResource(id = R.string.image_error),
                     modifier = Modifier.fillMaxSize(),
                 )
             }

@@ -22,7 +22,7 @@ object SketchesIcons {
     val BucketsSelected = Icons.Filled.PhotoLibrary
     val BucketsUnselected = Icons.Outlined.PhotoLibrary
     val ImageLoading = Icons.Rounded.Image
-    val ImageLoadError = Icons.Rounded.BrokenImage
+    val ImageError = Icons.Rounded.BrokenImage
     val Share = Icons.Filled.Share
     val Delete = Icons.Filled.DeleteForever
     val Video = Icons.Outlined.PlayCircle
