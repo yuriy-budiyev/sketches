@@ -411,12 +411,11 @@ private fun ImagePage(
     SketchesAsyncImage(
         uri = fileUri,
         description = stringResource(id = R.string.image),
+        modifier = modifier,
         contentScale = ContentScale.Fit,
         filterQuality = FilterQuality.High,
         enableLoadingIndicator = false,
         enableErrorIndicator = true,
-        enableCrossfade = false,
-        modifier = modifier,
     )
 }
 

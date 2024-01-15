@@ -36,11 +36,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
-import coil.request.ImageRequest
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
@@ -53,14 +51,9 @@ fun SketchesAsyncImage(
     filterQuality: FilterQuality = FilterQuality.Low,
     enableLoadingIndicator: Boolean = true,
     enableErrorIndicator: Boolean = true,
-    enableCrossfade: Boolean = true,
 ) {
     SubcomposeAsyncImage(
-        model = ImageRequest
-            .Builder(LocalContext.current)
-            .crossfade(enableCrossfade)
-            .data(uri)
-            .build(),
+        model = uri,
         contentDescription = description,
         modifier = modifier,
         contentScale = contentScale,
