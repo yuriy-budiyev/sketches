@@ -31,25 +31,31 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility(sketches.versions.java.get())
         targetCompatibility(sketches.versions.java.get())
     }
+
     kotlinOptions {
         jvmTarget = sketches.versions.java.get()
     }
+
     buildFeatures {
         compose = true
         buildConfig = true
     }
+
     composeOptions {
         kotlinCompilerExtensionVersion = sketches.versions.androidx.compose.compiler.get()
     }
+
     packaging {
         resources {
             excludes += "/META-INF/**"
         }
     }
+
     dependenciesInfo {
         includeInApk = false
         includeInBundle = false
