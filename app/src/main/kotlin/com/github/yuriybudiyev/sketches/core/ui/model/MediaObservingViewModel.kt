@@ -51,21 +51,8 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
     @SuppressLint("StaticFieldLeak")
     private val appContext: Context = context.applicationContext
 
-    private val imagesObserver: ContentObserver =
-        object: ContentObserver(Handler(Looper.getMainLooper())) {
-
-            override fun onChange(selfChange: Boolean) {
-                onMediaChanged()
-            }
-        }
-
-    private val videoObserver: ContentObserver =
-        object: ContentObserver(Handler(Looper.getMainLooper())) {
-
-            override fun onChange(selfChange: Boolean) {
-                onMediaChanged()
-            }
-        }
+    private val imagesObserver: ContentObserver = Observer()
+    private val videoObserver: ContentObserver = Observer()
 
     init {
         with(appContext.contentResolver) {
@@ -79,6 +66,13 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
                 true,
                 videoObserver
             )
+        }
+    }
+
+    private inner class Observer: ContentObserver(Handler((Looper.getMainLooper()))) {
+
+        override fun onChange(selfChange: Boolean) {
+            onMediaChanged()
         }
     }
 }
