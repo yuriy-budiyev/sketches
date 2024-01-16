@@ -165,7 +165,7 @@ private fun BucketsScreenLayout(
                         .aspectRatio(ratio = 1f)
                         .clip(shape = RoundedCornerShape(8.dp))
                         .border(
-                            width = 1.dp,
+                            width = 0.5.dp,
                             color = MaterialTheme.colorScheme.onBackground,
                             shape = RoundedCornerShape(8.dp),
                         ),
