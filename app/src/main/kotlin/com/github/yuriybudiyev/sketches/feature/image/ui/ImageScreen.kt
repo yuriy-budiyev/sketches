@@ -518,7 +518,7 @@ private fun MediaBar(
                     .size(itemSize)
                     .clip(RoundedCornerShape(8.dp))
                     .border(
-                        width = 0.5.dp,
+                        width = 1.dp,
                         color = MaterialTheme.colorScheme.onBackground,
                         shape = RoundedCornerShape(8.dp),
                     )
