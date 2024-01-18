@@ -220,7 +220,7 @@ private fun ImageScreenLayout(
             }
         },
     )
-    var isDeleteDialogVisible by remember { mutableStateOf(false) }
+    var deleteDialogVisible by remember { mutableStateOf(false) }
     LaunchedEffect(
         pagerState,
         coroutineScope,
@@ -290,7 +290,7 @@ private fun ImageScreenLayout(
                         )
                     }
                 } else {
-                    isDeleteDialogVisible = true
+                    deleteDialogVisible = true
                 }
             },
             onShare = {
@@ -303,21 +303,21 @@ private fun ImageScreenLayout(
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
         )
-        if (isDeleteDialogVisible) {
+        if (deleteDialogVisible) {
             SketchesAlertDialog(
                 titleText = stringResource(id = R.string.delete_image_dialog_title),
                 contentText = stringResource(id = R.string.delete_image_dialog_content),
                 positiveButtonText = stringResource(id = R.string.delete_image_dialog_positive),
                 negativeButtonText = stringResource(id = R.string.delete_image_dialog_negative),
                 onPositiveResult = {
-                    isDeleteDialogVisible = false
+                    deleteDialogVisible = false
                     onDeleteUpdated(
                         currentIndex,
                         filesUpdated[currentIndex]
                     )
                 },
                 onNegativeResult = {
-                    isDeleteDialogVisible = false
+                    deleteDialogVisible = false
                 },
             )
         }

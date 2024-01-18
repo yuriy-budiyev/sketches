@@ -89,7 +89,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
             }
         }
     )
-    var isPermissionsGranted by remember {
+    var permissionsGranted by remember {
         mutableStateOf(appContextUpdated.checkAllPermissionsGranted(mediaPermissionsUpdated))
     }
     Surface(
@@ -97,7 +97,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
         color = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground
     ) {
-        if (isPermissionsGranted) {
+        if (permissionsGranted) {
             val currentDestinations = appState.topLevelNavigationDestinations
             val currentDestination = appState.currentNavigationDestination
             Box(modifier = Modifier.fillMaxSize()) {
@@ -152,12 +152,12 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
             val mediaPermissionsLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestMultiplePermissions()
             ) { grantResult ->
-                isPermissionsGranted = checkAllPermissionsGranted(grantResult)
+                permissionsGranted = checkAllPermissionsGranted(grantResult)
             }
             val settingsLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartActivityForResult()
             ) {
-                isPermissionsGranted =
+                permissionsGranted =
                     appContextUpdated.checkAllPermissionsGranted(mediaPermissionsUpdated)
             }
             Column(
@@ -185,7 +185,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                 }
             }
             LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-                isPermissionsGranted =
+                permissionsGranted =
                     appContextUpdated.checkAllPermissionsGranted(mediaPermissionsUpdated)
             }
             LaunchedEffect(Unit) {

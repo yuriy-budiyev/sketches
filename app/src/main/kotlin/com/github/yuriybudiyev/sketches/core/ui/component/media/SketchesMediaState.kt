@@ -517,11 +517,11 @@ private class SketchesMediaStateImplSaver(
             context,
             coroutineScope
         ).apply {
-            val isVolumeEnabled = value.getBoolean(
+            val volumeEnabled = value.getBoolean(
                 IS_VOLUME_ENABLED,
                 false
             )
-            val isRepeatEnabled = value.getBoolean(
+            val repeatEnabled = value.getBoolean(
                 IS_REPEAT_ENABLED,
                 false
             )
@@ -534,7 +534,7 @@ private class SketchesMediaStateImplSaver(
                 value.getParcelable(URI)
             }
             if (uri != null) {
-                val isPlaying = value.getBoolean(
+                val playing = value.getBoolean(
                     IS_PLAYING,
                     false
                 )
@@ -545,17 +545,17 @@ private class SketchesMediaStateImplSaver(
                 open(
                     uri = uri,
                     position = position,
-                    playWhenReady = isPlaying,
-                    volumeEnabled = isVolumeEnabled,
-                    repeatEnabled = isRepeatEnabled
+                    playWhenReady = playing,
+                    volumeEnabled = volumeEnabled,
+                    repeatEnabled = repeatEnabled
                 )
             } else {
-                if (isVolumeEnabled) {
+                if (volumeEnabled) {
                     enableVolume()
                 } else {
                     disableVolume()
                 }
-                if (isRepeatEnabled) {
+                if (repeatEnabled) {
                     enableRepeat()
                 } else {
                     disableRepeat()

@@ -102,10 +102,10 @@ fun SketchesMediaDisplay(
                 )
         )
         val displayAspectRatio = state.displayAspectRatio
-        val isVideoVisible = state.isVideoVisible
+        val videoVisible = state.isVideoVisible
         key(
             displayAspectRatio,
-            isVideoVisible
+            videoVisible
         ) {
             AndroidView(
                 modifier = Modifier
@@ -119,7 +119,7 @@ fun SketchesMediaDisplay(
                 onRelease = { view -> state.clearVideoView(view) },
                 update = { view -> state.setVideoView(view) },
             )
-            if (!isVideoVisible) {
+            if (!videoVisible) {
                 Box(
                     modifier = Modifier
                         .matchParentSize()
