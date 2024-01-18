@@ -36,14 +36,22 @@ import androidx.lifecycle.LifecycleOwner
 @Composable
 inline fun LifecycleEventEffect(
     event: Lifecycle.Event,
-    crossinline effect: () -> Unit,
+    crossinline block: () -> Unit,
 ) {
+    val eventUpdated by rememberUpdatedState(event)
+    LifecycleEventEffect { currentEvent ->
+        if (currentEvent == eventUpdated) {
+            block()
+        }
+    }
+}
+
+@Composable
+inline fun LifecycleEventEffect(crossinline block: (event: Lifecycle.Event) -> Unit) {
     val lifecycleOwnerUpdated by rememberUpdatedState(LocalLifecycleOwner.current)
     DisposableEffect(lifecycleOwnerUpdated) {
-        val observer = LifecycleEventObserver { _: LifecycleOwner, currentEvent: Lifecycle.Event ->
-            if (currentEvent == event) {
-                effect()
-            }
+        val observer = LifecycleEventObserver { _: LifecycleOwner, event: Lifecycle.Event ->
+            block(event)
         }
         lifecycleOwnerUpdated.lifecycle.addObserver(observer)
         onDispose {
