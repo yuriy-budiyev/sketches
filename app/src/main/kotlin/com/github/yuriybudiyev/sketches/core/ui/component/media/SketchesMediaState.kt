@@ -518,11 +518,11 @@ private class SketchesMediaStateImplSaver(
             coroutineScope
         ).apply {
             val volumeEnabled = value.getBoolean(
-                IS_VOLUME_ENABLED,
+                VOLUME_ENABLED,
                 false
             )
             val repeatEnabled = value.getBoolean(
-                IS_REPEAT_ENABLED,
+                REPEAT_ENABLED,
                 false
             )
             val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -535,7 +535,7 @@ private class SketchesMediaStateImplSaver(
             }
             if (uri != null) {
                 val playing = value.getBoolean(
-                    IS_PLAYING,
+                    PLAYING,
                     false
                 )
                 val position = value.getLong(
@@ -566,15 +566,15 @@ private class SketchesMediaStateImplSaver(
     override fun SaverScope.save(value: SketchesMediaStateImpl): Bundle =
         Bundle().apply {
             putBoolean(
-                IS_PLAYING,
+                PLAYING,
                 value.isPlaying
             )
             putBoolean(
-                IS_VOLUME_ENABLED,
+                VOLUME_ENABLED,
                 value.isVolumeEnabled
             )
             putBoolean(
-                IS_REPEAT_ENABLED,
+                REPEAT_ENABLED,
                 value.isRepeatEnabled
             )
             putLong(
@@ -589,9 +589,9 @@ private class SketchesMediaStateImplSaver(
 
     companion object {
 
-        const val IS_PLAYING = "is_playing"
-        const val IS_VOLUME_ENABLED = "is_volume_enabled"
-        const val IS_REPEAT_ENABLED = "is_repeat_enabled"
+        const val PLAYING = "playing"
+        const val VOLUME_ENABLED = "volume_enabled"
+        const val REPEAT_ENABLED = "repeat_enabled"
         const val POSITION = "position"
         const val URI = "uri"
     }
