@@ -39,9 +39,9 @@ import androidx.core.view.WindowCompat
 fun SketchesTheme(content: @Composable () -> Unit) {
     val darkTheme = isSystemInDarkTheme()
     val colorScheme = if (darkTheme) {
-        sketchesDarkColorScheme
+        SketchesDarkColorScheme
     } else {
-        sketchesLightColorScheme
+        SketchesLightColorScheme
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -64,7 +64,7 @@ fun SketchesTheme(content: @Composable () -> Unit) {
     )
 }
 
-private val sketchesLightColorScheme = lightColorScheme(
+private val SketchesLightColorScheme = lightColorScheme(
     primary = SketchesColors.Primary,
     onPrimary = SketchesColors.OnPrimary,
     secondary = SketchesColors.Light.Secondary,
@@ -73,7 +73,7 @@ private val sketchesLightColorScheme = lightColorScheme(
     onBackground = SketchesColors.Light.OnBackground
 )
 
-private val sketchesDarkColorScheme = darkColorScheme(
+private val SketchesDarkColorScheme = darkColorScheme(
     primary = SketchesColors.Primary,
     onPrimary = SketchesColors.OnPrimary,
     secondary = SketchesColors.Dark.Secondary,
