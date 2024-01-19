@@ -10,7 +10,8 @@ androidx-arch-core = "2.2.0"
 androidx-annotation = "1.7.1"
 androidx-collection = "1.3.0"
 androidx-concurrent = "1.1.0"
-androidx-navigation = "2.7.6"
+androidx-lifecycle = "2.7.0"
+androidx-activity = "1.8.2"
 androidx-compose-compiler = "1.5.8"
 androidx-compose-runtime = "1.5.4"
 androidx-compose-ui = "1.5.4"
@@ -18,8 +19,7 @@ androidx-compose-foundation = "1.5.4"
 androidx-compose-animation = "1.5.4"
 androidx-compose-material = "1.5.4"
 androidx-compose-material3 = "1.1.2"
-androidx-activity = "1.8.2"
-androidx-lifecycle = "2.7.0"
+androidx-navigation = "2.7.6"
 androidx-startup = "1.1.1"
 androidx-window = "1.2.0"
 androidx-work = "2.9.0"
@@ -54,11 +54,23 @@ androidx-collection = { group = "androidx.collection", name = "collection", vers
 androidx-collection-ktx = { group = "androidx.collection", name = "collection-ktx", version.ref = "androidx-collection" }
 androidx-concurrent-futures = { group = "androidx.concurrent", name = "concurrent-futures", version.ref = "androidx-concurrent" }
 androidx-concurrent-futures-ktx = { group = "androidx.concurrent", name = "concurrent-futures-ktx", version.ref = "androidx-concurrent" }
-androidx-navigation-common = { group = "androidx.navigation", name = "navigation-common", version.ref = "androidx-navigation" }
-androidx-navigation-common-ktx = { group = "androidx.navigation", name = "navigation-common-ktx", version.ref = "androidx-navigation" }
-androidx-navigation-runtime = { group = "androidx.navigation", name = "navigation-runtime", version.ref = "androidx-navigation" }
-androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "androidx-navigation" }
-androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidx-navigation" }
+androidx-lifecycle-common = { group = "androidx.lifecycle", name = "lifecycle-common", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-common-java8 = { group = "androidx.lifecycle", name = "lifecycle-common-java8", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-livadata = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-livedata", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-livedata-core = { group = "androidx.lifecycle", name = "lifecycle-livedata-core", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-livedata-core-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-core-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel-savedstate = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-savedstate", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "androidx-activity" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity" }
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "androidx-activity" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "androidx-compose-runtime" }
 androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "androidx-compose-runtime" }
 androidx-compose-runtime-saveable = { group = "androidx.compose.runtime", name = "runtime-saveable", version.ref = "androidx-compose-runtime" }
@@ -80,23 +92,11 @@ androidx-compose-material-icons-extended = { group = "androidx.compose.material"
 androidx-compose-material-ripple = { group = "androidx.compose.material", name = "material-ripple", version.ref = "androidx-compose-material" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "androidx-compose-material3" }
 androidx-compose-material3-wsc = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref = "androidx-compose-material3" }
-androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "androidx-activity" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity" }
-androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "androidx-activity" }
-androidx-lifecycle-common = { group = "androidx.lifecycle", name = "lifecycle-common", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-common-java8 = { group = "androidx.lifecycle", name = "lifecycle-common-java8", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-runtime-livadata = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-livedata = { group = "androidx.lifecycle", name = "lifecycle-livedata", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-livedata-core = { group = "androidx.lifecycle", name = "lifecycle-livedata-core", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-livedata-core-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-core-ktx", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-viewmodel-savedstate = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-savedstate", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
+androidx-navigation-common = { group = "androidx.navigation", name = "navigation-common", version.ref = "androidx-navigation" }
+androidx-navigation-common-ktx = { group = "androidx.navigation", name = "navigation-common-ktx", version.ref = "androidx-navigation" }
+androidx-navigation-runtime = { group = "androidx.navigation", name = "navigation-runtime", version.ref = "androidx-navigation" }
+androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "androidx-navigation" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidx-navigation" }
 androidx-startup = { group = "androidx.startup", name = "startup-runtime", version.ref = "androidx-startup" }
 androidx-window = { group = "androidx.window", name = "window", version.ref = "androidx-window" }
 androidx-window-core = { group = "androidx.window", name = "window-core", version.ref = "androidx-window" }
@@ -133,11 +133,11 @@ androidx-arch-core = ["androidx-arch-core-common", "androidx-arch-core-runtime"]
 androidx-annotation = ["androidx-annotation", "androidx-annotation-jvm"]
 androidx-collection = ["androidx-collection", "androidx-collection-ktx"]
 androidx-concurrent = ["androidx-concurrent-futures", "androidx-concurrent-futures-ktx"]
-androidx-navigation = ["androidx-navigation-common", "androidx-navigation-common-ktx", "androidx-navigation-runtime", "androidx-navigation-runtime-ktx", "androidx-navigation-compose"]
+androidx-lifecycle = ["androidx-lifecycle-common", "androidx-lifecycle-common-java8", "androidx-lifecycle-runtime", "androidx-lifecycle-runtime-compose", "androidx-lifecycle-runtime-ktx", "androidx-lifecycle-livedata", "androidx-lifecycle-livedata-ktx", "androidx-lifecycle-livedata-core", "androidx-lifecycle-livedata-core-ktx", "androidx-lifecycle-viewmodel", "androidx-lifecycle-viewmodel-savedstate", "androidx-lifecycle-viewmodel-compose", "androidx-lifecycle-viewmodel-ktx"]
+androidx-activity = ["androidx-activity", "androidx-activity-compose", "androidx-activity-ktx"]
 androidx-compose = ["androidx-compose-runtime", "androidx-compose-runtime-livedata", "androidx-compose-runtime-saveable", "androidx-compose-ui", "androidx-compose-ui-geometry", "androidx-compose-ui-graphics", "androidx-compose-ui-unit", "androidx-compose-ui-util", "androidx-compose-foundation", "androidx-compose-foundation-layout", "androidx-compose-animation", "androidx-compose-animation-core", "androidx-compose-animation-graphics", "androidx-compose-material-icons-core", "androidx-compose-material-icons-extended", "androidx-compose-material-ripple", "androidx-compose-material3", "androidx-compose-material3-wsc"]
 androidx-compose-tooling = ["androidx-compose-ui-tooling", "androidx-compose-ui-tooling-data", "androidx-compose-ui-tooling-preview"]
-androidx-activity = ["androidx-activity", "androidx-activity-compose", "androidx-activity-ktx"]
-androidx-lifecycle = ["androidx-lifecycle-common", "androidx-lifecycle-common-java8", "androidx-lifecycle-runtime", "androidx-lifecycle-runtime-compose", "androidx-lifecycle-runtime-ktx", "androidx-lifecycle-livedata", "androidx-lifecycle-livedata-ktx", "androidx-lifecycle-livedata-core", "androidx-lifecycle-livedata-core-ktx", "androidx-lifecycle-viewmodel", "androidx-lifecycle-viewmodel-savedstate", "androidx-lifecycle-viewmodel-compose", "androidx-lifecycle-viewmodel-ktx"]
+androidx-navigation = ["androidx-navigation-common", "androidx-navigation-common-ktx", "androidx-navigation-runtime", "androidx-navigation-runtime-ktx", "androidx-navigation-compose"]
 androidx-window = ["androidx-window", "androidx-window-core", "androidx-window-java"]
 androidx-work = ["androidx-work-runtime", "androidx-work-runtime-ktx"]
 androidx-media3 = ["androidx-media3-common", "androidx-media3-database", "androidx-media3-datasource", "androidx-media3-datasource-okhttp", "androidx-media3-decoder", "androidx-media3-container", "androidx-media3-extractor", "androidx-media3-exoplayer"]
