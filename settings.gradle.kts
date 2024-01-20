@@ -14,7 +14,7 @@ dependencyResolutionManagement {
     }
     versionCatalogs {
         create("sketches") {
-            from(files("sketches.versions.toml"))
+            from(files("gradle/sketches.versions.toml"))
         }
     }
 }
