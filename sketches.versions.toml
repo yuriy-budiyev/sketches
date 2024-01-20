@@ -25,10 +25,13 @@ androidx-window = "1.2.0"
 androidx-work = "2.9.0"
 androidx-media3 = "1.2.1"
 androidx-hilt = "1.1.0"
+androidx-test-junit = "1.1.5"
+androidx-test-espresso = "3.5.1"
 hilt = "2.50"
 okhttp = "4.12.0"
 okio = "3.7.0"
 coil = "2.5.0"
+junit = "4.13.2"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-application" }
@@ -82,6 +85,8 @@ androidx-compose-ui-util = { group = "androidx.compose.ui", name = "ui-util", ve
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "androidx-compose-ui" }
 androidx-compose-ui-tooling-data = { group = "androidx.compose.ui", name = "ui-tooling-data", version.ref = "androidx-compose-ui" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "androidx-compose-ui" }
+androidx-compose-ui-test-junit = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "androidx-compose-ui" }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "androidx-compose-ui" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "androidx-compose-foundation" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "androidx-compose-foundation" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "androidx-compose-animation" }
@@ -116,6 +121,9 @@ androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref 
 androidx-hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation", version.ref = "androidx-hilt" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidx-hilt" }
 androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "androidx-hilt" }
+androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
+androidx-test-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidx-test-junit" }
+androidx-test-espresso = { group = "androidx.test.ext", name = "espresso-core", version.ref = "androidx-test-espresso" }
 hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
@@ -125,6 +133,7 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
 coil-gif = { group = "io.coil-kt", name = "coil-gif", version.ref = "coil" }
 coil-video = { group = "io.coil-kt", name = "coil-video", version.ref = "coil" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 [bundles]
 kotlin = ["kotlin-stdlib", "kotlin-stdlib-jdk7", "kotlin-stdlib-jdk8", "kotlin-reflect", "kotlin-coroutines-core", "kotlin-coroutines-android"]
@@ -144,3 +153,4 @@ androidx-media3 = ["androidx-media3-common", "androidx-media3-database", "androi
 hilt = ["hilt", "androidx-hilt-common", "androidx-hilt-work", "androidx-hilt-navigation", "androidx-hilt-navigation-compose"]
 hilt-compiler = ["hilt-compiler", "androidx-hilt-compiler"]
 coil = ["coil", "coil-compose", "coil-gif", "coil-svg", "coil-video"]
+androidx-test = ["androidx-test-junit", "androidx-test-junit-ktx", "androidx-test-espresso"]

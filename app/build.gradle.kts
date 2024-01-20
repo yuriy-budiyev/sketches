@@ -16,6 +16,7 @@ android {
         buildToolsVersion = "34.0.0"
         versionCode = 1
         versionName = "1.0.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -89,4 +90,8 @@ dependencies {
     implementation(sketches.okio)
     ksp(sketches.bundles.hilt.compiler)
     debugImplementation(sketches.bundles.androidx.compose.tooling)
+    debugImplementation(sketches.androidx.compose.ui.test.manifest)
+    testImplementation(sketches.junit)
+    androidTestImplementation(sketches.bundles.androidx.test)
+    androidTestImplementation(sketches.androidx.compose.ui.test.junit)
 }
