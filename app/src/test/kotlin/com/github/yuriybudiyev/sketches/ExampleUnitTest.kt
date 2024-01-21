@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches
 
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -32,6 +33,7 @@ import org.junit.Test
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
+@HiltAndroidTest
 class ExampleUnitTest {
 
     @Test

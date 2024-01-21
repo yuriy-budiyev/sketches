@@ -102,6 +102,8 @@ androidx-navigation-common-ktx = { group = "androidx.navigation", name = "naviga
 androidx-navigation-runtime = { group = "androidx.navigation", name = "navigation-runtime", version.ref = "androidx-navigation" }
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "androidx-navigation" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidx-navigation" }
+androidx-navigation-test = { group = "androidx.navigation", name = "navigation-testing", version.ref = "androidx-navigation" }
+androidx-navigation-test-ktx = { group = "androidx.navigation", name = "navigation-testing-ktx", version.ref = "androidx-navigation" }
 androidx-startup = { group = "androidx.startup", name = "startup-runtime", version.ref = "androidx-startup" }
 androidx-window = { group = "androidx.window", name = "window", version.ref = "androidx-window" }
 androidx-window-core = { group = "androidx.window", name = "window-core", version.ref = "androidx-window" }
@@ -125,6 +127,7 @@ androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref
 androidx-test-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidx-test-junit" }
 androidx-test-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-test-espresso" }
 hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-test = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okio = { group = "com.squareup.okio", name = "okio", version.ref = "okio" }
@@ -147,10 +150,11 @@ androidx-activity = ["androidx-activity", "androidx-activity-compose", "androidx
 androidx-compose = ["androidx-compose-runtime", "androidx-compose-runtime-livedata", "androidx-compose-runtime-saveable", "androidx-compose-ui", "androidx-compose-ui-geometry", "androidx-compose-ui-graphics", "androidx-compose-ui-unit", "androidx-compose-ui-util", "androidx-compose-foundation", "androidx-compose-foundation-layout", "androidx-compose-animation", "androidx-compose-animation-core", "androidx-compose-animation-graphics", "androidx-compose-material-icons-core", "androidx-compose-material-icons-extended", "androidx-compose-material-ripple", "androidx-compose-material3", "androidx-compose-material3-wsc"]
 androidx-compose-tooling = ["androidx-compose-ui-tooling", "androidx-compose-ui-tooling-data", "androidx-compose-ui-tooling-preview"]
 androidx-navigation = ["androidx-navigation-common", "androidx-navigation-common-ktx", "androidx-navigation-runtime", "androidx-navigation-runtime-ktx", "androidx-navigation-compose"]
+androidx-navigation-test = ["androidx-navigation-test", "androidx-navigation-test-ktx"]
 androidx-window = ["androidx-window", "androidx-window-core", "androidx-window-java"]
 androidx-work = ["androidx-work-runtime", "androidx-work-runtime-ktx"]
 androidx-media3 = ["androidx-media3-common", "androidx-media3-database", "androidx-media3-datasource", "androidx-media3-datasource-okhttp", "androidx-media3-decoder", "androidx-media3-container", "androidx-media3-extractor", "androidx-media3-exoplayer"]
+androidx-test = ["androidx-test-junit", "androidx-test-junit-ktx", "androidx-test-espresso"]
 hilt = ["hilt", "androidx-hilt-common", "androidx-hilt-work", "androidx-hilt-navigation", "androidx-hilt-navigation-compose"]
 hilt-compiler = ["hilt-compiler", "androidx-hilt-compiler"]
 coil = ["coil", "coil-compose", "coil-gif", "coil-svg", "coil-video"]
-androidx-test = ["androidx-test-junit", "androidx-test-junit-ktx", "androidx-test-espresso"]
