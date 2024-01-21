@@ -81,8 +81,8 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
                     dateAdded = c.getLong(dateAddedColumn) * 1000L,
                     mediaType = mediaType,
                     mimeType = c.getString(mimeTypeColumn) ?: when (mediaType) {
-                        MediaType.IMAGE -> "image/*"
-                        MediaType.VIDEO -> "video/*"
+                        MediaType.Image -> "image/*"
+                        MediaType.Video -> "video/*"
                     },
                     uri = ContentUris.withAppendedId(
                         contentUri,
@@ -96,11 +96,11 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
 
     override suspend fun getFiles(bucketId: Long): List<MediaStoreFile> {
         val imageFiles = collectFiles(
-            MediaType.IMAGE,
+            MediaType.Image,
             bucketId
         )
         val videoFiles = collectFiles(
-            MediaType.VIDEO,
+            MediaType.Video,
             bucketId
         )
         val files = ArrayList<MediaStoreFile>(imageFiles.size + videoFiles.size)
@@ -174,11 +174,11 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
     override suspend fun getBuckets(): List<MediaStoreBucket> {
         val bucketsInfo = LinkedHashMap<Long, BucketInfo>()
         collectBucketsInfo(
-            MediaType.IMAGE,
+            MediaType.Image,
             bucketsInfo
         )
         collectBucketsInfo(
-            MediaType.VIDEO,
+            MediaType.Video,
             bucketsInfo
         )
         return bucketsInfo

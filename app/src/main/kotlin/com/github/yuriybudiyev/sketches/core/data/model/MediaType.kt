@@ -26,6 +26,6 @@ package com.github.yuriybudiyev.sketches.core.data.model
 
 enum class MediaType {
 
-    IMAGE,
-    VIDEO
+    Image,
+    Video
 }

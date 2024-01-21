@@ -385,13 +385,13 @@ private fun MediaPage(
     modifier: Modifier = Modifier,
 ) {
     when (fileType) {
-        MediaType.IMAGE -> {
+        MediaType.Image -> {
             ImagePage(
                 fileUri = fileUri,
                 modifier = modifier,
             )
         }
-        MediaType.VIDEO -> {
+        MediaType.Video -> {
             VideoPage(
                 state = state,
                 number = number,

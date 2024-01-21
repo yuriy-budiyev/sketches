@@ -59,7 +59,7 @@ fun SketchesMediaItem(
             enableLoadingIndicator = true,
             enableErrorIndicator = true,
         )
-        if (type == MediaType.VIDEO) {
+        if (type == MediaType.Video) {
             Box(
                 modifier = Modifier
                     .align(alignment = Alignment.BottomEnd)

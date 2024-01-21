@@ -57,12 +57,12 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
     init {
         with(appContext.contentResolver) {
             registerContentObserver(
-                contentUriFor(MediaType.IMAGE),
+                contentUriFor(MediaType.Image),
                 true,
                 imagesObserver
             )
             registerContentObserver(
-                contentUriFor(MediaType.VIDEO),
+                contentUriFor(MediaType.Video),
                 true,
                 videoObserver
             )
