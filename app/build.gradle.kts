@@ -95,7 +95,7 @@ dependencies {
     testImplementation(sketches.hilt.test)
     kspTest(sketches.bundles.hilt.compiler)
     androidTestImplementation(sketches.bundles.androidx.test)
-    androidTestImplementation(sketches.bundles.androidx.navigation.test)
+    androidTestImplementation(sketches.androidx.navigation.test)
     androidTestImplementation(sketches.androidx.compose.ui.test.junit)
     androidTestImplementation(sketches.hilt.test)
     kspAndroidTest(sketches.bundles.hilt.compiler)
