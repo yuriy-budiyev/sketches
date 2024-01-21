@@ -63,12 +63,16 @@ fun SketchesMediaPlayer(
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     controlsBackgroundColor: Color = backgroundColor.copy(alpha = 0.75f),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
+    enableLoadingIndicator: Boolean = true,
+    enableErrorIndicator: Boolean = true,
 ) {
     Box(modifier = modifier) {
         SketchesMediaDisplay(
             state = state,
             modifier = Modifier.matchParentSize(),
-            backgroundColor = backgroundColor
+            backgroundColor = backgroundColor,
+            enableLoadingIndicator = enableLoadingIndicator,
+            enableErrorIndicator = enableErrorIndicator
         )
         SketchesMediaController(
             state = state,
@@ -91,6 +95,8 @@ fun SketchesMediaDisplay(
     state: SketchesMediaState,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
+    enableLoadingIndicator: Boolean = true,
+    enableErrorIndicator: Boolean = true,
 ) {
     Box(modifier = modifier) {
         Box(
@@ -121,13 +127,34 @@ fun SketchesMediaDisplay(
             )
             if (!videoVisible) {
                 Box(
+                    contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .matchParentSize()
                         .background(
                             color = backgroundColor,
                             shape = RectangleShape
                         )
-                )
+                ) {
+                    if (state.isPlaybackError) {
+                        if (enableErrorIndicator) {
+                            Icon(
+                                imageVector = SketchesIcons.ImageError,
+                                contentDescription = stringResource(id = R.string.image_error),
+                                modifier = Modifier.size(48.dp),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    } else {
+                        if (enableLoadingIndicator) {
+                            Icon(
+                                imageVector = SketchesIcons.ImageLoading,
+                                contentDescription = stringResource(id = R.string.image_loading),
+                                modifier = Modifier.size(48.dp),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    }
+                }
             }
         }
     }

@@ -480,6 +480,8 @@ private fun VideoPage(
         state = mediaState,
         modifier = modifier,
         coroutineScope = coroutineScope,
+        enableLoadingIndicator = false,
+        enableErrorIndicator = true
     )
 }
 

@@ -54,6 +54,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.VideoSize
@@ -89,6 +90,8 @@ interface SketchesMediaState {
     val isLoading: Boolean
 
     val isPlaying: Boolean
+
+    val isPlaybackError: Boolean
 
     fun play()
 
@@ -186,6 +189,13 @@ private class SketchesMediaStateImpl(
                 }
             }
         }
+    }
+
+    override var isPlaybackError: Boolean by mutableStateOf(player.playerError != null)
+        private set
+
+    override fun onPlayerErrorChanged(error: PlaybackException?) {
+        isPlaybackError = error != null
     }
 
     override fun play() {
