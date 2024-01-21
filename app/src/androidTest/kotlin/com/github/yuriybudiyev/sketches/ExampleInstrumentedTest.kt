@@ -39,7 +39,7 @@ import org.junit.runner.RunWith
 class ExampleInstrumentedTest {
 
     @Test
-    fun useAppContext() { // Context of the app under test.
+    fun useAppContext() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals(
             if (BuildConfig.DEBUG) {
