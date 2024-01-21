@@ -63,7 +63,7 @@ fun SketchesMediaPlayer(
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     controlsBackgroundColor: Color = backgroundColor.copy(alpha = 0.75f),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
-    enableLoadingIndicator: Boolean = true,
+    enableImagePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
     Box(modifier = modifier) {
@@ -71,7 +71,7 @@ fun SketchesMediaPlayer(
             state = state,
             modifier = Modifier.matchParentSize(),
             backgroundColor = backgroundColor,
-            enableLoadingIndicator = enableLoadingIndicator,
+            enableImagePlaceholder = enableImagePlaceholder,
             enableErrorIndicator = enableErrorIndicator
         )
         SketchesMediaController(
@@ -95,7 +95,7 @@ fun SketchesMediaDisplay(
     state: SketchesMediaState,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
-    enableLoadingIndicator: Boolean = true,
+    enableImagePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
     Box(modifier = modifier) {
@@ -145,10 +145,10 @@ fun SketchesMediaDisplay(
                             )
                         }
                     } else {
-                        if (enableLoadingIndicator) {
+                        if (enableImagePlaceholder) {
                             Icon(
                                 imageVector = SketchesIcons.ImageLoading,
-                                contentDescription = stringResource(id = R.string.image_loading),
+                                contentDescription = stringResource(id = R.string.image),
                                 modifier = Modifier.size(48.dp),
                                 tint = MaterialTheme.colorScheme.onBackground
                             )
