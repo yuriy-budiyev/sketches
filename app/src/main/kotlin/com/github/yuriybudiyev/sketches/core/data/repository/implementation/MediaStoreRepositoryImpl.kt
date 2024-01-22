@@ -172,7 +172,7 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
     }
 
     override suspend fun getBuckets(): List<MediaStoreBucket> {
-        val bucketsInfo = LinkedHashMap<Long, BucketInfo>()
+        val bucketsInfo = LinkedHashMap<Long, BucketInfo>(256)
         collectBucketsInfo(
             MediaType.Image,
             bucketsInfo
