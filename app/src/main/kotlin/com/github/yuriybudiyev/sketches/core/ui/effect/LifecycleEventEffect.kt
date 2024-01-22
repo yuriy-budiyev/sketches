@@ -26,8 +26,6 @@ package com.github.yuriybudiyev.sketches.core.ui.effect
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -38,9 +36,8 @@ inline fun LifecycleEventEffect(
     event: Lifecycle.Event,
     crossinline block: () -> Unit,
 ) {
-    val eventUpdated by rememberUpdatedState(event)
     LifecycleEventEffect { currentEvent ->
-        if (currentEvent == eventUpdated) {
+        if (currentEvent == event) {
             block()
         }
     }
@@ -48,14 +45,14 @@ inline fun LifecycleEventEffect(
 
 @Composable
 inline fun LifecycleEventEffect(crossinline block: (event: Lifecycle.Event) -> Unit) {
-    val lifecycleOwnerUpdated by rememberUpdatedState(LocalLifecycleOwner.current)
-    DisposableEffect(lifecycleOwnerUpdated) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _: LifecycleOwner, event: Lifecycle.Event ->
             block(event)
         }
-        lifecycleOwnerUpdated.lifecycle.addObserver(observer)
+        lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
-            lifecycleOwnerUpdated.lifecycle.removeObserver(observer)
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 }
