@@ -131,15 +131,10 @@ fun ImageRoute(
                 )
             }
         },
-        onDelete = { index, file ->
+        onDelete = { _, file ->
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
                 coroutineScope.launch {
-                    viewModel.deleteMedia(
-                        index,
-                        file.id,
-                        file.bucketId,
-                        file.uri
-                    )
+                    viewModel.deleteMedia(file.uri)
                 }
             }
         },
