@@ -24,7 +24,12 @@
 
 package com.github.yuriybudiyev.sketches.baselineprofile
 
+import android.os.Build
+import androidx.benchmark.macro.MacrobenchmarkScope
 import androidx.benchmark.macro.junit4.BaselineProfileRule
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Direction
+import androidx.test.uiautomator.UiSelector
 import org.junit.Rule
 import org.junit.Test
 
@@ -35,11 +40,33 @@ class BaselineProfileGenerator {
 
     @Test
     fun startup() {
-        baselineProfileRule.collect(
-            packageName = "com.github.yuriybudiyev.sketches",
-            profileBlock = {
-                startActivityAndWait()
-            },
-        )
+        baselineProfileRule.collect("com.github.yuriybudiyev.sketches") {
+            startActivityAndWait()
+            grantMediaPermission()
+            scrollImagesGrid()
+        }
     }
+}
+
+fun MacrobenchmarkScope.grantMediaPermission() {
+    val allowButton = device.findObject(
+        UiSelector().text(
+            when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> "Allow all"
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> "Allow"
+                else -> "ALLOW"
+            }
+        )
+    )
+    if (allowButton.exists()) {
+        allowButton.click()
+    }
+}
+
+fun MacrobenchmarkScope.scrollImagesGrid() {
+    val imagesGrid = device.findObject(By.res("images_grid"))
+    imagesGrid.setGestureMargin(device.displayWidth / 5)
+    imagesGrid.fling(Direction.DOWN)
+    imagesGrid.fling(Direction.UP)
+    device.waitForIdle()
 }

@@ -35,6 +35,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
@@ -85,7 +87,11 @@ fun ImagesScreen(
                 SketchesMediaVerticalGrid(
                     files = uiState.files,
                     onItemClick = onImageClick,
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier
+                        .matchParentSize()
+                        .semantics {
+                            testTag = "images_grid"
+                        },
                     overlayTop = true,
                     overlayBottom = true,
                 )

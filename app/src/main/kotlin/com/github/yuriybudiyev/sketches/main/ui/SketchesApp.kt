@@ -54,9 +54,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import com.github.yuriybudiyev.sketches.R
@@ -68,6 +71,7 @@ import com.github.yuriybudiyev.sketches.core.util.permissions.checkAllPermission
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 
 @Composable
+@OptIn(ExperimentalComposeUiApi::class)
 fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
     val appContextUpdated by rememberUpdatedState(LocalContext.current.applicationContext)
     val mediaPermissionsUpdated by rememberUpdatedState(
@@ -93,7 +97,11 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
         mutableStateOf(appContextUpdated.checkAllPermissionsGranted(mediaPermissionsUpdated))
     }
     Surface(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .semantics {
+                testTagsAsResourceId = true
+            },
         color = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground
     ) {
