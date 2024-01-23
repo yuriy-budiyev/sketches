@@ -54,9 +54,3 @@ dependencies {
     implementation(sketches.androidx.test.uiautomator)
     implementation(sketches.androidx.baselineprofile)
 }
-
-androidComponents {
-    beforeVariants(selector().all()) {
-        it.enable = it.buildType == "benchmark"
-    }
-}
