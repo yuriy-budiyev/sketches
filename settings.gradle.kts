@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "sketches"
 include(":app")
+include(":baselineprofile")

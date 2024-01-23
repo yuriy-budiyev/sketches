@@ -1,5 +1,6 @@
 plugins {
     alias(sketches.plugins.android.application)
+    alias(sketches.plugins.androidx.baselineprofile)
     alias(sketches.plugins.kotlin)
     alias(sketches.plugins.kotlin.ksp)
     alias(sketches.plugins.hilt)
@@ -25,6 +26,11 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
+        }
+        create("benchmark") {
+            initWith(buildTypes.getByName("release"))
+            matchingFallbacks += listOf("release")
+            isDebuggable = false
         }
 
         release {
@@ -85,6 +91,7 @@ dependencies {
     implementation(sketches.bundles.hilt)
     implementation(sketches.bundles.coil)
     implementation(sketches.androidx.versionedparcelable)
+    implementation(sketches.androidx.profileinstaller)
     implementation(sketches.androidx.startup)
     implementation(sketches.okhttp)
     implementation(sketches.okio)
@@ -99,4 +106,9 @@ dependencies {
     androidTestImplementation(sketches.androidx.compose.ui.test.junit)
     androidTestImplementation(sketches.hilt.test)
     kspAndroidTest(sketches.bundles.hilt.compiler)
+    baselineProfile(project(":baselineprofile"))
+}
+
+baselineProfile {
+    automaticGenerationDuringBuild = false
 }
