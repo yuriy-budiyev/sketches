@@ -28,8 +28,9 @@ import android.os.Build
 import androidx.benchmark.macro.MacrobenchmarkScope
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.Direction
-import androidx.test.uiautomator.UiSelector
+import androidx.test.uiautomator.Until
 import org.junit.Rule
 import org.junit.Test
 
@@ -49,24 +50,30 @@ class BaselineProfileGenerator {
 }
 
 fun MacrobenchmarkScope.grantMediaPermission() {
-    val allowButton = device.findObject(
-        UiSelector().text(
-            when {
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> "Allow all"
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> "Allow"
-                else -> "ALLOW"
-            }
-        )
+    val allowButton = device.wait(
+        Until.findObject(
+            By.text(
+                when {
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> "Allow all"
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> "Allow"
+                    else -> "ALLOW"
+                }
+            )
+        ),
+        Configurator.getInstance().waitForSelectorTimeout
     )
-    if (allowButton.exists()) {
+    if (allowButton != null) {
         allowButton.click()
+        device.waitForIdle()
     }
 }
 
 fun MacrobenchmarkScope.scrollImagesGrid() {
     val imagesGrid = device.findObject(By.res("images_grid"))
-    imagesGrid.setGestureMargin(device.displayWidth / 5)
-    imagesGrid.fling(Direction.DOWN)
-    imagesGrid.fling(Direction.UP)
-    device.waitForIdle()
+    if (imagesGrid != null) {
+        imagesGrid.setGestureMargin(device.displayWidth / 5)
+        imagesGrid.fling(Direction.DOWN)
+        imagesGrid.fling(Direction.UP)
+        device.waitForIdle()
+    }
 }
