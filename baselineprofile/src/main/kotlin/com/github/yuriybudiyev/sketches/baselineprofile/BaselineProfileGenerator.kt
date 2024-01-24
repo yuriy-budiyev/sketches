@@ -24,12 +24,18 @@
 
 package com.github.yuriybudiyev.sketches.baselineprofile
 
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import android.os.Build
 import androidx.benchmark.macro.MacrobenchmarkScope
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.uiautomator.By
+import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.Direction
+import androidx.test.uiautomator.StaleObjectException
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
 import org.junit.Rule
 import org.junit.Test
@@ -44,40 +50,87 @@ class BaselineProfileGenerator {
         baselineProfileRule.collect("com.github.yuriybudiyev.sketches") {
             startActivityAndWait()
             grantMediaPermission()
-            scrollImagesGrid()
+            scrollMedaGrid()
+            clickMediaItem()
+            scrollMediaPager()
+            scrollMediaBar()
+            clickMediaItem()
         }
     }
 }
 
-fun MacrobenchmarkScope.grantMediaPermission() {
-    val allowButton = device.wait(
-        Until.findObject(
-            By.text(
-                when {
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> "Allow all"
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> "Allow"
-                    else -> "ALLOW"
-                }
-            )
-        ),
-        Configurator.getInstance().waitForSelectorTimeout
-    )
-    if (allowButton != null) {
+private fun MacrobenchmarkScope.grantMediaPermission() {
+    device.waitForObject(
+        By.text(
+            when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> "Allow all"
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> "Allow"
+                else -> "ALLOW"
+            }
+        )
+    ) { allowButton ->
         allowButton.click()
         device.waitForIdle()
     }
 }
 
-fun MacrobenchmarkScope.scrollImagesGrid() {
-    val imagesGrid = device.findObject(By.res("images_grid"))
-    if (imagesGrid != null) {
-        imagesGrid.setGestureMargin(device.displayWidth / 5)
-        imagesGrid.fling(Direction.DOWN)
-        imagesGrid.fling(Direction.UP)
+private fun MacrobenchmarkScope.scrollMedaGrid() {
+    device.waitForObject(By.res("media_grid")) { mediaGrid ->
+        mediaGrid.setGestureMargin(device.displayWidth / 5)
+        mediaGrid.fling(Direction.DOWN)
         device.waitForIdle()
     }
 }
 
-fun MacrobenchmarkScope.openImage() {
+private fun MacrobenchmarkScope.clickMediaItem() {
+    device.waitForObject(By.res("media_item")) { mediaGridItem ->
+        mediaGridItem.click()
+        device.waitForIdle()
+    }
+}
 
+private fun MacrobenchmarkScope.scrollMediaPager() {
+    device.waitForObject(By.res("media_pager")) { mediaPager ->
+        mediaPager.setGestureMargin(device.displayWidth / 5)
+        mediaPager.fling(Direction.RIGHT)
+        device.waitForIdle()
+    }
+}
+
+private fun MacrobenchmarkScope.scrollMediaBar() {
+    device.waitForObject(By.res("media_bar")) { mediaBar ->
+        mediaBar.setGestureMargin(device.displayWidth / 5)
+        mediaBar.fling(Direction.RIGHT)
+        mediaBar.fling(Direction.LEFT)
+        device.waitForIdle()
+    }
+}
+
+private fun UiDevice.waitForObject(selector: BySelector): UiObject2? =
+    wait(
+        Until.findObject(selector),
+        Configurator.getInstance().waitForSelectorTimeout
+    )
+
+@OptIn(ExperimentalContracts::class)
+private inline fun UiDevice.waitForObject(
+    selector: BySelector,
+    block: (UiObject2) -> Unit,
+) {
+    contract {
+        callsInPlace(block)
+    }
+    var done = false
+    while (!done) {
+        val obj = waitForObject(selector)
+        if (obj != null) {
+            try {
+                block(obj)
+                done = true
+            } catch (_: StaleObjectException) {
+            }
+        } else {
+            done = true
+        }
+    }
 }
