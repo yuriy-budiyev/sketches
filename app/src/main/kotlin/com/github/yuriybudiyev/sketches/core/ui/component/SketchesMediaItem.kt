@@ -37,6 +37,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.Dp
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
@@ -49,7 +51,11 @@ fun SketchesMediaItem(
     iconPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier) {
+    Box(
+        modifier = modifier.semantics {
+            testTag = "media_item"
+        },
+    ) {
         SketchesAsyncImage(
             uri = uri,
             description = stringResource(id = R.string.image),

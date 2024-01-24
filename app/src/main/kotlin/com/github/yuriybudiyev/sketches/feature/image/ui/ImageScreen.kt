@@ -71,6 +71,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -355,7 +357,9 @@ private fun MediaPager(
         state = state,
         beyondBoundsPageCount = 1,
         key = { page -> filesUpdated[page].id },
-        modifier = modifier,
+        modifier = modifier.semantics {
+            testTag = "media_pager"
+        },
     ) { page ->
         val file = filesUpdated[page]
         MediaPage(
@@ -493,7 +497,9 @@ private fun MediaBar(
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
     LazyRow(
         state = state,
-        modifier = modifier,
+        modifier = modifier.semantics {
+            testTag = "media_bar"
+        },
         contentPadding = PaddingValues(horizontal = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(
             space = 4.dp,

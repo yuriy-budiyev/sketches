@@ -34,6 +34,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
@@ -48,7 +50,9 @@ fun SketchesMediaVerticalGrid(
     val filesUpdated by rememberUpdatedState(files)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
     SketchesLazyVerticalGrid(
-        modifier = modifier,
+        modifier = modifier.semantics {
+            testTag = "media_grid"
+        },
         overlayTop = overlayTop,
         overlayBottom = overlayBottom,
     ) {

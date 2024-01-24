@@ -77,3 +77,7 @@ fun MacrobenchmarkScope.scrollImagesGrid() {
         device.waitForIdle()
     }
 }
+
+fun MacrobenchmarkScope.openImage() {
+
+}
