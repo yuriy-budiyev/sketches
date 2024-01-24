@@ -53,7 +53,10 @@ fun SketchesMediaItem(
 ) {
     Box(
         modifier = modifier.semantics {
-            testTag = "media_item"
+            testTag = when (type) {
+                MediaType.Image -> "media_item_image"
+                MediaType.Video -> "media_item_video"
+            }
         },
     ) {
         SketchesAsyncImage(

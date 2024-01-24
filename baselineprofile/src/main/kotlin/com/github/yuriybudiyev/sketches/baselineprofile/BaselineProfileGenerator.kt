@@ -33,6 +33,7 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.Direction
+import androidx.test.uiautomator.SearchCondition
 import androidx.test.uiautomator.StaleObjectException
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
@@ -51,10 +52,10 @@ class BaselineProfileGenerator {
             startActivityAndWait()
             grantMediaPermission()
             scrollMedaGrid()
-            clickMediaItem()
-            scrollMediaPager()
-            scrollMediaBar()
-            clickMediaItem()
+            clickOnImage()
+            waitMediaPagerAndPressBack()
+            clickOnVideo()
+            waitMediaPagerAndPressBack()
         }
     }
 }
@@ -79,29 +80,29 @@ private fun MacrobenchmarkScope.scrollMedaGrid() {
         mediaGrid.setGestureMargin(device.displayWidth / 5)
         mediaGrid.fling(Direction.DOWN)
         device.waitForIdle()
-    }
-}
-
-private fun MacrobenchmarkScope.clickMediaItem() {
-    device.waitForObject(By.res("media_item")) { mediaGridItem ->
-        mediaGridItem.click()
+        mediaGrid.fling(Direction.UP)
         device.waitForIdle()
     }
 }
 
-private fun MacrobenchmarkScope.scrollMediaPager() {
-    device.waitForObject(By.res("media_pager")) { mediaPager ->
-        mediaPager.setGestureMargin(device.displayWidth / 5)
-        mediaPager.fling(Direction.RIGHT)
+private fun MacrobenchmarkScope.clickOnImage() {
+    device.waitForObject(By.res("media_item_image")) { mediaItem ->
+        mediaItem.click()
         device.waitForIdle()
     }
 }
 
-private fun MacrobenchmarkScope.scrollMediaBar() {
-    device.waitForObject(By.res("media_bar")) { mediaBar ->
-        mediaBar.setGestureMargin(device.displayWidth / 5)
-        mediaBar.fling(Direction.RIGHT)
+private fun MacrobenchmarkScope.clickOnVideo() {
+    device.waitForObject(By.res("media_item_video")) { mediaItem ->
+        mediaItem.click()
         device.waitForIdle()
+    }
+}
+
+private fun MacrobenchmarkScope.waitMediaPagerAndPressBack() {
+    device.waitForObject(By.res("media_pager")) {
+        device.waitForIdle()
+        device.pressBack()
     }
 }
 
