@@ -101,7 +101,6 @@ private fun MacrobenchmarkScope.scrollMediaBar() {
     device.waitForObject(By.res("media_bar")) { mediaBar ->
         mediaBar.setGestureMargin(device.displayWidth / 5)
         mediaBar.fling(Direction.RIGHT)
-        mediaBar.fling(Direction.LEFT)
         device.waitForIdle()
     }
 }
