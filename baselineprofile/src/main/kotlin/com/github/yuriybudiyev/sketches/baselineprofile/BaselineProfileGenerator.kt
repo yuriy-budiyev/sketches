@@ -100,8 +100,8 @@ private fun MacrobenchmarkScope.clickOnVideo() {
 
 private fun MacrobenchmarkScope.waitMediaPagerAndPressBack() {
     device.waitForObject(By.res("media_pager")) {
-        device.waitForIdle()
         device.pressBack()
+        device.waitForIdle()
     }
 }
 
