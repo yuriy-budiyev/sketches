@@ -54,6 +54,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -77,6 +78,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
@@ -91,7 +93,6 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
-import com.github.yuriybudiyev.sketches.core.ui.effect.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.util.ui.animateScrollToItemCentered
 
@@ -428,24 +429,20 @@ private fun VideoPage(
     modifier: Modifier = Modifier,
 ) {
     val numberUpdated by rememberUpdatedState(number)
-    val fileUriUpdated by rememberUpdatedState(fileUri)
     val mediaState = rememberSketchesMediaState(coroutineScope)
-    LaunchedEffect(
+    DisposableEffect(
         mediaState,
-        coroutineScope,
+        fileUri
     ) {
-        snapshotFlow { fileUriUpdated }.collect { uri ->
-            if (mediaState.uri != uri) {
-                coroutineScope.launch {
-                    mediaState.open(uri)
-                }
-            }
+        mediaState.open(fileUri)
+        onDispose {
+            mediaState.close()
         }
     }
     LaunchedEffect(
-        state,
-        mediaState,
         coroutineScope,
+        mediaState,
+        state,
     ) {
         snapshotFlow { state.currentPage }.collect { currentPage ->
             if (currentPage == numberUpdated) {
@@ -468,7 +465,6 @@ private fun VideoPage(
                 }
             }
         }
-
     }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
         coroutineScope.launch {
