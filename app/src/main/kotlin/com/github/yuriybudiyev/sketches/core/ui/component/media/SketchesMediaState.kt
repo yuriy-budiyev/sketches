@@ -30,6 +30,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.Surface
 import android.view.SurfaceView
 import android.view.TextureView
 import kotlinx.coroutines.CoroutineScope
@@ -121,13 +122,17 @@ interface SketchesMediaState {
 
     fun setVideoView(view: SurfaceView)
 
-    fun setVideoView(view: TextureView)
-
     fun clearVideoView(view: SurfaceView)
+
+    fun setVideoView(view: TextureView)
 
     fun clearVideoView(view: TextureView)
 
-    fun clearVideoView()
+    fun setVideoSurface(surface: Surface)
+
+    fun clearVideoSurface(surface: Surface)
+
+    fun clearVideoSurfaceOrView()
 
     val duration: Long
 
@@ -310,15 +315,15 @@ private class SketchesMediaStateImpl(
         }
     }
 
-    override fun setVideoView(view: TextureView) {
-        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
-            setVideoTextureView(view)
-        }
-    }
-
     override fun clearVideoView(view: SurfaceView) {
         player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
             clearVideoSurfaceView(view)
+        }
+    }
+
+    override fun setVideoView(view: TextureView) {
+        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+            setVideoTextureView(view)
         }
     }
 
@@ -328,7 +333,19 @@ private class SketchesMediaStateImpl(
         }
     }
 
-    override fun clearVideoView() {
+    override fun setVideoSurface(surface: Surface) {
+        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+            setVideoSurface(surface)
+        }
+    }
+
+    override fun clearVideoSurface(surface: Surface) {
+        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+            clearVideoSurface(surface)
+        }
+    }
+
+    override fun clearVideoSurfaceOrView() {
         player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
             clearVideoSurface()
         }
