@@ -120,10 +120,20 @@ fun SketchesMediaDisplay(
                         matchHeightConstraintsFirst = displayAspectRatio < 1f
                     )
                     .align(Alignment.Center),
-                factory = { context -> TextureView(context) },
-                onReset = { view -> state.clearVideoView(view) },
-                onRelease = { view -> state.clearVideoView(view) },
-                update = { view -> state.setVideoView(view) },
+                factory = { context ->
+                    TextureView(context).apply {
+                        isOpaque = false
+                    }
+                },
+                onReset = { view ->
+                    state.clearVideoView(view)
+                },
+                onRelease = { view ->
+                    state.clearVideoView(view)
+                },
+                update = { view ->
+                    state.setVideoView(view)
+                },
             )
             if (!videoVisible) {
                 Box(
