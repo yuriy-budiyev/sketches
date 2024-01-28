@@ -30,6 +30,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import androidx.collection.MutableLongObjectMap
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
@@ -121,7 +122,7 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
 
     private suspend fun collectBucketsInfo(
         mediaType: MediaType,
-        destination: MutableMap<Long, BucketInfo>,
+        destination: MutableLongObjectMap<BucketInfo>,
     ) {
         val contentUri = contentUriFor(mediaType)
         val cursor = withContext(Dispatchers.IO) {
@@ -172,7 +173,7 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
     }
 
     override suspend fun getBuckets(): List<MediaStoreBucket> {
-        val bucketsInfo = LinkedHashMap<Long, BucketInfo>(256)
+        val bucketsInfo = MutableLongObjectMap<BucketInfo>(256)
         collectBucketsInfo(
             MediaType.Image,
             bucketsInfo
@@ -181,9 +182,12 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
             MediaType.Video,
             bucketsInfo
         )
-        return bucketsInfo
-            .mapTo(ArrayList(bucketsInfo.size)) { (_, info) -> info.toBucket() }
-            .also { buckets -> buckets.sortByDescending { bucket -> bucket.coverDateAdded } }
+        val buckets = ArrayList<MediaStoreBucket>(bucketsInfo.size)
+        bucketsInfo.forEachValue { info ->
+            buckets.add(info.toBucket())
+        }
+        buckets.sortByDescending { bucket -> bucket.coverDateAdded }
+        return buckets
     }
 
     private fun BucketInfo.toBucket(): MediaStoreBucket =
