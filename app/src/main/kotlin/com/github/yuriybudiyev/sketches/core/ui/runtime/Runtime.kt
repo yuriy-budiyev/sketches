@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.context
+package com.github.yuriybudiyev.sketches.core.ui.runtime
 
 import kotlin.reflect.KClass
 import android.content.Context
