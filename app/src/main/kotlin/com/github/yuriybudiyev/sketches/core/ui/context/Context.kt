@@ -22,11 +22,22 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.util.context
+package com.github.yuriybudiyev.sketches.core.ui.context
 
 import kotlin.reflect.KClass
 import android.content.Context
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import com.github.yuriybudiyev.sketches.core.util.context.requireSystemService
 
-inline fun <reified T: Any> Context.requireSystemService(serviceClass: KClass<T>): T =
-    getSystemService(serviceClass.java)
-        ?: throw IllegalArgumentException("Invalid service class: $serviceClass")
+@Composable
+@NonRestartableComposable
+inline fun <reified T: Any> rememberSystemService(
+    serviceClass: KClass<T>,
+    context: Context = LocalContext.current,
+): T =
+    remember(context) {
+        context.requireSystemService(serviceClass)
+    }
