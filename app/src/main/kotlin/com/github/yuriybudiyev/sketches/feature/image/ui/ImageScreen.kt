@@ -356,7 +356,6 @@ private fun MediaPager(
     val filesUpdated by rememberUpdatedState(items)
     HorizontalPager(
         state = state,
-        beyondBoundsPageCount = 1,
         key = { page -> filesUpdated[page].id },
         modifier = modifier.semantics {
             testTag = "media_pager"
