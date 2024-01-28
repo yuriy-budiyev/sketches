@@ -46,7 +46,7 @@ class BaselineProfileGenerator {
     val baselineProfileRule = BaselineProfileRule()
 
     @Test
-    fun startup() {
+    fun generate() {
         baselineProfileRule.collect("com.github.yuriybudiyev.sketches") {
             startActivityAndWait()
             grantMediaPermission()
