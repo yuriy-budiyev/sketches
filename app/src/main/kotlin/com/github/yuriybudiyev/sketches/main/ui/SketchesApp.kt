@@ -59,6 +59,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -145,6 +146,9 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                                         },
                                         contentDescription = stringResource(id = destination.titleRes)
                                     )
+                                },
+                                modifier = Modifier.semantics {
+                                    testTag = "nav_${destination.routeBase}"
                                 },
                             )
                         }

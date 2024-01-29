@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.baselineprofile
 
+import java.util.regex.Pattern
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -51,11 +52,15 @@ class BaselineProfileGenerator {
         baselineProfileRule.collect("com.github.yuriybudiyev.sketches") {
             startActivityAndWait()
             grantMediaPermission()
-            scrollMedaGrid()
+            scrollMediaGrid()
             clickOnImage()
             waitMediaPagerAndPressBack()
             clickOnVideo()
             waitMediaPagerAndPressBack()
+            navigateToBuckets()
+            openBucket()
+            waitMediaAndPressBack()
+            navigateToImages()
         }
     }
 }
@@ -75,7 +80,7 @@ private fun MacrobenchmarkScope.grantMediaPermission() {
     }
 }
 
-private fun MacrobenchmarkScope.scrollMedaGrid() {
+private fun MacrobenchmarkScope.scrollMediaGrid() {
     device.waitForObject(By.res("media_grid")) { mediaGrid ->
         mediaGrid.setGestureMargin(device.displayWidth / 5)
         mediaGrid.fling(Direction.DOWN)
@@ -101,6 +106,34 @@ private fun MacrobenchmarkScope.clickOnVideo() {
 
 private fun MacrobenchmarkScope.waitMediaPagerAndPressBack() {
     device.waitForObject(By.res("media_pager")) {
+        device.pressBack()
+        device.waitForIdle()
+    }
+}
+
+private fun MacrobenchmarkScope.navigateToImages() {
+    device.waitForObject(By.res("nav_images")) { navItem ->
+        navItem.click()
+        device.waitForIdle()
+    }
+}
+
+private fun MacrobenchmarkScope.navigateToBuckets() {
+    device.waitForObject(By.res("nav_buckets")) { navItem ->
+        navItem.click()
+        device.waitForIdle()
+    }
+}
+
+private fun MacrobenchmarkScope.openBucket() {
+    device.waitForObject(By.res("bucket")) { bucketItem ->
+        bucketItem.click()
+        device.waitForIdle()
+    }
+}
+
+private fun MacrobenchmarkScope.waitMediaAndPressBack() {
+    device.waitForObject(By.res(Pattern.compile("media_item_.*"))) {
         device.pressBack()
         device.waitForIdle()
     }
