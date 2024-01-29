@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.baselineprofile
 
 import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import android.os.Build
 import androidx.benchmark.macro.MacrobenchmarkScope
@@ -117,7 +118,10 @@ private inline fun UiDevice.waitForObject(
     block: (UiObject2) -> Unit,
 ) {
     contract {
-        callsInPlace(block)
+        callsInPlace(
+            block,
+            InvocationKind.UNKNOWN
+        )
     }
     var done = false
     while (!done) {

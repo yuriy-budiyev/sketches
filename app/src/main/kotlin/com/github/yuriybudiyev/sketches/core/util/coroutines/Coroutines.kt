@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.util.coroutines
 
 import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlinx.coroutines.CancellationException
 
@@ -34,7 +35,10 @@ inline fun <T: Throwable> excludeCancellation(
     block: (thrown: T) -> Unit,
 ) {
     contract {
-        callsInPlace(block)
+        callsInPlace(
+            block,
+            InvocationKind.AT_MOST_ONCE
+        )
     }
 
     if (thrown is CancellationException) {

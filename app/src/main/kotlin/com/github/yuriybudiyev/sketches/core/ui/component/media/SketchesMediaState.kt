@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.ui.component.media
 
 import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import android.content.Context
 import android.net.Uri
@@ -630,7 +631,10 @@ private inline fun Player.callWithCheck(
     crossinline available: Player.() -> Unit,
 ) {
     contract {
-        callsInPlace(available)
+        callsInPlace(
+            available,
+            InvocationKind.AT_MOST_ONCE
+        )
     }
     if (isCommandAvailable(command)) {
         available()
@@ -644,8 +648,14 @@ private inline fun <T> Player.callWithCheck(
     unavailable: Player.() -> T,
 ): T {
     contract {
-        callsInPlace(available)
-        callsInPlace(unavailable)
+        callsInPlace(
+            available,
+            InvocationKind.AT_MOST_ONCE
+        )
+        callsInPlace(
+            unavailable,
+            InvocationKind.AT_MOST_ONCE
+        )
     }
     return if (isCommandAvailable(command)) {
         available()

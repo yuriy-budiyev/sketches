@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.util.log
 
 import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import android.util.Log
 import com.github.yuriybudiyev.sketches.BuildConfig
@@ -36,7 +37,10 @@ inline fun log(
     lazyMessage: () -> String,
 ) {
     contract {
-        callsInPlace(lazyMessage)
+        callsInPlace(
+            lazyMessage,
+            InvocationKind.AT_MOST_ONCE
+        )
     }
 
     if (BuildConfig.DEBUG) {
