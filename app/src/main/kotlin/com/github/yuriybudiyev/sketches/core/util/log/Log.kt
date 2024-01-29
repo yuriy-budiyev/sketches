@@ -24,13 +24,21 @@
 
 package com.github.yuriybudiyev.sketches.core.util.log
 
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import android.util.Log
 import com.github.yuriybudiyev.sketches.BuildConfig
 
+@Suppress("unused")
+@OptIn(ExperimentalContracts::class)
 inline fun log(
     throwable: Throwable? = null,
     lazyMessage: () -> String,
 ) {
+    contract {
+        callsInPlace(lazyMessage)
+    }
+
     if (BuildConfig.DEBUG) {
         Log.d(
             "SketchesDebug",
