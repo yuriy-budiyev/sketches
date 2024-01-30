@@ -33,7 +33,7 @@ import androidx.annotation.CallSuper
 import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
-import com.github.yuriybudiyev.sketches.core.util.data.contentUriFor
+import com.github.yuriybudiyev.sketches.core.util.content.contentUriFor
 
 abstract class MediaObservingViewModel(context: Context): ViewModel() {
 

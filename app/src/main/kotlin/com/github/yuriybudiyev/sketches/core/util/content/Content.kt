@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.util.data
+package com.github.yuriybudiyev.sketches.core.util.content
 
 import android.net.Uri
 import android.os.Build
