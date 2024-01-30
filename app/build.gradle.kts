@@ -106,7 +106,7 @@ dependencies {
     androidTestImplementation(sketches.androidx.compose.ui.test.junit)
     androidTestImplementation(sketches.hilt.test)
     kspAndroidTest(sketches.bundles.hilt.compiler)
-    baselineProfile(project(mapOf("path" to ":baselineprofile")))
+    baselineProfile(project(":baselineprofile"))
 }
 
 baselineProfile {
