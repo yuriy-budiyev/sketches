@@ -64,7 +64,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
-import com.github.yuriybudiyev.sketches.core.util.annotation.TrueOrFalse
 
 @Composable
 @OptIn(UnstableApi::class)
@@ -90,13 +89,10 @@ fun rememberSketchesMediaState(
 @Stable
 interface SketchesMediaState {
 
-    @get:TrueOrFalse
     val isLoading: Boolean
 
-    @get:TrueOrFalse
     val isPlaying: Boolean
 
-    @get:TrueOrFalse
     val isPlaybackError: Boolean
 
     fun play()
@@ -105,21 +101,18 @@ interface SketchesMediaState {
 
     fun stop()
 
-    @get:TrueOrFalse
     val isVolumeEnabled: Boolean
 
     fun enableVolume()
 
     fun disableVolume()
 
-    @get:TrueOrFalse
     val isRepeatEnabled: Boolean
 
     fun enableRepeat()
 
     fun disableRepeat()
 
-    @get:TrueOrFalse
     val isVideoVisible: Boolean
 
     @get:FloatRange(
@@ -153,9 +146,9 @@ interface SketchesMediaState {
     fun open(
         uri: Uri,
         position: Long = 0L,
-        @TrueOrFalse playWhenReady: Boolean = false,
-        @TrueOrFalse volumeEnabled: Boolean = false,
-        @TrueOrFalse repeatEnabled: Boolean = false,
+        playWhenReady: Boolean = false,
+        volumeEnabled: Boolean = false,
+        repeatEnabled: Boolean = false,
     )
 
     fun close()
@@ -178,21 +171,17 @@ private class SketchesMediaStateImpl(
         .setMediaSourceFactory(ProgressiveMediaSource.Factory(DefaultDataSource.Factory(context)))
         .build()
 
-    @get:TrueOrFalse
-    @setparam:TrueOrFalse
     override var isLoading: Boolean by mutableStateOf(player.isLoading)
         private set
 
-    override fun onIsLoadingChanged(@TrueOrFalse isLoading: Boolean) {
+    override fun onIsLoadingChanged(isLoading: Boolean) {
         this.isLoading = isLoading
     }
 
-    @get:TrueOrFalse
-    @setparam:TrueOrFalse
     override var isPlaying: Boolean by mutableStateOf(player.isPlaying)
         private set
 
-    override fun onIsPlayingChanged(@TrueOrFalse isPlaying: Boolean) {
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
         this.isPlaying = isPlaying
         if (isPlaying) {
             updatePosition()
@@ -208,8 +197,6 @@ private class SketchesMediaStateImpl(
         }
     }
 
-    @get:TrueOrFalse
-    @setparam:TrueOrFalse
     override var isPlaybackError: Boolean by mutableStateOf(player.playerError != null)
         private set
 
@@ -239,7 +226,6 @@ private class SketchesMediaStateImpl(
         }
     }
 
-    @TrueOrFalse
     private fun isVolumeEnabledInternal(): Boolean =
         player.callWithCheck(
             Player.COMMAND_GET_VOLUME,
@@ -247,8 +233,6 @@ private class SketchesMediaStateImpl(
             unavailable = { false },
         )
 
-    @get:TrueOrFalse
-    @setparam:TrueOrFalse
     override var isVolumeEnabled: Boolean by mutableStateOf(isVolumeEnabledInternal())
         private set
 
@@ -268,12 +252,9 @@ private class SketchesMediaStateImpl(
         }
     }
 
-    @TrueOrFalse
     private fun isRepeatEnabledInternal(@Player.RepeatMode repeatMode: Int = player.repeatMode): Boolean =
         repeatMode != Player.REPEAT_MODE_OFF
 
-    @get:TrueOrFalse
-    @setparam:TrueOrFalse
     override var isRepeatEnabled: Boolean by mutableStateOf(isRepeatEnabledInternal())
         private set
 
@@ -293,12 +274,9 @@ private class SketchesMediaStateImpl(
         }
     }
 
-    @TrueOrFalse
     private fun isVideoVisibleInternal(videoSize: VideoSize = player.videoSize): Boolean =
         videoSize.width > 0 && videoSize.height > 0
 
-    @get:TrueOrFalse
-    @setparam:TrueOrFalse
     override var isVideoVisible: Boolean by mutableStateOf(isVideoVisibleInternal())
         private set
 
@@ -445,7 +423,6 @@ private class SketchesMediaStateImpl(
         updatePosition()
     }
 
-    @TrueOrFalse
     private fun checkEndOfContent(
         position: Long = this.position,
         duration: Long = this.duration,
@@ -493,9 +470,9 @@ private class SketchesMediaStateImpl(
     override fun open(
         uri: Uri,
         position: Long,
-        @TrueOrFalse playWhenReady: Boolean,
-        @TrueOrFalse volumeEnabled: Boolean,
-        @TrueOrFalse repeatEnabled: Boolean,
+        playWhenReady: Boolean,
+        volumeEnabled: Boolean,
+        repeatEnabled: Boolean,
     ) {
         player.callWithCheck(Player.COMMAND_CHANGE_MEDIA_ITEMS) {
             setMediaItem(
