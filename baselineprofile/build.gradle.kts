@@ -45,7 +45,7 @@ android {
 
 baselineProfile {
     //managedDevices += "pixel6Api33"
-    useConnectedDevices = false
+    useConnectedDevices = true
 }
 
 dependencies {

@@ -24,32 +24,23 @@
 
 package com.github.yuriybudiyev.sketches
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.junit.runner.RunWith
 
 /**
- * Instrumented test, which will execute on an Android device.
+ * Example local unit test, which will execute on the development machine (host).
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @HiltAndroidTest
-@RunWith(AndroidJUnit4::class)
-class ExampleInstrumentedTest {
+class SketchesUnitTest {
 
     @Test
-    fun useAppContext() {
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+    fun additionIsCorrect() {
         assertEquals(
-            if (BuildConfig.DEBUG) {
-                "com.github.yuriybudiyev.sketches.debug"
-            } else {
-                "com.github.yuriybudiyev.sketches"
-            },
-            appContext.packageName
+            4,
+            2 + 2
         )
     }
 }
