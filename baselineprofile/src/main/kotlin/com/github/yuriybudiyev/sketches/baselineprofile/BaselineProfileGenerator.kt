@@ -28,9 +28,11 @@ import java.util.regex.Pattern
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import android.Manifest
 import android.os.Build
 import androidx.benchmark.macro.MacrobenchmarkScope
 import androidx.benchmark.macro.junit4.BaselineProfileRule
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.Configurator
@@ -49,9 +51,39 @@ class BaselineProfileGenerator {
 
     @Test
     fun generate() {
-        baselineProfileRule.collect("com.github.yuriybudiyev.sketches") {
+        val packageName = "com.github.yuriybudiyev.sketches"
+        with(InstrumentationRegistry.getInstrumentation().uiAutomation) {
+            when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                    grantRuntimePermission(
+                        packageName,
+                        Manifest.permission.READ_MEDIA_IMAGES
+                    )
+                    grantRuntimePermission(
+                        packageName,
+                        Manifest.permission.READ_MEDIA_VIDEO
+                    )
+                }
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                    grantRuntimePermission(
+                        packageName,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    )
+                }
+                else -> {
+                    grantRuntimePermission(
+                        packageName,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    )
+                    grantRuntimePermission(
+                        packageName,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+                }
+            }
+        }
+        baselineProfileRule.collect(packageName) {
             startActivityAndWait()
-            grantMediaPermission()
             scrollMediaGrid()
             clickOnImage()
             waitMediaPagerAndPressBack()
@@ -62,21 +94,6 @@ class BaselineProfileGenerator {
             waitMediaAndPressBack()
             navigateToImages()
         }
-    }
-}
-
-private fun MacrobenchmarkScope.grantMediaPermission() {
-    device.waitForObject(
-        By.text(
-            when {
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> "Allow all"
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> "Allow"
-                else -> "ALLOW"
-            }
-        )
-    ) { allowButton ->
-        allowButton.click()
-        device.waitForIdle()
     }
 }
 
