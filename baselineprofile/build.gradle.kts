@@ -49,8 +49,12 @@ baselineProfile {
 }
 
 dependencies {
+    implementation(sketches.bundles.kotlin)
+    implementation(sketches.bundles.androidx.annotation)
     implementation(sketches.androidx.test.junit)
     implementation(sketches.androidx.test.espresso)
     implementation(sketches.androidx.test.uiautomator)
     implementation(sketches.androidx.baselineprofile)
+    implementation(sketches.guava)
+    implementation(sketches.okio)
 }

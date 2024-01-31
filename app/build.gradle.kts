@@ -93,6 +93,7 @@ dependencies {
     implementation(sketches.androidx.versionedparcelable)
     implementation(sketches.androidx.profileinstaller)
     implementation(sketches.androidx.startup)
+    implementation(sketches.guava)
     implementation(sketches.okhttp)
     implementation(sketches.okio)
     ksp(sketches.bundles.hilt.compiler)
