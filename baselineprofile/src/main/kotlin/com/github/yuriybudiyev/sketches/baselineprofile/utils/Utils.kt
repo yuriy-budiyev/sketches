@@ -39,7 +39,7 @@ const val PACKAGE_NAME = "com.github.yuriybudiyev.sketches"
 @OptIn(ExperimentalContracts::class)
 inline fun UiDevice.waitForObject(
     selector: BySelector,
-    block: (UiObject2) -> Unit,
+    block: UiDevice.(UiObject2) -> Unit,
 ) {
     contract {
         callsInPlace(
@@ -55,6 +55,8 @@ inline fun UiDevice.waitForObject(
                 block(obj)
                 done = true
             } catch (_: StaleObjectException) {
+            } finally {
+                obj.recycle()
             }
         } else {
             done = true
