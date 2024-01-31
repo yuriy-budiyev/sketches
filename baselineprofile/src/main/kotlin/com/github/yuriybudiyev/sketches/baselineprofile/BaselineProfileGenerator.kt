@@ -51,9 +51,8 @@ class BaselineProfileGenerator {
 
     @Test
     fun generate() {
-        val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val packageName = instrumentation.targetContext.packageName
-        with(instrumentation.uiAutomation) {
+        val packageName = "com.github.yuriybudiyev.sketches"
+        with(InstrumentationRegistry.getInstrumentation().uiAutomation) {
             when {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
                     grantRuntimePermission(
