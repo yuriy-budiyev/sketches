@@ -16,6 +16,10 @@ android {
         jvmTarget = sketches.versions.java.get()
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         minSdk = 28
         targetSdk = 34
