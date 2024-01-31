@@ -51,9 +51,8 @@ baselineProfile {
 dependencies {
     implementation(sketches.bundles.kotlin)
     implementation(sketches.bundles.androidx.annotation)
-    implementation(sketches.androidx.test.junit)
-    implementation(sketches.androidx.test.espresso)
-    implementation(sketches.androidx.test.uiautomator)
+    implementation(sketches.bundles.androidx.test)
+    implementation(sketches.bundles.androidx.tracing)
     implementation(sketches.androidx.baselineprofile)
     implementation(sketches.guava)
     implementation(sketches.okio)

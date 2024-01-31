@@ -76,9 +76,9 @@ android {
 
 dependencies {
     implementation(sketches.bundles.kotlin)
+    implementation(sketches.bundles.androidx.annotation)
     implementation(sketches.bundles.androidx.core)
     implementation(sketches.bundles.androidx.arch.core)
-    implementation(sketches.bundles.androidx.annotation)
     implementation(sketches.bundles.androidx.collection)
     implementation(sketches.bundles.androidx.concurrent)
     implementation(sketches.bundles.androidx.lifecycle)
@@ -88,6 +88,7 @@ dependencies {
     implementation(sketches.bundles.androidx.window)
     implementation(sketches.bundles.androidx.work)
     implementation(sketches.bundles.androidx.media3)
+    implementation(sketches.bundles.androidx.tracing)
     implementation(sketches.bundles.hilt)
     implementation(sketches.bundles.coil)
     implementation(sketches.androidx.versionedparcelable)
