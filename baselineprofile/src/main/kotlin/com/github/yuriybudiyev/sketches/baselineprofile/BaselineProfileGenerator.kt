@@ -25,22 +25,15 @@
 package com.github.yuriybudiyev.sketches.baselineprofile
 
 import java.util.regex.Pattern
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 import android.Manifest
 import android.os.Build
 import androidx.benchmark.macro.MacrobenchmarkScope
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
-import androidx.test.uiautomator.BySelector
-import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.Direction
-import androidx.test.uiautomator.StaleObjectException
-import androidx.test.uiautomator.UiDevice
-import androidx.test.uiautomator.UiObject2
-import androidx.test.uiautomator.Until
+import com.github.yuriybudiyev.sketches.baselineprofile.utils.PACKAGE_NAME
+import com.github.yuriybudiyev.sketches.baselineprofile.utils.waitForObject
 import org.junit.Rule
 import org.junit.Test
 
@@ -51,38 +44,37 @@ class BaselineProfileGenerator {
 
     @Test
     fun generate() {
-        val packageName = "com.github.yuriybudiyev.sketches"
         with(InstrumentationRegistry.getInstrumentation().uiAutomation) {
             when {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
                     grantRuntimePermission(
-                        packageName,
+                        PACKAGE_NAME,
                         Manifest.permission.READ_MEDIA_IMAGES
                     )
                     grantRuntimePermission(
-                        packageName,
+                        PACKAGE_NAME,
                         Manifest.permission.READ_MEDIA_VIDEO
                     )
                 }
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
                     grantRuntimePermission(
-                        packageName,
+                        PACKAGE_NAME,
                         Manifest.permission.READ_EXTERNAL_STORAGE
                     )
                 }
                 else -> {
                     grantRuntimePermission(
-                        packageName,
+                        PACKAGE_NAME,
                         Manifest.permission.READ_EXTERNAL_STORAGE
                     )
                     grantRuntimePermission(
-                        packageName,
+                        PACKAGE_NAME,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE
                     )
                 }
             }
         }
-        baselineProfileRule.collect(packageName) {
+        baselineProfileRule.collect(PACKAGE_NAME) {
             startActivityAndWait()
             scrollMediaGrid()
             clickOnImage()
@@ -153,37 +145,5 @@ private fun MacrobenchmarkScope.waitMediaAndPressBack() {
     device.waitForObject(By.res(Pattern.compile("media_item_.*"))) {
         device.pressBack()
         device.waitForIdle()
-    }
-}
-
-private fun UiDevice.waitForObject(selector: BySelector): UiObject2? =
-    wait(
-        Until.findObject(selector),
-        Configurator.getInstance().waitForSelectorTimeout
-    )
-
-@OptIn(ExperimentalContracts::class)
-private inline fun UiDevice.waitForObject(
-    selector: BySelector,
-    block: (UiObject2) -> Unit,
-) {
-    contract {
-        callsInPlace(
-            block,
-            InvocationKind.UNKNOWN
-        )
-    }
-    var done = false
-    while (!done) {
-        val obj = waitForObject(selector)
-        if (obj != null) {
-            try {
-                block(obj)
-                done = true
-            } catch (_: StaleObjectException) {
-            }
-        } else {
-            done = true
-        }
     }
 }

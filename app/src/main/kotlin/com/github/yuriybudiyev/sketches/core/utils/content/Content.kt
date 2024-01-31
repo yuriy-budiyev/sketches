@@ -22,27 +22,27 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.util.coroutines
+package com.github.yuriybudiyev.sketches.core.utils.content
 
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
-import kotlinx.coroutines.CancellationException
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 
-@OptIn(ExperimentalContracts::class)
-inline fun <T: Throwable> excludeCancellation(
-    thrown: T,
-    block: (thrown: T) -> Unit,
-) {
-    contract {
-        callsInPlace(
-            block,
-            InvocationKind.AT_MOST_ONCE
-        )
+fun contentUriFor(mediaType: MediaType): Uri =
+    when (mediaType) {
+        MediaType.Image -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+            } else {
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            }
+        }
+        MediaType.Video -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+            } else {
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+            }
+        }
     }
-
-    if (thrown is CancellationException) {
-        return
-    }
-    block(thrown)
-}

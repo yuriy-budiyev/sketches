@@ -35,7 +35,7 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
-import com.github.yuriybudiyev.sketches.core.util.content.contentUriFor
+import com.github.yuriybudiyev.sketches.core.utils.content.contentUriFor
 
 class MediaStoreRepositoryImpl(private val context: Context): MediaStoreRepository {
 

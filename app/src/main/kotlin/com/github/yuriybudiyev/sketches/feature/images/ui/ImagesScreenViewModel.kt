@@ -35,7 +35,7 @@ import kotlinx.coroutines.withContext
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
-import com.github.yuriybudiyev.sketches.core.util.coroutines.excludeCancellation
+import com.github.yuriybudiyev.sketches.core.utils.coroutines.excludeCancellation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 

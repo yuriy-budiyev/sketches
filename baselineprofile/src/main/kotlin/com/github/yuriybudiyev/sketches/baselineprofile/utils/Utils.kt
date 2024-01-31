@@ -22,32 +22,48 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.util.log
+package com.github.yuriybudiyev.sketches.baselineprofile.utils
 
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
-import android.util.Log
-import com.github.yuriybudiyev.sketches.BuildConfig
+import androidx.test.uiautomator.BySelector
+import androidx.test.uiautomator.Configurator
+import androidx.test.uiautomator.StaleObjectException
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject2
+import androidx.test.uiautomator.Until
 
-@Suppress("unused")
+const val PACKAGE_NAME = "com.github.yuriybudiyev.sketches"
+
 @OptIn(ExperimentalContracts::class)
-inline fun log(
-    throwable: Throwable? = null,
-    lazyMessage: () -> String,
+inline fun UiDevice.waitForObject(
+    selector: BySelector,
+    block: (UiObject2) -> Unit,
 ) {
     contract {
         callsInPlace(
-            lazyMessage,
-            InvocationKind.AT_MOST_ONCE
+            block,
+            InvocationKind.UNKNOWN
         )
     }
-
-    if (BuildConfig.DEBUG) {
-        Log.d(
-            "SketchesDebug",
-            lazyMessage(),
-            throwable
-        )
+    var done = false
+    while (!done) {
+        val obj = waitForObject(selector)
+        if (obj != null) {
+            try {
+                block(obj)
+                done = true
+            } catch (_: StaleObjectException) {
+            }
+        } else {
+            done = true
+        }
     }
 }
+
+fun UiDevice.waitForObject(selector: BySelector): UiObject2? =
+    wait(
+        Until.findObject(selector),
+        Configurator.getInstance().waitForSelectorTimeout
+    )

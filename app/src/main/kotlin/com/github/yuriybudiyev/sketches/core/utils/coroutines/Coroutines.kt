@@ -22,22 +22,27 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.util.ui
+package com.github.yuriybudiyev.sketches.core.utils.coroutines
 
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.lazy.LazyListState
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
+import kotlinx.coroutines.CancellationException
 
-suspend fun LazyListState.animateScrollToItemCentered(
-    index: Int,
-    sizePx: Int,
+@OptIn(ExperimentalContracts::class)
+inline fun <T: Throwable> excludeCancellation(
+    thrown: T,
+    block: (thrown: T) -> Unit,
 ) {
-    with(layoutInfo) {
-        animateScrollToItem(
-            index,
-            beforeContentPadding + sizePx / 2 - when (orientation) {
-                Orientation.Vertical -> viewportSize.height
-                Orientation.Horizontal -> viewportSize.width
-            } / 2
+    contract {
+        callsInPlace(
+            block,
+            InvocationKind.AT_MOST_ONCE
         )
     }
+
+    if (thrown is CancellationException) {
+        return
+    }
+    block(thrown)
 }

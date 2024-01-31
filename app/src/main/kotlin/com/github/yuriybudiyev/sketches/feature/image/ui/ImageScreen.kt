@@ -94,7 +94,7 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
-import com.github.yuriybudiyev.sketches.core.util.ui.animateScrollToItemCentered
+import com.github.yuriybudiyev.sketches.core.utils.ui.animateScrollToItemCentered
 
 @Composable
 fun ImageRoute(

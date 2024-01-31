@@ -22,27 +22,22 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.util.content
+package com.github.yuriybudiyev.sketches.core.utils.ui
 
-import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
-import com.github.yuriybudiyev.sketches.core.data.model.MediaType
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.lazy.LazyListState
 
-fun contentUriFor(mediaType: MediaType): Uri =
-    when (mediaType) {
-        MediaType.Image -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-            } else {
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-            }
-        }
-        MediaType.Video -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-            } else {
-                MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-            }
-        }
+suspend fun LazyListState.animateScrollToItemCentered(
+    index: Int,
+    sizePx: Int,
+) {
+    with(layoutInfo) {
+        animateScrollToItem(
+            index,
+            beforeContentPadding + sizePx / 2 - when (orientation) {
+                Orientation.Vertical -> viewportSize.height
+                Orientation.Horizontal -> viewportSize.width
+            } / 2
+        )
     }
+}
