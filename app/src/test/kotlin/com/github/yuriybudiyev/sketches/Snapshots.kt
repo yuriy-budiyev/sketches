@@ -24,13 +24,13 @@
 
 package com.github.yuriybudiyev.sketches
 
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.StateObject
 import androidx.compose.runtime.snapshots.StateRecord
 import androidx.compose.runtime.snapshots.readable
 import androidx.compose.runtime.snapshots.writable
-import org.junit.Test
 
 class Snapshots {
 

@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.baselineprofile
 
 import java.util.regex.Pattern
+import kotlin.test.Test
 import android.Manifest
 import android.os.Build
 import androidx.benchmark.macro.MacrobenchmarkScope
@@ -35,7 +36,6 @@ import androidx.test.uiautomator.Direction
 import com.github.yuriybudiyev.sketches.baselineprofile.utils.PACKAGE_NAME
 import com.github.yuriybudiyev.sketches.baselineprofile.utils.waitForObject
 import org.junit.Rule
-import org.junit.Test
 
 class BaselineProfileGenerator {
 
