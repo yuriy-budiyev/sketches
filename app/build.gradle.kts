@@ -102,11 +102,13 @@ dependencies {
     debugImplementation(sketches.androidx.compose.ui.test.manifest)
     testImplementation(sketches.junit)
     testImplementation(sketches.hilt.test)
+    testImplementation(sketches.kotlin.test)
     kspTest(sketches.bundles.hilt.compiler)
     androidTestImplementation(sketches.bundles.androidx.test)
     androidTestImplementation(sketches.androidx.navigation.test)
     androidTestImplementation(sketches.androidx.compose.ui.test.junit)
     androidTestImplementation(sketches.hilt.test)
+    androidTestImplementation(sketches.kotlin.test)
     kspAndroidTest(sketches.bundles.hilt.compiler)
     baselineProfile(project(":baselineprofile"))
 }
