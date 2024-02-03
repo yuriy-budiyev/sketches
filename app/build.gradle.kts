@@ -111,17 +111,6 @@ dependencies {
     androidTestImplementation(sketches.hilt.test)
     kspAndroidTest(sketches.bundles.hilt.compiler)
     baselineProfile(project(":baselineprofile"))
-
-    constraints {
-        implementation(sketches.guava) {
-            attributes {
-                attribute(
-                    TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
-                    objects.named(TargetJvmEnvironment.STANDARD_JVM)
-                )
-            }
-        }
-    }
 }
 
 baselineProfile {
