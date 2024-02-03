@@ -63,7 +63,7 @@ dependencies {
     implementation(sketches.okio)
 
     constraints {
-        implementation("com.google.guava:guava") {
+        implementation(sketches.guava) {
             attributes {
                 attribute(
                     TargetJvmEnvironment.TARGET_JVM_ENVIRONMENT_ATTRIBUTE,
