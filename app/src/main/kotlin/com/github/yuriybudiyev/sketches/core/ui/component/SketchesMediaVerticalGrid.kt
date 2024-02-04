@@ -37,6 +37,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.ui.dimen.SketchesDimens
 
 @Composable
 fun SketchesMediaVerticalGrid(
@@ -68,7 +69,7 @@ fun SketchesMediaVerticalGrid(
                     .aspectRatio(ratio = 1f)
                     .clip(shape = MaterialTheme.shapes.small)
                     .border(
-                        width = 1.dp,
+                        width = SketchesDimens.MediaItemBorderThickness,
                         color = MaterialTheme.colorScheme.onBackground,
                         shape = MaterialTheme.shapes.small
                     )

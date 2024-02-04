@@ -61,6 +61,7 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLazyVerticalGrid
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.dimen.SketchesDimens
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavigationDestination
 
 @Composable
@@ -169,7 +170,7 @@ private fun BucketsScreenLayout(
                         .aspectRatio(ratio = 1f)
                         .clip(shape = MaterialTheme.shapes.small)
                         .border(
-                            width = 1.dp,
+                            width = SketchesDimens.MediaItemBorderThickness,
                             color = MaterialTheme.colorScheme.onBackground,
                             shape = MaterialTheme.shapes.small,
                         ),

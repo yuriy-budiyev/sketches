@@ -73,7 +73,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -92,6 +91,7 @@ import com.github.yuriybudiyev.sketches.core.ui.component.SketchesMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.component.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.component.media.rememberSketchesMediaState
+import com.github.yuriybudiyev.sketches.core.ui.dimen.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.utils.ui.animateScrollToItemCentered
 
@@ -204,8 +204,7 @@ private fun ImageScreenLayout(
     val onShareUpdated by rememberUpdatedState(onShare)
     val pagerState = rememberPagerState(currentIndex) { filesUpdated.size }
     val barState = rememberLazyListState(currentIndex)
-    val barItemSize = 56.dp
-    val barItemSizePx = with(LocalDensity.current) { barItemSize.roundToPx() }
+    val barItemSize = with(LocalDensity.current) { SketchesDimens.MediaBarItemSize.roundToPx() }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { result ->
@@ -242,7 +241,7 @@ private fun ImageScreenLayout(
             coroutineScope.launch {
                 barState.animateScrollToItemCentered(
                     page,
-                    barItemSizePx,
+                    barItemSize,
                 )
             }
         }
@@ -260,15 +259,14 @@ private fun ImageScreenLayout(
             MediaBar(
                 state = barState,
                 items = filesUpdated,
-                itemSize = barItemSize,
                 onItemClick = { index, _ ->
                     coroutineScope.launch {
                         pagerState.animateScrollToPage(index)
                     }
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp),
+                    .height(SketchesDimens.BottomBarHeight)
+                    .fillMaxWidth(),
             )
         }
         TopBar(
@@ -483,7 +481,6 @@ private fun VideoPage(
 private fun MediaBar(
     state: LazyListState,
     items: List<MediaStoreFile>,
-    itemSize: Dp,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -494,9 +491,9 @@ private fun MediaBar(
         modifier = modifier.semantics {
             testTag = "media_bar"
         },
-        contentPadding = PaddingValues(horizontal = 4.dp),
+        contentPadding = PaddingValues(horizontal = SketchesDimens.MediaBarItemSpacing),
         horizontalArrangement = Arrangement.spacedBy(
-            space = 4.dp,
+            space = SketchesDimens.MediaBarItemSpacing,
             alignment = Alignment.CenterHorizontally,
         ),
         verticalAlignment = Alignment.CenterVertically,
@@ -512,10 +509,10 @@ private fun MediaBar(
                 type = file.mediaType,
                 iconPadding = 2.dp,
                 modifier = Modifier
-                    .size(size = itemSize)
+                    .size(size = SketchesDimens.MediaBarItemSize)
                     .clip(shape = MaterialTheme.shapes.small)
                     .border(
-                        width = 1.dp,
+                        width = SketchesDimens.MediaItemBorderThickness,
                         color = MaterialTheme.colorScheme.onBackground,
                         shape = MaterialTheme.shapes.small,
                     )

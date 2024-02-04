@@ -68,6 +68,7 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesMessage
 import com.github.yuriybudiyev.sketches.core.ui.component.SketchesOutlinedButton
+import com.github.yuriybudiyev.sketches.core.ui.dimen.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.utils.permissions.checkAllPermissionsGranted
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 
@@ -119,9 +120,9 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                         containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f),
                         contentColor = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier
+                            .height(SketchesDimens.BottomBarHeight)
                             .align(Alignment.BottomStart)
                             .fillMaxWidth()
-                            .height(64.dp)
                     ) {
                         currentDestinations.forEach { destination ->
                             val selected = destination == currentDestination

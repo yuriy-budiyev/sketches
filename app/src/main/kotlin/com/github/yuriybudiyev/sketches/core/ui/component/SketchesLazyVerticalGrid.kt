@@ -32,6 +32,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.github.yuriybudiyev.sketches.core.ui.dimen.SketchesDimens
 
 @Composable
 fun SketchesLazyVerticalGrid(
@@ -44,13 +45,21 @@ fun SketchesLazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 96.dp),
         modifier = modifier,
         contentPadding = PaddingValues(
-            start = 8.dp,
-            top = if (overlayTop) 64.dp else 8.dp,
-            end = 8.dp,
-            bottom = if (overlayBottom) 64.dp else 8.dp,
+            start = SketchesDimens.LazyGridItemSpacing,
+            top = if (overlayTop) {
+                SketchesDimens.LazyGridOverlayHeight
+            } else {
+                SketchesDimens.LazyGridItemSpacing
+            },
+            end = SketchesDimens.LazyGridItemSpacing,
+            bottom = if (overlayBottom) {
+                SketchesDimens.LazyGridOverlayHeight
+            } else {
+                SketchesDimens.LazyGridItemSpacing
+            },
         ),
-        horizontalArrangement = Arrangement.spacedBy(space = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(space = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(space = SketchesDimens.LazyGridItemSpacing),
+        verticalArrangement = Arrangement.spacedBy(space = SketchesDimens.LazyGridItemSpacing),
         content = content
     )
 }

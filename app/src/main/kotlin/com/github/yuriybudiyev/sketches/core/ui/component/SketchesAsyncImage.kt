@@ -37,9 +37,9 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.ui.dimen.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icon.SketchesIcons
 
 @Composable
@@ -92,7 +92,7 @@ private fun StateIcon(
         Icon(
             imageVector = icon,
             contentDescription = description,
-            modifier = Modifier.size(48.dp),
+            modifier = Modifier.size(SketchesDimens.AsyncImageStateIconSize),
             tint = MaterialTheme.colorScheme.onBackground
         )
     }
