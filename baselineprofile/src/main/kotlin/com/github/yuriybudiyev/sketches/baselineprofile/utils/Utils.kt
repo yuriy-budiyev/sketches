@@ -34,7 +34,7 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.Until
 
-const val PACKAGE_NAME = "com.github.yuriybudiyev.sketches"
+const val PackageName = "com.github.yuriybudiyev.sketches"
 
 @OptIn(ExperimentalContracts::class)
 inline fun UiDevice.waitForObject(

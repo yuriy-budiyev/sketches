@@ -33,7 +33,7 @@ import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Direction
-import com.github.yuriybudiyev.sketches.baselineprofile.utils.PACKAGE_NAME
+import com.github.yuriybudiyev.sketches.baselineprofile.utils.PackageName
 import com.github.yuriybudiyev.sketches.baselineprofile.utils.waitForObject
 import org.junit.Rule
 
@@ -48,33 +48,33 @@ class BaselineProfileGenerator {
             when {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
                     grantRuntimePermission(
-                        PACKAGE_NAME,
+                        PackageName,
                         Manifest.permission.READ_MEDIA_IMAGES
                     )
                     grantRuntimePermission(
-                        PACKAGE_NAME,
+                        PackageName,
                         Manifest.permission.READ_MEDIA_VIDEO
                     )
                 }
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
                     grantRuntimePermission(
-                        PACKAGE_NAME,
+                        PackageName,
                         Manifest.permission.READ_EXTERNAL_STORAGE
                     )
                 }
                 else -> {
                     grantRuntimePermission(
-                        PACKAGE_NAME,
+                        PackageName,
                         Manifest.permission.READ_EXTERNAL_STORAGE
                     )
                     grantRuntimePermission(
-                        PACKAGE_NAME,
+                        PackageName,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE
                     )
                 }
             }
         }
-        baselineProfileRule.collect(PACKAGE_NAME) {
+        baselineProfileRule.collect(PackageName) {
             startActivityAndWait()
             scrollMediaGrid()
             clickOnImage()
