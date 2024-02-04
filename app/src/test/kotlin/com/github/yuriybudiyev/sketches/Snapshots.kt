@@ -178,7 +178,10 @@ class Size(
     ): StateRecord() {
 
         override fun create(): StateRecord =
-            StateStateRecord()
+            StateStateRecord(
+                width,
+                height
+            )
 
         override fun assign(value: StateRecord) {
             value as StateStateRecord
