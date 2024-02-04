@@ -164,24 +164,24 @@ class Size(
         get() = records
 
     override fun prependStateRecord(value: StateRecord) {
-        records = value as SizeStateStateRecord
+        records = value as StateStateRecord
     }
 
-    private var records = SizeStateStateRecord(
+    private var records = StateStateRecord(
         width,
         height
     )
 
-    private class SizeStateStateRecord(
+    private class StateStateRecord(
         var width: Int = 0,
         var height: Int = 0,
     ): StateRecord() {
 
         override fun create(): StateRecord =
-            SizeStateStateRecord()
+            StateStateRecord()
 
         override fun assign(value: StateRecord) {
-            value as SizeStateStateRecord
+            value as StateStateRecord
             width = value.width
             height = value.height
         }
