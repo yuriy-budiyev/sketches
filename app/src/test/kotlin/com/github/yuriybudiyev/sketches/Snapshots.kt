@@ -173,8 +173,8 @@ class Size(
     )
 
     private class StateStateRecord(
-        var width: Int = 0,
-        var height: Int = 0,
+        var width: Int,
+        var height: Int,
     ): StateRecord() {
 
         override fun create(): StateRecord =
