@@ -27,7 +27,6 @@ package com.github.yuriybudiyev.sketches.core.ui.component
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -67,11 +66,11 @@ fun SketchesMediaVerticalGrid(
                 iconPadding = 4.dp,
                 modifier = Modifier
                     .aspectRatio(ratio = 1f)
-                    .clip(shape = RoundedCornerShape(8.dp))
+                    .clip(shape = MaterialTheme.shapes.small)
                     .border(
                         width = 1.dp,
                         color = MaterialTheme.colorScheme.onBackground,
-                        shape = RoundedCornerShape(8.dp)
+                        shape = MaterialTheme.shapes.small
                     )
                     .clickable {
                         onItemClickUpdated(

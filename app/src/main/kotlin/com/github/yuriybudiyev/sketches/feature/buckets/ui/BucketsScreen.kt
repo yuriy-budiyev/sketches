@@ -34,7 +34,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -149,7 +148,7 @@ private fun BucketsScreenLayout(
             val item = bucketsUpdated[index]
             Column(
                 modifier = Modifier
-                    .clip(shape = RoundedCornerShape(8.dp))
+                    .clip(shape = MaterialTheme.shapes.small)
                     .clickable {
                         coroutineScope.launch {
                             onBucketClickUpdated(
@@ -168,11 +167,11 @@ private fun BucketsScreenLayout(
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(ratio = 1f)
-                        .clip(shape = RoundedCornerShape(8.dp))
+                        .clip(shape = MaterialTheme.shapes.small)
                         .border(
                             width = 1.dp,
                             color = MaterialTheme.colorScheme.onBackground,
-                            shape = RoundedCornerShape(8.dp),
+                            shape = MaterialTheme.shapes.small,
                         ),
                     contentScale = ContentScale.Crop,
                     enableLoadingIndicator = true,

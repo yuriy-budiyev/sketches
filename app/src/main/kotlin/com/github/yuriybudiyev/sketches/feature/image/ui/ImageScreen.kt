@@ -51,7 +51,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -513,12 +512,12 @@ private fun MediaBar(
                 type = file.mediaType,
                 iconPadding = 2.dp,
                 modifier = Modifier
-                    .size(itemSize)
-                    .clip(RoundedCornerShape(8.dp))
+                    .size(size = itemSize)
+                    .clip(shape = MaterialTheme.shapes.small)
                     .border(
                         width = 1.dp,
                         color = MaterialTheme.colorScheme.onBackground,
-                        shape = RoundedCornerShape(8.dp),
+                        shape = MaterialTheme.shapes.small,
                     )
                     .clickable {
                         onItemClickUpdated(
