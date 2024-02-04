@@ -167,6 +167,20 @@ class Size(
         records = value as StateStateRecord
     }
 
+    override fun mergeRecords(
+        previous: StateRecord,
+        current: StateRecord,
+        applied: StateRecord,
+    ): StateRecord? {
+        val currentRecord = current as StateStateRecord
+        val appliedRecord = applied as StateStateRecord
+        return if (currentRecord.width == appliedRecord.width && currentRecord.height == appliedRecord.height) {
+            currentRecord
+        } else {
+            null
+        }
+    }
+
     private var records = StateStateRecord(
         width,
         height
