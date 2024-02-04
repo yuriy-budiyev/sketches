@@ -628,7 +628,7 @@ private class SketchesMediaStateImplSaver(
 @kotlin.OptIn(ExperimentalContracts::class)
 private inline fun Player.callWithCheck(
     @Player.Command command: Int,
-    crossinline available: Player.() -> Unit,
+    available: Player.() -> Unit,
 ) {
     contract {
         callsInPlace(
