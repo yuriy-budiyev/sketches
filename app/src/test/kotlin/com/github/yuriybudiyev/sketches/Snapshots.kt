@@ -184,9 +184,9 @@ class Size(
             )
 
         override fun assign(value: StateRecord) {
-            value as StateStateRecord
-            width = value.width
-            height = value.height
+            val record = value as StateStateRecord
+            width = record.width
+            height = record.height
         }
     }
 }
