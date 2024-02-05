@@ -14,7 +14,7 @@ Android gallery app based on Compose, Coil and Media3.
 
 #### Album
 
-<img src="https://github.com/yuriy-budiyev/sketches/blob/main/screenshots/screenshot_bucket.png?raw=true" width="320" alt="Albums screenshot">
+<img src="https://github.com/yuriy-budiyev/sketches/blob/main/screenshots/screenshot_bucket.png?raw=true" width="320" alt="Album screenshot">
 
 #### Image
 
