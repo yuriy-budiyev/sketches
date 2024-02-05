@@ -75,8 +75,7 @@ import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
-    val appContextUpdated by rememberUpdatedState(LocalContext.current.applicationContext)
-    val mediaPermissionsUpdated by rememberUpdatedState(
+    val mediaPermissions = remember {
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
                 arrayOf(
@@ -94,9 +93,10 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                 )
             }
         }
-    )
+    }
+    val appContextUpdated by rememberUpdatedState(LocalContext.current.applicationContext)
     var permissionsGranted by remember {
-        mutableStateOf(appContextUpdated.checkAllPermissionsGranted(mediaPermissionsUpdated))
+        mutableStateOf(appContextUpdated.checkAllPermissionsGranted(mediaPermissions))
     }
     Surface(
         modifier = Modifier
@@ -170,8 +170,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
             val settingsLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartActivityForResult()
             ) {
-                permissionsGranted =
-                    appContextUpdated.checkAllPermissionsGranted(mediaPermissionsUpdated)
+                permissionsGranted = appContextUpdated.checkAllPermissionsGranted(mediaPermissions)
             }
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -198,12 +197,11 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                 }
             }
             LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-                permissionsGranted =
-                    appContextUpdated.checkAllPermissionsGranted(mediaPermissionsUpdated)
+                permissionsGranted = appContextUpdated.checkAllPermissionsGranted(mediaPermissions)
             }
             LaunchedEffect(Unit) {
                 appState.coroutineScope.launch {
-                    mediaPermissionsLauncher.launch(mediaPermissionsUpdated)
+                    mediaPermissionsLauncher.launch(mediaPermissions)
                 }
             }
         }
