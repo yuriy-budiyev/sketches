@@ -513,7 +513,7 @@ private fun MediaBar(
                     .clip(shape = MaterialTheme.shapes.small)
                     .border(
                         width = SketchesDimens.MediaItemBorderThickness,
-                        color = MaterialTheme.colorScheme.onBackground,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                         shape = MaterialTheme.shapes.small,
                     )
                     .clickable {
