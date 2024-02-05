@@ -70,7 +70,7 @@ fun SketchesMediaVerticalGrid(
                     .clip(shape = MaterialTheme.shapes.small)
                     .border(
                         width = SketchesDimens.MediaItemBorderThickness,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.25f),
                         shape = MaterialTheme.shapes.small
                     )
                     .clickable {
