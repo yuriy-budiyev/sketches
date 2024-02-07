@@ -23,3 +23,4 @@ rootProject.name = "sketches"
 include(":app")
 include(":core:constraints")
 include(":core:data")
+include(":core:ui")

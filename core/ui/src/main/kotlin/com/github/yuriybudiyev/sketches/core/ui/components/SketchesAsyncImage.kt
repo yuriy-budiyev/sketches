@@ -25,65 +25,75 @@
 package com.github.yuriybudiyev.sketches.core.ui.components
 
 import android.net.Uri
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTag
-import androidx.compose.ui.unit.Dp
-import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.data.model.MediaType
+import coil.compose.SubcomposeAsyncImage
+import com.github.yuriybudiyev.sketches.core.ui.R
+import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 
 @Composable
-fun SketchesMediaItem(
+fun SketchesAsyncImage(
     uri: Uri,
-    type: MediaType,
-    iconPadding: Dp,
+    description: String,
+    modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.Fit,
+    filterQuality: FilterQuality = FilterQuality.Low,
+    enableLoadingIndicator: Boolean = true,
+    enableErrorIndicator: Boolean = true,
+) {
+    SubcomposeAsyncImage(
+        model = uri,
+        contentDescription = description,
+        modifier = modifier,
+        contentScale = contentScale,
+        filterQuality = filterQuality,
+        loading = {
+            if (enableLoadingIndicator) {
+                StateIcon(
+                    icon = SketchesIcons.ImageLoading,
+                    description = stringResource(id = R.string.image_loading),
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+        },
+        error = {
+            if (enableErrorIndicator) {
+                StateIcon(
+                    icon = SketchesIcons.ImageError,
+                    description = stringResource(id = R.string.image_error),
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+        },
+    )
+}
+
+@Composable
+private fun StateIcon(
+    icon: ImageVector,
+    description: String,
     modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier = modifier.semantics {
-            testTag = when (type) {
-                MediaType.Image -> "media_item_image"
-                MediaType.Video -> "media_item_video"
-            }
-        },
+        contentAlignment = Alignment.Center,
+        modifier = modifier
     ) {
-        SketchesAsyncImage(
-            uri = uri,
-            description = stringResource(id = R.string.image),
-            modifier = Modifier.matchParentSize(),
-            contentScale = ContentScale.Crop,
-            filterQuality = FilterQuality.Low,
-            enableLoadingIndicator = true,
-            enableErrorIndicator = true,
+        Icon(
+            imageVector = icon,
+            contentDescription = description,
+            modifier = Modifier.size(SketchesDimens.AsyncImageStateIconSize),
+            tint = MaterialTheme.colorScheme.onBackground
         )
-        if (type == MediaType.Video) {
-            Box(
-                modifier = Modifier
-                    .align(alignment = Alignment.BottomEnd)
-                    .padding(all = iconPadding)
-                    .background(
-                        color = MaterialTheme.colorScheme.background.copy(alpha = 0.75f),
-                        shape = CircleShape
-                    ),
-            ) {
-                Icon(
-                    imageVector = SketchesIcons.Video,
-                    contentDescription = stringResource(id = R.string.video),
-                    tint = MaterialTheme.colorScheme.onBackground,
-                )
-            }
-        }
     }
 }

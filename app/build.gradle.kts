@@ -70,6 +70,7 @@ android {
 dependencies {
     implementation(project(":core:constraints"))
     implementation(project(":core:data"))
+    implementation(project(":core:ui"))
     implementation(sketches.bundles.kotlin)
     implementation(sketches.bundles.androidx.annotation)
     implementation(sketches.bundles.androidx.core)

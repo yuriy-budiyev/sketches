@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="loading_message">Загрузка</string>
+    <string name="unexpected_error">Произошла неожиданная ошибка</string>
+    <string name="image">Изображение</string>
+    <string name="video">Видео</string>
+    <string name="play">Воспроизвести</string>
+    <string name="pause">Приостановить</string>
+    <string name="enable_volume">Включить звук</string>
+    <string name="disable_volume">Выключить звук</string>
+    <string name="image_error">Ошибка загрузки изображения</string>
+    <string name="image_loading">Загрузка изображения</string>
+</resources>

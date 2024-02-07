@@ -52,7 +52,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.ui.R
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 
 @Composable
