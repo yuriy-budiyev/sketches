@@ -9,6 +9,10 @@ android {
     namespace = "com.github.yuriybudiyev.sketches.core.data"
     compileSdk = 34
 
+    defaultConfig {
+        minSdk = 26
+    }
+
     compileOptions {
         sourceCompatibility(sketches.versions.java.get())
         targetCompatibility(sketches.versions.java.get())

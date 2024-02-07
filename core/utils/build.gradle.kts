@@ -4,14 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.github.yuriybudiyev.sketches.core.ui"
+    namespace = "com.github.yuriybudiyev.sketches.core.utils"
     compileSdk = 34
 
     defaultConfig {
         minSdk = 26
-        vectorDrawables {
-            useSupportLibrary = true
-        }
     }
 
     compileOptions {
@@ -24,24 +21,13 @@ android {
     }
 
     buildFeatures {
-        compose = true
         buildConfig = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = sketches.versions.androidx.compose.compiler.get()
     }
 }
 
 dependencies {
-    api(sketches.bundles.androidx.lifecycle)
-    api(sketches.bundles.androidx.compose)
-    api(sketches.bundles.androidx.media3)
-    api(sketches.bundles.coil)
     implementation(project(":core:constraints"))
-    implementation(project(":core:data"))
     implementation(sketches.bundles.kotlin)
     testImplementation(sketches.bundles.kotlin.test)
-    testImplementation(sketches.hilt.test)
     testImplementation(sketches.junit)
 }

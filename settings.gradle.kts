@@ -22,5 +22,6 @@ dependencyResolutionManagement {
 rootProject.name = "sketches"
 include(":app")
 include(":core:constraints")
+include(":core:utils")
 include(":core:data")
 include(":core:ui")

@@ -65,11 +65,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.common.utils.permissions.checkAllPermissionsGranted
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesOutlinedButton
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
+import com.github.yuriybudiyev.sketches.core.utils.permissions.checkAllPermissionsGranted
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 
 @Composable

@@ -23,28 +23,27 @@
  *
  */
 
-package com.github.yuriybudiyev.sketches.core.common.utils.permissions
+package com.github.yuriybudiyev.sketches.core.utils.coroutines
 
-import android.content.Context
-import android.content.pm.PackageManager
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
+import kotlinx.coroutines.CancellationException
 
-fun Context.checkPermissionGranted(permission: String): Boolean =
-    checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
-
-fun Context.checkAllPermissionsGranted(permissions: Array<String>): Boolean {
-    for (permission in permissions) {
-        if (!checkPermissionGranted(permission)) {
-            return false
-        }
+@OptIn(ExperimentalContracts::class)
+inline fun <T: Throwable> excludeCancellation(
+    thrown: T,
+    block: (thrown: T) -> Unit,
+) {
+    contract {
+        callsInPlace(
+            block,
+            InvocationKind.AT_MOST_ONCE
+        )
     }
-    return true
-}
 
-fun checkAllPermissionsGranted(permissions: Map<String, Boolean>): Boolean {
-    for ((_, granted) in permissions) {
-        if (!granted) {
-            return false
-        }
+    if (thrown is CancellationException) {
+        return
     }
-    return true
+    block(thrown)
 }
