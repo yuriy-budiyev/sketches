@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 Yuriy Budiyev
+ * Copyright (c) 2024 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,11 +39,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.ui.component.SketchesCenteredMessage
-import com.github.yuriybudiyev.sketches.core.ui.component.SketchesErrorMessage
-import com.github.yuriybudiyev.sketches.core.ui.component.SketchesLoadingIndicator
-import com.github.yuriybudiyev.sketches.core.ui.component.SketchesMediaVerticalGrid
-import com.github.yuriybudiyev.sketches.core.ui.component.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaVerticalGrid
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavigationDestination
 
 @Composable

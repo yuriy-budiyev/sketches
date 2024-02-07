@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2023 Yuriy Budiyev
+ * Copyright (c) 2024 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ import androidx.annotation.CallSuper
 import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
-import com.github.yuriybudiyev.sketches.core.utils.content.contentUriFor
+import com.github.yuriybudiyev.sketches.core.data.utils.contentUriFor
 
 abstract class MediaObservingViewModel(context: Context): ViewModel() {
 
