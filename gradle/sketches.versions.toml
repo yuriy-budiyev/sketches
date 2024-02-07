@@ -45,6 +45,7 @@ junit = "4.13.2"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-plugin" }
+android-library = { id = "com.android.library", version.ref = "android-plugin" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
@@ -179,5 +180,6 @@ androidx-media3 = ["androidx-media3-common", "androidx-media3-database", "androi
 androidx-test = ["androidx-test-annotation", "androidx-test-core", "androidx-test-core-ktx", "androidx-test-monitor", "androidx-test-rules", "androidx-test-runner", "androidx-test-junit", "androidx-test-junit-ktx", "androidx-test-espresso", "androidx-test-uiautomator"]
 androidx-tracing = ["androidx-tracing", "androidx-tracing-ktx"]
 hilt = ["hilt", "androidx-hilt-common", "androidx-hilt-work", "androidx-hilt-navigation", "androidx-hilt-navigation-compose"]
+hilt-library = ["hilt", "androidx-hilt-common"]
 hilt-compiler = ["hilt-compiler", "androidx-hilt-compiler"]
 coil = ["coil", "coil-compose", "coil-gif", "coil-svg", "coil-video"]
