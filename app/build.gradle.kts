@@ -1,6 +1,5 @@
 plugins {
     alias(sketches.plugins.android.application)
-    alias(sketches.plugins.androidx.baselineprofile)
     alias(sketches.plugins.kotlin)
     alias(sketches.plugins.kotlin.ksp)
     alias(sketches.plugins.hilt)
@@ -35,12 +34,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-        }
-        create("benchmark") {
-            initWith(buildTypes.getByName("release"))
-            matchingFallbacks += listOf("release")
-            signingConfig = signingConfigs.getByName("debug")
-            proguardFiles("benchmark-rules.pro")
         }
     }
 
@@ -92,9 +85,7 @@ dependencies {
     implementation(sketches.bundles.hilt)
     implementation(sketches.bundles.coil)
     implementation(sketches.androidx.versionedparcelable)
-    implementation(sketches.androidx.profileinstaller)
     implementation(sketches.androidx.startup)
-    implementation(sketches.guava)
     implementation(sketches.okhttp)
     implementation(sketches.okio)
     ksp(sketches.bundles.hilt.compiler)
@@ -110,9 +101,4 @@ dependencies {
     androidTestImplementation(sketches.androidx.compose.ui.test.junit)
     androidTestImplementation(sketches.hilt.test)
     kspAndroidTest(sketches.bundles.hilt.compiler)
-    baselineProfile(project(":baselineprofile"))
-}
-
-baselineProfile {
-    automaticGenerationDuringBuild = false
 }
