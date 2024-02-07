@@ -58,7 +58,7 @@ dependencies {
     implementation(sketches.bundles.androidx.annotation)
     implementation(sketches.bundles.androidx.test)
     implementation(sketches.bundles.androidx.tracing)
-    implementation(sketches.androidx.baselineprofile)
+    implementation(sketches.androidx.benchmark.macro)
     implementation(sketches.guava)
     implementation(sketches.okio)
 }
