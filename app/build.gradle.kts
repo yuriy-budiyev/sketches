@@ -83,6 +83,7 @@ dependencies {
     implementation(sketches.bundles.androidx.navigation)
     implementation(sketches.bundles.androidx.window)
     implementation(sketches.bundles.androidx.work)
+    implementation(sketches.bundles.androidx.media3)
     implementation(sketches.bundles.androidx.tracing)
     implementation(sketches.bundles.hilt)
     implementation(sketches.bundles.coil)
