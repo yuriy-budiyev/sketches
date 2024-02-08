@@ -23,28 +23,32 @@
  *
  */
 
-package com.github.yuriybudiyev.sketches.core.utils.permissions
+package com.github.yuriybudiyev.sketches.core.common.utils.log
 
-import android.content.Context
-import android.content.pm.PackageManager
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
+import android.util.Log
+import com.github.yuriybudiyev.sketches.BuildConfig
 
-fun Context.checkPermissionGranted(permission: String): Boolean =
-    checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
-
-fun Context.checkAllPermissionsGranted(permissions: Array<String>): Boolean {
-    for (permission in permissions) {
-        if (!checkPermissionGranted(permission)) {
-            return false
-        }
+@Suppress("unused")
+@OptIn(ExperimentalContracts::class)
+inline fun log(
+    throwable: Throwable? = null,
+    lazyMessage: () -> String,
+) {
+    contract {
+        callsInPlace(
+            lazyMessage,
+            InvocationKind.AT_MOST_ONCE
+        )
     }
-    return true
-}
 
-fun checkAllPermissionsGranted(permissions: Map<String, Boolean>): Boolean {
-    for ((_, granted) in permissions) {
-        if (!granted) {
-            return false
-        }
+    if (BuildConfig.DEBUG) {
+        Log.d(
+            "SketchesDebug",
+            lazyMessage(),
+            throwable
+        )
     }
-    return true
 }
