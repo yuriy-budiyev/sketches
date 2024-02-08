@@ -35,6 +35,7 @@ import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
 import com.github.yuriybudiyev.sketches.core.navigation.destination.NavigationDestination
+import com.github.yuriybudiyev.sketches.main.ui.SketchesAppState
 
 fun NavGraphBuilder.composable(
     destination: NavigationDestination,
@@ -59,6 +60,11 @@ fun NavController.navigate(
         destination.buildRouteWithArgs(*args),
         navOptions(optionsBuilder)
     )
+}
+
+fun NavigationDestination.registerIn(appState: SketchesAppState): NavigationDestination {
+    appState.registerNavigationDestination(this)
+    return this
 }
 
 fun NavigationDestination.buildRoute(): String =

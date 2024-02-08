@@ -79,12 +79,11 @@ class SketchesAppState(
         }
     }
 
-    fun registerNavigationDestination(destination: NavigationDestination): NavigationDestination {
+    fun registerNavigationDestination(destination: NavigationDestination) {
         navigationDestinationsInternal[destination.buildRoute()] = destination
         if (destination is TopLevelNavigationDestination) {
             topLevelNavigationDestinationsInternal += destination
         }
-        return destination
     }
 
     private val navigationDestinationsInternal: MutableMap<String, NavigationDestination> =

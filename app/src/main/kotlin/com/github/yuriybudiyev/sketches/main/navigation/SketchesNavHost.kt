@@ -32,8 +32,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.navigation.buildRoute
 import com.github.yuriybudiyev.sketches.core.navigation.composable
 import com.github.yuriybudiyev.sketches.core.navigation.navigate
+import com.github.yuriybudiyev.sketches.core.navigation.registerIn
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavigationDestination
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavigationDestination
@@ -52,9 +54,9 @@ fun SketchesNavHost(
     NavHost(
         modifier = modifier,
         navController = appState.navController,
-        startDestination = ImagesNavigationDestination.routeBase
+        startDestination = ImagesNavigationDestination.buildRoute()
     ) {
-        composable(appState.registerNavigationDestination(ImagesNavigationDestination)) {
+        composable(ImagesNavigationDestination.registerIn(appState)) {
             ImagesRoute(
                 onImageClick = { index, image ->
                     appState.coroutineScope.launch {
@@ -68,7 +70,7 @@ fun SketchesNavHost(
                 },
             )
         }
-        composable(appState.registerNavigationDestination(BucketsNavigationDestination)) {
+        composable(BucketsNavigationDestination.registerIn(appState)) {
             BucketsRoute(
                 onBucketClick = { _, bucket ->
                     appState.coroutineScope.launch {
@@ -81,7 +83,7 @@ fun SketchesNavHost(
                 },
             )
         }
-        composable(appState.registerNavigationDestination(BucketNavigationDestination)) { backStackEntry ->
+        composable(BucketNavigationDestination.registerIn(appState)) { backStackEntry ->
             val bucketId = backStackEntry.arguments?.getLong(
                 BucketNavigationDestination.Arguments.BUCKET_ID,
                 Long.MIN_VALUE
@@ -103,7 +105,7 @@ fun SketchesNavHost(
                 },
             )
         }
-        composable(appState.registerNavigationDestination(ImageNavigationDestination)) { backStackEntry ->
+        composable(ImageNavigationDestination.registerIn(appState)) { backStackEntry ->
             val imageIndex = backStackEntry.arguments?.getInt(
                 ImageNavigationDestination.Arguments.IMAGE_INDEX,
                 -1

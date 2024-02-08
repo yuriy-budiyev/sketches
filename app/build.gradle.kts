@@ -72,7 +72,6 @@ dependencies {
     implementation(project(":core:utils"))
     implementation(project(":core:data"))
     implementation(project(":core:ui"))
-    implementation(project(":core:navigation"))
     implementation(sketches.bundles.kotlin)
     implementation(sketches.bundles.androidx.annotation)
     implementation(sketches.bundles.androidx.core)
