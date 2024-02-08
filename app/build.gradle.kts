@@ -92,6 +92,7 @@ dependencies {
     debugImplementation(sketches.bundles.androidx.compose.tooling)
     debugImplementation(sketches.androidx.compose.ui.test.manifest)
     testImplementation(sketches.bundles.kotlin.test)
+    testImplementation(sketches.bundles.androidx.test)
     testImplementation(sketches.hilt.test)
     testImplementation(sketches.junit)
     kspTest(sketches.bundles.hilt.compiler)
