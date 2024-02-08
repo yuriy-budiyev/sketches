@@ -38,7 +38,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import coil.compose.SubcomposeAsyncImage
-import com.github.yuriybudiyev.sketches.core.ui.R
+import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 

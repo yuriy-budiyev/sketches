@@ -40,7 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.Dp
-import com.github.yuriybudiyev.sketches.core.ui.R
+import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 
