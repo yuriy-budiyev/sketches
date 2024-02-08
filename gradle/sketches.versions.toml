@@ -59,7 +59,6 @@ kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.re
 kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
 kotlin-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlin-coroutines" }
-kotlin-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
 kotlin-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlin-collections-immutable" }
 kotlin-annotations = { group = "org.jetbrains", name = "annotations", version.ref = "kotlin-annotations" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
@@ -164,7 +163,7 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 [bundles]
 kotlin = ["kotlin-stdlib", "kotlin-stdlib-jdk7", "kotlin-stdlib-jdk8", "kotlin-reflect", "kotlin-coroutines-core", "kotlin-coroutines-android", "kotlin-collections-immutable", "kotlin-annotations"]
-kotlin-test = ["kotlin-test", "kotlin-test-junit", "kotlin-coroutines-test"]
+kotlin-test = ["kotlin-test", "kotlin-test-junit"]
 androidx-annotation = ["androidx-annotation", "androidx-annotation-experimental"]
 androidx-core = ["androidx-core", "androidx-core-ktx"]
 androidx-arch-core = ["androidx-arch-core-common", "androidx-arch-core-runtime"]
