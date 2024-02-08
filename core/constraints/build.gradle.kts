@@ -124,6 +124,10 @@ dependencies {
                 )
                 add(
                     configurationName,
+                    sketches.bundles.kotlin.test
+                )
+                add(
+                    configurationName,
                     sketches.bundles.androidx.test
                 )
                 add(
@@ -133,6 +137,10 @@ dependencies {
                 add(
                     configurationName,
                     sketches.androidx.compose.ui.test.junit
+                )
+                add(
+                    configurationName,
+                    sketches.hilt.test
                 )
             }
     }
