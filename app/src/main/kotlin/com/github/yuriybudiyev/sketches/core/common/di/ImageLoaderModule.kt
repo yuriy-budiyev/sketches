@@ -23,7 +23,7 @@
  *
  */
 
-package com.github.yuriybudiyev.sketches.main.di
+package com.github.yuriybudiyev.sketches.core.common.di
 
 import android.content.Context
 import android.os.Build
