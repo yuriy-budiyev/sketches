@@ -27,7 +27,10 @@ package com.github.yuriybudiyev.sketches.core.ui.components.media
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import kotlin.math.roundToInt
+import android.app.ActivityManager
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -62,6 +65,7 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.VideoSize
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 
@@ -168,6 +172,12 @@ private class SketchesMediaStateImpl(
 
     private val player: Player = ExoPlayer
         .Builder(context)
+        .setLoadControl(
+            DefaultLoadControl
+                .Builder()
+                .setTargetBufferBytes(context.calculateBufferSize())
+                .build()
+        )
         .setMediaSourceFactory(ProgressiveMediaSource.Factory(DefaultDataSource.Factory(context)))
         .build()
 
@@ -662,4 +672,13 @@ private inline fun <T> Player.callWithCheck(
     } else {
         unavailable()
     }
+}
+
+private fun Context.calculateBufferSize(): Int {
+    val activityManager = getSystemService(ActivityManager::class.java)
+    val largeHeap = (applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
+    val memoryClass =
+        if (largeHeap) activityManager.largeMemoryClass else activityManager.memoryClass
+    val multiplier = if (activityManager.isLowRamDevice) 0.15f else 0.2f
+    return (memoryClass * multiplier * 1024 * 1024).roundToInt()
 }
