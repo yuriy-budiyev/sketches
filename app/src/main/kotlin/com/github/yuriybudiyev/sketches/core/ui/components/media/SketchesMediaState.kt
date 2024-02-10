@@ -31,7 +31,6 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.Surface
 import android.view.SurfaceView
@@ -67,6 +66,7 @@ import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import com.github.yuriybudiyev.sketches.core.common.utils.bundle.getParcelableCompat
 
 @Composable
 @OptIn(UnstableApi::class)
@@ -548,7 +548,6 @@ private class SketchesMediaStateImplSaver(
     private val coroutineScope: CoroutineScope,
 ): Saver<SketchesMediaStateImpl, Bundle> {
 
-    @Suppress("DEPRECATION")
     override fun restore(value: Bundle): SketchesMediaStateImpl =
         SketchesMediaStateImpl(
             context,
@@ -562,14 +561,7 @@ private class SketchesMediaStateImplSaver(
                 Keys.RepeatEnabled,
                 false
             )
-            val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                value.getParcelable(
-                    Keys.Uri,
-                    Uri::class.java
-                )
-            } else {
-                value.getParcelable(Keys.Uri)
-            }
+            val uri = value.getParcelableCompat<Uri>(Keys.Uri)
             if (uri != null) {
                 val playing = value.getBoolean(
                     Keys.Playing,
