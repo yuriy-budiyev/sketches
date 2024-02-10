@@ -27,7 +27,6 @@ package com.github.yuriybudiyev.sketches.core.ui.components.media
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
-import kotlin.math.roundToInt
 import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
@@ -679,5 +678,5 @@ private fun Context.calculateBufferSize(): Int {
     val largeHeap = (applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
     val memoryClass =
         if (largeHeap) activityManager.largeMemoryClass else activityManager.memoryClass
-    return (memoryClass * 0.1 * 1024 * 1024).roundToInt()
+    return memoryClass * 1024 * 1024 / 10
 }
