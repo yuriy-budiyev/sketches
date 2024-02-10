@@ -69,7 +69,7 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
         }
     }
 
-    private inner class Observer: ContentObserver(Handler((Looper.getMainLooper()))) {
+    private inner class Observer: ContentObserver(Handler(Looper.getMainLooper())) {
 
         override fun onChange(selfChange: Boolean) {
             onMediaChanged()
