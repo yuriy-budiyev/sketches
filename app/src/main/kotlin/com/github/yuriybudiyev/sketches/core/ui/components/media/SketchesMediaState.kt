@@ -679,6 +679,5 @@ private fun Context.calculateBufferSize(): Int {
     val largeHeap = (applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
     val memoryClass =
         if (largeHeap) activityManager.largeMemoryClass else activityManager.memoryClass
-    val multiplier = if (activityManager.isLowRamDevice) 0.15f else 0.2f
-    return (memoryClass * multiplier * 1024 * 1024).roundToInt()
+    return (memoryClass * 0.1 * 1024 * 1024).roundToInt()
 }
