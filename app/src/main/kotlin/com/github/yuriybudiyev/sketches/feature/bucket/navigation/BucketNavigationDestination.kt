@@ -34,9 +34,10 @@ object BucketNavigationDestination: NavigationDestination {
 
     override val routeBase: String = "bucket"
 
-    override val arguments: List<NamedNavArgument> =
-        listOf(navArgument(name = Arguments.BUCKET_ID) { type = NavType.LongType },
-            navArgument(name = Arguments.BUCKET_NAME) { type = NavType.StringType })
+    override val arguments: List<NamedNavArgument> = listOf(
+        navArgument(name = Arguments.BUCKET_ID) { type = NavType.LongType },
+        navArgument(name = Arguments.BUCKET_NAME) { type = NavType.StringType },
+    )
 
     override val deepLinks: List<NavDeepLink> = emptyList()
 

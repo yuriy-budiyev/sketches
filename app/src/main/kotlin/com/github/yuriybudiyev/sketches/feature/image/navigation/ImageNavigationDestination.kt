@@ -34,10 +34,11 @@ object ImageNavigationDestination: NavigationDestination {
 
     override val routeBase: String = "image"
 
-    override val arguments: List<NamedNavArgument> =
-        listOf(navArgument(name = Arguments.IMAGE_INDEX) { type = NavType.IntType },
-            navArgument(name = Arguments.IMAGE_ID) { type = NavType.LongType },
-            navArgument(name = Arguments.BUCKET_ID) { type = NavType.LongType })
+    override val arguments: List<NamedNavArgument> = listOf(
+        navArgument(name = Arguments.IMAGE_INDEX) { type = NavType.IntType },
+        navArgument(name = Arguments.IMAGE_ID) { type = NavType.LongType },
+        navArgument(name = Arguments.BUCKET_ID) { type = NavType.LongType },
+    )
 
     override val deepLinks: List<NavDeepLink> = emptyList()
 
