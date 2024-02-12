@@ -32,7 +32,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.navigation.buildRoute
 import com.github.yuriybudiyev.sketches.core.navigation.composable
 import com.github.yuriybudiyev.sketches.core.navigation.navigate
 import com.github.yuriybudiyev.sketches.core.navigation.registerIn
@@ -54,7 +53,7 @@ fun SketchesNavHost(
     NavHost(
         modifier = modifier,
         navController = appState.navController,
-        startDestination = ImagesNavigationDestination.buildRoute()
+        startDestination = ImagesNavigationDestination.routeBase
     ) {
         composable(ImagesNavigationDestination.registerIn(appState)) {
             ImagesRoute(
