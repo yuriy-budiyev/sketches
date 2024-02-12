@@ -518,7 +518,10 @@ private class SketchesMediaStateImpl(
         }
     }
 
-    override fun onAbandoned() {
+    override fun onRemembered() {
+    }
+
+    private fun releasePlayer() {
         stopPositionPeriodicUpdate()
         player.callWithCheck(Player.COMMAND_RELEASE) {
             release()
@@ -527,14 +530,11 @@ private class SketchesMediaStateImpl(
     }
 
     override fun onForgotten() {
-        stopPositionPeriodicUpdate()
-        player.callWithCheck(Player.COMMAND_RELEASE) {
-            release()
-            uri = null
-        }
+        releasePlayer()
     }
 
-    override fun onRemembered() {
+    override fun onAbandoned() {
+        releasePlayer()
     }
 
     init {
