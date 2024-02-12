@@ -508,25 +508,25 @@ private class SketchesMediaStateImpl(
         }
     }
 
-    override fun close() {
+    private fun releasePlayer() {
         uri = null
+        stopPositionPeriodicUpdate()
+        player.callWithCheck(Player.COMMAND_RELEASE) {
+            release()
+        }
+    }
+
+    override fun close() {
         player.callWithCheck(Player.COMMAND_STOP) {
             player.stop()
         }
         player.callWithCheck(Player.COMMAND_CHANGE_MEDIA_ITEMS) {
             player.clearMediaItems()
         }
+        releasePlayer()
     }
 
     override fun onRemembered() {
-    }
-
-    private fun releasePlayer() {
-        stopPositionPeriodicUpdate()
-        player.callWithCheck(Player.COMMAND_RELEASE) {
-            release()
-            uri = null
-        }
     }
 
     override fun onForgotten() {
