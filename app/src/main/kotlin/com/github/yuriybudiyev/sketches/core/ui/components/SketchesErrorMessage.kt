@@ -48,6 +48,7 @@ fun SketchesErrorMessage(
 ) {
     if (BuildConfig.DEBUG) {
         val clipboardManagerUpdated by rememberUpdatedState(LocalClipboardManager.current)
+        val thrownUpdated by rememberUpdatedState(thrown)
         Column(
             modifier = modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -60,12 +61,12 @@ fun SketchesErrorMessage(
                     .padding(16.dp),
             )
             SketchesMessage(
-                text = thrown.toString(),
+                text = thrownUpdated.toString(),
                 modifier = Modifier
                     .clickable {
                         clipboardManagerUpdated.setText(
                             AnnotatedString
-                                .Builder(thrown.stackTraceToString())
+                                .Builder(thrownUpdated.stackTraceToString())
                                 .toAnnotatedString(),
                         )
                     }
