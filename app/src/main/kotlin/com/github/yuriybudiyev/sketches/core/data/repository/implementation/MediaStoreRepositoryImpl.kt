@@ -50,9 +50,7 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
                 contentUri,
                 arrayOf(
                     MediaStore.MediaColumns._ID,
-                    MediaStore.MediaColumns.DISPLAY_NAME,
                     MediaStore.MediaColumns.BUCKET_ID,
-                    MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
                     MediaStore.MediaColumns.DATE_ADDED,
                     MediaStore.MediaColumns.MIME_TYPE,
                 ),
