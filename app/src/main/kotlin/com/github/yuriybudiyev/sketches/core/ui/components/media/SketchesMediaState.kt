@@ -637,7 +637,6 @@ private inline fun Player.callWithCheck(
             InvocationKind.AT_MOST_ONCE
         )
     }
-
     if (isCommandAvailable(command)) {
         available()
     }
@@ -659,7 +658,6 @@ private inline fun <T> Player.callWithCheck(
             InvocationKind.AT_MOST_ONCE
         )
     }
-
     return if (isCommandAvailable(command)) {
         available()
     } else {
