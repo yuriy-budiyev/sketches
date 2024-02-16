@@ -41,6 +41,7 @@ inline fun <T: Throwable> excludeCancellation(
             InvocationKind.AT_MOST_ONCE
         )
     }
+
     if (thrown is CancellationException) {
         return
     }

@@ -43,6 +43,7 @@ inline fun log(
             InvocationKind.AT_MOST_ONCE
         )
     }
+
     if (BuildConfig.DEBUG) {
         Log.d(
             "SketchesDebug",
