@@ -108,7 +108,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
         contentColor = MaterialTheme.colorScheme.onBackground
     ) {
         if (permissionsGranted) {
-            val currentDestinations = appState.topLevelNavigationDestinations
+            val topLevelDestinations = appState.topLevelNavigationDestinations
             val currentDestination = appState.currentNavigationDestination
             Box(modifier = Modifier.fillMaxSize()) {
                 SketchesNavHost(
@@ -124,7 +124,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                             .align(Alignment.BottomStart)
                             .fillMaxWidth()
                     ) {
-                        currentDestinations.forEach { destination ->
+                        topLevelDestinations.forEach { destination ->
                             val selected = destination == currentDestination
                             NavigationBarItem(
                                 selected = selected,
