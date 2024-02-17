@@ -162,7 +162,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
             } else {
                 stringResource(id = R.string.no_storage_permission)
             }
-            val mediaPermissionsLauncher = rememberLauncherForActivityResult(
+            val permissionsLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.RequestMultiplePermissions()
             ) { grantResult ->
                 permissionsGranted = checkAllPermissionsGranted(grantResult)
@@ -201,7 +201,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
             }
             LaunchedEffect(Unit) {
                 appState.coroutineScope.launch {
-                    mediaPermissionsLauncher.launch(mediaPermissions)
+                    permissionsLauncher.launch(mediaPermissions)
                 }
             }
         }
