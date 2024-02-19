@@ -26,17 +26,11 @@ package com.github.yuriybudiyev.sketches.core.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLayoutDirection
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 
 @Composable
@@ -46,27 +40,21 @@ fun SketchesLazyVerticalGrid(
     overlayBottom: Boolean = false,
     content: LazyGridScope.() -> Unit,
 ) {
-    val systemBarInsets = WindowInsets.systemBars.asPaddingValues()
-    val layoutDirection = LocalLayoutDirection.current
-    val startBarPadding = systemBarInsets.calculateStartPadding(layoutDirection)
-    val topBarPadding = systemBarInsets.calculateTopPadding()
-    val endBarPadding = systemBarInsets.calculateEndPadding(layoutDirection)
-    val bottomBarPadding = systemBarInsets.calculateBottomPadding()
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = SketchesDimens.LazyGridItemSize),
         modifier = modifier,
         contentPadding = PaddingValues(
-            start = SketchesDimens.LazyGridItemSpacing + startBarPadding,
+            start = SketchesDimens.LazyGridItemSpacing,
             top = if (overlayTop) {
-                SketchesDimens.LazyGridOverlayHeight + topBarPadding
+                SketchesDimens.LazyGridOverlayHeight
             } else {
-                SketchesDimens.LazyGridItemSpacing + topBarPadding
+                SketchesDimens.LazyGridItemSpacing
             },
-            end = SketchesDimens.LazyGridItemSpacing + endBarPadding,
+            end = SketchesDimens.LazyGridItemSpacing,
             bottom = if (overlayBottom) {
-                SketchesDimens.LazyGridOverlayHeight + bottomBarPadding
+                SketchesDimens.LazyGridOverlayHeight
             } else {
-                SketchesDimens.LazyGridItemSpacing + bottomBarPadding
+                SketchesDimens.LazyGridItemSpacing
             },
         ),
         horizontalArrangement = Arrangement.spacedBy(space = SketchesDimens.LazyGridItemSpacing),
