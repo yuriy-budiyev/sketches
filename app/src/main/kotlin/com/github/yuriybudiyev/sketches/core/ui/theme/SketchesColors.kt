@@ -46,4 +46,6 @@ object SketchesColors {
         val Background = Color(0xFF0F0F0F)
         val OnBackground = Color(0xFFFFFFFF)
     }
+
+    const val UiAlpha = 0.75f
 }

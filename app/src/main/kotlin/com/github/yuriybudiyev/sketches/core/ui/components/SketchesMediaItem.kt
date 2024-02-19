@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.Dp
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
+import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesColors
 
 @Composable
 fun SketchesMediaItem(
@@ -74,7 +75,7 @@ fun SketchesMediaItem(
                     .align(alignment = Alignment.BottomEnd)
                     .padding(all = iconPadding)
                     .background(
-                        color = MaterialTheme.colorScheme.background.copy(alpha = 0.75f),
+                        color = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlpha),
                         shape = CircleShape
                     ),
             ) {

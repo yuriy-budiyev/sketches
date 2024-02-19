@@ -96,6 +96,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaPl
 import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
+import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.utils.animateScrollToItemCentered
 
 @Composable
@@ -349,7 +350,7 @@ private fun TopBar(
 ) {
     SketchesTopAppBar(
         modifier = modifier,
-        backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f),
+        backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlpha),
     ) {
         SketchesAppBarActionButton(
             icon = SketchesIcons.Delete,
