@@ -26,6 +26,9 @@ package com.github.yuriybudiyev.sketches.core.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -40,21 +43,24 @@ fun SketchesLazyVerticalGrid(
     overlayBottom: Boolean = false,
     content: LazyGridScope.() -> Unit,
 ) {
+    val systemBarInsets = WindowInsets.systemBars.asPaddingValues()
+    val topBarPadding = systemBarInsets.calculateTopPadding()
+    val bottomBarPadding = systemBarInsets.calculateBottomPadding()
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = SketchesDimens.LazyGridItemSize),
         modifier = modifier,
         contentPadding = PaddingValues(
             start = SketchesDimens.LazyGridItemSpacing,
             top = if (overlayTop) {
-                SketchesDimens.LazyGridOverlayHeight
+                SketchesDimens.LazyGridOverlayHeight + topBarPadding
             } else {
-                SketchesDimens.LazyGridItemSpacing
+                SketchesDimens.LazyGridItemSpacing + topBarPadding
             },
             end = SketchesDimens.LazyGridItemSpacing,
             bottom = if (overlayBottom) {
-                SketchesDimens.LazyGridOverlayHeight
+                SketchesDimens.LazyGridOverlayHeight + bottomBarPadding
             } else {
-                SketchesDimens.LazyGridItemSpacing
+                SketchesDimens.LazyGridItemSpacing + bottomBarPadding
             },
         ),
         horizontalArrangement = Arrangement.spacedBy(space = SketchesDimens.LazyGridItemSpacing),

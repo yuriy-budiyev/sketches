@@ -41,10 +41,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -205,6 +209,9 @@ private fun ImageScreenLayout(
     val pagerState = rememberPagerState(currentIndex) { filesUpdated.size }
     val barState = rememberLazyListState(currentIndex)
     val barItemSize = with(LocalDensity.current) { SketchesDimens.MediaBarItemSize.roundToPx() }
+    val barBottomPadding = WindowInsets.systemBars
+        .asPaddingValues()
+        .calculateBottomPadding()
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { result ->
@@ -265,6 +272,7 @@ private fun ImageScreenLayout(
                     }
                 },
                 modifier = Modifier
+                    .padding(bottom = barBottomPadding)
                     .height(SketchesDimens.BottomBarHeight)
                     .fillMaxWidth(),
             )
