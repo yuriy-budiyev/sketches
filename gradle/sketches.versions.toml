@@ -7,7 +7,6 @@ kotlin-ksp = "1.9.22-1.0.17"
 androidx-annotation = "1.7.1"
 androidx-annotation-experimental = "1.4.0"
 androidx-core = "1.12.0"
-androidx-versionedparcelable = "1.2.0"
 androidx-arch-core = "2.2.0"
 androidx-collection = "1.4.0"
 androidx-concurrent = "1.1.0"
@@ -21,7 +20,6 @@ androidx-compose-animation = "1.6.1"
 androidx-compose-material = "1.6.1"
 androidx-compose-material3 = "1.2.0"
 androidx-navigation = "2.7.7"
-androidx-startup = "1.1.1"
 androidx-window = "1.2.0"
 androidx-work = "2.9.0"
 androidx-media3 = "1.2.1"
@@ -62,7 +60,6 @@ androidx-core = { group = "androidx.core", name = "core", version.ref = "android
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core" }
 androidx-arch-core-common = { group = "androidx.arch.core", name = "core-common", version.ref = "androidx-arch-core" }
 androidx-arch-core-runtime = { group = "androidx.arch.core", name = "core-runtime", version.ref = "androidx-arch-core" }
-androidx-versionedparcelable = { group = "androidx.versionedparcelable", name = "versionedparcelable", version.ref = "androidx-versionedparcelable" }
 androidx-collection = { group = "androidx.collection", name = "collection", version.ref = "androidx-collection" }
 androidx-collection-ktx = { group = "androidx.collection", name = "collection-ktx", version.ref = "androidx-collection" }
 androidx-concurrent-futures = { group = "androidx.concurrent", name = "concurrent-futures", version.ref = "androidx-concurrent" }
@@ -113,7 +110,6 @@ androidx-navigation-runtime = { group = "androidx.navigation", name = "navigatio
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "androidx-navigation" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidx-navigation" }
 androidx-navigation-test = { group = "androidx.navigation", name = "navigation-testing", version.ref = "androidx-navigation" }
-androidx-startup = { group = "androidx.startup", name = "startup-runtime", version.ref = "androidx-startup" }
 androidx-window = { group = "androidx.window", name = "window", version.ref = "androidx-window" }
 androidx-window-core = { group = "androidx.window", name = "window-core", version.ref = "androidx-window" }
 androidx-window-java = { group = "androidx.window", name = "window-java", version.ref = "androidx-window" }

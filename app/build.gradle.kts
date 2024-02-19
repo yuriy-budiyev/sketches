@@ -84,8 +84,6 @@ dependencies {
     implementation(sketches.bundles.androidx.tracing)
     implementation(sketches.bundles.hilt)
     implementation(sketches.bundles.coil)
-    implementation(sketches.androidx.versionedparcelable)
-    implementation(sketches.androidx.startup)
     implementation(sketches.okhttp)
     implementation(sketches.okio)
     ksp(sketches.bundles.hilt.compiler)
