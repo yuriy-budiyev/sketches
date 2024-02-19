@@ -36,9 +36,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -96,7 +94,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaPl
 import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
-import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.utils.animateScrollToItemCentered
 
 @Composable
@@ -158,8 +155,8 @@ fun ImageScreen(
 ) {
     Box(
         modifier = Modifier
-            .fillMaxSize()
             .systemBarsPadding()
+            .fillMaxSize()
     ) {
         when (uiState) {
             ImageScreenUiState.Empty -> {
@@ -213,7 +210,6 @@ private fun ImageScreenLayout(
     val pagerState = rememberPagerState(currentIndex) { filesUpdated.size }
     val barState = rememberLazyListState(currentIndex)
     val barItemSize = with(LocalDensity.current) { SketchesDimens.MediaBarItemSize.roundToPx() }
-    var fullScreen by remember { mutableStateOf(false) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { result ->
@@ -255,72 +251,58 @@ private fun ImageScreenLayout(
             }
         }
     }
-    val pagerInteractionSource = remember { MutableInteractionSource() }
     Box(modifier = modifier) {
         Column(modifier = Modifier.matchParentSize()) {
             MediaPager(
                 state = pagerState,
                 items = filesUpdated,
                 coroutineScope = coroutineScope,
-                modifier = Modifier.run {
-                    fillMaxWidth()
-                        .weight(1f)
-                        .combinedClickable(
-                            interactionSource = pagerInteractionSource,
-                            indication = null,
-                            onDoubleClick = {
-                                fullScreen = !fullScreen
-                            },
-                            onClick = {},
-                        )
-                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
             )
-            if (!fullScreen) {
-                MediaBar(
-                    state = barState,
-                    items = filesUpdated,
-                    onItemClick = { index, _ ->
-                        coroutineScope.launch {
-                            pagerState.animateScrollToPage(index)
-                        }
-                    },
-                    modifier = Modifier
-                        .height(SketchesDimens.BottomBarHeight)
-                        .fillMaxWidth(),
-                )
-            }
-        }
-        if (!fullScreen) {
-            TopBar(
-                onDelete = {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        coroutineScope.launch {
-                            deleteRequestLauncher.launch(
-                                IntentSenderRequest
-                                    .Builder(
-                                        MediaStore.createDeleteRequest(
-                                            contextUpdated.contentResolver,
-                                            listOf(filesUpdated[currentIndex].uri)
-                                        ).intentSender
-                                    )
-                                    .build()
-                            )
-                        }
-                    } else {
-                        deleteDialogVisible = true
+            MediaBar(
+                state = barState,
+                items = filesUpdated,
+                onItemClick = { index, _ ->
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(index)
                     }
                 },
-                onShare = {
-                    onShareUpdated(
-                        currentIndex,
-                        filesUpdated[currentIndex],
-                    )
-                },
                 modifier = Modifier
-                    .align(Alignment.TopStart)
+                    .height(SketchesDimens.BottomBarHeight)
                     .fillMaxWidth(),
             )
         }
+        TopBar(
+            onDelete = {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    coroutineScope.launch {
+                        deleteRequestLauncher.launch(
+                            IntentSenderRequest
+                                .Builder(
+                                    MediaStore.createDeleteRequest(
+                                        contextUpdated.contentResolver,
+                                        listOf(filesUpdated[currentIndex].uri)
+                                    ).intentSender
+                                )
+                                .build()
+                        )
+                    }
+                } else {
+                    deleteDialogVisible = true
+                }
+            },
+            onShare = {
+                onShareUpdated(
+                    currentIndex,
+                    filesUpdated[currentIndex],
+                )
+            },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .fillMaxWidth(),
+        )
         if (deleteDialogVisible) {
             SketchesAlertDialog(
                 titleText = stringResource(id = R.string.delete_image_dialog_title),
@@ -350,7 +332,7 @@ private fun TopBar(
 ) {
     SketchesTopAppBar(
         modifier = modifier,
-        backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlpha),
+        backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f),
     ) {
         SketchesAppBarActionButton(
             icon = SketchesIcons.Delete,
