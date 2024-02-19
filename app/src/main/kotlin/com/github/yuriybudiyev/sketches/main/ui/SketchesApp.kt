@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.main.ui
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -51,6 +52,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,7 +61,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
@@ -101,14 +106,15 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
     var permissionsGranted by remember {
         mutableStateOf(appContextUpdated.checkAllPermissionsGranted(mediaPermissions))
     }
+    val colorScheme = MaterialTheme.colorScheme
     Surface(
         modifier = Modifier
             .fillMaxSize()
             .semantics {
                 testTagsAsResourceId = true
             },
-        color = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.onBackground
+        color = colorScheme.background,
+        contentColor = colorScheme.onBackground
     ) {
         if (permissionsGranted) {
             val topLevelDestinations = appState.topLevelNavigationDestinations
@@ -118,13 +124,27 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                     appState = appState,
                     modifier = Modifier.matchParentSize()
                 )
-                if (currentDestination is TopLevelNavigationDestination) {
+                val topLevelNavigation = currentDestination is TopLevelNavigationDestination
+                val view = LocalView.current
+                if (!view.isInEditMode) {
+                    SideEffect {
+                        val window = (view.context as Activity).window
+                        window.navigationBarColor = if (topLevelNavigation) {
+                            Color.Transparent.toArgb()
+                        } else {
+                            colorScheme.background
+                                .copy(alpha = 0.75f)
+                                .toArgb()
+                        }
+                    }
+                }
+                if (topLevelNavigation) {
                     val barBottomPadding = WindowInsets.systemBars
                         .asPaddingValues()
                         .calculateBottomPadding()
                     NavigationBar(
-                        containerColor = MaterialTheme.colorScheme.background.copy(alpha = 0.75f),
-                        contentColor = MaterialTheme.colorScheme.onBackground,
+                        containerColor = colorScheme.background.copy(alpha = 0.75f),
+                        contentColor = colorScheme.onBackground,
                         modifier = Modifier
                             .height(SketchesDimens.BottomBarHeight + barBottomPadding)
                             .align(Alignment.BottomStart)
@@ -135,9 +155,9 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                             NavigationBarItem(
                                 selected = selected,
                                 colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                                    unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-                                    indicatorColor = MaterialTheme.colorScheme.primary
+                                    selectedIconColor = colorScheme.onPrimary,
+                                    unselectedIconColor = colorScheme.onBackground,
+                                    indicatorColor = colorScheme.primary
                                 ),
                                 onClick = {
                                     appState.coroutineScope.launch {
