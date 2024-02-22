@@ -184,20 +184,17 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
         )
         val buckets = ArrayList<MediaStoreBucket>(bucketsInfo.size)
         bucketsInfo.forEachValue { info ->
-            buckets.add(info.toBucket())
+            buckets += MediaStoreBucket(
+                info.id,
+                info.name,
+                info.size,
+                info.coverUri,
+                info.coverDateAdded
+            )
         }
         buckets.sortByDescending { bucket -> bucket.coverDateAdded }
         return buckets
     }
-
-    private fun BucketInfo.toBucket(): MediaStoreBucket =
-        MediaStoreBucket(
-            id,
-            name,
-            size,
-            coverUri,
-            coverDateAdded
-        )
 
     private data class BucketInfo(
         val id: Long,
