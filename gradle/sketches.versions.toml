@@ -3,6 +3,7 @@ android-plugin = "8.2.2"
 java = "1.8"
 kotlin = "1.9.22"
 kotlin-coroutines = "1.8.0"
+kotlin-collections-immutable = "0.3.7"
 kotlin-ksp = "1.9.22-1.0.17"
 androidx-annotation = "1.7.1"
 androidx-annotation-experimental = "1.4.0"
@@ -54,6 +55,7 @@ kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.re
 kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
 kotlin-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlin-coroutines" }
+kotlin-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlin-collections-immutable" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
 androidx-annotation-experimental = { group = "androidx.annotation", name = "annotation-experimental", version.ref = "androidx-annotation-experimental" }
 androidx-core = { group = "androidx.core", name = "core", version.ref = "androidx-core" }
@@ -159,7 +161,8 @@ kotlin = [
     "kotlin-stdlib-jdk8",
     "kotlin-reflect",
     "kotlin-coroutines-core",
-    "kotlin-coroutines-android"
+    "kotlin-coroutines-android",
+    "kotlin-collections-immutable"
 ]
 kotlin-test = [
     "kotlin-test",
