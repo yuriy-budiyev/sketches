@@ -23,6 +23,8 @@ androidx-navigation = "2.7.7"
 androidx-window = "1.2.0"
 androidx-work = "2.9.0"
 androidx-media3 = "1.2.1"
+androidx-sqlite = "2.4.0"
+androidx-room = "2.6.1"
 androidx-hilt = "1.1.0"
 androidx-test-annotation = "1.0.1"
 androidx-test-core = "1.5.0"
@@ -43,6 +45,7 @@ junit = "4.13.2"
 android-application = { id = "com.android.application", version.ref = "android-plugin" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
+room = { id = "androidx.room", version.ref = "androidx-room" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 
 [libraries]
@@ -123,6 +126,14 @@ androidx-media3-container = { group = "androidx.media3", name = "media3-containe
 androidx-media3-extractor = { group = "androidx.media3", name = "media3-extractor", version.ref = "androidx-media3" }
 androidx-media3-decoder = { group = "androidx.media3", name = "media3-decoder", version.ref = "androidx-media3" }
 androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "androidx-media3" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
+androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "androidx-room" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
+androidx-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "androidx-room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidx-room" }
+androidx-sqlite = { group = "androidx.sqlite", name = "sqlite", version.ref = "androidx-sqlite" }
+androidx-sqlite-framework = { group = "androidx.sqlite", name = "sqlite-framework", version.ref = "androidx-sqlite" }
+androidx-sqlite-ktx = { group = "androidx.sqlite", name = "sqlite-ktx", version.ref = "androidx-sqlite" }
 androidx-hilt-common = { group = "androidx.hilt", name = "hilt-common", version.ref = "androidx-hilt" }
 androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "androidx-hilt" }
 androidx-hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation", version.ref = "androidx-hilt" }
@@ -271,6 +282,17 @@ androidx-test = [
 androidx-tracing = [
     "androidx-tracing",
     "androidx-tracing-ktx"
+]
+androidx-sqlite = [
+    "androidx-sqlite",
+    "androidx-sqlite-framework",
+    "androidx-sqlite-ktx"
+]
+androidx-room = [
+    "androidx-room-common",
+    "androidx-room-runtime",
+    "androidx-room-paging",
+    "androidx-room-ktx"
 ]
 hilt = [
     "hilt",

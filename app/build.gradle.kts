@@ -2,6 +2,7 @@ plugins {
     alias(sketches.plugins.android.application)
     alias(sketches.plugins.kotlin)
     alias(sketches.plugins.kotlin.ksp)
+    alias(sketches.plugins.room)
     alias(sketches.plugins.hilt)
 }
 
@@ -82,10 +83,13 @@ dependencies {
     implementation(sketches.bundles.androidx.work)
     implementation(sketches.bundles.androidx.media3)
     implementation(sketches.bundles.androidx.tracing)
+    implementation(sketches.bundles.androidx.sqlite)
+    implementation(sketches.bundles.androidx.room)
     implementation(sketches.bundles.hilt)
     implementation(sketches.bundles.coil)
     implementation(sketches.okhttp)
     implementation(sketches.okio)
+    ksp(sketches.androidx.room.compiler)
     ksp(sketches.bundles.hilt.compiler)
     debugImplementation(sketches.bundles.androidx.compose.tooling)
     debugImplementation(sketches.androidx.compose.ui.test.manifest)
@@ -100,4 +104,8 @@ dependencies {
     androidTestImplementation(sketches.androidx.compose.ui.test.junit)
     androidTestImplementation(sketches.hilt.test)
     kspAndroidTest(sketches.bundles.hilt.compiler)
+}
+
+room {
+    schemaDirectory("$projectDir/schemas/")
 }
