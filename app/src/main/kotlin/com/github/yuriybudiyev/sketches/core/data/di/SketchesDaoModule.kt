@@ -34,7 +34,7 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object MediaInfoDaoModule {
+object SketchesDaoModule {
 
     @Provides
     fun provideMediaInfoDao(database: SketchesDatabase): MediaInfoDao =
