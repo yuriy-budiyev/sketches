@@ -24,10 +24,6 @@
         android:theme="@style/Theme.Sketches"
         tools:targetApi="34">
 
-        <profileable
-            android:shell="true"
-            tools:targetApi="29" />
-
         <activity
             android:name=".main.MainActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
