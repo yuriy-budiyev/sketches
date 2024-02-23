@@ -23,7 +23,6 @@ androidx-navigation = "2.7.7"
 androidx-window = "1.2.0"
 androidx-work = "2.9.0"
 androidx-media3 = "1.2.1"
-androidx-sqlite = "2.4.0"
 androidx-room = "2.6.1"
 androidx-hilt = "1.1.0"
 androidx-test-annotation = "1.0.1"
@@ -131,9 +130,6 @@ androidx-room-common = { group = "androidx.room", name = "room-common", version.
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
 androidx-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "androidx-room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidx-room" }
-androidx-sqlite = { group = "androidx.sqlite", name = "sqlite", version.ref = "androidx-sqlite" }
-androidx-sqlite-framework = { group = "androidx.sqlite", name = "sqlite-framework", version.ref = "androidx-sqlite" }
-androidx-sqlite-ktx = { group = "androidx.sqlite", name = "sqlite-ktx", version.ref = "androidx-sqlite" }
 androidx-hilt-common = { group = "androidx.hilt", name = "hilt-common", version.ref = "androidx-hilt" }
 androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "androidx-hilt" }
 androidx-hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation", version.ref = "androidx-hilt" }
@@ -282,11 +278,6 @@ androidx-test = [
 androidx-tracing = [
     "androidx-tracing",
     "androidx-tracing-ktx"
-]
-androidx-sqlite = [
-    "androidx-sqlite",
-    "androidx-sqlite-framework",
-    "androidx-sqlite-ktx"
 ]
 androidx-room = [
     "androidx-room-common",

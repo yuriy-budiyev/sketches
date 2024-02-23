@@ -83,7 +83,6 @@ dependencies {
     implementation(sketches.bundles.androidx.work)
     implementation(sketches.bundles.androidx.media3)
     implementation(sketches.bundles.androidx.tracing)
-    implementation(sketches.bundles.androidx.sqlite)
     implementation(sketches.bundles.androidx.room)
     implementation(sketches.bundles.hilt)
     implementation(sketches.bundles.coil)
