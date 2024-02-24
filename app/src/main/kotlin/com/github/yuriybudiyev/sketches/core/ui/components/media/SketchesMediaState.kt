@@ -261,13 +261,19 @@ private class SketchesMediaStateImpl(
         }
     }
 
-    private fun isRepeatEnabledInternal(@Player.RepeatMode repeatMode: Int = player.repeatMode): Boolean =
+    private fun isRepeatEnabledInternal(
+        @Player.RepeatMode
+        repeatMode: Int = player.repeatMode,
+    ): Boolean =
         repeatMode != Player.REPEAT_MODE_OFF
 
     override var isRepeatEnabled: Boolean by mutableStateOf(isRepeatEnabledInternal())
         private set
 
-    override fun onRepeatModeChanged(@Player.RepeatMode repeatMode: Int) {
+    override fun onRepeatModeChanged(
+        @Player.RepeatMode
+        repeatMode: Int,
+    ) {
         this.isRepeatEnabled = isRepeatEnabledInternal(repeatMode)
     }
 
@@ -426,7 +432,8 @@ private class SketchesMediaStateImpl(
 
     override fun onTimelineChanged(
         timeline: Timeline,
-        @Player.TimelineChangeReason reason: Int,
+        @Player.TimelineChangeReason
+        reason: Int,
     ) {
         updateDuration()
         updatePosition()
@@ -628,7 +635,8 @@ private class SketchesMediaStateImplSaver(
 
 @kotlin.OptIn(ExperimentalContracts::class)
 private inline fun Player.callWithCheck(
-    @Player.Command command: Int,
+    @Player.Command
+    command: Int,
     available: Player.() -> Unit,
 ) {
     contract {
@@ -644,7 +652,8 @@ private inline fun Player.callWithCheck(
 
 @kotlin.OptIn(ExperimentalContracts::class)
 private inline fun <T> Player.callWithCheck(
-    @Player.Command command: Int,
+    @Player.Command
+    command: Int,
     available: Player.() -> T,
     unavailable: Player.() -> T,
 ): T {

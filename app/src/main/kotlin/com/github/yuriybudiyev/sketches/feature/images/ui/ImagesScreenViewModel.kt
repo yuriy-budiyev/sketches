@@ -41,7 +41,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 
 @HiltViewModel
 class ImagesScreenViewModel @Inject constructor(
-    @ApplicationContext context: Context,
+    @ApplicationContext
+    context: Context,
     private val repository: MediaStoreRepository,
 ): MediaObservingViewModel(context) {
 

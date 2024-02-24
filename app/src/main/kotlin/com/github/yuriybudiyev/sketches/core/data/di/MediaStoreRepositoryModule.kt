@@ -41,6 +41,9 @@ object MediaStoreRepositoryModule {
 
     @Provides
     @Singleton
-    fun provideMediaStoreRepository(@ApplicationContext context: Context): MediaStoreRepository =
+    fun provideMediaStoreRepository(
+        @ApplicationContext
+        context: Context,
+    ): MediaStoreRepository =
         MediaStoreRepositoryImpl(context)
 }

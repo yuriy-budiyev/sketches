@@ -45,7 +45,10 @@ object ImageLoaderModule {
 
     @Provides
     @Singleton
-    fun provideImageLoader(@ApplicationContext context: Context): ImageLoader =
+    fun provideImageLoader(
+        @ApplicationContext
+        context: Context,
+    ): ImageLoader =
         ImageLoader
             .Builder(context)
             .components {
