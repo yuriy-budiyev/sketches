@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin)
     alias(libs.plugins.kotlin.ksp)
-    alias(libs.plugins.room)
     alias(libs.plugins.hilt)
 }
 
@@ -83,12 +82,10 @@ dependencies {
     implementation(libs.bundles.androidx.work)
     implementation(libs.bundles.androidx.media3)
     implementation(libs.bundles.androidx.tracing)
-    implementation(libs.bundles.androidx.room)
     implementation(libs.bundles.hilt)
     implementation(libs.bundles.coil)
     implementation(libs.okhttp)
     implementation(libs.okio)
-    ksp(libs.androidx.room.compiler)
     ksp(libs.bundles.hilt.compiler)
     debugImplementation(libs.bundles.androidx.compose.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
@@ -101,8 +98,4 @@ dependencies {
     androidTestImplementation(libs.androidx.navigation.test)
     androidTestImplementation(libs.androidx.compose.ui.test.junit)
     androidTestImplementation(libs.hilt.test)
-}
-
-room {
-    schemaDirectory("$projectDir/schemas/")
 }
