@@ -1,9 +1,9 @@
 plugins {
-    alias(sketches.plugins.android.application)
-    alias(sketches.plugins.kotlin)
-    alias(sketches.plugins.kotlin.ksp)
-    alias(sketches.plugins.room)
-    alias(sketches.plugins.hilt)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.room)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -39,12 +39,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility(sketches.versions.java.get())
-        targetCompatibility(sketches.versions.java.get())
+        sourceCompatibility(libs.versions.java.get())
+        targetCompatibility(libs.versions.java.get())
     }
 
     kotlinOptions {
-        jvmTarget = sketches.versions.java.get()
+        jvmTarget = libs.versions.java.get()
     }
 
     buildFeatures {
@@ -53,7 +53,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = sketches.versions.androidx.compose.compiler.get()
+        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
     }
 
     packaging {
@@ -69,39 +69,38 @@ android {
 }
 
 dependencies {
-    implementation(sketches.bundles.kotlin)
-    implementation(sketches.bundles.androidx.annotation)
-    implementation(sketches.bundles.androidx.core)
-    implementation(sketches.bundles.androidx.arch.core)
-    implementation(sketches.bundles.androidx.collection)
-    implementation(sketches.bundles.androidx.concurrent)
-    implementation(sketches.bundles.androidx.lifecycle)
-    implementation(sketches.bundles.androidx.activity)
-    implementation(sketches.bundles.androidx.compose)
-    implementation(sketches.bundles.androidx.navigation)
-    implementation(sketches.bundles.androidx.window)
-    implementation(sketches.bundles.androidx.work)
-    implementation(sketches.bundles.androidx.media3)
-    implementation(sketches.bundles.androidx.tracing)
-    implementation(sketches.bundles.androidx.room)
-    implementation(sketches.bundles.hilt)
-    implementation(sketches.bundles.coil)
-    implementation(sketches.okhttp)
-    implementation(sketches.okio)
-    ksp(sketches.androidx.room.compiler)
-    ksp(sketches.bundles.hilt.compiler)
-    debugImplementation(sketches.bundles.androidx.compose.tooling)
-    debugImplementation(sketches.androidx.compose.ui.test.manifest)
-    testImplementation(sketches.bundles.kotlin.test)
-    testImplementation(sketches.bundles.androidx.test)
-    testImplementation(sketches.hilt.test)
-    testImplementation(sketches.junit)
-    androidTestImplementation(sketches.bundles.kotlin.test)
-    androidTestImplementation(sketches.bundles.androidx.test)
-    androidTestImplementation(sketches.androidx.navigation.test)
-    androidTestImplementation(sketches.androidx.compose.ui.test.junit)
-    androidTestImplementation(sketches.hilt.test)
-    kspAndroidTest(sketches.bundles.hilt.compiler)
+    implementation(libs.bundles.kotlin)
+    implementation(libs.bundles.androidx.annotation)
+    implementation(libs.bundles.androidx.core)
+    implementation(libs.bundles.androidx.arch.core)
+    implementation(libs.bundles.androidx.collection)
+    implementation(libs.bundles.androidx.concurrent)
+    implementation(libs.bundles.androidx.lifecycle)
+    implementation(libs.bundles.androidx.activity)
+    implementation(libs.bundles.androidx.compose)
+    implementation(libs.bundles.androidx.navigation)
+    implementation(libs.bundles.androidx.window)
+    implementation(libs.bundles.androidx.work)
+    implementation(libs.bundles.androidx.media3)
+    implementation(libs.bundles.androidx.tracing)
+    implementation(libs.bundles.androidx.room)
+    implementation(libs.bundles.hilt)
+    implementation(libs.bundles.coil)
+    implementation(libs.okhttp)
+    implementation(libs.okio)
+    ksp(libs.androidx.room.compiler)
+    ksp(libs.bundles.hilt.compiler)
+    debugImplementation(libs.bundles.androidx.compose.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    testImplementation(libs.bundles.kotlin.test)
+    testImplementation(libs.bundles.androidx.test)
+    testImplementation(libs.hilt.test)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.bundles.kotlin.test)
+    androidTestImplementation(libs.bundles.androidx.test)
+    androidTestImplementation(libs.androidx.navigation.test)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit)
+    androidTestImplementation(libs.hilt.test)
 }
 
 room {

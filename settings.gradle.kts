@@ -13,11 +13,6 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
-    versionCatalogs {
-        create("sketches") {
-            from(files("gradle/sketches.versions.toml"))
-        }
-    }
 }
 
 rootProject.name = "sketches"
