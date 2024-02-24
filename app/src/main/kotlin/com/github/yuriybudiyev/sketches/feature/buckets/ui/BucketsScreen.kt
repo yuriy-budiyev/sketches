@@ -165,7 +165,7 @@ private fun BucketsScreenLayout(
             ) {
                 SketchesAsyncImage(
                     uri = item.coverUri,
-                    description = stringResource(id = R.string.bucket_cover),
+                    contentDescription = stringResource(id = R.string.bucket_cover),
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(ratio = 1f)

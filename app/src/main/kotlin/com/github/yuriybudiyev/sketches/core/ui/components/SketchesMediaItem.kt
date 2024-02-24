@@ -32,6 +32,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
@@ -46,6 +47,7 @@ import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesColors
 
 @Composable
+@NonRestartableComposable
 fun SketchesMediaItem(
     uri: Uri,
     type: MediaType,
@@ -62,7 +64,7 @@ fun SketchesMediaItem(
     ) {
         SketchesAsyncImage(
             uri = uri,
-            description = stringResource(id = R.string.image),
+            contentDescription = stringResource(id = R.string.image),
             modifier = Modifier.matchParentSize(),
             contentScale = ContentScale.Crop,
             filterQuality = FilterQuality.Low,

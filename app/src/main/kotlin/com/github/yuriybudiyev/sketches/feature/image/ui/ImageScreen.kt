@@ -407,7 +407,7 @@ private fun ImagePage(
 ) {
     SketchesAsyncImage(
         uri = fileUri,
-        description = stringResource(id = R.string.image),
+        contentDescription = stringResource(id = R.string.image),
         modifier = modifier,
         contentScale = ContentScale.Fit,
         filterQuality = FilterQuality.High,
