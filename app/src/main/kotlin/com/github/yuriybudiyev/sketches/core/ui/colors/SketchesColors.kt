@@ -20,22 +20,34 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+ *
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.theme
+package com.github.yuriybudiyev.sketches.core.ui.colors
 
-import androidx.compose.material3.Typography
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
 
-val SketchesTypography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )
-)
+object SketchesColors {
+
+    val Primary = Color(0xFF6B69D6)
+    val OnPrimary = Color(0xFFFFFFFF)
+
+    object Light {
+
+        val Secondary = Color(0xFF7F7DDB)
+        val Tertiary = Color(0xFF9391E1)
+        val Background = Color(0xFFEFEFEF)
+        val OnBackground = Color(0xFF000000)
+    }
+
+    object Dark {
+
+        val Secondary = Color(0xFF5755D1)
+        val Tertiary = Color(0xFF4341CB)
+        val Background = Color(0xFF0F0F0F)
+        val OnBackground = Color(0xFFFFFFFF)
+    }
+
+    const val UiAlphaHigh = 0.75f
+    const val UiAlphaLow = 0.25f
+}

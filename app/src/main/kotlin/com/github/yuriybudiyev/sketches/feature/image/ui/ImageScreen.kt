@@ -81,6 +81,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
+import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAlertDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAsyncImage
@@ -93,7 +94,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaPl
 import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
-import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.utils.animateScrollToItemCentered
 
 @Composable
@@ -328,7 +328,7 @@ private fun TopBar(
 ) {
     SketchesTopAppBar(
         modifier = modifier,
-        backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlpha),
+        backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaHigh),
     ) {
         SketchesAppBarActionButton(
             icon = SketchesIcons.Delete,
@@ -514,7 +514,7 @@ private fun MediaBar(
                     .clip(shape = MaterialTheme.shapes.small)
                     .border(
                         width = SketchesDimens.MediaItemBorderThickness,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.25f),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlphaLow),
                         shape = MaterialTheme.shapes.small,
                     )
                     .clickable {

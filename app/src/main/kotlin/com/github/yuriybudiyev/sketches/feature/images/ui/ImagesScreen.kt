@@ -39,12 +39,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaVerticalGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
-import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesColors
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavigationDestination
 
 @Composable
@@ -103,7 +103,7 @@ fun ImagesScreen(
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
             text = stringResource(id = ImagesNavigationDestination.titleRes),
-            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlpha),
+            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaHigh),
         )
     }
 }

@@ -53,8 +53,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
-import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesColors
 
 @Composable
 fun SketchesMediaPlayer(
@@ -62,7 +62,7 @@ fun SketchesMediaPlayer(
     modifier: Modifier = Modifier,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     backgroundColor: Color = MaterialTheme.colorScheme.background,
-    controlsBackgroundColor: Color = backgroundColor.copy(alpha = SketchesColors.UiAlpha),
+    controlsBackgroundColor: Color = backgroundColor.copy(alpha = SketchesColors.UiAlphaHigh),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
     enableImagePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,

@@ -67,10 +67,10 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.common.utils.permissions.checkAllPermissionsGranted
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
+import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesOutlinedButton
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
-import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesColors
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 
 @Composable
@@ -118,7 +118,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                 )
                 if (currentDestination is TopLevelNavigationDestination) {
                     NavigationBar(
-                        containerColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlpha),
+                        containerColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaHigh),
                         contentColor = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier
                             .height(SketchesDimens.BottomBarHeight)

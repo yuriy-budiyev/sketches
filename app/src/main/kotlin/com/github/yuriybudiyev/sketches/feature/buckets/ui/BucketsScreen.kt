@@ -55,6 +55,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
+import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
@@ -62,7 +63,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyVerticalG
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
-import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesColors
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavigationDestination
 
 @Composable
@@ -124,7 +124,7 @@ fun BucketsScreen(
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
             text = stringResource(id = BucketsNavigationDestination.titleRes),
-            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlpha),
+            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaHigh),
         )
     }
 }
@@ -172,7 +172,7 @@ private fun BucketsScreenLayout(
                         .clip(shape = MaterialTheme.shapes.small)
                         .border(
                             width = SketchesDimens.MediaItemBorderThickness,
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.25f),
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlphaLow),
                             shape = MaterialTheme.shapes.small,
                         ),
                     contentScale = ContentScale.Crop,

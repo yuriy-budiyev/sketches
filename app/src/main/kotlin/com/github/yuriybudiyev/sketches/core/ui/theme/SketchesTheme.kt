@@ -34,6 +34,8 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.typography.SketchesTypography
 
 @Composable
 fun SketchesTheme(content: @Composable () -> Unit) {
