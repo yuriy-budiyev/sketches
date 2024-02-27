@@ -62,6 +62,16 @@ inline fun log(
 }
 
 @Suppress("unused")
-fun logStackTrace() {
-    log(Exception("Stack trace")) { "Stack trace" }
+@OptIn(ExperimentalContracts::class)
+inline fun logStackTrace(lazyMessage: () -> Any = { "Stack trace" }) {
+    contract {
+        callsInPlace(
+            lazyMessage,
+            InvocationKind.AT_MOST_ONCE
+        )
+    }
+    log(
+        Exception("Stack trace"),
+        lazyMessage
+    )
 }
