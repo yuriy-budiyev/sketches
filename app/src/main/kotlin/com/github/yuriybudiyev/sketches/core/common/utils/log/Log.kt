@@ -31,6 +31,8 @@ import kotlin.contracts.contract
 import android.util.Log
 import com.github.yuriybudiyev.sketches.BuildConfig
 
+const val SketchesLogTag = "SketchesDebug"
+
 @Suppress("unused")
 @OptIn(ExperimentalContracts::class)
 inline fun log(
@@ -43,12 +45,20 @@ inline fun log(
             InvocationKind.AT_MOST_ONCE
         )
     }
-    if (BuildConfig.DEBUG) {
-        val message = lazyMessage().toString()
+    if (!BuildConfig.DEBUG) {
+        return
+    }
+    val message = lazyMessage().toString()
+    if (throwable != null) {
         Log.d(
-            "SketchesDebug",
+            SketchesLogTag,
             message,
             throwable
+        )
+    } else {
+        Log.d(
+            SketchesLogTag,
+            message
         )
     }
 }
