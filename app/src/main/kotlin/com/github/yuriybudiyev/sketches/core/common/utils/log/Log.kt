@@ -35,7 +35,7 @@ import com.github.yuriybudiyev.sketches.BuildConfig
 @OptIn(ExperimentalContracts::class)
 inline fun log(
     throwable: Throwable? = null,
-    lazyMessage: () -> String,
+    lazyMessage: () -> Any,
 ) {
     contract {
         callsInPlace(
@@ -44,9 +44,10 @@ inline fun log(
         )
     }
     if (BuildConfig.DEBUG) {
+        val message = lazyMessage().toString()
         Log.d(
             "SketchesDebug",
-            lazyMessage(),
+            message,
             throwable
         )
     }
