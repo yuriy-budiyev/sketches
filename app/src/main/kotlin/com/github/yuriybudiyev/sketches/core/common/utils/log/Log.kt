@@ -48,7 +48,7 @@ fun log(
 }
 
 @Suppress("unused")
-fun logStackTrace(message: String = "Stack trace") {
+fun logStackTrace(message: String) {
     val exception = Exception("Stack trace")
     Log.d(
         LogTag,
