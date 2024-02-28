@@ -28,22 +28,23 @@ package com.github.yuriybudiyev.sketches.core.common.utils.log
 import android.util.Log
 
 @Suppress("unused")
+fun log(message: String) {
+    Log.d(
+        LogTag,
+        message
+    )
+}
+
+@Suppress("unused")
 fun log(
     message: String,
-    throwable: Throwable? = null,
+    throwable: Throwable,
 ) {
-    if (throwable != null) {
-        Log.d(
-            LogTag,
-            message,
-            throwable
-        )
-    } else {
-        Log.d(
-            LogTag,
-            message
-        )
-    }
+    Log.d(
+        LogTag,
+        message,
+        throwable
+    )
 }
 
 @Suppress("unused")
