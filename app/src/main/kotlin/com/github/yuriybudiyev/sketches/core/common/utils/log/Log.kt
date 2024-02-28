@@ -25,59 +25,35 @@
 
 package com.github.yuriybudiyev.sketches.core.common.utils.log
 
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 import android.util.Log
-import com.github.yuriybudiyev.sketches.BuildConfig
 
 @Suppress("unused")
-@OptIn(ExperimentalContracts::class)
-inline fun log(
+fun log(
+    message: String,
     throwable: Throwable? = null,
-    lazyMessage: () -> Any,
 ) {
-    contract {
-        callsInPlace(
-            lazyMessage,
-            InvocationKind.AT_MOST_ONCE
-        )
-    }
-    if (!BuildConfig.DEBUG) {
-        return
-    }
-    val message = lazyMessage().toString()
     if (throwable != null) {
         Log.d(
-            "SketchesDebug",
+            LogTag,
             message,
             throwable
         )
     } else {
         Log.d(
-            "SketchesDebug",
+            LogTag,
             message
         )
     }
 }
 
 @Suppress("unused")
-@OptIn(ExperimentalContracts::class)
-inline fun logStackTrace(lazyMessage: () -> Any = { "Stack trace" }) {
-    contract {
-        callsInPlace(
-            lazyMessage,
-            InvocationKind.AT_MOST_ONCE
-        )
-    }
-    if (!BuildConfig.DEBUG) {
-        return
-    }
-    val message = lazyMessage().toString()
+fun logStackTrace(message: String = "Stack trace") {
     val exception = Exception("Stack trace")
     Log.d(
-        "SketchesDebug",
+        LogTag,
         message,
         exception
     )
 }
+
+private const val LogTag = "SketchesDebug"
