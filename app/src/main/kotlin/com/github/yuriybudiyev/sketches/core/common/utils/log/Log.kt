@@ -28,27 +28,26 @@ package com.github.yuriybudiyev.sketches.core.common.utils.log
 import android.util.Log
 
 @Suppress("unused")
-fun log(message: String) {
-    Log.d(
-        LogTag,
-        message
-    )
-}
-
-@Suppress("unused")
 fun log(
     message: String,
-    throwable: Throwable,
+    throwable: Throwable? = null,
 ) {
-    Log.d(
-        LogTag,
-        message,
-        throwable
-    )
+    if (throwable != null) {
+        Log.d(
+            LogTag,
+            message,
+            throwable
+        )
+    } else {
+        Log.d(
+            LogTag,
+            message
+        )
+    }
 }
 
 @Suppress("unused")
-fun logStackTrace(message: String) {
+fun logStackTrace(message: String = "Stack trace") {
     val exception = Exception("Stack trace")
     Log.d(
         LogTag,
