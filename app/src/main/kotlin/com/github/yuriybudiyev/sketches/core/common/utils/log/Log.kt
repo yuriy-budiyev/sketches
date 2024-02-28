@@ -70,8 +70,14 @@ inline fun logStackTrace(lazyMessage: () -> Any = { "Stack trace" }) {
             InvocationKind.AT_MOST_ONCE
         )
     }
-    log(
-        Exception("Stack trace"),
-        lazyMessage
+    if (!BuildConfig.DEBUG) {
+        return
+    }
+    val message = lazyMessage().toString()
+    val exception = Exception("Stack trace")
+    Log.d(
+        "SketchesDebug",
+        message,
+        exception
     )
 }
