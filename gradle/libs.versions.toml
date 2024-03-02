@@ -190,6 +190,7 @@ androidx-lifecycle = [
     "androidx-lifecycle-common-java8",
     "androidx-lifecycle-runtime",
     "androidx-lifecycle-runtime-compose",
+    "androidx-lifecycle-runtime-livadata",
     "androidx-lifecycle-runtime-ktx",
     "androidx-lifecycle-livedata",
     "androidx-lifecycle-livedata-ktx",
