@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -86,6 +87,8 @@ dependencies {
     implementation(libs.bundles.coil)
     implementation(libs.okhttp)
     implementation(libs.okio)
+    implementation(libs.androidx.profileinstaller)
+    baselineProfile(project(":baselineprofile"))
     ksp(libs.bundles.hilt.compiler)
     debugImplementation(libs.bundles.androidx.compose.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
