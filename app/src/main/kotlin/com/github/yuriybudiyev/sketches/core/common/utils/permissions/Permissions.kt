@@ -26,9 +26,13 @@ package com.github.yuriybudiyev.sketches.core.common.utils.permissions
 
 import android.content.Context
 import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
 
 fun Context.checkPermissionGranted(permission: String): Boolean =
-    checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED
+    ContextCompat.checkSelfPermission(
+        this,
+        permission
+    ) == PackageManager.PERMISSION_GRANTED
 
 fun Context.checkAllPermissionsGranted(permissions: Array<String>): Boolean {
     for (permission in permissions) {
