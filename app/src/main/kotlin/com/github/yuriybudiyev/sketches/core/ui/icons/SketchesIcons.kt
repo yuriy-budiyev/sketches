@@ -29,6 +29,7 @@ import androidx.compose.material.icons.automirrored.filled.VolumeOff
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PermMedia
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.PlayArrow
@@ -54,4 +55,5 @@ object SketchesIcons {
     val Pause = Icons.Filled.Pause
     val VolumeEnabled = Icons.AutoMirrored.Filled.VolumeUp
     val VolumeDisabled = Icons.AutoMirrored.Filled.VolumeOff
+    val UpdateMediaSelection = Icons.Filled.PermMedia
 }
