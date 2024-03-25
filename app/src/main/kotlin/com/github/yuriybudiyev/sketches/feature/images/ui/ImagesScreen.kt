@@ -40,16 +40,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaVerticalGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavigationDestination
 
 @Composable
 fun ImagesRoute(
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onRequestUserSelectedMedia: (() -> Unit)? = null,
     viewModel: ImagesScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -62,6 +65,7 @@ fun ImagesRoute(
     }
     ImagesScreen(
         uiState = uiState,
+        onRequestUserSelectedMedia = onRequestUserSelectedMedia,
         onImageClick = onImageClick,
     )
 }
@@ -69,6 +73,7 @@ fun ImagesRoute(
 @Composable
 fun ImagesScreen(
     uiState: ImagesScreenUiState,
+    onRequestUserSelectedMedia: (() -> Unit)?,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -104,6 +109,17 @@ fun ImagesScreen(
                 .fillMaxWidth(),
             text = stringResource(id = ImagesNavigationDestination.titleRes),
             backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaHigh),
+            actions = {
+                if (onRequestUserSelectedMedia != null) {
+                    SketchesAppBarActionButton(
+                        icon = SketchesIcons.UpdateMediaSelection,
+                        description = stringResource(id = R.string.update_selected_media),
+                        onClick = {
+                            onRequestUserSelectedMedia()
+                        },
+                    )
+                }
+            },
         )
     }
 }

@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.main.ui
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -65,6 +66,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.common.utils.permissions.checkAllPermissionsGranted
+import com.github.yuriybudiyev.sketches.core.common.utils.permissions.checkPermissionGranted
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMessage
@@ -214,4 +216,22 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
             }
         }
     }
+}
+
+private fun Context.checkMediaPermissions(): MediaPermissions =
+    when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            checkPermissionGranted(Manifest.permission.READ_MEDIA_IMAGES) &&
+            checkPermissionGranted(Manifest.permission.READ_MEDIA_VIDEO) -> MediaPermissions.Full
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
+            checkPermissionGranted(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) -> MediaPermissions.UserSelected
+        checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE) -> MediaPermissions.Full
+        else -> MediaPermissions.None
+    }
+
+enum class MediaPermissions {
+
+    Full,
+    UserSelected,
+    None
 }
