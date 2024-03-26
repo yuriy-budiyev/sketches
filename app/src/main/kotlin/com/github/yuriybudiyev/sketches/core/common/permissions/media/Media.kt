@@ -41,6 +41,7 @@ enum class MediaAccess {
     UserSelected
 }
 
+//TODO
 fun Context.checkMediaAccess(): MediaAccess =
     when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
