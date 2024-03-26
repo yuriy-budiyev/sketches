@@ -27,6 +27,7 @@ package com.github.yuriybudiyev.sketches.core.common.permissions.media
 import android.Manifest
 import android.content.Context
 import android.os.Build
+import androidx.activity.result.ActivityResultLauncher
 import com.github.yuriybudiyev.sketches.core.common.permissions.checkPermissionGranted
 
 enum class MediaAccess {
@@ -43,6 +44,19 @@ fun Context.checkMediaAccess(): MediaAccess =
             && checkPermissionGranted(Manifest.permission.READ_MEDIA_VIDEO) -> MediaAccess.Full
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
             && checkPermissionGranted(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) -> MediaAccess.UserSelected
-        checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE) -> MediaAccess.Full
+        checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)
+            && checkPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE) -> MediaAccess.Full
         else -> MediaAccess.None
     }
+
+fun ActivityResultLauncher<Array<String>>.requestMediaAccess() {
+
+}
+
+@JvmInline
+value class MediaAccessRequestLauncher(val launcher: ActivityResultLauncher<Array<String>>) {
+
+    fun requestMediaAccess() {
+
+    }
+}
