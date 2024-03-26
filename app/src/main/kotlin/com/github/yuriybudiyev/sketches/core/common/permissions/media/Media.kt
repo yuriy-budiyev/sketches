@@ -27,7 +27,11 @@ package com.github.yuriybudiyev.sketches.core.common.permissions.media
 import android.Manifest
 import android.content.Context
 import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
 import com.github.yuriybudiyev.sketches.core.common.permissions.checkPermissionGranted
 
 enum class MediaAccess {
@@ -39,6 +43,8 @@ enum class MediaAccess {
 
 fun Context.checkMediaAccess(): MediaAccess =
     when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+            && checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE) -> MediaAccess.Full
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
             && checkPermissionGranted(Manifest.permission.READ_MEDIA_IMAGES)
             && checkPermissionGranted(Manifest.permission.READ_MEDIA_VIDEO) -> MediaAccess.Full
@@ -49,14 +55,43 @@ fun Context.checkMediaAccess(): MediaAccess =
         else -> MediaAccess.None
     }
 
-fun ActivityResultLauncher<Array<String>>.requestMediaAccess() {
-
+@Composable
+@NonRestartableComposable
+fun rememberMediaAccessRequestLauncher(): MediaAccessRequestLauncher {
+    return MediaAccessRequestLauncher(rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) {})
 }
 
 @JvmInline
-value class MediaAccessRequestLauncher(val launcher: ActivityResultLauncher<Array<String>>) {
+value class MediaAccessRequestLauncher(private val launcher: ActivityResultLauncher<Array<String>>) {
 
     fun requestMediaAccess() {
-
+        launcher.launch(
+            when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
+                    arrayOf(
+                        Manifest.permission.READ_MEDIA_IMAGES,
+                        Manifest.permission.READ_MEDIA_VIDEO,
+                        Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                    )
+                }
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                    arrayOf(
+                        Manifest.permission.READ_MEDIA_IMAGES,
+                        Manifest.permission.READ_MEDIA_VIDEO
+                    )
+                }
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
+                else -> {
+                    arrayOf(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+                }
+            }
+        )
     }
 }
