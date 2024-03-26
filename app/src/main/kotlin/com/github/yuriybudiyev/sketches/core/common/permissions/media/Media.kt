@@ -25,14 +25,12 @@
 package com.github.yuriybudiyev.sketches.core.common.permissions.media
 
 import android.Manifest
-import android.content.Context
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
-import com.github.yuriybudiyev.sketches.core.common.permissions.checkPermissionGranted
 
 enum class MediaAccess {
 
@@ -42,7 +40,7 @@ enum class MediaAccess {
 }
 
 //TODO
-fun Context.checkMediaAccess(): MediaAccess =
+/*fun Context.checkMediaAccess(): MediaAccess =
     when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
             && checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE) -> MediaAccess.Full
@@ -54,7 +52,7 @@ fun Context.checkMediaAccess(): MediaAccess =
         checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)
             && checkPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE) -> MediaAccess.Full
         else -> MediaAccess.None
-    }
+    }*/
 
 @Composable
 @NonRestartableComposable
