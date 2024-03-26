@@ -57,11 +57,10 @@ fun Context.checkMediaAccess(): MediaAccess =
 
 @Composable
 @NonRestartableComposable
-fun rememberMediaAccessRequestLauncher(): MediaAccessRequestLauncher {
-    return MediaAccessRequestLauncher(rememberLauncherForActivityResult(
+fun rememberMediaAccessRequestLauncher(): MediaAccessRequestLauncher =
+    MediaAccessRequestLauncher(rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) {})
-}
 
 @JvmInline
 value class MediaAccessRequestLauncher(private val launcher: ActivityResultLauncher<Array<String>>) {
