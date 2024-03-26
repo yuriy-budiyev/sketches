@@ -22,26 +22,37 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.common.utils.coroutines
+package com.github.yuriybudiyev.sketches.core.common.log
 
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
-import kotlinx.coroutines.CancellationException
+import android.util.Log
 
-@OptIn(ExperimentalContracts::class)
-inline fun <T: Throwable> excludeCancellation(
-    thrown: T,
-    block: (thrown: T) -> Unit,
+@Suppress("unused")
+fun log(
+    message: String,
+    throwable: Throwable? = null,
 ) {
-    contract {
-        callsInPlace(
-            block,
-            InvocationKind.AT_MOST_ONCE
+    if (throwable != null) {
+        Log.d(
+            LogTag,
+            message,
+            throwable
+        )
+    } else {
+        Log.d(
+            LogTag,
+            message
         )
     }
-    if (thrown is CancellationException) {
-        return
-    }
-    block(thrown)
 }
+
+@Suppress("unused")
+fun logStackTrace(message: String = "Stack trace") {
+    val exception = Exception("Stack trace")
+    Log.d(
+        LogTag,
+        message,
+        exception
+    )
+}
+
+private const val LogTag = "SketchesDebug"

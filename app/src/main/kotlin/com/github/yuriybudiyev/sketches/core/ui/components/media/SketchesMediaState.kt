@@ -24,9 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components.media
 
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
@@ -35,11 +32,6 @@ import android.os.Bundle
 import android.view.Surface
 import android.view.SurfaceView
 import android.view.TextureView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import androidx.annotation.FloatRange
 import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
@@ -66,7 +58,15 @@ import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
-import com.github.yuriybudiyev.sketches.core.common.utils.bundle.getParcelableCompat
+import com.github.yuriybudiyev.sketches.core.common.bundle.getParcelableCompat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 @Composable
 @OptIn(UnstableApi::class)

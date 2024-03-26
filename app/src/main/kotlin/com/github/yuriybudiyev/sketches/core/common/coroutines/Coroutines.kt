@@ -22,19 +22,26 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.common.utils.bundle
+package com.github.yuriybudiyev.sketches.core.common.coroutines
 
-import android.os.Build
-import android.os.Bundle
-import android.os.Parcelable
+import kotlinx.coroutines.CancellationException
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
-@Suppress("DEPRECATION")
-inline fun <reified T: Parcelable> Bundle.getParcelableCompat(key: String): T? =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        getParcelable(
-            key,
-            T::class.java
+@OptIn(ExperimentalContracts::class)
+inline fun <T: Throwable> excludeCancellation(
+    thrown: T,
+    block: (thrown: T) -> Unit,
+) {
+    contract {
+        callsInPlace(
+            block,
+            InvocationKind.AT_MOST_ONCE
         )
-    } else {
-        getParcelable(key)
     }
+    if (thrown is CancellationException) {
+        return
+    }
+    block(thrown)
+}

@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.main.navigation
 
 import android.content.Intent
-import kotlinx.coroutines.launch
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -45,6 +44,7 @@ import com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavigationDestination
 import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
 import com.github.yuriybudiyev.sketches.main.ui.SketchesAppState
+import kotlinx.coroutines.launch
 
 @Composable
 fun SketchesNavHost(

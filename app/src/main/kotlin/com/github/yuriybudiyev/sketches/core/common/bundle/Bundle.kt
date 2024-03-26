@@ -22,37 +22,19 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.common.utils.log
+package com.github.yuriybudiyev.sketches.core.common.bundle
 
-import android.util.Log
+import android.os.Build
+import android.os.Bundle
+import android.os.Parcelable
 
-@Suppress("unused")
-fun log(
-    message: String,
-    throwable: Throwable? = null,
-) {
-    if (throwable != null) {
-        Log.d(
-            LogTag,
-            message,
-            throwable
+@Suppress("DEPRECATION")
+inline fun <reified T: Parcelable> Bundle.getParcelableCompat(key: String): T? =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        getParcelable(
+            key,
+            T::class.java
         )
     } else {
-        Log.d(
-            LogTag,
-            message
-        )
+        getParcelable(key)
     }
-}
-
-@Suppress("unused")
-fun logStackTrace(message: String = "Stack trace") {
-    val exception = Exception("Stack trace")
-    Log.d(
-        LogTag,
-        message,
-        exception
-    )
-}
-
-private const val LogTag = "SketchesDebug"

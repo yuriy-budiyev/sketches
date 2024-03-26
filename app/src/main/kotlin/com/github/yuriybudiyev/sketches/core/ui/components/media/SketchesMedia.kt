@@ -24,10 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components.media
 
-import kotlin.math.roundToLong
 import android.view.TextureView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -55,6 +52,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlin.math.roundToLong
 
 @Composable
 fun SketchesMediaPlayer(

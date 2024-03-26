@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.common.utils.permissions
+package com.github.yuriybudiyev.sketches.core.common.permissions
 
 import android.content.Context
 import android.content.pm.PackageManager

@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.core.data.di
 
 import android.content.Context
-import javax.inject.Singleton
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import com.github.yuriybudiyev.sketches.core.data.repository.implementation.MediaStoreRepositoryImpl
 import dagger.Module
@@ -33,6 +32,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)

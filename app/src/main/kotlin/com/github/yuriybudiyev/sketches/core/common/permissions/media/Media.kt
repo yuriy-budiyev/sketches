@@ -22,21 +22,27 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches
+package com.github.yuriybudiyev.sketches.core.common.permissions.media
 
-import android.app.Application
-import coil.ImageLoader
-import coil.ImageLoaderFactory
-import dagger.hilt.android.HiltAndroidApp
-import javax.inject.Inject
-import javax.inject.Provider
+import android.Manifest
+import android.content.Context
+import android.os.Build
+import com.github.yuriybudiyev.sketches.core.common.permissions.checkPermissionGranted
 
-@HiltAndroidApp
-class SketchesApplication: Application(), ImageLoaderFactory {
+enum class MediaAccess {
 
-    @Inject
-    lateinit var imageLoaderProvider: Provider<ImageLoader>
-
-    override fun newImageLoader(): ImageLoader =
-        imageLoaderProvider.get()
+    None,
+    Full,
+    UserSelected
 }
+
+fun Context.checkMediaAccess(): MediaAccess =
+    when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+            && checkPermissionGranted(Manifest.permission.READ_MEDIA_IMAGES)
+            && checkPermissionGranted(Manifest.permission.READ_MEDIA_VIDEO) -> MediaAccess.Full
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+            && checkPermissionGranted(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) -> MediaAccess.UserSelected
+        checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE) -> MediaAccess.Full
+        else -> MediaAccess.None
+    }

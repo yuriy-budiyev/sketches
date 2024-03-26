@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.feature.bucket.ui
 
-import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,6 +45,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaVerticalGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
+import kotlinx.coroutines.launch
 
 @Composable
 fun BucketRoute(

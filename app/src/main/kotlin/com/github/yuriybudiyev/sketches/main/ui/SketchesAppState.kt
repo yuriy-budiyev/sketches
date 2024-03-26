@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.main.ui
 
-import kotlinx.coroutines.CoroutineScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -37,6 +36,7 @@ import com.github.yuriybudiyev.sketches.core.navigation.buildRoute
 import com.github.yuriybudiyev.sketches.core.navigation.destination.NavigationDestination
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.navigation.navigate
+import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun rememberSketchesAppState(

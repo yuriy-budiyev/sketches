@@ -28,8 +28,6 @@ import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import androidx.collection.MutableLongObjectMap
 import androidx.core.database.getStringOrNull
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
@@ -37,6 +35,8 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import com.github.yuriybudiyev.sketches.core.data.utils.contentUriFor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class MediaStoreRepositoryImpl(private val context: Context): MediaStoreRepository {
 
