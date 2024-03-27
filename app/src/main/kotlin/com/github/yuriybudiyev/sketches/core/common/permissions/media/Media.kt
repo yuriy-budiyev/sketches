@@ -25,12 +25,14 @@
 package com.github.yuriybudiyev.sketches.core.common.permissions.media
 
 import android.Manifest
+import android.content.Context
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
+import com.github.yuriybudiyev.sketches.core.common.permissions.checkPermissionGranted
 
 enum class MediaAccess {
 
@@ -39,27 +41,58 @@ enum class MediaAccess {
     UserSelected
 }
 
-//TODO
-/*fun Context.checkMediaAccess(): MediaAccess =
+fun Context.checkMediaAccess(): MediaAccess =
     when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-            && checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE) -> MediaAccess.Full
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-            && checkPermissionGranted(Manifest.permission.READ_MEDIA_IMAGES)
-            && checkPermissionGranted(Manifest.permission.READ_MEDIA_VIDEO) -> MediaAccess.Full
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-            && checkPermissionGranted(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) -> MediaAccess.UserSelected
-        checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)
-            && checkPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE) -> MediaAccess.Full
-        else -> MediaAccess.None
-    }*/
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
+            when {
+                checkPermissionGranted(Manifest.permission.READ_MEDIA_IMAGES)
+                    && checkPermissionGranted(Manifest.permission.READ_MEDIA_VIDEO) -> {
+                    MediaAccess.Full
+                }
+                checkPermissionGranted(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) -> {
+                    MediaAccess.UserSelected
+                }
+                else -> {
+                    MediaAccess.None
+                }
+            }
+        }
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+            if (checkPermissionGranted(Manifest.permission.READ_MEDIA_IMAGES)
+                && checkPermissionGranted(Manifest.permission.READ_MEDIA_VIDEO)
+            ) {
+                MediaAccess.Full
+            } else {
+                MediaAccess.None
+            }
+        }
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
+            if (checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                MediaAccess.Full
+            } else {
+                MediaAccess.None
+            }
+        }
+        else -> {
+            if (checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)
+                && checkPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            ) {
+                MediaAccess.Full
+            } else {
+                MediaAccess.None
+            }
+        }
+    }
 
 @Composable
 @NonRestartableComposable
-fun rememberMediaAccessRequestLauncher(): MediaAccessRequestLauncher =
-    MediaAccessRequestLauncher(rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions()
-    ) {})
+fun rememberMediaAccessRequestLauncher(): MediaAccessRequestLauncher {
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions(),
+        onResult = {},
+    )
+    return MediaAccessRequestLauncher(launcher)
+}
 
 @JvmInline
 value class MediaAccessRequestLauncher(private val launcher: ActivityResultLauncher<Array<String>>) {
