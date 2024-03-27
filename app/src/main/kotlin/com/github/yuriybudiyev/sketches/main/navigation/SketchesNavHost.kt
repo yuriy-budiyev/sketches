@@ -26,6 +26,8 @@ package com.github.yuriybudiyev.sketches.main.navigation
 
 import android.content.Intent
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -50,7 +52,9 @@ import kotlinx.coroutines.launch
 fun SketchesNavHost(
     appState: SketchesAppState,
     modifier: Modifier = Modifier,
+    onRequestUserSelectedMedia: (() -> Unit)? = null,
 ) {
+    val onRequestUserSelectedMediaUpdated by rememberUpdatedState(onRequestUserSelectedMedia)
     NavHost(
         modifier = modifier,
         navController = appState.navController,
@@ -68,6 +72,7 @@ fun SketchesNavHost(
                         )
                     }
                 },
+                onRequestUserSelectedMedia = onRequestUserSelectedMediaUpdated,
             )
         }
         composable(BucketsNavigationDestination.registerIn(appState)) {

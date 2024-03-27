@@ -66,7 +66,7 @@ class SketchesAppState(
             return navigationDestinationsInternal[route]
         }
 
-    val topLevelNavigationDestinations: List<TopLevelNavigationDestination>
+    val topLevelNavigationDestinations: Collection<TopLevelNavigationDestination>
         get() = topLevelNavigationDestinationsInternal
 
     fun navigateToTopLevelDestination(destination: TopLevelNavigationDestination) {
@@ -87,8 +87,8 @@ class SketchesAppState(
     }
 
     private val navigationDestinationsInternal: MutableMap<String, NavigationDestination> =
-        HashMap()
+        LinkedHashMap()
 
-    private val topLevelNavigationDestinationsInternal: MutableList<TopLevelNavigationDestination> =
-        ArrayList()
+    private val topLevelNavigationDestinationsInternal: MutableSet<TopLevelNavigationDestination> =
+        LinkedHashSet()
 }

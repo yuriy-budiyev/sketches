@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.main.ui
 
-import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -64,7 +63,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.common.permissions.checkAllPermissionsGranted
+import com.github.yuriybudiyev.sketches.core.common.permissions.media.MediaAccess
+import com.github.yuriybudiyev.sketches.core.common.permissions.media.checkMediaAccess
+import com.github.yuriybudiyev.sketches.core.common.permissions.media.rememberMediaAccessRequestLauncher
 import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMessage
@@ -76,35 +77,11 @@ import kotlinx.coroutines.launch
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
-    val mediaPermissions = remember {
-        when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
-                arrayOf(
-                    Manifest.permission.READ_MEDIA_IMAGES,
-                    Manifest.permission.READ_MEDIA_VIDEO,
-                    Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
-                )
-            }
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                arrayOf(
-                    Manifest.permission.READ_MEDIA_IMAGES,
-                    Manifest.permission.READ_MEDIA_VIDEO
-                )
-            }
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-            }
-            else -> {
-                arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                )
-            }
-        }
-    }
     val appContextUpdated by rememberUpdatedState(LocalContext.current.applicationContext)
-    var permissionsGranted by remember {
-        mutableStateOf(appContextUpdated.checkAllPermissionsGranted(mediaPermissions))
+    var mediaAccess by remember { mutableStateOf(appContextUpdated.checkMediaAccess()) }
+    val mediaAccessLauncher = rememberMediaAccessRequestLauncher()
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        mediaAccess = appContextUpdated.checkMediaAccess()
     }
     Surface(
         modifier = Modifier
@@ -115,101 +92,99 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
         color = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground
     ) {
-        if (permissionsGranted) {
-            val topLevelDestinations = appState.topLevelNavigationDestinations
-            val currentDestination = appState.currentNavigationDestination
-            Box(modifier = Modifier.fillMaxSize()) {
-                SketchesNavHost(
-                    appState = appState,
-                    modifier = Modifier.matchParentSize()
-                )
-                if (currentDestination is TopLevelNavigationDestination) {
-                    NavigationBar(
-                        containerColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaHigh),
-                        contentColor = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier
-                            .height(SketchesDimens.BottomBarHeight)
-                            .align(Alignment.BottomStart)
-                            .fillMaxWidth()
-                    ) {
-                        topLevelDestinations.forEach { destination ->
-                            val selected = destination == currentDestination
-                            NavigationBarItem(
-                                selected = selected,
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                                    unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-                                    indicatorColor = MaterialTheme.colorScheme.primary
-                                ),
-                                onClick = {
-                                    appState.coroutineScope.launch {
-                                        appState.navigateToTopLevelDestination(destination)
-                                    }
-                                },
-                                icon = {
-                                    Icon(
-                                        imageVector = if (selected) {
-                                            destination.selectedIcon
-                                        } else {
-                                            destination.unselectedIcon
-                                        },
-                                        contentDescription = stringResource(id = destination.titleRes)
-                                    )
-                                },
-                                modifier = Modifier.semantics {
-                                    testTag = "nav_${destination.routeBase}"
-                                },
-                            )
+        when (mediaAccess) {
+            MediaAccess.Full, MediaAccess.UserSelected -> {
+                val topLevelDestinations = appState.topLevelNavigationDestinations
+                val currentDestination = appState.currentNavigationDestination
+                Box(modifier = Modifier.fillMaxSize()) {
+                    SketchesNavHost(
+                        appState = appState,
+                        modifier = Modifier.matchParentSize(),
+                        onRequestUserSelectedMedia = if (mediaAccess == MediaAccess.UserSelected) {
+                            { mediaAccessLauncher.requestMediaAccess() }
+                        } else {
+                            null
+                        }
+                    )
+                    if (currentDestination is TopLevelNavigationDestination) {
+                        NavigationBar(
+                            containerColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaHigh),
+                            contentColor = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier
+                                .height(SketchesDimens.BottomBarHeight)
+                                .align(Alignment.BottomStart)
+                                .fillMaxWidth()
+                        ) {
+                            topLevelDestinations.forEach { destination ->
+                                val selected = destination == currentDestination
+                                NavigationBarItem(
+                                    selected = selected,
+                                    colors = NavigationBarItemDefaults.colors(
+                                        selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                                        unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+                                        indicatorColor = MaterialTheme.colorScheme.primary
+                                    ),
+                                    onClick = {
+                                        appState.coroutineScope.launch {
+                                            appState.navigateToTopLevelDestination(destination)
+                                        }
+                                    },
+                                    icon = {
+                                        Icon(
+                                            imageVector = if (selected) {
+                                                destination.selectedIcon
+                                            } else {
+                                                destination.unselectedIcon
+                                            },
+                                            contentDescription = stringResource(id = destination.titleRes)
+                                        )
+                                    },
+                                    modifier = Modifier.semantics {
+                                        testTag = "nav_${destination.routeBase}"
+                                    },
+                                )
+                            }
                         }
                     }
                 }
             }
-        } else {
-            val message = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                stringResource(id = R.string.no_images_permission)
-            } else {
-                stringResource(id = R.string.no_storage_permission)
-            }
-            val permissionsLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.RequestMultiplePermissions()
-            ) { grantResult ->
-                permissionsGranted = checkAllPermissionsGranted(grantResult)
-            }
-            val settingsLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.StartActivityForResult()
-            ) {
-                permissionsGranted = appContextUpdated.checkAllPermissionsGranted(mediaPermissions)
-            }
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                SketchesMessage(
-                    text = message,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+            MediaAccess.None -> {
+                val settingsLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.StartActivityForResult(),
+                    onResult = {},
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-                SketchesOutlinedButton(text = stringResource(id = R.string.open_settings)) {
-                    appState.coroutineScope.launch {
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        intent.data = Uri.fromParts(
-                            "package",
-                            appContextUpdated.packageName,
-                            null
-                        )
-                        settingsLauncher.launch(intent)
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    SketchesMessage(
+                        text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            stringResource(id = R.string.no_images_permission)
+                        } else {
+                            stringResource(id = R.string.no_storage_permission)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    SketchesOutlinedButton(text = stringResource(id = R.string.open_settings)) {
+                        appState.coroutineScope.launch {
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intent.data = Uri.fromParts(
+                                "package",
+                                appContextUpdated.packageName,
+                                null
+                            )
+                            settingsLauncher.launch(intent)
+                        }
                     }
                 }
-            }
-            LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-                permissionsGranted = appContextUpdated.checkAllPermissionsGranted(mediaPermissions)
-            }
-            LaunchedEffect(Unit) {
-                appState.coroutineScope.launch {
-                    permissionsLauncher.launch(mediaPermissions)
+                LaunchedEffect(Unit) {
+                    appState.coroutineScope.launch {
+                        mediaAccessLauncher.requestMediaAccess()
+                    }
                 }
             }
         }
