@@ -31,11 +31,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
@@ -48,6 +53,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaVertical
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavigationDestination
+import kotlinx.coroutines.launch
 
 @Composable
 fun ImagesRoute(
@@ -61,11 +67,29 @@ fun ImagesRoute(
         viewModel,
         coroutineScope,
     ) {
-        viewModel.updateMedia()
+        coroutineScope.launch {
+            viewModel.updateMedia()
+        }
+    }
+    var mediaAccessRequested by remember { mutableStateOf(false) }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        if (mediaAccessRequested) {
+            mediaAccessRequested = false
+            coroutineScope.launch {
+                viewModel.updateMedia()
+            }
+        }
     }
     ImagesScreen(
         uiState = uiState,
-        onRequestUserSelectedMedia = onRequestUserSelectedMedia,
+        onRequestUserSelectedMedia = if (onRequestUserSelectedMedia != null) {
+            {
+                mediaAccessRequested = true
+                onRequestUserSelectedMedia()
+            }
+        } else {
+            null
+        },
         onImageClick = onImageClick,
     )
 }
