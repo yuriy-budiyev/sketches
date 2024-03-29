@@ -29,12 +29,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -63,33 +59,14 @@ fun ImagesRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
-    LaunchedEffect(
-        viewModel,
-        coroutineScope,
-    ) {
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         coroutineScope.launch {
             viewModel.updateMedia()
         }
     }
-    var mediaAccessRequested by remember { mutableStateOf(false) }
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        if (mediaAccessRequested) {
-            mediaAccessRequested = false
-            coroutineScope.launch {
-                viewModel.updateMedia()
-            }
-        }
-    }
     ImagesScreen(
         uiState = uiState,
-        onRequestUserSelectedMedia = if (onRequestUserSelectedMedia != null) {
-            {
-                mediaAccessRequested = true
-                onRequestUserSelectedMedia()
-            }
-        } else {
-            null
-        },
+        onRequestUserSelectedMedia = onRequestUserSelectedMedia,
         onImageClick = onImageClick,
     )
 }
