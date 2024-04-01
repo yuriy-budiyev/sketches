@@ -31,7 +31,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.NonRestartableComposable
 import com.github.yuriybudiyev.sketches.core.common.permissions.checkPermissionGranted
 
 enum class MediaAccess {
@@ -85,7 +84,6 @@ fun Context.checkMediaAccess(): MediaAccess =
     }
 
 @Composable
-@NonRestartableComposable
 fun rememberMediaAccessRequestLauncher(): MediaAccessRequestLauncher {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
