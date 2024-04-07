@@ -22,16 +22,42 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.compositionlocals
+package com.github.yuriybudiyev.sketches.core.common.di
 
-import androidx.compose.runtime.compositionLocalOf
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import android.content.Context
+import android.os.Build
+import coil.ImageLoader
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
+import coil.decode.SvgDecoder
+import coil.decode.VideoFrameDecoder
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
-val LocalMediaStoreRepository =
-    compositionLocalOf<MediaStoreRepository> {
-        noLocalProvidedFor("MediaStoreRepository")
-    }
+@Module
+@InstallIn(SingletonComponent::class)
+object ImageLoaderModule {
 
-private fun noLocalProvidedFor(name: String): Nothing {
-    error("CompositionLocal $name not present")
+    @Provides
+    @Singleton
+    fun provideImageLoader(
+        @ApplicationContext
+        context: Context,
+    ): ImageLoader =
+        ImageLoader
+            .Builder(context)
+            .components {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    add(ImageDecoderDecoder.Factory())
+                } else {
+                    add(GifDecoder.Factory())
+                }
+                add(SvgDecoder.Factory())
+                add(VideoFrameDecoder.Factory())
+            }
+            .build()
 }

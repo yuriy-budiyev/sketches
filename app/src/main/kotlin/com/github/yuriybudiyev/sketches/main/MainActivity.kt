@@ -27,9 +27,6 @@ package com.github.yuriybudiyev.sketches.main
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.CompositionLocalProvider
-import com.github.yuriybudiyev.sketches.core.data.repository.implementation.MediaStoreRepositoryImpl
-import com.github.yuriybudiyev.sketches.core.ui.compositionlocals.LocalMediaStoreRepository
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
 import com.github.yuriybudiyev.sketches.main.ui.SketchesApp
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,12 +37,8 @@ class MainActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CompositionLocalProvider(
-                LocalMediaStoreRepository provides MediaStoreRepositoryImpl(applicationContext)
-            ) {
-                SketchesTheme {
-                    SketchesApp()
-                }
+            SketchesTheme {
+                SketchesApp()
             }
         }
     }
