@@ -32,13 +32,32 @@ import android.os.Looper
 import androidx.annotation.CallSuper
 import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.github.yuriybudiyev.sketches.core.common.permissions.media.MediaAccess
+import com.github.yuriybudiyev.sketches.core.common.permissions.media.checkMediaAccess
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.data.utils.contentUriFor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 abstract class MediaObservingViewModel(context: Context): ViewModel() {
 
     @MainThread
     abstract fun onMediaChanged()
+
+    fun updateMediaAccess() {
+        val current = mediaAccess
+        val updated = appContext.checkMediaAccess()
+        mediaAccess = current
+        if (current != updated || current == MediaAccess.UserSelected) {
+            viewModelScope.launch {
+                withContext(Dispatchers.Main) {
+                    onMediaChanged()
+                }
+            }
+        }
+    }
 
     @CallSuper
     override fun onCleared() {
@@ -53,6 +72,8 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
 
     private val imagesObserver: ContentObserver = Observer()
     private val videoObserver: ContentObserver = Observer()
+
+    private var mediaAccess: MediaAccess = appContext.checkMediaAccess()
 
     init {
         with(appContext.contentResolver) {
@@ -72,7 +93,11 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
     private inner class Observer: ContentObserver(Handler(Looper.getMainLooper())) {
 
         override fun onChange(selfChange: Boolean) {
-            onMediaChanged()
+            viewModelScope.launch {
+                withContext(Dispatchers.Main) {
+                    onMediaChanged()
+                }
+            }
         }
     }
 }

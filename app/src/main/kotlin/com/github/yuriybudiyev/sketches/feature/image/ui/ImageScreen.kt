@@ -107,13 +107,24 @@ fun ImageRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val bucketIdUpdated by rememberUpdatedState(bucketId)
     val coroutineScope = rememberCoroutineScope()
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+    LaunchedEffect(
+        fileIndex,
+        fileId,
+        bucketId,
+        viewModel,
+        coroutineScope,
+    ) {
         coroutineScope.launch {
             viewModel.updateMedia(
                 fileIndex,
                 fileId,
                 bucketId,
             )
+        }
+    }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        coroutineScope.launch {
+            viewModel.updateMediaAccess()
         }
     }
     ImageScreen(
