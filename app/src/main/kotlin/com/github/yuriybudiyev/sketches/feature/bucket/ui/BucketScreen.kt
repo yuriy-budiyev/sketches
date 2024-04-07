@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -57,9 +58,18 @@ fun BucketRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+    LaunchedEffect(
+        id,
+        viewModel,
+        coroutineScope,
+    ) {
         coroutineScope.launch {
             viewModel.updateMedia(id)
+        }
+    }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        coroutineScope.launch {
+            viewModel.updateMediaAccess()
         }
     }
     BucketScreen(

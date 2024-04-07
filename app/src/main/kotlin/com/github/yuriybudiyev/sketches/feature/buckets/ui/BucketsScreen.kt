@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -73,9 +74,17 @@ fun BucketsRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
-    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+    LaunchedEffect(
+        viewModel,
+        coroutineScope,
+    ) {
         coroutineScope.launch {
             viewModel.updateBuckets()
+        }
+    }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        coroutineScope.launch {
+            viewModel.updateMediaAccess()
         }
     }
     BucketsScreen(
