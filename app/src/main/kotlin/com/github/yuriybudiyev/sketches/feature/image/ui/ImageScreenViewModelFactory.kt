@@ -22,31 +22,22 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.main
+package com.github.yuriybudiyev.sketches.feature.image.ui
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.runtime.CompositionLocalProvider
-import com.github.yuriybudiyev.sketches.core.data.repository.implementation.MediaStoreRepositoryImpl
-import com.github.yuriybudiyev.sketches.core.ui.compositionlocals.LocalMediaStoreRepository
-import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
-import com.github.yuriybudiyev.sketches.main.ui.SketchesApp
-import dagger.hilt.android.AndroidEntryPoint
+import android.content.Context
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 
-@AndroidEntryPoint
-class MainActivity: ComponentActivity() {
+class ImageScreenViewModelFactory(
+    private val context: Context,
+    private val repository: MediaStoreRepository
+): ViewModelProvider.Factory {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            CompositionLocalProvider(
-                LocalMediaStoreRepository provides MediaStoreRepositoryImpl(applicationContext)
-            ) {
-                SketchesTheme {
-                    SketchesApp()
-                }
-            }
-        }
-    }
+    @Suppress("UNCHECKED_CAST")
+    override fun <T: ViewModel> create(modelClass: Class<T>): T =
+        ImageScreenViewModel(
+            context,
+            repository
+        ) as T
 }

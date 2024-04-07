@@ -30,19 +30,14 @@ import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.common.coroutines.excludeCancellation
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-@HiltViewModel
-class ImageScreenViewModel @Inject constructor(
-    @ApplicationContext
+class ImageScreenViewModel(
     context: Context,
     private val repository: MediaStoreRepository,
 ): MediaObservingViewModel(context) {

@@ -72,10 +72,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
@@ -90,6 +90,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaState
+import com.github.yuriybudiyev.sketches.core.ui.compositionlocals.LocalMediaStoreRepository
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.ui.utils.animateScrollToItemCentered
@@ -102,7 +103,12 @@ fun ImageRoute(
     fileId: Long,
     bucketId: Long,
     onShare: (index: Int, file: MediaStoreFile) -> Unit,
-    viewModel: ImageScreenViewModel = hiltViewModel(),
+    viewModel: ImageScreenViewModel = viewModel(
+        factory = ImageScreenViewModelFactory(
+            LocalContext.current,
+            LocalMediaStoreRepository.current,
+        )
+    ),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val bucketIdUpdated by rememberUpdatedState(bucketId)

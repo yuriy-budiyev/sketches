@@ -25,18 +25,29 @@
 package com.github.yuriybudiyev.sketches
 
 import android.app.Application
+import android.os.Build
 import coil.ImageLoader
 import coil.ImageLoaderFactory
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
+import coil.decode.SvgDecoder
+import coil.decode.VideoFrameDecoder
 import dagger.hilt.android.HiltAndroidApp
-import javax.inject.Inject
-import javax.inject.Provider
 
 @HiltAndroidApp
 class SketchesApplication: Application(), ImageLoaderFactory {
 
-    @Inject
-    lateinit var imageLoaderProvider: Provider<ImageLoader>
-
     override fun newImageLoader(): ImageLoader =
-        imageLoaderProvider.get()
+        ImageLoader
+            .Builder(applicationContext)
+            .components {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    add(ImageDecoderDecoder.Factory())
+                } else {
+                    add(GifDecoder.Factory())
+                }
+                add(SvgDecoder.Factory())
+                add(VideoFrameDecoder.Factory())
+            }
+            .build()
 }
