@@ -49,8 +49,8 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
     fun updateMediaAccess() {
         val current = mediaAccess
         val updated = appContext.checkMediaAccess()
-        mediaAccess = current
-        if (current != updated || current == MediaAccess.UserSelected) {
+        mediaAccess = updated
+        if (current != updated || updated == MediaAccess.UserSelected) {
             viewModelScope.launch {
                 withContext(Dispatchers.Main) {
                     onMediaChanged()
