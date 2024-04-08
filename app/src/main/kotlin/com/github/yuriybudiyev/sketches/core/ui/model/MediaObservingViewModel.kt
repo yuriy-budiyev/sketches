@@ -44,7 +44,7 @@ import kotlinx.coroutines.withContext
 abstract class MediaObservingViewModel(context: Context): ViewModel() {
 
     @MainThread
-    abstract fun onMediaChanged()
+    protected abstract fun onMediaChanged()
 
     fun updateMediaAccess() {
         val current = mediaAccess
@@ -70,10 +70,10 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
     @SuppressLint("StaticFieldLeak")
     private val appContext: Context = context.applicationContext
 
+    private var mediaAccess: MediaAccess = appContext.checkMediaAccess()
+
     private val imagesObserver: ContentObserver = Observer()
     private val videoObserver: ContentObserver = Observer()
-
-    private var mediaAccess: MediaAccess = appContext.checkMediaAccess()
 
     init {
         with(appContext.contentResolver) {
