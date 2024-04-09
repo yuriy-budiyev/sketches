@@ -83,12 +83,14 @@ class BaselineProfileGenerator {
 
 private fun MacrobenchmarkScope.scrollMediaGrid() {
     device.waitForObject(By.res("media_grid")) { mediaGrid ->
-        device.waitForObject(By.res("media_item_image"))
+        device.waitMedia()
         mediaGrid.setGestureMargin(device.displayWidth / 5)
-        mediaGrid.fling(Direction.DOWN)
-        device.waitForIdle()
-        mediaGrid.fling(Direction.UP)
-        device.waitForIdle()
+        repeat(5) {
+            mediaGrid.fling(Direction.DOWN)
+            device.waitForIdle()
+            mediaGrid.fling(Direction.UP)
+            device.waitForIdle()
+        }
     }
 }
 
@@ -135,10 +137,27 @@ private fun MacrobenchmarkScope.openBucket() {
 }
 
 private fun MacrobenchmarkScope.waitMediaAndPressBack() {
-    device.waitForObject(By.res(Pattern.compile("media_item_.*"))) {
+    device.waitMedia {
         device.pressBack()
         device.waitForIdle()
     }
+}
+
+private fun UiDevice.waitMedia(): UiObject2? =
+    waitForObject(By.res(Pattern.compile("media_item_.*")))
+
+@OptIn(ExperimentalContracts::class)
+private inline fun UiDevice.waitMedia(block: (UiObject2) -> Unit) {
+    contract {
+        callsInPlace(
+            block,
+            InvocationKind.UNKNOWN
+        )
+    }
+    waitForObject(
+        By.res(Pattern.compile("media_item_.*")),
+        block
+    )
 }
 
 private fun UiDevice.waitForObject(selector: BySelector): UiObject2? =
