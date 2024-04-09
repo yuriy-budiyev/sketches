@@ -9,19 +9,22 @@ android {
     compileSdk = 34
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility(libs.versions.java.get())
+        targetCompatibility(libs.versions.java.get())
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = libs.versions.java.get()
     }
 
     defaultConfig {
         minSdk = 28
         targetSdk = 34
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     targetProjectPath = ":app"
@@ -35,6 +38,8 @@ baselineProfile {
 }
 
 dependencies {
+    implementation(libs.bundles.kotlin)
+    implementation(libs.bundles.kotlin.test)
     implementation(libs.androidx.test.junit)
     implementation(libs.androidx.test.espresso)
     implementation(libs.androidx.test.uiautomator)
@@ -42,11 +47,13 @@ dependencies {
 }
 
 androidComponents {
-    onVariants { v ->
-        val artifactsLoader = v.artifacts.getBuiltArtifactsLoader()
-        v.instrumentationRunnerArguments.put(
+    onVariants { variant ->
+        val artifactsLoader = variant.artifacts.getBuiltArtifactsLoader()
+
+        @Suppress("UnstableApiUsage")
+        variant.instrumentationRunnerArguments.put(
             "targetAppId",
-            v.testedApks.map { artifactsLoader.load(it)?.applicationId }
+            variant.testedApks.map { artifactsLoader.load(it)?.applicationId }
         )
     }
 }
