@@ -65,10 +65,7 @@ class BaselineProfileGenerator {
                 }
             }
         }
-        rule.collect(
-            packageName = packageName,
-            includeInStartupProfile = true
-        ) {
+        rule.collect(packageName) {
             pressHome()
             startActivityAndWait()
             scrollMediaGrid()
