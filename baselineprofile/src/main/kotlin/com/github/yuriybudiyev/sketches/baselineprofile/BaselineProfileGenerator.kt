@@ -86,6 +86,7 @@ class BaselineProfileGenerator {
 
 private fun MacrobenchmarkScope.scrollMediaGrid() {
     device.waitForObject(By.res("media_grid")) { mediaGrid ->
+        device.waitForObject(By.res("media_item_image"))
         mediaGrid.setGestureMargin(device.displayWidth / 5)
         mediaGrid.fling(Direction.DOWN)
         device.waitForIdle()
