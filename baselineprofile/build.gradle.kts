@@ -28,7 +28,6 @@ android {
     }
 
     targetProjectPath = ":app"
-
 }
 
 baselineProfile {
