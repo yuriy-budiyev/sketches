@@ -8,6 +8,12 @@ android {
     namespace = "com.github.yuriybudiyev.sketches.baselineprofile"
     compileSdk = 34
 
+    defaultConfig {
+        minSdk = 28
+        targetSdk = 34
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
     compileOptions {
         sourceCompatibility(libs.versions.java.get())
         targetCompatibility(libs.versions.java.get())
@@ -17,11 +23,6 @@ android {
         jvmTarget = libs.versions.java.get()
     }
 
-    defaultConfig {
-        minSdk = 28
-        targetSdk = 34
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
 
     buildFeatures {
         buildConfig = true
