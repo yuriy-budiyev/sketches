@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlin)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.hilt)
-    alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -85,7 +84,6 @@ dependencies {
     implementation(libs.bundles.androidx.tracing)
     implementation(libs.bundles.hilt)
     implementation(libs.bundles.coil)
-    implementation(libs.androidx.profileinstaller)
     implementation(libs.okhttp)
     implementation(libs.okio)
     ksp(libs.bundles.hilt.compiler)
@@ -100,5 +98,4 @@ dependencies {
     androidTestImplementation(libs.androidx.navigation.test)
     androidTestImplementation(libs.androidx.compose.ui.test.junit)
     androidTestImplementation(libs.hilt.test)
-    baselineProfile(project(":baselineprofile"))
 }
