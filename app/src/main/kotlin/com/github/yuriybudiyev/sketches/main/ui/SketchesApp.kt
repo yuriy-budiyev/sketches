@@ -52,13 +52,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTag
-import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -75,7 +71,6 @@ import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
 import kotlinx.coroutines.launch
 
 @Composable
-@OptIn(ExperimentalComposeUiApi::class)
 fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
     val appContextUpdated by rememberUpdatedState(LocalContext.current.applicationContext)
     var mediaAccess by remember { mutableStateOf(appContextUpdated.checkMediaAccess()) }
@@ -84,11 +79,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
         mediaAccess = appContextUpdated.checkMediaAccess()
     }
     Surface(
-        modifier = Modifier
-            .fillMaxSize()
-            .semantics {
-                testTagsAsResourceId = true
-            },
+        modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground
     ) {
@@ -138,9 +129,6 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                                             },
                                             contentDescription = stringResource(id = destination.titleRes)
                                         )
-                                    },
-                                    modifier = Modifier.semantics {
-                                        testTag = "nav_${destination.routeBase}"
                                     },
                                 )
                             }
