@@ -508,6 +508,7 @@ private fun MediaBar(
         items(
             count = itemsUpdated.size,
             key = { position -> itemsUpdated[position].id },
+            contentType = { position -> itemsUpdated[position].mediaType },
         ) { position ->
             val file = itemsUpdated[position]
             SketchesMediaItem(

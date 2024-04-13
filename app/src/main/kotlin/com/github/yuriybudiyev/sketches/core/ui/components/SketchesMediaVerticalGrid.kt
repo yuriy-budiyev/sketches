@@ -60,6 +60,7 @@ fun SketchesMediaVerticalGrid(
         items(
             count = filesUpdated.size,
             key = { index -> filesUpdated[index].id },
+            contentType = { index -> filesUpdated[index].mediaType },
         ) { index ->
             val file = filesUpdated[index]
             SketchesMediaItem(
