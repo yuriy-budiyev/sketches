@@ -41,12 +41,6 @@ class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
     DiscardPolicy(),
 ) {
 
-    init {
-        continueExistingPeriodicTasksAfterShutdownPolicy = false
-        executeExistingDelayedTasksAfterShutdownPolicy = false
-        removeOnCancelPolicy = true
-    }
-
     override fun afterExecute(
         r: Runnable?,
         t: Throwable?,
@@ -60,5 +54,11 @@ class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
                 throw RuntimeException(e)
             }
         }
+    }
+
+    init {
+        continueExistingPeriodicTasksAfterShutdownPolicy = false
+        executeExistingDelayedTasksAfterShutdownPolicy = false
+        removeOnCancelPolicy = true
     }
 }

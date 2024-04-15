@@ -33,6 +33,7 @@ class ImageLoaderThread(
     target,
     name
 ) {
+
     override fun run() {
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
         super.run()
