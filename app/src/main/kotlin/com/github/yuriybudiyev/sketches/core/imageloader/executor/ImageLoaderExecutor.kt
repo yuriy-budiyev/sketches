@@ -38,7 +38,7 @@ class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
             .availableProcessors(),
     ),
     ImageLoaderThreadFactory(),
-    DiscardPolicy(),
+    AbortPolicy(),
 ) {
 
     override fun afterExecute(
