@@ -22,42 +22,43 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.common.di
+package com.github.yuriybudiyev.sketches.core.imageloader.executor
 
-import android.content.Context
-import android.os.Build
-import coil.ImageLoader
-import coil.decode.GifDecoder
-import coil.decode.ImageDecoderDecoder
-import coil.decode.SvgDecoder
-import coil.decode.VideoFrameDecoder
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import java.util.concurrent.CancellationException
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.Future
+import java.util.concurrent.ScheduledThreadPoolExecutor
+import kotlin.math.min
 
-@Module
-@InstallIn(SingletonComponent::class)
-object ImageLoaderModule {
+class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
+    min(
+        4,
+        Runtime
+            .getRuntime()
+            .availableProcessors(),
+    ),
+    ImageLoaderThreadFactory(),
+    DiscardPolicy(),
+) {
 
-    @Provides
-    @Singleton
-    fun provideImageLoader(
-        @ApplicationContext
-        context: Context,
-    ): ImageLoader =
-        ImageLoader
-            .Builder(context)
-            .components {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    add(ImageDecoderDecoder.Factory())
-                } else {
-                    add(GifDecoder.Factory())
-                }
-                add(SvgDecoder.Factory())
-                add(VideoFrameDecoder.Factory())
+    init {
+        continueExistingPeriodicTasksAfterShutdownPolicy = false
+        executeExistingDelayedTasksAfterShutdownPolicy = false
+        removeOnCancelPolicy = true
+    }
+
+    override fun afterExecute(
+        r: Runnable?,
+        t: Throwable?,
+    ) {
+        if (t == null && r is Future<*>) {
+            try {
+                r.get()
+            } catch (_: CancellationException) {
+            } catch (_: InterruptedException) {
+            } catch (e: ExecutionException) {
+                throw RuntimeException(e)
             }
-            .build()
+        }
+    }
 }
