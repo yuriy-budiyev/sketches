@@ -32,8 +32,8 @@ class ImageLoaderThreadFactory: ThreadFactory {
     override fun newThread(r: Runnable): Thread =
         ImageLoaderThread(
             r,
-            "image-loader-${counter.incrementAndGet()}"
+            "image-loader-${counter.getAndIncrement()}"
         )
 
-    private val counter: AtomicInteger = AtomicInteger(0)
+    private val counter: AtomicInteger = AtomicInteger(1)
 }
