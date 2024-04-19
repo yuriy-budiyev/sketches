@@ -74,7 +74,9 @@ import kotlinx.coroutines.launch
 fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
     val appContextUpdated by rememberUpdatedState(LocalContext.current.applicationContext)
     var mediaAccess by remember { mutableStateOf(appContextUpdated.checkMediaAccess()) }
-    val mediaAccessLauncher = rememberMediaAccessRequestLauncher()
+    val mediaAccessLauncher = rememberMediaAccessRequestLauncher {
+        mediaAccess = appContextUpdated.checkMediaAccess()
+    }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         mediaAccess = appContextUpdated.checkMediaAccess()
     }
