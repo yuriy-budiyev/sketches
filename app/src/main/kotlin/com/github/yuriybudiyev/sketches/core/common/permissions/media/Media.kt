@@ -41,54 +41,79 @@ enum class MediaAccess {
 }
 
 fun Context.checkMediaAccess(): MediaAccess =
-    when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
-            when {
-                checkPermissionGranted(Manifest.permission.READ_MEDIA_IMAGES)
-                    && checkPermissionGranted(Manifest.permission.READ_MEDIA_VIDEO) -> {
-                    MediaAccess.Full
-                }
-                checkPermissionGranted(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) -> {
-                    MediaAccess.UserSelected
-                }
-                else -> {
-                    MediaAccess.None
-                }
-            }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        if (checkPermissionGranted(Manifest.permission.READ_MEDIA_IMAGES)
+            && checkPermissionGranted(Manifest.permission.READ_MEDIA_VIDEO)
+        ) {
+            MediaAccess.Full
+        } else if (checkPermissionGranted(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)) {
+            MediaAccess.UserSelected
+        } else {
+            MediaAccess.None
         }
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-            if (checkPermissionGranted(Manifest.permission.READ_MEDIA_IMAGES)
-                && checkPermissionGranted(Manifest.permission.READ_MEDIA_VIDEO)
-            ) {
-                MediaAccess.Full
-            } else {
-                MediaAccess.None
-            }
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (checkPermissionGranted(Manifest.permission.READ_MEDIA_IMAGES)
+            && checkPermissionGranted(Manifest.permission.READ_MEDIA_VIDEO)
+        ) {
+            MediaAccess.Full
+        } else {
+            MediaAccess.None
         }
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-            if (checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                MediaAccess.Full
-            } else {
-                MediaAccess.None
-            }
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            MediaAccess.Full
+        } else {
+            MediaAccess.None
         }
-        else -> {
-            if (checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)
-                && checkPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            ) {
-                MediaAccess.Full
-            } else {
-                MediaAccess.None
-            }
+    } else {
+        if (checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)
+            && checkPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        ) {
+            MediaAccess.Full
+        } else {
+            MediaAccess.None
         }
     }
 
 @Composable
-inline fun rememberMediaAccessRequestLauncher(crossinline onResult: () -> Unit = {}): MediaAccessRequestLauncher {
+inline fun rememberMediaAccessRequestLauncher(crossinline onResult: (MediaAccess) -> Unit = {}): MediaAccessRequestLauncher {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
-        onResult = {
-            onResult()
+        onResult = { grantResults ->
+            val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                if (grantResults[Manifest.permission.READ_MEDIA_IMAGES] == true
+                    && grantResults[Manifest.permission.READ_MEDIA_VIDEO] == true
+                ) {
+                    MediaAccess.Full
+                } else if (grantResults[Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED] == true) {
+                    MediaAccess.UserSelected
+                } else {
+                    MediaAccess.None
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (grantResults[Manifest.permission.READ_MEDIA_IMAGES] == true
+                    && grantResults[Manifest.permission.READ_MEDIA_VIDEO] == true
+                ) {
+                    MediaAccess.Full
+                } else {
+                    MediaAccess.None
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (grantResults[Manifest.permission.READ_EXTERNAL_STORAGE] == true) {
+                    MediaAccess.Full
+                } else {
+                    MediaAccess.None
+                }
+            } else {
+                if (grantResults[Manifest.permission.READ_EXTERNAL_STORAGE] == true
+                    && grantResults[Manifest.permission.WRITE_EXTERNAL_STORAGE] == true
+                ) {
+                    MediaAccess.Full
+                } else {
+                    MediaAccess.None
+                }
+            }
+            onResult(result)
         },
     )
     return MediaAccessRequestLauncher(launcher)
@@ -99,29 +124,24 @@ value class MediaAccessRequestLauncher(private val launcher: ActivityResultLaunc
 
     fun requestMediaAccess() {
         launcher.launch(
-            when {
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> {
-                    arrayOf(
-                        Manifest.permission.READ_MEDIA_IMAGES,
-                        Manifest.permission.READ_MEDIA_VIDEO,
-                        Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
-                    )
-                }
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                    arrayOf(
-                        Manifest.permission.READ_MEDIA_IMAGES,
-                        Manifest.permission.READ_MEDIA_VIDEO
-                    )
-                }
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-                }
-                else -> {
-                    arrayOf(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    )
-                }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                arrayOf(
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO,
+                    Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                )
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                arrayOf(
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO
+                )
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+            } else {
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
             }
         )
     }
