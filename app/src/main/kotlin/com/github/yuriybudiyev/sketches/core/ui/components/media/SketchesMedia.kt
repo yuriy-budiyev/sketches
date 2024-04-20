@@ -172,36 +172,37 @@ fun SketchesMediaController(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(modifier = Modifier
-            .size(size = 48.dp)
-            .clip(shape = CircleShape)
-            .clickable {
-                coroutineScope.launch {
-                    if (state.isPlaying) {
-                        state.pause()
-                    } else {
-                        state.play()
-                    }
-                }
-            },
-            contentAlignment = Alignment.Center,
-            content = {
-                Icon(
-                    imageVector = if (state.isPlaying) {
-                        SketchesIcons.Pause
-                    } else {
-                        SketchesIcons.Play
-                    },
-                    contentDescription = stringResource(
-                        id = if (state.isPlaying) {
-                            R.string.pause
+        Box(
+            modifier = Modifier
+                .size(size = 48.dp)
+                .clip(shape = CircleShape)
+                .clickable {
+                    coroutineScope.launch {
+                        if (state.isPlaying) {
+                            state.pause()
                         } else {
-                            R.string.play
+                            state.play()
                         }
-                    ),
-                    modifier = Modifier.size(size = 24.dp)
-                )
-            })
+                    }
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = if (state.isPlaying) {
+                    SketchesIcons.Pause
+                } else {
+                    SketchesIcons.Play
+                },
+                contentDescription = stringResource(
+                    id = if (state.isPlaying) {
+                        R.string.pause
+                    } else {
+                        R.string.play
+                    }
+                ),
+                modifier = Modifier.size(size = 24.dp)
+            )
+        }
         val position = state.position
         val duration = state.duration
         Slider(
@@ -232,35 +233,36 @@ fun SketchesMediaController(
                 disabledInactiveTickColor = color
             )
         )
-        Box(modifier = Modifier
-            .size(size = 48.dp)
-            .clip(shape = CircleShape)
-            .clickable {
-                coroutineScope.launch {
-                    if (state.isVolumeEnabled) {
-                        state.disableVolume()
-                    } else {
-                        state.enableVolume()
-                    }
-                }
-            },
-            contentAlignment = Alignment.Center,
-            content = {
-                Icon(
-                    imageVector = if (state.isVolumeEnabled) {
-                        SketchesIcons.VolumeEnabled
-                    } else {
-                        SketchesIcons.VolumeDisabled
-                    },
-                    contentDescription = stringResource(
-                        id = if (state.isVolumeEnabled) {
-                            R.string.disable_volume
+        Box(
+            modifier = Modifier
+                .size(size = 48.dp)
+                .clip(shape = CircleShape)
+                .clickable {
+                    coroutineScope.launch {
+                        if (state.isVolumeEnabled) {
+                            state.disableVolume()
                         } else {
-                            R.string.enable_volume
+                            state.enableVolume()
                         }
-                    ),
-                    modifier = Modifier.size(size = 24.dp)
-                )
-            })
+                    }
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = if (state.isVolumeEnabled) {
+                    SketchesIcons.VolumeEnabled
+                } else {
+                    SketchesIcons.VolumeDisabled
+                },
+                contentDescription = stringResource(
+                    id = if (state.isVolumeEnabled) {
+                        R.string.disable_volume
+                    } else {
+                        R.string.enable_volume
+                    }
+                ),
+                modifier = Modifier.size(size = 24.dp)
+            )
+        }
     }
 }
