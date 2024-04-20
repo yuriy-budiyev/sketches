@@ -76,7 +76,7 @@ fun Context.checkMediaAccess(): MediaAccess =
     }
 
 @Composable
-inline fun rememberMediaAccessRequestLauncher(crossinline onResult: (MediaAccess) -> Unit = {}): MediaAccessRequestLauncher {
+inline fun rememberMediaAccessRequestLauncher(crossinline onResult: (MediaAccess) -> Unit): MediaAccessRequestLauncher {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
         onResult = { grantResults ->
