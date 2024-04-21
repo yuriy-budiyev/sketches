@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
-import android.app.Activity
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -211,14 +210,7 @@ private fun ImageScreenLayout(
     val barItemSize = with(LocalDensity.current) { SketchesDimens.MediaBarItemSize.roundToPx() }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
-        onResult = { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                onDeleteUpdated(
-                    currentIndex,
-                    filesUpdated[currentIndex],
-                )
-            }
-        },
+        onResult = { },
     )
     var deleteDialogVisible by remember { mutableStateOf(false) }
     LaunchedEffect(
