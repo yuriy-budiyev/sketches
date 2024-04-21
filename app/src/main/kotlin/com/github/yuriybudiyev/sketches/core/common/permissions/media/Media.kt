@@ -59,7 +59,7 @@ fun Context.checkMediaAccess(): MediaAccess =
         } else {
             MediaAccess.None
         }
-    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         if (checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
             MediaAccess.Full
         } else {
@@ -99,7 +99,7 @@ inline fun rememberMediaAccessRequestLauncher(crossinline onResult: (MediaAccess
                     } else {
                         MediaAccess.None
                     }
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     if (grantResults[Manifest.permission.READ_EXTERNAL_STORAGE] == true) {
                         MediaAccess.Full
                     } else {
@@ -136,7 +136,7 @@ value class MediaAccessRequestLauncher(private val launcher: ActivityResultLaunc
                     Manifest.permission.READ_MEDIA_IMAGES,
                     Manifest.permission.READ_MEDIA_VIDEO
                 )
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
             } else {
                 arrayOf(

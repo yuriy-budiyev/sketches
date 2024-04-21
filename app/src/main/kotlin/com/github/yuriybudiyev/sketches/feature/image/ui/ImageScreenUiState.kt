@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
+import android.content.IntentSender
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
 sealed interface ImageScreenUiState {
@@ -37,6 +38,7 @@ sealed interface ImageScreenUiState {
         val fileId: Long,
         val bucketId: Long,
         val files: List<MediaStoreFile>,
+        val deleteIntentSenderApi29: IntentSender?
     ): ImageScreenUiState
 
     data class Error(val thrown: Exception): ImageScreenUiState
