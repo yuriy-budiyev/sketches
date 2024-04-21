@@ -225,8 +225,6 @@ private fun ImageScreenLayout(
                         currentIndex,
                         filesUpdated[currentIndex],
                     )
-                } else {
-                    //TODO
                 }
             }
         },
