@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
 import android.app.Activity
-import android.content.IntentSender
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -139,11 +138,7 @@ fun ImageRoute(
             }
         },
         onDelete = { _, file ->
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-                coroutineScope.launch {
-                    viewModel.deleteMediaApi29(file.uri)
-                }
-            } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
                 coroutineScope.launch {
                     viewModel.deleteMedia(file.uri)
                 }
@@ -176,7 +171,6 @@ fun ImageScreen(
                 ImageScreenLayout(
                     index = uiState.fileIndex,
                     files = uiState.files,
-                    deleteIntentSenderApi29 = uiState.deleteIntentSenderApi29,
                     coroutineScope = coroutineScope,
                     onChange = onChange,
                     onDelete = onDelete,
@@ -199,7 +193,6 @@ fun ImageScreen(
 private fun ImageScreenLayout(
     index: Int,
     files: List<MediaStoreFile>,
-    deleteIntentSenderApi29: IntentSender?,
     coroutineScope: CoroutineScope,
     onChange: (index: Int, file: MediaStoreFile) -> Unit,
     onDelete: (index: Int, file: MediaStoreFile) -> Unit,
@@ -219,28 +212,15 @@ private fun ImageScreenLayout(
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { result ->
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-                if (result.resultCode == Activity.RESULT_OK) {
-                    onDeleteUpdated(
-                        currentIndex,
-                        filesUpdated[currentIndex],
-                    )
-                }
+            if (result.resultCode == Activity.RESULT_OK) {
+                onDeleteUpdated(
+                    currentIndex,
+                    filesUpdated[currentIndex],
+                )
             }
         },
     )
     var deleteDialogVisible by remember { mutableStateOf(false) }
-    LaunchedEffect(deleteIntentSenderApi29) {
-        if (deleteIntentSenderApi29 != null) {
-            coroutineScope.launch {
-                deleteRequestLauncher.launch(
-                    IntentSenderRequest
-                        .Builder(deleteIntentSenderApi29)
-                        .build()
-                )
-            }
-        }
-    }
     LaunchedEffect(
         pagerState,
         coroutineScope,

@@ -24,11 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
-import android.app.RecoverableSecurityException
 import android.content.Context
 import android.net.Uri
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.common.coroutines.excludeCancellation
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
@@ -91,8 +88,7 @@ class ImageScreenViewModel @Inject constructor(
                             fileIndex,
                             fileId,
                             bucketId,
-                            files,
-                            null
+                            files
                         )
                     } else {
                         var backwardIndex = fileIndex - 1
@@ -121,8 +117,7 @@ class ImageScreenViewModel @Inject constructor(
                             ),
                             fileId,
                             bucketId,
-                            files,
-                            null
+                            files
                         )
                     }
                 } else {
@@ -144,36 +139,6 @@ class ImageScreenViewModel @Inject constructor(
             try {
                 withContext(Dispatchers.Default) {
                     repository.deleteFile(uri)
-                }
-            } catch (e: Exception) {
-                excludeCancellation(e) {
-                    uiStateInternal.value = ImageScreenUiState.Error(e)
-                }
-            }
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    fun deleteMediaApi29(uri: Uri) {
-        currentJob?.cancel()
-        currentJob = viewModelScope.launch {
-            try {
-                withContext(Dispatchers.Default) {
-                    repository.deleteFile(uri)
-                }
-                val state = uiStateInternal.value
-                if (state is ImageScreenUiState.Image) {
-                    if (state.deleteIntentSenderApi29 != null) {
-                        uiStateInternal.value = state.copy(deleteIntentSenderApi29 = null)
-                    }
-                }
-            } catch (e: RecoverableSecurityException) {
-                val state = uiStateInternal.value
-                if (state is ImageScreenUiState.Image) {
-                    uiStateInternal.value =
-                        state.copy(deleteIntentSenderApi29 = e.userAction.actionIntent.intentSender)
-                } else {
-                    uiStateInternal.value = ImageScreenUiState.Error(e)
                 }
             } catch (e: Exception) {
                 excludeCancellation(e) {
