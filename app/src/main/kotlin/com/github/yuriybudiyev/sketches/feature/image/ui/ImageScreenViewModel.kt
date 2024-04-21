@@ -161,6 +161,12 @@ class ImageScreenViewModel @Inject constructor(
                 withContext(Dispatchers.Default) {
                     repository.deleteFile(uri)
                 }
+                val state = uiStateInternal.value
+                if (state is ImageScreenUiState.Image) {
+                    if (state.deleteIntentSenderApi29 != null) {
+                        updateMediaInternal()
+                    }
+                }
             } catch (e: RecoverableSecurityException) {
                 val state = uiStateInternal.value
                 if (state is ImageScreenUiState.Image) {
