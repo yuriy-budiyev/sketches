@@ -164,7 +164,7 @@ class ImageScreenViewModel @Inject constructor(
                 val state = uiStateInternal.value
                 if (state is ImageScreenUiState.Image) {
                     if (state.deleteIntentSenderApi29 != null) {
-                        uiStateInternal.value = state.copy(deleteIntentSenderApi29 = null)
+                        updateMediaInternal()
                     }
                 }
             } catch (e: RecoverableSecurityException) {
