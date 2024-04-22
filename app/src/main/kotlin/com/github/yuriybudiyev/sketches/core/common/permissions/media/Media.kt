@@ -80,41 +80,40 @@ inline fun rememberMediaAccessRequestLauncher(crossinline onResult: (MediaAccess
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
         onResult = { grantResults ->
-            onResult(
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    if (grantResults[Manifest.permission.READ_MEDIA_IMAGES] == true
-                        && grantResults[Manifest.permission.READ_MEDIA_VIDEO] == true
-                    ) {
-                        MediaAccess.Full
-                    } else if (grantResults[Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED] == true) {
-                        MediaAccess.UserSelected
-                    } else {
-                        MediaAccess.None
-                    }
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    if (grantResults[Manifest.permission.READ_MEDIA_IMAGES] == true
-                        && grantResults[Manifest.permission.READ_MEDIA_VIDEO] == true
-                    ) {
-                        MediaAccess.Full
-                    } else {
-                        MediaAccess.None
-                    }
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    if (grantResults[Manifest.permission.READ_EXTERNAL_STORAGE] == true) {
-                        MediaAccess.Full
-                    } else {
-                        MediaAccess.None
-                    }
+            val mediaAccess = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                if (grantResults[Manifest.permission.READ_MEDIA_IMAGES] == true
+                    && grantResults[Manifest.permission.READ_MEDIA_VIDEO] == true
+                ) {
+                    MediaAccess.Full
+                } else if (grantResults[Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED] == true) {
+                    MediaAccess.UserSelected
                 } else {
-                    if (grantResults[Manifest.permission.READ_EXTERNAL_STORAGE] == true
-                        && grantResults[Manifest.permission.WRITE_EXTERNAL_STORAGE] == true
-                    ) {
-                        MediaAccess.Full
-                    } else {
-                        MediaAccess.None
-                    }
+                    MediaAccess.None
                 }
-            )
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (grantResults[Manifest.permission.READ_MEDIA_IMAGES] == true
+                    && grantResults[Manifest.permission.READ_MEDIA_VIDEO] == true
+                ) {
+                    MediaAccess.Full
+                } else {
+                    MediaAccess.None
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (grantResults[Manifest.permission.READ_EXTERNAL_STORAGE] == true) {
+                    MediaAccess.Full
+                } else {
+                    MediaAccess.None
+                }
+            } else {
+                if (grantResults[Manifest.permission.READ_EXTERNAL_STORAGE] == true
+                    && grantResults[Manifest.permission.WRITE_EXTERNAL_STORAGE] == true
+                ) {
+                    MediaAccess.Full
+                } else {
+                    MediaAccess.None
+                }
+            }
+            onResult(mediaAccess)
         },
     )
     return MediaAccessRequestLauncher(launcher)
