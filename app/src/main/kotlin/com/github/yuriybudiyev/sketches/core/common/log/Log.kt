@@ -28,29 +28,29 @@ import android.util.Log
 
 @Suppress("unused")
 fun log(
-    message: String,
+    message: Any?,
     throwable: Throwable? = null,
 ) {
     if (throwable != null) {
         Log.d(
             LogTag,
-            message,
+            message.toString(),
             throwable
         )
     } else {
         Log.d(
             LogTag,
-            message
+            message.toString()
         )
     }
 }
 
 @Suppress("unused")
-fun logStackTrace(message: String = "Stack trace") {
+fun logStackTrace(message: Any? = "Stack trace") {
     val exception = Exception("Stack trace")
     Log.d(
         LogTag,
-        message,
+        message.toString(),
         exception
     )
 }
