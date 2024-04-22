@@ -51,7 +51,7 @@ class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
             } catch (_: CancellationException) {
             } catch (_: InterruptedException) {
             } catch (e: ExecutionException) {
-                throw RuntimeException(e)
+                throw RuntimeException(e.cause)
             }
         }
     }
