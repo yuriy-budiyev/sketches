@@ -62,6 +62,12 @@ fun SketchesTheme(content: @Composable () -> Unit) {
             )
             window.statusBarColor = Color.Transparent.toArgb()
             window.navigationBarColor = Color.Transparent.toArgb()
+            val insetsController = WindowCompat.getInsetsController(
+                window,
+                view
+            )
+            insetsController.isAppearanceLightStatusBars = !darkTheme
+            insetsController.isAppearanceLightNavigationBars = !darkTheme
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 window.attributes.layoutInDisplayCutoutMode =
                     WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
