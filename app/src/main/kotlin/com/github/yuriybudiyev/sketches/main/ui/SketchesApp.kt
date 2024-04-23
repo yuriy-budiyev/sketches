@@ -88,10 +88,11 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         mediaAccess = appContextUpdated.checkMediaAccess()
     }
+    val colorScheme = MaterialTheme.colorScheme
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.onBackground
+        color = colorScheme.background,
+        contentColor = colorScheme.onBackground
     ) {
         when (mediaAccess) {
             MediaAccess.Full, MediaAccess.UserSelected -> {
@@ -107,17 +108,27 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                             null
                         }
                     )
-                    val window = (LocalView.current.context as Activity).window
-                    if (currentDestination is TopLevelNavigationDestination) {
+                    val view = LocalView.current
+                    val topLevelNavigation = currentDestination is TopLevelNavigationDestination
+                    if (!view.isInEditMode) {
                         SideEffect {
-                            window.navigationBarColor = Color.Transparent.toArgb()
+                            val window = (view.context as Activity).window
+                            if (topLevelNavigation) {
+                                window.navigationBarColor = Color.Transparent.toArgb()
+                            } else {
+                                window.navigationBarColor = colorScheme.background
+                                    .copy(alpha = SketchesColors.UiAlphaHigh)
+                                    .toArgb()
+                            }
                         }
+                    }
+                    if (topLevelNavigation) {
                         val bottomSystemBarHeight = WindowInsets.systemBars
                             .asPaddingValues()
                             .calculateBottomPadding()
                         NavigationBar(
-                            containerColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaHigh),
-                            contentColor = MaterialTheme.colorScheme.onBackground,
+                            containerColor = colorScheme.background.copy(alpha = SketchesColors.UiAlphaHigh),
+                            contentColor = colorScheme.onBackground,
                             modifier = Modifier
                                 .height(SketchesDimens.BottomBarHeight + bottomSystemBarHeight)
                                 .align(Alignment.BottomStart)
@@ -128,9 +139,9 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                                 NavigationBarItem(
                                     selected = selected,
                                     colors = NavigationBarItemDefaults.colors(
-                                        selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                                        unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-                                        indicatorColor = MaterialTheme.colorScheme.primary
+                                        selectedIconColor = colorScheme.onPrimary,
+                                        unselectedIconColor = colorScheme.onBackground,
+                                        indicatorColor = colorScheme.primary
                                     ),
                                     onClick = {
                                         appState.coroutineScope.launch {
@@ -149,13 +160,6 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                                     },
                                 )
                             }
-                        }
-                    } else {
-                        val colorScheme = MaterialTheme.colorScheme
-                        SideEffect {
-                            window.navigationBarColor = colorScheme.background
-                                .copy(alpha = SketchesColors.UiAlphaHigh)
-                                .toArgb()
                         }
                     }
                 }
