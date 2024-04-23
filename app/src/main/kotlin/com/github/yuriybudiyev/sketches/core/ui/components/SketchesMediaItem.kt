@@ -66,7 +66,7 @@ fun SketchesMediaItem(
                     .align(alignment = Alignment.BottomEnd)
                     .padding(all = iconPadding)
                     .background(
-                        color = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaHigh),
+                        color = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlpha75),
                         shape = CircleShape
                     ),
             ) {

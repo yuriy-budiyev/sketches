@@ -118,7 +118,7 @@ fun ImagesScreen(
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
             text = stringResource(id = ImagesNavigationDestination.titleRes),
-            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaHigh),
+            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlpha75),
             actions = {
                 if (onRequestUserSelectedMedia != null) {
                     SketchesAppBarActionButton(

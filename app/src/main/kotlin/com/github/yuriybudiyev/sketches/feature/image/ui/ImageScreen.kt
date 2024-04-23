@@ -328,7 +328,7 @@ private fun TopBar(
 ) {
     SketchesTopAppBar(
         modifier = modifier,
-        backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaHigh),
+        backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlpha75),
     ) {
         SketchesAppBarActionButton(
             icon = SketchesIcons.Delete,
@@ -511,7 +511,7 @@ private fun MediaBar(
                     .clip(shape = MaterialTheme.shapes.small)
                     .border(
                         width = SketchesDimens.MediaItemBorderThickness,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlphaLow),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlpha25),
                         shape = MaterialTheme.shapes.small,
                     )
                     .clickable {

@@ -62,7 +62,7 @@ fun SketchesMediaPlayer(
     modifier: Modifier = Modifier,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     backgroundColor: Color = MaterialTheme.colorScheme.background,
-    controlsBackgroundColor: Color = backgroundColor.copy(alpha = SketchesColors.UiAlphaHigh),
+    controlsBackgroundColor: Color = backgroundColor.copy(alpha = SketchesColors.UiAlpha75),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
     enableImagePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,
