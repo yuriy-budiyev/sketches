@@ -129,7 +129,7 @@ fun BucketsScreen(
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
             text = stringResource(id = BucketsNavigationDestination.titleRes),
-            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlpha75),
+            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
         )
     }
 }
@@ -174,7 +174,7 @@ private fun BucketsScreenLayout(
                         .clip(shape = MaterialTheme.shapes.small)
                         .border(
                             width = SketchesDimens.MediaItemBorderThickness,
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlpha25),
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlphaHighTransparency),
                             shape = MaterialTheme.shapes.small,
                         ),
                     contentScale = ContentScale.Crop,

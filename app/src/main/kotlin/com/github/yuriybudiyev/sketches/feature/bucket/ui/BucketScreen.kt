@@ -117,7 +117,7 @@ fun BucketScreen(
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
             text = name,
-            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlpha75),
+            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
         )
     }
 }

@@ -117,7 +117,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                                 window.navigationBarColor = Color.Transparent.toArgb()
                             } else {
                                 window.navigationBarColor = colorScheme.background
-                                    .copy(alpha = SketchesColors.UiAlpha75)
+                                    .copy(alpha = SketchesColors.UiAlphaLowTransparency)
                                     .toArgb()
                             }
                         }
@@ -127,7 +127,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                             .asPaddingValues()
                             .calculateBottomPadding()
                         NavigationBar(
-                            containerColor = colorScheme.background.copy(alpha = SketchesColors.UiAlpha75),
+                            containerColor = colorScheme.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
                             contentColor = colorScheme.onBackground,
                             modifier = Modifier
                                 .height(SketchesDimens.BottomBarHeight + bottomSystemBarHeight)
