@@ -56,12 +56,12 @@ fun SketchesTheme(content: @Composable () -> Unit) {
                 window.isStatusBarContrastEnforced = false
                 window.isNavigationBarContrastEnforced = false
             }
-            window.statusBarColor = Color.Transparent.toArgb()
-            window.navigationBarColor = Color.Transparent.toArgb()
             WindowCompat.setDecorFitsSystemWindows(
                 window,
                 false
             )
+            window.statusBarColor = Color.Transparent.toArgb()
+            window.navigationBarColor = Color.Transparent.toArgb()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 window.attributes.layoutInDisplayCutoutMode =
                     WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
