@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.main.ui
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -34,10 +35,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -46,6 +50,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,7 +58,10 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -99,12 +107,19 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                             null
                         }
                     )
+                    val window = (LocalView.current.context as Activity).window
                     if (currentDestination is TopLevelNavigationDestination) {
+                        SideEffect {
+                            window.navigationBarColor = Color.Transparent.toArgb()
+                        }
+                        val bottomSystemBarHeight = WindowInsets.systemBars
+                            .asPaddingValues()
+                            .calculateBottomPadding()
                         NavigationBar(
                             containerColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaHigh),
                             contentColor = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier
-                                .height(SketchesDimens.BottomBarHeight)
+                                .height(SketchesDimens.BottomBarHeight + bottomSystemBarHeight)
                                 .align(Alignment.BottomStart)
                                 .fillMaxWidth()
                         ) {
@@ -134,6 +149,13 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                                     },
                                 )
                             }
+                        }
+                    } else {
+                        val colorScheme = MaterialTheme.colorScheme
+                        SideEffect {
+                            window.navigationBarColor = colorScheme.background
+                                .copy(alpha = SketchesColors.UiAlphaHigh)
+                                .toArgb()
                         }
                     }
                 }
