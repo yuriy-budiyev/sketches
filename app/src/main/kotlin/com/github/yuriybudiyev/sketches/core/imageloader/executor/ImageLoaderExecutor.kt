@@ -45,7 +45,7 @@ class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
         r: Runnable?,
         t: Throwable?,
     ) {
-        if (t == null && r is Future<*>) {
+        if (t == null && r is Future<*> && r.isDone) {
             try {
                 r.get()
             } catch (_: CancellationException) {
