@@ -39,7 +39,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import coil.compose.SubcomposeAsyncImage
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 
@@ -94,7 +93,7 @@ private fun StateIcon(
             imageVector = icon,
             contentDescription = description,
             modifier = Modifier.size(SketchesDimens.AsyncImageStateIconSize),
-            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlphaLowTransparency)
+            tint = MaterialTheme.colorScheme.onBackground
         )
     }
 }
