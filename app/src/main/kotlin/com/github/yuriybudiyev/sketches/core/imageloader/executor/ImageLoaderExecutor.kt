@@ -28,15 +28,12 @@ import java.util.concurrent.CancellationException
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
 import java.util.concurrent.ScheduledThreadPoolExecutor
-import kotlin.math.min
 
 class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
-    min(
-        4,
-        Runtime
-            .getRuntime()
-            .availableProcessors(),
-    ),
+    Runtime
+        .getRuntime()
+        .availableProcessors()
+        .coerceAtMost(4),
     ImageLoaderThreadFactory(),
     AbortPolicy(),
 ) {
