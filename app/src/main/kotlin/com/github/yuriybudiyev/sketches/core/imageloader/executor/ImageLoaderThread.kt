@@ -28,7 +28,7 @@ import android.os.Process
 
 class ImageLoaderThread(
     target: Runnable,
-    name: String
+    name: String,
 ): Thread(
     target,
     name
