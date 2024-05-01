@@ -39,7 +39,7 @@ class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
 ) {
 
     override fun afterExecute(
-        r: Runnable?,
+        r: Runnable,
         t: Throwable?,
     ) {
         if (t == null && r is Future<*> && r.isDone) {

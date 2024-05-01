@@ -1,5 +1,5 @@
 [versions]
-android-plugin = "8.3.2"
+agp = "8.4.0"
 java = "1.8"
 kotlin = "1.9.23"
 kotlin-coroutines = "1.8.0"
@@ -40,7 +40,7 @@ coil = "2.6.0"
 junit = "4.13.2"
 
 [plugins]
-android-application = { id = "com.android.application", version.ref = "android-plugin" }
+android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
