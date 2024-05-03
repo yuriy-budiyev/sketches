@@ -25,7 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.imageloader.executor
 
 import java.util.concurrent.ThreadFactory
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
 
 class ImageLoaderThreadFactory: ThreadFactory {
 
@@ -35,5 +35,5 @@ class ImageLoaderThreadFactory: ThreadFactory {
             "image-loader-${counter.getAndIncrement()}"
         )
 
-    private val counter: AtomicInteger = AtomicInteger(1)
+    private val counter: AtomicLong = AtomicLong(1L)
 }
