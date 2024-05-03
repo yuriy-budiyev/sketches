@@ -22,22 +22,20 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.multithreading.executor
+package com.github.yuriybudiyev.sketches.core.imageloader.executor
 
-import android.os.Process
 import java.util.concurrent.CancellationException
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
-import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.ScheduledThreadPoolExecutor
-import java.util.concurrent.ThreadFactory
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.atomic.AtomicLong
 
-class WorkerThreadExecutor(corePoolSize: Int): ScheduledThreadPoolExecutor(
-    corePoolSize,
-    WorkerThreadFactory,
-    RejectedExecutionHandler
+class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
+    Runtime
+        .getRuntime()
+        .availableProcessors()
+        .coerceAtMost(4),
+    ImageLoaderThreadFactory(),
+    AbortPolicy(),
 ) {
 
     override fun afterExecute(
@@ -59,40 +57,5 @@ class WorkerThreadExecutor(corePoolSize: Int): ScheduledThreadPoolExecutor(
         continueExistingPeriodicTasksAfterShutdownPolicy = false
         executeExistingDelayedTasksAfterShutdownPolicy = false
         removeOnCancelPolicy = true
-    }
-
-    private object WorkerThreadFactory: ThreadFactory {
-
-        override fun newThread(r: Runnable): Thread =
-            WorkerThread(
-                r,
-                "worker-${counter.getAndIncrement()}"
-            )
-
-        private val counter: AtomicLong = AtomicLong(1)
-
-        private class WorkerThread(
-            target: Runnable,
-            name: String,
-        ): Thread(
-            target,
-            name
-        ) {
-
-            override fun run() {
-                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
-                super.run()
-            }
-        }
-    }
-
-    private object RejectedExecutionHandler: java.util.concurrent.RejectedExecutionHandler {
-
-        override fun rejectedExecution(
-            r: Runnable,
-            e: ThreadPoolExecutor,
-        ) {
-            throw RejectedExecutionException("Task $r rejected from $e")
-        }
     }
 }

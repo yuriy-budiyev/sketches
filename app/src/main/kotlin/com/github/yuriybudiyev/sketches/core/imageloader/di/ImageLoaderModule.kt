@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.di
+package com.github.yuriybudiyev.sketches.core.imageloader.di
 
 import android.content.Context
 import android.os.Build
@@ -31,12 +31,13 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
 import coil.decode.VideoFrameDecoder
-import com.github.yuriybudiyev.sketches.core.multithreading.createWorkerCoroutineDispatcher
+import com.github.yuriybudiyev.sketches.core.imageloader.executor.ImageLoaderExecutor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.asCoroutineDispatcher
 import javax.inject.Singleton
 
 @Module
@@ -49,7 +50,7 @@ object ImageLoaderModule {
         @ApplicationContext
         context: Context,
     ): ImageLoader {
-        val dispatcher = createWorkerCoroutineDispatcher()
+        val dispatcher = ImageLoaderExecutor().asCoroutineDispatcher()
         return ImageLoader
             .Builder(context)
             .components {

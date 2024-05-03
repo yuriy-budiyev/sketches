@@ -28,7 +28,6 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.common.coroutines.excludeCancellation
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
-import com.github.yuriybudiyev.sketches.core.multithreading.Worker
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -60,7 +59,7 @@ class ImagesScreenViewModel @Inject constructor(
                 uiStateInternal.value = ImagesScreenUiState.Loading
             }
             try {
-                val files = withContext(Dispatchers.Worker) { repository.getFiles() }
+                val files = withContext(Dispatchers.Default) { repository.getFiles() }
                 if (files.isNotEmpty()) {
                     uiStateInternal.value = ImagesScreenUiState.Images(files)
                 } else {
