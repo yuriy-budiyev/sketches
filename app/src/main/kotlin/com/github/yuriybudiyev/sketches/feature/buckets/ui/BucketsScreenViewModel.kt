@@ -28,6 +28,7 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.common.coroutines.excludeCancellation
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import com.github.yuriybudiyev.sketches.core.multithreading.Worker
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -59,7 +60,7 @@ class BucketsScreenViewModel @Inject constructor(
                 uiStateInternal.value = BucketsScreenUiState.Loading
             }
             try {
-                val buckets = withContext(Dispatchers.Default) {
+                val buckets = withContext(Dispatchers.Worker) {
                     repository.getBuckets()
                 }
                 if (buckets.isNotEmpty()) {

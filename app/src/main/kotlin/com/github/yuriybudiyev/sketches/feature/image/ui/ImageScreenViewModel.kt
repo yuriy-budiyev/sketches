@@ -29,6 +29,7 @@ import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.common.coroutines.excludeCancellation
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import com.github.yuriybudiyev.sketches.core.multithreading.Worker
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -80,7 +81,7 @@ class ImageScreenViewModel @Inject constructor(
                 uiStateInternal.value = ImageScreenUiState.Loading
             }
             try {
-                val files = withContext(Dispatchers.Default) { repository.getFiles(bucketId) }
+                val files = withContext(Dispatchers.Worker) { repository.getFiles(bucketId) }
                 val filesSize = files.size
                 if (filesSize > 0) {
                     if (fileIndex < filesSize && files[fileIndex].id == fileId) {
@@ -137,7 +138,7 @@ class ImageScreenViewModel @Inject constructor(
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
             try {
-                withContext(Dispatchers.Default) {
+                withContext(Dispatchers.Worker) {
                     repository.deleteFile(uri)
                 }
             } catch (e: Exception) {
