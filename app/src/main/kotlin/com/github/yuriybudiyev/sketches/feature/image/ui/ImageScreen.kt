@@ -219,13 +219,15 @@ private fun ImageScreenLayout(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { activityResult ->
             if (activityResult.resultCode == Activity.RESULT_OK) {
-                Toast
-                    .makeText(
-                        contextUpdated,
-                        R.string.image_deleted,
-                        Toast.LENGTH_SHORT
-                    )
-                    .show()
+                coroutineScope.launch {
+                    Toast
+                        .makeText(
+                            contextUpdated,
+                            R.string.image_deleted,
+                            Toast.LENGTH_SHORT
+                        )
+                        .show()
+                }
             }
         },
     )
