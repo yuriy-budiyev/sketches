@@ -24,11 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
-import android.app.Activity
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -217,19 +215,7 @@ private fun ImageScreenLayout(
     val barItemSize = with(LocalDensity.current) { SketchesDimens.MediaBarItemSize.roundToPx() }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
-        onResult = { activityResult ->
-            if (activityResult.resultCode == Activity.RESULT_OK) {
-                coroutineScope.launch {
-                    Toast
-                        .makeText(
-                            contextUpdated,
-                            R.string.image_deleted,
-                            Toast.LENGTH_SHORT
-                        )
-                        .show()
-                }
-            }
-        },
+        onResult = { },
     )
     var deleteDialogVisible by remember { mutableStateOf(false) }
     LaunchedEffect(
