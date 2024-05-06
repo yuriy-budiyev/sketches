@@ -50,32 +50,44 @@ fun SketchesMediaItem(
     iconPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier) {
-        SketchesAsyncImage(
-            uri = uri,
-            contentDescription = stringResource(id = R.string.image),
-            modifier = Modifier.matchParentSize(),
-            contentScale = ContentScale.Crop,
-            filterQuality = FilterQuality.Low,
-            enableLoadingIndicator = true,
-            enableErrorIndicator = true,
-        )
-        if (type == MediaType.Video) {
-            val colorScheme = MaterialTheme.colorScheme
-            Box(
-                modifier = Modifier
-                    .align(alignment = Alignment.BottomEnd)
-                    .padding(all = iconPadding)
-                    .background(
-                        color = colorScheme.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                        shape = CircleShape
-                    ),
-            ) {
-                Icon(
-                    imageVector = SketchesIcons.Video,
-                    contentDescription = stringResource(id = R.string.video),
-                    tint = colorScheme.onBackground,
+    when (type) {
+        MediaType.Image -> {
+            SketchesAsyncImage(
+                uri = uri,
+                contentDescription = stringResource(id = R.string.image),
+                modifier = modifier,
+                contentScale = ContentScale.Crop,
+                filterQuality = FilterQuality.Low,
+                enableLoadingIndicator = true,
+                enableErrorIndicator = true,
+            )
+        }
+        MediaType.Video -> {
+            Box(modifier = modifier) {
+                SketchesAsyncImage(
+                    uri = uri,
+                    contentDescription = stringResource(id = R.string.image),
+                    modifier = Modifier.matchParentSize(),
+                    contentScale = ContentScale.Crop,
+                    filterQuality = FilterQuality.Low,
+                    enableLoadingIndicator = true,
+                    enableErrorIndicator = true,
                 )
+                Box(
+                    modifier = Modifier
+                        .align(alignment = Alignment.BottomEnd)
+                        .padding(all = iconPadding)
+                        .background(
+                            color = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                            shape = CircleShape
+                        ),
+                ) {
+                    Icon(
+                        imageVector = SketchesIcons.Video,
+                        contentDescription = stringResource(id = R.string.video),
+                        tint = MaterialTheme.colorScheme.onBackground,
+                    )
+                }
             }
         }
     }
