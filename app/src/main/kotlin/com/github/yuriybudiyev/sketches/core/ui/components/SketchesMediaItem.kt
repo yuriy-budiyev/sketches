@@ -73,19 +73,20 @@ fun SketchesMediaItem(
                     enableLoadingIndicator = true,
                     enableErrorIndicator = true,
                 )
+                val colorScheme = MaterialTheme.colorScheme
                 Box(
                     modifier = Modifier
                         .align(alignment = Alignment.BottomEnd)
                         .padding(all = iconPadding)
                         .background(
-                            color = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                            color = colorScheme.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
                             shape = CircleShape
                         ),
                 ) {
                     Icon(
                         imageVector = SketchesIcons.Video,
                         contentDescription = stringResource(id = R.string.video),
-                        tint = MaterialTheme.colorScheme.onBackground,
+                        tint = colorScheme.onBackground,
                     )
                 }
             }
