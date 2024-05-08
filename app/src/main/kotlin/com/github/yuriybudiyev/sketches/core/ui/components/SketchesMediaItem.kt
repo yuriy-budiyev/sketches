@@ -39,57 +39,56 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 
 @Composable
-fun SketchesMediaItem(
+fun SketchesImageMediaItem(
     uri: Uri,
-    type: MediaType,
+    modifier: Modifier = Modifier,
+) {
+    SketchesAsyncImage(
+        uri = uri,
+        contentDescription = stringResource(id = R.string.image),
+        modifier = modifier,
+        contentScale = ContentScale.Crop,
+        filterQuality = FilterQuality.Low,
+        enableLoadingIndicator = true,
+        enableErrorIndicator = true,
+    )
+}
+
+@Composable
+fun SketchesVideoMediaItem(
+    uri: Uri,
     iconPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
-    when (type) {
-        MediaType.Image -> {
-            SketchesAsyncImage(
-                uri = uri,
-                contentDescription = stringResource(id = R.string.image),
-                modifier = modifier,
-                contentScale = ContentScale.Crop,
-                filterQuality = FilterQuality.Low,
-                enableLoadingIndicator = true,
-                enableErrorIndicator = true,
+    Box(modifier = modifier) {
+        SketchesAsyncImage(
+            uri = uri,
+            contentDescription = stringResource(id = R.string.image),
+            modifier = Modifier.matchParentSize(),
+            contentScale = ContentScale.Crop,
+            filterQuality = FilterQuality.Low,
+            enableLoadingIndicator = true,
+            enableErrorIndicator = true,
+        )
+        val colorScheme = MaterialTheme.colorScheme
+        Box(
+            modifier = Modifier
+                .align(alignment = Alignment.BottomEnd)
+                .padding(all = iconPadding)
+                .background(
+                    color = colorScheme.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                    shape = CircleShape
+                ),
+        ) {
+            Icon(
+                imageVector = SketchesIcons.Video,
+                contentDescription = stringResource(id = R.string.video),
+                tint = colorScheme.onBackground,
             )
-        }
-        MediaType.Video -> {
-            Box(modifier = modifier) {
-                SketchesAsyncImage(
-                    uri = uri,
-                    contentDescription = stringResource(id = R.string.image),
-                    modifier = Modifier.matchParentSize(),
-                    contentScale = ContentScale.Crop,
-                    filterQuality = FilterQuality.Low,
-                    enableLoadingIndicator = true,
-                    enableErrorIndicator = true,
-                )
-                val colorScheme = MaterialTheme.colorScheme
-                Box(
-                    modifier = Modifier
-                        .align(alignment = Alignment.BottomEnd)
-                        .padding(all = iconPadding)
-                        .background(
-                            color = colorScheme.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                            shape = CircleShape
-                        ),
-                ) {
-                    Icon(
-                        imageVector = SketchesIcons.Video,
-                        contentDescription = stringResource(id = R.string.video),
-                        tint = colorScheme.onBackground,
-                    )
-                }
-            }
         }
     }
 }

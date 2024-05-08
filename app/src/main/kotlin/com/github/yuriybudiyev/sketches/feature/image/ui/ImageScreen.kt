@@ -69,7 +69,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -83,9 +82,10 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionB
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesImageMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesVideoMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
@@ -502,25 +502,36 @@ private fun MediaBar(
             contentType = { position -> itemsUpdated[position].mediaType },
         ) { position ->
             val file = itemsUpdated[position]
-            SketchesMediaItem(
-                uri = file.uri,
-                type = file.mediaType,
-                iconPadding = 2.dp,
-                modifier = Modifier
-                    .size(size = SketchesDimens.MediaBarItemSize)
-                    .clip(shape = MaterialTheme.shapes.small)
-                    .border(
-                        width = SketchesDimens.MediaItemBorderThickness,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlphaHighTransparency),
-                        shape = MaterialTheme.shapes.small,
+            val itemModifier = Modifier
+                .size(size = SketchesDimens.MediaBarItemSize)
+                .clip(shape = MaterialTheme.shapes.small)
+                .border(
+                    width = SketchesDimens.MediaItemBorderThickness,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                    shape = MaterialTheme.shapes.small,
+                )
+                .clickable {
+                    onItemClickUpdated(
+                        position,
+                        file,
                     )
-                    .clickable {
-                        onItemClickUpdated(
-                            position,
-                            file,
-                        )
-                    },
-            )
+                }
+            val fileUri = file.uri
+            when (file.mediaType) {
+                MediaType.Image -> {
+                    SketchesImageMediaItem(
+                        uri = fileUri,
+                        modifier = itemModifier,
+                    )
+                }
+                MediaType.Video -> {
+                    SketchesVideoMediaItem(
+                        uri = fileUri,
+                        iconPadding = SketchesDimens.MediaBarVideoIconPadding,
+                        modifier = itemModifier,
+                    )
+                }
+            }
         }
     }
 }
