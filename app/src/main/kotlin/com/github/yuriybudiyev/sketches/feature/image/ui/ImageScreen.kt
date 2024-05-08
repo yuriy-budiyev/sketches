@@ -501,17 +501,18 @@ private fun MediaBar(
             contentType = { position -> itemsUpdated[position].mediaType },
         ) { position ->
             val file = itemsUpdated[position]
+            val smallMaterialShape = MaterialTheme.shapes.small
             SketchesMediaItem(
                 uri = file.uri,
                 type = file.mediaType,
                 videoIconPadding = SketchesDimens.MediaBarVideoIconPadding,
                 modifier = Modifier
                     .size(size = SketchesDimens.MediaBarItemSize)
-                    .clip(shape = MaterialTheme.shapes.small)
+                    .clip(shape = smallMaterialShape)
                     .border(
                         width = SketchesDimens.MediaItemBorderThickness,
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlphaHighTransparency),
-                        shape = MaterialTheme.shapes.small,
+                        shape = smallMaterialShape,
                     )
                     .clickable {
                         onItemClickUpdated(
