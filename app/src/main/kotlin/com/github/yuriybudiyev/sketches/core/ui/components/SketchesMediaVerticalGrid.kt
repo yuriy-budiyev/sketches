@@ -85,7 +85,8 @@ fun SketchesMediaVerticalGrid(
                 MediaType.Video -> {
                     SketchesVideoMediaItem(
                         uri = fileUri,
-                        iconPadding = SketchesDimens.LazyGridVideoIconPadding
+                        iconPadding = SketchesDimens.LazyGridVideoIconPadding,
+                        modifier = itemModifier,
                     )
                 }
             }
