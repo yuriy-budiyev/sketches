@@ -58,23 +58,27 @@ fun SketchesAsyncImage(
         modifier = modifier,
         contentScale = contentScale,
         filterQuality = filterQuality,
-        loading = {
-            if (enableLoadingIndicator) {
+        loading = if (enableLoadingIndicator) {
+            {
                 StateIcon(
                     icon = SketchesIcons.ImageLoading,
                     description = stringResource(id = R.string.image_loading),
                     modifier = Modifier.fillMaxSize(),
                 )
             }
+        } else {
+            null
         },
-        error = {
-            if (enableErrorIndicator) {
+        error = if (enableErrorIndicator) {
+            {
                 StateIcon(
                     icon = SketchesIcons.ImageError,
                     description = stringResource(id = R.string.image_error),
                     modifier = Modifier.fillMaxSize(),
                 )
             }
+        } else {
+            null
         },
     )
 }
