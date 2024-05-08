@@ -34,7 +34,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 
@@ -60,36 +59,25 @@ fun SketchesMediaVerticalGrid(
         ) { index ->
             val file = filesUpdated[index]
             val smallMaterialShape = MaterialTheme.shapes.small
-            val itemModifier = Modifier
-                .aspectRatio(ratio = 1f)
-                .clip(shape = smallMaterialShape)
-                .border(
-                    width = SketchesDimens.MediaItemBorderThickness,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlphaHighTransparency),
-                    shape = smallMaterialShape
-                )
-                .clickable {
-                    onItemClickUpdated(
-                        index,
-                        file
+            SketchesMediaItem(
+                uri = file.uri,
+                type = file.mediaType,
+                videoIconPadding = SketchesDimens.LazyGridVideoIconPadding,
+                modifier = Modifier
+                    .aspectRatio(ratio = 1f)
+                    .clip(shape = smallMaterialShape)
+                    .border(
+                        width = SketchesDimens.MediaItemBorderThickness,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                        shape = smallMaterialShape
                     )
-                }
-            val fileUri = file.uri
-            when (file.mediaType) {
-                MediaType.Image -> {
-                    SketchesImageMediaItem(
-                        uri = fileUri,
-                        modifier = itemModifier
-                    )
-                }
-                MediaType.Video -> {
-                    SketchesVideoMediaItem(
-                        uri = fileUri,
-                        iconPadding = SketchesDimens.LazyGridVideoIconPadding,
-                        modifier = itemModifier,
-                    )
-                }
-            }
+                    .clickable {
+                        onItemClickUpdated(
+                            index,
+                            file
+                        )
+                    },
+            )
         }
     }
 }

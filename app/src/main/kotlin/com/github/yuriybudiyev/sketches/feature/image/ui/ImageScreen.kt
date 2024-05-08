@@ -82,10 +82,9 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionB
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesImageMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesVideoMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
@@ -502,36 +501,25 @@ private fun MediaBar(
             contentType = { position -> itemsUpdated[position].mediaType },
         ) { position ->
             val file = itemsUpdated[position]
-            val itemModifier = Modifier
-                .size(size = SketchesDimens.MediaBarItemSize)
-                .clip(shape = MaterialTheme.shapes.small)
-                .border(
-                    width = SketchesDimens.MediaItemBorderThickness,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlphaHighTransparency),
-                    shape = MaterialTheme.shapes.small,
-                )
-                .clickable {
-                    onItemClickUpdated(
-                        position,
-                        file,
+            SketchesMediaItem(
+                uri = file.uri,
+                type = file.mediaType,
+                videoIconPadding = SketchesDimens.MediaBarVideoIconPadding,
+                modifier = Modifier
+                    .size(size = SketchesDimens.MediaBarItemSize)
+                    .clip(shape = MaterialTheme.shapes.small)
+                    .border(
+                        width = SketchesDimens.MediaItemBorderThickness,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                        shape = MaterialTheme.shapes.small,
                     )
-                }
-            val fileUri = file.uri
-            when (file.mediaType) {
-                MediaType.Image -> {
-                    SketchesImageMediaItem(
-                        uri = fileUri,
-                        modifier = itemModifier,
-                    )
-                }
-                MediaType.Video -> {
-                    SketchesVideoMediaItem(
-                        uri = fileUri,
-                        iconPadding = SketchesDimens.MediaBarVideoIconPadding,
-                        modifier = itemModifier,
-                    )
-                }
-            }
+                    .clickable {
+                        onItemClickUpdated(
+                            position,
+                            file,
+                        )
+                    },
+            )
         }
     }
 }
