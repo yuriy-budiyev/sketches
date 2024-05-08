@@ -74,16 +74,17 @@ fun SketchesMediaVerticalGrid(
                         file
                     )
                 }
+            val fileUri = file.uri
             when (file.mediaType) {
                 MediaType.Image -> {
                     SketchesImageMediaItem(
-                        uri = file.uri,
+                        uri = fileUri,
                         modifier = itemModifier
                     )
                 }
                 MediaType.Video -> {
                     SketchesVideoMediaItem(
-                        uri = file.uri,
+                        uri = fileUri,
                         iconPadding = SketchesDimens.LazyGridVideoIconPadding
                     )
                 }
