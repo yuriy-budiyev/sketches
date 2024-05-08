@@ -68,7 +68,7 @@ fun SketchesMediaItem(
 }
 
 @Composable
-fun SketchesImageMediaItem(
+private fun SketchesImageMediaItem(
     uri: Uri,
     modifier: Modifier = Modifier,
 ) {
@@ -84,7 +84,7 @@ fun SketchesImageMediaItem(
 }
 
 @Composable
-fun SketchesVideoMediaItem(
+private fun SketchesVideoMediaItem(
     uri: Uri,
     iconPadding: Dp,
     modifier: Modifier = Modifier,
