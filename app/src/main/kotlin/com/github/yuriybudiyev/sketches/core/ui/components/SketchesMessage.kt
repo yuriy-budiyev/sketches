@@ -53,7 +53,7 @@ fun SketchesMessage(
 @Composable
 fun SketchesCenteredMessage(
     text: String,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier,
