@@ -36,8 +36,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
@@ -51,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -205,13 +204,12 @@ fun SketchesMediaController(
         }
         val position = state.position
         val duration = state.duration
-        Slider(
+        SketchesSlider(
             value = if (position != SketchesMediaState.UnknownTime && duration != SketchesMediaState.UnknownTime) {
                 (position.toDouble() / duration.toDouble()).toFloat()
             } else {
                 0f
             },
-            modifier = Modifier.weight(weight = 1f),
             onValueChange = { value ->
                 if (duration != SketchesMediaState.UnknownTime) {
                     val newPosition = (duration.toDouble() * value.toDouble()).roundToLong()
@@ -220,18 +218,8 @@ fun SketchesMediaController(
                     }
                 }
             },
-            colors = SliderDefaults.colors(
-                thumbColor = color,
-                activeTrackColor = color,
-                activeTickColor = color,
-                inactiveTrackColor = color,
-                inactiveTickColor = color,
-                disabledThumbColor = color,
-                disabledActiveTrackColor = color,
-                disabledActiveTickColor = color,
-                disabledInactiveTrackColor = color,
-                disabledInactiveTickColor = color
-            )
+            modifier = Modifier.weight(weight = 1f),
+            color = color,
         )
         Box(
             modifier = Modifier
