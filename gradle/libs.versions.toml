@@ -41,6 +41,7 @@ junit = "4.13.2"
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
