@@ -33,6 +33,9 @@ import androidx.navigation.compose.rememberNavController
 import com.github.yuriybudiyev.sketches.core.navigation.RouteInfo
 import com.github.yuriybudiyev.sketches.core.navigation.TopLevelRouteInfo
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.serializer
 import kotlin.reflect.KClass
 
 @Composable
@@ -65,15 +68,18 @@ class SketchesAppState(
     val topLevelNavigationRoutes: Collection<TopLevelRouteInfo>
         get() = topLevelNavigationRoutesInternal.values
 
+    @OptIn(
+        InternalSerializationApi::class,
+        ExperimentalSerializationApi::class
+    )
     fun <T: Any> registerNavigationRoute(
         routeClass: KClass<T>,
         routeInfo: RouteInfo,
     ) {
-        val className = routeClass.qualifiedName
-            ?: throw IllegalArgumentException("Route class can't be local or anonymous")
-        navigationRoutesInternal[className] = routeInfo
+        val serialName = routeClass.serializer().descriptor.serialName
+        navigationRoutesInternal[serialName] = routeInfo
         if (routeInfo is TopLevelRouteInfo) {
-            topLevelNavigationRoutesInternal[className] = routeInfo
+            topLevelNavigationRoutesInternal[serialName] = routeInfo
         }
     }
 

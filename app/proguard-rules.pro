@@ -42,6 +42,3 @@
 
 #Okio
 -dontwarn org.codehaus.mojo.animal_sniffer.*
-
-#Navigation
--keepnames @kotlinx.serialization.Serializable class *
