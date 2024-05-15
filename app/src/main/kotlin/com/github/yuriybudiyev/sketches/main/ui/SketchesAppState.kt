@@ -74,7 +74,8 @@ class SketchesAppState(
         )
     }
 
-    fun registerNavigationRoute(
+    @PublishedApi
+    internal fun registerNavigationRoute(
         serialName: String,
         routeInfo: RouteInfo,
     ) {
