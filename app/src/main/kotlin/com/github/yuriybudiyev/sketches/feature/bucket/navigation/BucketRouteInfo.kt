@@ -22,28 +22,8 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.feature.images.navigation
+package com.github.yuriybudiyev.sketches.feature.bucket.navigation
 
-import androidx.annotation.StringRes
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavDeepLink
-import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
-import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
+import com.github.yuriybudiyev.sketches.core.navigation.RouteInfo
 
-object ImagesNavigationDestination: TopLevelNavigationDestination {
-
-    override val routeBase: String = "images"
-
-    override val arguments: List<NamedNavArgument> = emptyList()
-
-    override val deepLinks: List<NavDeepLink> = emptyList()
-
-    @get:StringRes
-    override val titleRes: Int = R.string.images
-
-    override val selectedIcon: ImageVector = SketchesIcons.ImagesSelected
-
-    override val unselectedIcon: ImageVector = SketchesIcons.ImagesUnselected
-}
+data object BucketRouteInfo: RouteInfo

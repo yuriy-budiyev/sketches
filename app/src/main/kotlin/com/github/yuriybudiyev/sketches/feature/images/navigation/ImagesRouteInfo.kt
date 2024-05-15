@@ -22,15 +22,22 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.navigation.route
+package com.github.yuriybudiyev.sketches.feature.images.navigation
 
+import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.navigation.TopLevelRouteInfo
+import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 
-interface TopLevelNavigationRoute {
+object ImagesRouteInfo: TopLevelRouteInfo {
 
-    val titleRes: Int
+    override val route: Any = ImagesRoute
 
-    val selectedIcon: ImageVector
+    @get:StringRes
+    override val titleRes: Int = R.string.images
 
-    val unselectedIcon: ImageVector
+    override val selectedIcon: ImageVector = SketchesIcons.ImagesSelected
+
+    override val unselectedIcon: ImageVector = SketchesIcons.ImagesUnselected
 }

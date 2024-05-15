@@ -22,28 +22,6 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.feature.bucket.navigation
+package com.github.yuriybudiyev.sketches.core.navigation
 
-import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavDeepLink
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
-import com.github.yuriybudiyev.sketches.core.navigation.destination.NavigationDestination
-
-object BucketNavigationDestination: NavigationDestination {
-
-    override val routeBase: String = "bucket"
-
-    override val arguments: List<NamedNavArgument> = listOf(
-        navArgument(name = Arguments.BUCKET_ID) { type = NavType.LongType },
-        navArgument(name = Arguments.BUCKET_NAME) { type = NavType.StringType },
-    )
-
-    override val deepLinks: List<NavDeepLink> = emptyList()
-
-    object Arguments {
-
-        const val BUCKET_ID = "id"
-        const val BUCKET_NAME = "name"
-    }
-}
+interface RouteInfo

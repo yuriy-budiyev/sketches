@@ -25,18 +25,15 @@
 package com.github.yuriybudiyev.sketches.main.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.github.yuriybudiyev.sketches.core.navigation.buildRoute
-import com.github.yuriybudiyev.sketches.core.navigation.buildRouteWithArgs
-import com.github.yuriybudiyev.sketches.core.navigation.destination.NavigationDestination
-import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
+import com.github.yuriybudiyev.sketches.core.navigation.RouteInfo
+import com.github.yuriybudiyev.sketches.core.navigation.TopLevelRouteInfo
 import kotlinx.coroutines.CoroutineScope
+import kotlin.reflect.KClass
 
 @Composable
 fun rememberSketchesAppState(
@@ -53,42 +50,35 @@ fun rememberSketchesAppState(
         )
     }
 
-@Stable
 class SketchesAppState(
     val navController: NavHostController,
     val coroutineScope: CoroutineScope,
 ) {
 
-    val currentNavigationDestination: NavigationDestination?
+    val currentNavigationRoute: RouteInfo?
         @Composable get() {
             val route = navController.currentBackStackEntryAsState().value?.destination?.route
                 ?: return null
-            return navigationDestinationsInternal[route]
+            return navigationRoutesInternal[route.substringBefore('/')]
         }
 
-    val topLevelNavigationDestinations: Collection<TopLevelNavigationDestination>
-        get() = topLevelNavigationDestinationsInternal
+    val topLevelNavigationRoutes: Collection<TopLevelRouteInfo>
+        get() = topLevelNavigationRoutesInternal.values
 
-    fun navigateToTopLevelDestination(destination: TopLevelNavigationDestination) {
-        navController.navigate(destination.buildRouteWithArgs()) {
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
-        }
-    }
-
-    fun registerNavigationDestination(destination: NavigationDestination) {
-        navigationDestinationsInternal[destination.buildRoute()] = destination
-        if (destination is TopLevelNavigationDestination) {
-            topLevelNavigationDestinationsInternal += destination
+    fun <T: Any> registerNavigationRoute(
+        routeClass: KClass<T>,
+        routeInfo: RouteInfo,
+    ) {
+        val className = routeClass.qualifiedName
+            ?: throw IllegalArgumentException("Route class can't be local or anonymous")
+        navigationRoutesInternal[className] = routeInfo
+        if (routeInfo is TopLevelRouteInfo) {
+            topLevelNavigationRoutesInternal[className] = routeInfo
         }
     }
 
-    private val navigationDestinationsInternal: MutableMap<String, NavigationDestination> =
+    private val navigationRoutesInternal: MutableMap<String, RouteInfo> = LinkedHashMap()
+
+    private val topLevelNavigationRoutesInternal: MutableMap<String, TopLevelRouteInfo> =
         LinkedHashMap()
-
-    private val topLevelNavigationDestinationsInternal: MutableSet<TopLevelNavigationDestination> =
-        LinkedHashSet()
 }

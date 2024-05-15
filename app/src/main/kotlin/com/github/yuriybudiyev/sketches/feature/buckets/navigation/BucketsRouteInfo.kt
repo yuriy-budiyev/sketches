@@ -22,16 +22,22 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.navigation.destination
+package com.github.yuriybudiyev.sketches.feature.buckets.navigation
 
-import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavDeepLink
+import androidx.annotation.StringRes
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.navigation.TopLevelRouteInfo
+import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 
-interface NavigationDestination {
+data object BucketsRouteInfo: TopLevelRouteInfo {
 
-    val routeBase: String
+    override val route: Any = BucketsRoute
 
-    val arguments: List<NamedNavArgument>
+    @get:StringRes
+    override val titleRes: Int = R.string.buckets
 
-    val deepLinks: List<NavDeepLink>
+    override val selectedIcon: ImageVector = SketchesIcons.BucketsSelected
+
+    override val unselectedIcon: ImageVector = SketchesIcons.BucketsUnselected
 }

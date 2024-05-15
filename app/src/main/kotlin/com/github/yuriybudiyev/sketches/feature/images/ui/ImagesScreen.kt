@@ -49,7 +49,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndica
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaVerticalGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
-import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavigationDestination
+import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesRouteInfo
 import kotlinx.coroutines.launch
 
 @Composable
@@ -117,7 +117,7 @@ fun ImagesScreen(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
-            text = stringResource(id = ImagesNavigationDestination.titleRes),
+            text = stringResource(id = ImagesRouteInfo.titleRes),
             backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
             actions = {
                 if (onRequestUserSelectedMedia != null) {

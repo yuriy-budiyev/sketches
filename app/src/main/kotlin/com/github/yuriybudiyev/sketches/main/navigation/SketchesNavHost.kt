@@ -38,12 +38,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketRoute
+import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketRouteInfo
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
+import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRouteInfo
 import com.github.yuriybudiyev.sketches.feature.buckets.ui.BucketsRoute
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageRoute
+import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageRouteInfo
 import com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesRoute
+import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesRouteInfo
 import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
 import com.github.yuriybudiyev.sketches.main.ui.SketchesAppState
 import kotlinx.coroutines.launch
@@ -60,6 +64,10 @@ fun SketchesNavHost(
         navController = appState.navController,
         startDestination = ImagesRoute
     ) {
+        appState.registerNavigationRoute(
+            routeClass = ImagesRoute::class,
+            routeInfo = ImagesRouteInfo
+        )
         composable<ImagesRoute>(
             enterTransition = { fadeIn() },
             exitTransition = { fadeOut() },
@@ -79,6 +87,10 @@ fun SketchesNavHost(
                 onRequestUserSelectedMedia = onRequestUserSelectedMediaUpdated,
             )
         }
+        appState.registerNavigationRoute(
+            routeClass = BucketsRoute::class,
+            routeInfo = BucketsRouteInfo
+        )
         composable<BucketsRoute>(
             enterTransition = { fadeIn() },
             exitTransition = { fadeOut() },
@@ -96,6 +108,10 @@ fun SketchesNavHost(
                 },
             )
         }
+        appState.registerNavigationRoute(
+            routeClass = BucketRoute::class,
+            routeInfo = BucketRouteInfo
+        )
         composable<BucketRoute>(
             enterTransition = { fadeIn() },
             exitTransition = { fadeOut() },
@@ -117,6 +133,10 @@ fun SketchesNavHost(
                 },
             )
         }
+        appState.registerNavigationRoute(
+            routeClass = ImageRoute::class,
+            routeInfo = ImageRouteInfo
+        )
         composable<ImageRoute>(
             enterTransition = { fadeIn() },
             exitTransition = { fadeOut() },

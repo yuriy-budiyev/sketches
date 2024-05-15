@@ -22,7 +22,8 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.navigation.route
+package com.github.yuriybudiyev.sketches.feature.image.navigation
 
-interface NavigationRoute {
-}
+import com.github.yuriybudiyev.sketches.core.navigation.RouteInfo
+
+data object ImageRouteInfo: RouteInfo

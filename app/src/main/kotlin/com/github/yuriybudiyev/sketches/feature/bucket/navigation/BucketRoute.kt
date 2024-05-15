@@ -24,11 +24,10 @@
 
 package com.github.yuriybudiyev.sketches.feature.bucket.navigation
 
-import com.github.yuriybudiyev.sketches.core.navigation.route.NavigationRoute
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class BucketRoute(
     val bucketId: Long,
     val bucketName: String,
-): NavigationRoute
+)

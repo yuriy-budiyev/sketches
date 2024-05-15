@@ -66,11 +66,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.common.permissions.media.MediaAccess
 import com.github.yuriybudiyev.sketches.core.common.permissions.media.checkMediaAccess
 import com.github.yuriybudiyev.sketches.core.common.permissions.media.rememberMediaAccessRequestLauncher
-import com.github.yuriybudiyev.sketches.core.navigation.destination.TopLevelNavigationDestination
+import com.github.yuriybudiyev.sketches.core.navigation.TopLevelRouteInfo
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesOutlinedButton
@@ -96,8 +97,8 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
     ) {
         when (mediaAccess) {
             MediaAccess.Full, MediaAccess.UserSelected -> {
-                val topLevelDestinations = appState.topLevelNavigationDestinations
-                val currentDestination = appState.currentNavigationDestination
+                val topLevelDestinations = appState.topLevelNavigationRoutes
+                val currentDestination = appState.currentNavigationRoute
                 Box(modifier = Modifier.fillMaxSize()) {
                     SketchesNavHost(
                         appState = appState,
@@ -109,7 +110,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                         }
                     )
                     val view = LocalView.current
-                    val topLevelNavigation = currentDestination is TopLevelNavigationDestination
+                    val topLevelNavigation = currentDestination is TopLevelRouteInfo
                     if (!view.isInEditMode) {
                         SideEffect {
                             val window = (view.context as Activity).window
@@ -145,7 +146,14 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                                     ),
                                     onClick = {
                                         appState.coroutineScope.launch {
-                                            appState.navigateToTopLevelDestination(destination)
+                                            val navController = appState.navController
+                                            navController.navigate(destination.route) {
+                                                popUpTo(navController.graph.findStartDestination().id) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
                                         }
                                     },
                                     icon = {
