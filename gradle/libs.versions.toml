@@ -3,6 +3,7 @@ agp = "8.4.0"
 java = "1.8"
 kotlin = "2.0.0-RC3"
 kotlin-coroutines = "1.8.1"
+kotlin-serialization = "1.6.3"
 kotlin-ksp = "2.0.0-RC3-1.0.20"
 androidx-annotation = "1.8.0"
 androidx-annotation-experimental = "1.4.1"
@@ -55,6 +56,8 @@ kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.re
 kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
 kotlin-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlin-coroutines" }
+kotlin-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlin-serialization" }
+kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlin-serialization" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
 androidx-annotation-experimental = { group = "androidx.annotation", name = "annotation-experimental", version.ref = "androidx-annotation-experimental" }
 androidx-core = { group = "androidx.core", name = "core", version.ref = "androidx-core" }
@@ -160,7 +163,9 @@ kotlin = [
     "kotlin-stdlib-jdk8",
     "kotlin-reflect",
     "kotlin-coroutines-core",
-    "kotlin-coroutines-android"
+    "kotlin-coroutines-android",
+    "kotlin-serialization-core",
+    "kotlin-serialization-json"
 ]
 kotlin-test = [
     "kotlin-test",
