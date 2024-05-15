@@ -64,10 +64,7 @@ fun SketchesNavHost(
         navController = appState.navController,
         startDestination = ImagesRoute
     ) {
-        appState.registerNavigationRoute(
-            routeClass = ImagesRoute::class,
-            routeInfo = ImagesRouteInfo
-        )
+        appState.registerNavigationRoute<ImagesRoute>(ImagesRouteInfo)
         composable<ImagesRoute>(
             enterTransition = { fadeIn() },
             exitTransition = { fadeOut() },
@@ -87,10 +84,7 @@ fun SketchesNavHost(
                 onRequestUserSelectedMedia = onRequestUserSelectedMediaUpdated,
             )
         }
-        appState.registerNavigationRoute(
-            routeClass = BucketsRoute::class,
-            routeInfo = BucketsRouteInfo
-        )
+        appState.registerNavigationRoute<BucketsRoute>(BucketsRouteInfo)
         composable<BucketsRoute>(
             enterTransition = { fadeIn() },
             exitTransition = { fadeOut() },
@@ -108,10 +102,7 @@ fun SketchesNavHost(
                 },
             )
         }
-        appState.registerNavigationRoute(
-            routeClass = BucketRoute::class,
-            routeInfo = BucketRouteInfo
-        )
+        appState.registerNavigationRoute<BucketRoute>(BucketRouteInfo)
         composable<BucketRoute>(
             enterTransition = { fadeIn() },
             exitTransition = { fadeOut() },
@@ -133,10 +124,7 @@ fun SketchesNavHost(
                 },
             )
         }
-        appState.registerNavigationRoute(
-            routeClass = ImageRoute::class,
-            routeInfo = ImageRouteInfo
-        )
+        appState.registerNavigationRoute<ImageRoute>(ImageRouteInfo)
         composable<ImageRoute>(
             enterTransition = { fadeIn() },
             exitTransition = { fadeOut() },

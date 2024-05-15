@@ -34,9 +34,7 @@ import com.github.yuriybudiyev.sketches.core.navigation.RouteInfo
 import com.github.yuriybudiyev.sketches.core.navigation.TopLevelRouteInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.serializer
-import kotlin.reflect.KClass
 
 @Composable
 fun rememberSketchesAppState(
@@ -68,15 +66,18 @@ class SketchesAppState(
     val topLevelNavigationRoutes: Collection<TopLevelRouteInfo>
         get() = topLevelNavigationRoutesInternal.values
 
-    @OptIn(
-        InternalSerializationApi::class,
-        ExperimentalSerializationApi::class
-    )
-    fun <T: Any> registerNavigationRoute(
-        routeClass: KClass<T>,
+    @OptIn(ExperimentalSerializationApi::class)
+    inline fun <reified T: Any> registerNavigationRoute(routeInfo: RouteInfo) {
+        registerNavigationRoute(
+            serializer<T>().descriptor.serialName,
+            routeInfo
+        )
+    }
+
+    fun registerNavigationRoute(
+        serialName: String,
         routeInfo: RouteInfo,
     ) {
-        val serialName = routeClass.serializer().descriptor.serialName
         navigationRoutesInternal[serialName] = routeInfo
         if (routeInfo is TopLevelRouteInfo) {
             topLevelNavigationRoutesInternal[serialName] = routeInfo

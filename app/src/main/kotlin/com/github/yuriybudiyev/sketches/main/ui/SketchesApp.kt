@@ -97,8 +97,8 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
     ) {
         when (mediaAccess) {
             MediaAccess.Full, MediaAccess.UserSelected -> {
-                val topLevelDestinations = appState.topLevelNavigationRoutes
-                val currentDestination = appState.currentNavigationRoute
+                val topLevelRoutes = appState.topLevelNavigationRoutes
+                val currentRouteInfo = appState.currentNavigationRoute
                 Box(modifier = Modifier.fillMaxSize()) {
                     SketchesNavHost(
                         appState = appState,
@@ -110,11 +110,10 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                         }
                     )
                     val view = LocalView.current
-                    val topLevelNavigation = currentDestination is TopLevelRouteInfo
                     if (!view.isInEditMode) {
                         SideEffect {
                             val window = (view.context as Activity).window
-                            if (topLevelNavigation) {
+                            if (currentRouteInfo is TopLevelRouteInfo) {
                                 window.navigationBarColor = Color.Transparent.toArgb()
                             } else {
                                 window.navigationBarColor = colorScheme.background
@@ -123,7 +122,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                             }
                         }
                     }
-                    if (topLevelNavigation) {
+                    if (currentRouteInfo is TopLevelRouteInfo) {
                         val bottomSystemBarHeight = WindowInsets.systemBars
                             .asPaddingValues()
                             .calculateBottomPadding()
@@ -135,8 +134,8 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                                 .align(Alignment.BottomStart)
                                 .fillMaxWidth()
                         ) {
-                            topLevelDestinations.forEach { destination ->
-                                val selected = destination == currentDestination
+                            topLevelRoutes.forEach { routeInfo ->
+                                val selected = routeInfo.route == currentRouteInfo.route
                                 NavigationBarItem(
                                     selected = selected,
                                     colors = NavigationBarItemDefaults.colors(
@@ -147,7 +146,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                                     onClick = {
                                         appState.coroutineScope.launch {
                                             val navController = appState.navController
-                                            navController.navigate(destination.route) {
+                                            navController.navigate(routeInfo.route) {
                                                 popUpTo(navController.graph.findStartDestination().id) {
                                                     saveState = true
                                                 }
@@ -159,11 +158,11 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                                     icon = {
                                         Icon(
                                             imageVector = if (selected) {
-                                                destination.selectedIcon
+                                                routeInfo.selectedIcon
                                             } else {
-                                                destination.unselectedIcon
+                                                routeInfo.unselectedIcon
                                             },
-                                            contentDescription = stringResource(id = destination.titleRes)
+                                            contentDescription = stringResource(id = routeInfo.titleRes)
                                         )
                                     },
                                 )
