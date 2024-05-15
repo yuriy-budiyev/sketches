@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.navigation
 
+import com.github.yuriybudiyev.sketches.core.navigation.route.NavigationRoute
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -31,4 +32,4 @@ data class ImageRoute(
     val imageIndex: Int,
     val imageId: Long,
     val bucketId: Long,
-)
+): NavigationRoute

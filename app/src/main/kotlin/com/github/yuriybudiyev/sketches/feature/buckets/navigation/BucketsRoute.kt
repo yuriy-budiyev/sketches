@@ -24,7 +24,22 @@
 
 package com.github.yuriybudiyev.sketches.feature.buckets.navigation
 
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.navigation.route.TopLevelNavigationRoute
+import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
-data object BucketsRoute
+data object BucketsRoute: TopLevelNavigationRoute {
+
+    @Transient
+    override val titleRes: Int = R.string.buckets
+
+    @Transient
+    override val selectedIcon: ImageVector = SketchesIcons.BucketsSelected
+
+    @Transient
+    override val unselectedIcon: ImageVector = SketchesIcons.BucketsUnselected
+}

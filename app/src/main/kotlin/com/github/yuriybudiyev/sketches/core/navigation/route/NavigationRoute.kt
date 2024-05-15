@@ -24,10 +24,5 @@
 
 package com.github.yuriybudiyev.sketches.core.navigation.route
 
-import androidx.compose.ui.graphics.vector.ImageVector
-
-data class TopLevelRouteInfo(
-    val titleRes: Int,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
-)
+interface NavigationRoute {
+}

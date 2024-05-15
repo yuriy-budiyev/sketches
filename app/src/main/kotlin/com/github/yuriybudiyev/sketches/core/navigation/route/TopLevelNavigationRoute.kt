@@ -22,24 +22,15 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.feature.images.navigation
+package com.github.yuriybudiyev.sketches.core.navigation.route
 
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.navigation.route.TopLevelNavigationRoute
-import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
-@Serializable
-data object ImagesRoute: TopLevelNavigationRoute {
+interface TopLevelNavigationRoute {
 
-    @Transient
-    override val titleRes: Int = R.string.images
+    val titleRes: Int
 
-    @Transient
-    override val selectedIcon: ImageVector = SketchesIcons.ImagesSelected
+    val selectedIcon: ImageVector
 
-    @Transient
-    override val unselectedIcon: ImageVector = SketchesIcons.ImagesUnselected
+    val unselectedIcon: ImageVector
 }

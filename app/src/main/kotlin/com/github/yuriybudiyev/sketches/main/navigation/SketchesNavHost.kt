@@ -25,6 +25,8 @@
 package com.github.yuriybudiyev.sketches.main.navigation
 
 import android.content.Intent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
@@ -32,18 +34,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.navigation.buildRoute
-import com.github.yuriybudiyev.sketches.core.navigation.composable
-import com.github.yuriybudiyev.sketches.core.navigation.navigate
-import com.github.yuriybudiyev.sketches.core.navigation.registerIn
-import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavigationDestination
+import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
-import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavigationDestination
+import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
 import com.github.yuriybudiyev.sketches.feature.buckets.ui.BucketsRoute
-import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageNavigationDestination
+import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageRoute
 import com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute
-import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavigationDestination
+import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesRoute
 import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
 import com.github.yuriybudiyev.sketches.main.ui.SketchesAppState
 import kotlinx.coroutines.launch
@@ -58,77 +58,76 @@ fun SketchesNavHost(
     NavHost(
         modifier = modifier,
         navController = appState.navController,
-        startDestination = ImagesNavigationDestination.buildRoute()
+        startDestination = ImagesRoute
     ) {
-        composable(ImagesNavigationDestination.registerIn(appState)) {
+        composable<ImagesRoute>(
+            enterTransition = { fadeIn() },
+            exitTransition = { fadeOut() },
+        ) {
             ImagesRoute(
                 onImageClick = { index, image ->
                     appState.coroutineScope.launch {
                         appState.navController.navigate(
-                            ImageNavigationDestination,
-                            index,
-                            image.id,
-                            Long.MIN_VALUE,
+                            ImageRoute(
+                                imageIndex = index,
+                                imageId = image.id,
+                                bucketId = Long.MIN_VALUE
+                            )
                         )
                     }
                 },
                 onRequestUserSelectedMedia = onRequestUserSelectedMediaUpdated,
             )
         }
-        composable(BucketsNavigationDestination.registerIn(appState)) {
+        composable<BucketsRoute>(
+            enterTransition = { fadeIn() },
+            exitTransition = { fadeOut() },
+        ) {
             BucketsRoute(
                 onBucketClick = { _, bucket ->
                     appState.coroutineScope.launch {
                         appState.navController.navigate(
-                            BucketNavigationDestination,
-                            bucket.id,
-                            bucket.name,
+                            BucketRoute(
+                                bucketId = bucket.id,
+                                bucketName = bucket.name
+                            )
                         )
                     }
                 },
             )
         }
-        composable(BucketNavigationDestination.registerIn(appState)) { backStackEntry ->
-            val bucketId = backStackEntry.arguments?.getLong(
-                BucketNavigationDestination.Arguments.BUCKET_ID,
-                Long.MIN_VALUE
-            ) ?: Long.MIN_VALUE
-            val bucketName =
-                backStackEntry.arguments?.getString(BucketNavigationDestination.Arguments.BUCKET_NAME)
+        composable<BucketRoute>(
+            enterTransition = { fadeIn() },
+            exitTransition = { fadeOut() },
+        ) { backStackEntry ->
+            val route = backStackEntry.toRoute<BucketRoute>()
             BucketRoute(
-                id = bucketId,
-                name = bucketName,
+                id = route.bucketId,
+                name = route.bucketName,
                 onImageClick = { index, image ->
                     appState.coroutineScope.launch {
                         appState.navController.navigate(
-                            ImageNavigationDestination,
-                            index,
-                            image.id,
-                            image.bucketId,
+                            ImageRoute(
+                                imageIndex = index,
+                                imageId = image.id,
+                                bucketId = image.bucketId
+                            )
                         )
                     }
                 },
             )
         }
-        composable(ImageNavigationDestination.registerIn(appState)) { backStackEntry ->
-            val imageIndex = backStackEntry.arguments?.getInt(
-                ImageNavigationDestination.Arguments.IMAGE_INDEX,
-                -1
-            ) ?: -1
-            val imageId = backStackEntry.arguments?.getLong(
-                ImageNavigationDestination.Arguments.IMAGE_ID,
-                Long.MIN_VALUE
-            ) ?: Long.MIN_VALUE
-            val bucketId = backStackEntry.arguments?.getLong(
-                ImageNavigationDestination.Arguments.BUCKET_ID,
-                Long.MIN_VALUE
-            ) ?: Long.MIN_VALUE
+        composable<ImageRoute>(
+            enterTransition = { fadeIn() },
+            exitTransition = { fadeOut() },
+        ) { backStackEntry ->
+            val route = backStackEntry.toRoute<ImageRoute>()
             val context = LocalContext.current
             val shareTitle = stringResource(id = R.string.share_image)
             ImageRoute(
-                fileIndex = imageIndex,
-                fileId = imageId,
-                bucketId = bucketId,
+                fileIndex = route.imageIndex,
+                fileId = route.imageId,
+                bucketId = route.bucketId,
                 onShare = { _, file ->
                     appState.coroutineScope.launch {
                         context.startActivity(
