@@ -27,4 +27,4 @@ package com.github.yuriybudiyev.sketches.feature.buckets.navigation
 import kotlinx.serialization.Serializable
 
 @Serializable
-object BucketsRoute
+data object BucketsRoute

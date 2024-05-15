@@ -27,4 +27,4 @@ package com.github.yuriybudiyev.sketches.feature.images.navigation
 import kotlinx.serialization.Serializable
 
 @Serializable
-object ImagesRoute
+data object ImagesRoute
