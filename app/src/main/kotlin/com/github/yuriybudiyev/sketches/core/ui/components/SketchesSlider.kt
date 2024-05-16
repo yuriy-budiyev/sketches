@@ -44,8 +44,8 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 fun SketchesSlider(
     value: Float,
     onValueChange: (Float) -> Unit,
