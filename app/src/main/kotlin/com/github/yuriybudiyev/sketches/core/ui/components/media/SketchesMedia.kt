@@ -219,7 +219,8 @@ fun SketchesMediaController(
                 }
             },
             modifier = Modifier.weight(weight = 1f),
-            color = color,
+            thumbColor = color,
+            trackColor = color.copy(alpha = SketchesColors.UiAlphaLowTransparency)
         )
         Box(
             modifier = Modifier

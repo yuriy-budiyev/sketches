@@ -42,6 +42,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +50,8 @@ fun SketchesSlider(
     value: Float,
     onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.onBackground,
+    thumbColor: Color = MaterialTheme.colorScheme.onBackground,
+    trackColor: Color = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlphaLowTransparency),
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val trackHeight = 4.dp
@@ -58,16 +60,16 @@ fun SketchesSlider(
         height = 20.dp
     )
     val colors = SliderDefaults.colors(
-        thumbColor = color,
-        activeTrackColor = color,
-        activeTickColor = color,
-        inactiveTrackColor = color,
-        inactiveTickColor = color,
-        disabledThumbColor = color,
-        disabledActiveTrackColor = color,
-        disabledActiveTickColor = color,
-        disabledInactiveTrackColor = color,
-        disabledInactiveTickColor = color
+        thumbColor = thumbColor,
+        activeTrackColor = trackColor,
+        activeTickColor = trackColor,
+        inactiveTrackColor = trackColor,
+        inactiveTickColor = trackColor,
+        disabledThumbColor = thumbColor,
+        disabledActiveTrackColor = trackColor,
+        disabledActiveTickColor = trackColor,
+        disabledInactiveTrackColor = trackColor,
+        disabledInactiveTickColor = trackColor
     )
     Slider(
         value = value,
