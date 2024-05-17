@@ -61,7 +61,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyVerticalG
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
-import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRouteInfo
+import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -128,7 +128,7 @@ fun BucketsScreen(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
-            text = stringResource(id = BucketsRouteInfo.titleRes),
+            text = stringResource(id = BucketsRoute.titleRes),
             backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
         )
     }

@@ -33,46 +33,43 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketRoute
-import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketRouteInfo
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
-import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRouteInfo
 import com.github.yuriybudiyev.sketches.feature.buckets.ui.BucketsRoute
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageRoute
-import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageRouteInfo
 import com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesRoute
-import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesRouteInfo
 import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
-import com.github.yuriybudiyev.sketches.main.ui.SketchesAppState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
 fun SketchesNavHost(
-    appState: SketchesAppState,
+    navController: NavHostController,
+    coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
     onRequestUserSelectedMedia: (() -> Unit)? = null,
 ) {
     val onRequestUserSelectedMediaUpdated by rememberUpdatedState(onRequestUserSelectedMedia)
     NavHost(
         modifier = modifier,
-        navController = appState.navController,
+        navController = navController,
         startDestination = ImagesRoute
     ) {
-        appState.registerNavigationRouteInfo(ImagesRouteInfo)
         composable<ImagesRoute>(
             enterTransition = { fadeIn() },
             exitTransition = { fadeOut() },
         ) {
             ImagesRoute(
                 onImageClick = { index, image ->
-                    appState.coroutineScope.launch {
-                        appState.navController.navigate(
+                    coroutineScope.launch {
+                        navController.navigate(
                             ImageRoute(
                                 imageIndex = index,
                                 imageId = image.id,
@@ -84,15 +81,14 @@ fun SketchesNavHost(
                 onRequestUserSelectedMedia = onRequestUserSelectedMediaUpdated,
             )
         }
-        appState.registerNavigationRouteInfo(BucketsRouteInfo)
         composable<BucketsRoute>(
             enterTransition = { fadeIn() },
             exitTransition = { fadeOut() },
         ) {
             BucketsRoute(
                 onBucketClick = { _, bucket ->
-                    appState.coroutineScope.launch {
-                        appState.navController.navigate(
+                    coroutineScope.launch {
+                        navController.navigate(
                             BucketRoute(
                                 bucketId = bucket.id,
                                 bucketName = bucket.name
@@ -102,7 +98,6 @@ fun SketchesNavHost(
                 },
             )
         }
-        appState.registerNavigationRouteInfo(BucketRouteInfo)
         composable<BucketRoute>(
             enterTransition = { fadeIn() },
             exitTransition = { fadeOut() },
@@ -112,8 +107,8 @@ fun SketchesNavHost(
                 id = route.bucketId,
                 name = route.bucketName,
                 onImageClick = { index, image ->
-                    appState.coroutineScope.launch {
-                        appState.navController.navigate(
+                    coroutineScope.launch {
+                        navController.navigate(
                             ImageRoute(
                                 imageIndex = index,
                                 imageId = image.id,
@@ -124,8 +119,7 @@ fun SketchesNavHost(
                 },
             )
         }
-        appState.registerNavigationRouteInfo(ImageRouteInfo)
-        composable<ImageRouteInfo>(
+        composable<ImageRoute>(
             enterTransition = { fadeIn() },
             exitTransition = { fadeOut() },
         ) { backStackEntry ->
@@ -137,7 +131,7 @@ fun SketchesNavHost(
                 fileId = route.imageId,
                 bucketId = route.bucketId,
                 onShare = { _, file ->
-                    appState.coroutineScope.launch {
+                    coroutineScope.launch {
                         context.startActivity(
                             Intent
                                 .createChooser(
