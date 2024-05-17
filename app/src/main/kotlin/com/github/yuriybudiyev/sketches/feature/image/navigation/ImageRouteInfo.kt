@@ -26,4 +26,4 @@ package com.github.yuriybudiyev.sketches.feature.image.navigation
 
 import com.github.yuriybudiyev.sketches.core.navigation.RouteInfo
 
-data object ImageRouteInfo: RouteInfo
+data object ImageRouteInfo: RouteInfo<ImageRoute>

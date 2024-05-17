@@ -24,4 +24,4 @@
 
 package com.github.yuriybudiyev.sketches.core.navigation
 
-interface RouteInfo
+interface RouteInfo<T: Any>

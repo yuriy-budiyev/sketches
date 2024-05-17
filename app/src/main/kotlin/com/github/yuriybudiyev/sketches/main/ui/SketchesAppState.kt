@@ -56,28 +56,29 @@ class SketchesAppState(
     val coroutineScope: CoroutineScope,
 ) {
 
-    val currentNavigationRoute: RouteInfo?
-        @Composable get() {
+    val currentNavigationRoute: RouteInfo<*>?
+        @Composable
+        get() {
             val route = navController.currentBackStackEntryAsState().value?.destination?.route
                 ?: return null
             return navigationRoutesInternal[route.substringBefore('/')]
         }
 
-    val topLevelNavigationRoutes: Collection<TopLevelRouteInfo>
+    val topLevelNavigationRoutes: Collection<TopLevelRouteInfo<*>>
         get() = topLevelNavigationRoutesInternal.values
 
     @OptIn(ExperimentalSerializationApi::class)
-    inline fun <reified T: Any> registerNavigationRoute(routeInfo: RouteInfo) {
-        registerNavigationRoute(
+    inline fun <reified T: Any> registerNavigationRouteInfo(routeInfo: RouteInfo<T>) {
+        registerNavigationRouteInfo(
             serializer<T>().descriptor.serialName,
             routeInfo
         )
     }
 
     @PublishedApi
-    internal fun registerNavigationRoute(
+    internal fun registerNavigationRouteInfo(
         serialName: String,
-        routeInfo: RouteInfo,
+        routeInfo: RouteInfo<*>,
     ) {
         navigationRoutesInternal[serialName] = routeInfo
         if (routeInfo is TopLevelRouteInfo) {
@@ -85,8 +86,8 @@ class SketchesAppState(
         }
     }
 
-    private val navigationRoutesInternal: MutableMap<String, RouteInfo> = LinkedHashMap()
+    private val navigationRoutesInternal: MutableMap<String, RouteInfo<*>> = LinkedHashMap()
 
-    private val topLevelNavigationRoutesInternal: MutableMap<String, TopLevelRouteInfo> =
+    private val topLevelNavigationRoutesInternal: MutableMap<String, TopLevelRouteInfo<*>> =
         LinkedHashMap()
 }

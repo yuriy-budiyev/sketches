@@ -51,9 +51,9 @@ package com.github.yuriybudiyev.sketches.core.navigation
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 
-interface TopLevelRouteInfo: RouteInfo {
+interface TopLevelRouteInfo<T: Any>: RouteInfo<T> {
 
-    val route: Any
+    val route: T
 
     @get:StringRes
     val titleRes: Int

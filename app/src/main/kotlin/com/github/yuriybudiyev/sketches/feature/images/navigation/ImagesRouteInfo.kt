@@ -30,9 +30,9 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.TopLevelRouteInfo
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 
-object ImagesRouteInfo: TopLevelRouteInfo {
+object ImagesRouteInfo: TopLevelRouteInfo<ImagesRoute> {
 
-    override val route: Any = ImagesRoute
+    override val route: ImagesRoute = ImagesRoute
 
     @get:StringRes
     override val titleRes: Int = R.string.images

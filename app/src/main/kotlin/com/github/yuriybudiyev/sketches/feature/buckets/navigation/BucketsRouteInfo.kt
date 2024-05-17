@@ -30,9 +30,9 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.TopLevelRouteInfo
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 
-data object BucketsRouteInfo: TopLevelRouteInfo {
+data object BucketsRouteInfo: TopLevelRouteInfo<BucketsRoute> {
 
-    override val route: Any = BucketsRoute
+    override val route: BucketsRoute = BucketsRoute
 
     @get:StringRes
     override val titleRes: Int = R.string.buckets

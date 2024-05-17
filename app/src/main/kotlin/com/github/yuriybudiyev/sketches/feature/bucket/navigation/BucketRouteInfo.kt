@@ -26,4 +26,4 @@ package com.github.yuriybudiyev.sketches.feature.bucket.navigation
 
 import com.github.yuriybudiyev.sketches.core.navigation.RouteInfo
 
-data object BucketRouteInfo: RouteInfo
+data object BucketRouteInfo: RouteInfo<BucketRoute>
