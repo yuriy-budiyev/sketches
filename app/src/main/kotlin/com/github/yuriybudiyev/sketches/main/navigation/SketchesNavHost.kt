@@ -32,7 +32,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -56,10 +55,12 @@ fun SketchesNavHost(
     modifier: Modifier = Modifier,
     onRequestUserSelectedMedia: (() -> Unit)? = null,
 ) {
+    val navControllerUpdated by rememberUpdatedState(navController)
+    val coroutineScopeUpdated by rememberUpdatedState(coroutineScope)
     val onRequestUserSelectedMediaUpdated by rememberUpdatedState(onRequestUserSelectedMedia)
     NavHost(
         modifier = modifier,
-        navController = navController,
+        navController = navControllerUpdated,
         startDestination = ImagesRoute
     ) {
         composable<ImagesRoute>(
@@ -68,8 +69,8 @@ fun SketchesNavHost(
         ) {
             ImagesRoute(
                 onImageClick = { index, image ->
-                    coroutineScope.launch {
-                        navController.navigate(
+                    coroutineScopeUpdated.launch {
+                        navControllerUpdated.navigate(
                             ImageRoute(
                                 imageIndex = index,
                                 imageId = image.id,
@@ -87,8 +88,8 @@ fun SketchesNavHost(
         ) {
             BucketsRoute(
                 onBucketClick = { _, bucket ->
-                    coroutineScope.launch {
-                        navController.navigate(
+                    coroutineScopeUpdated.launch {
+                        navControllerUpdated.navigate(
                             BucketRoute(
                                 bucketId = bucket.id,
                                 bucketName = bucket.name
@@ -107,8 +108,8 @@ fun SketchesNavHost(
                 id = route.bucketId,
                 name = route.bucketName,
                 onImageClick = { index, image ->
-                    coroutineScope.launch {
-                        navController.navigate(
+                    coroutineScopeUpdated.launch {
+                        navControllerUpdated.navigate(
                             ImageRoute(
                                 imageIndex = index,
                                 imageId = image.id,
@@ -124,15 +125,14 @@ fun SketchesNavHost(
             exitTransition = { fadeOut() },
         ) { backStackEntry ->
             val route = backStackEntry.toRoute<ImageRoute>()
-            val context = LocalContext.current
-            val shareTitle = stringResource(id = R.string.share_image)
+            val contextUpdated by rememberUpdatedState(LocalContext.current)
             ImageRoute(
                 fileIndex = route.imageIndex,
                 fileId = route.imageId,
                 bucketId = route.bucketId,
                 onShare = { _, file ->
-                    coroutineScope.launch {
-                        context.startActivity(
+                    coroutineScopeUpdated.launch {
+                        contextUpdated.startActivity(
                             Intent
                                 .createChooser(
                                     Intent(Intent.ACTION_SEND)
@@ -141,7 +141,7 @@ fun SketchesNavHost(
                                             file.uri
                                         )
                                         .setType(file.mimeType),
-                                    shareTitle
+                                    contextUpdated.getString(R.string.share_image)
                                 )
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         )
