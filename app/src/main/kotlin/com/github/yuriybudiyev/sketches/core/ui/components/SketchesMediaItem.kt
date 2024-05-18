@@ -32,6 +32,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
@@ -99,20 +101,20 @@ private fun SketchesVideoMediaItem(
             enableLoadingIndicator = true,
             enableErrorIndicator = true,
         )
-        val colorScheme = MaterialTheme.colorScheme
+        val colorSchemeUpdated by rememberUpdatedState(MaterialTheme.colorScheme)
         Box(
             modifier = Modifier
                 .align(alignment = Alignment.BottomEnd)
                 .padding(all = iconPadding)
                 .background(
-                    color = colorScheme.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                    color = colorSchemeUpdated.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
                     shape = CircleShape
                 ),
         ) {
             Icon(
                 imageVector = SketchesIcons.Video,
                 contentDescription = stringResource(id = R.string.video),
-                tint = colorScheme.onBackground,
+                tint = colorSchemeUpdated.onBackground,
             )
         }
     }

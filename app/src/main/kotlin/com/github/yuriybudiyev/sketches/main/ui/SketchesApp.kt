@@ -84,17 +84,14 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesRoute
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.serializer
 
 @Composable
-fun SketchesApp(
-    navController: NavHostController = rememberNavController(),
-    coroutineScope: CoroutineScope = rememberCoroutineScope(),
-) {
+fun SketchesApp() {
+    val coroutineScope = rememberCoroutineScope()
     val appContextUpdated by rememberUpdatedState(LocalContext.current.applicationContext)
     var mediaAccess by remember { mutableStateOf(appContextUpdated.checkMediaAccess()) }
     val mediaAccessLauncher = rememberMediaAccessRequestLauncher { result ->
@@ -103,14 +100,15 @@ fun SketchesApp(
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         mediaAccess = appContextUpdated.checkMediaAccess()
     }
-    val colorScheme = MaterialTheme.colorScheme
+    val colorSchemeUpdated by rememberUpdatedState(MaterialTheme.colorScheme)
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = colorScheme.background,
-        contentColor = colorScheme.onBackground
+        color = colorSchemeUpdated.background,
+        contentColor = colorSchemeUpdated.onBackground
     ) {
         when (mediaAccess) {
             MediaAccess.Full, MediaAccess.UserSelected -> {
+                val navController = rememberNavController()
                 val topLevelNavigationRoutes = rememberTopLevelNavigationRoutes()
                 val currentTopLevelRoute by navController.currentTopLevelNavigationRoute(topLevelNavigationRoutes)
                 Box(modifier = Modifier.fillMaxSize()) {
@@ -131,7 +129,7 @@ fun SketchesApp(
                             if (currentTopLevelRoute != null) {
                                 window.navigationBarColor = Color.Transparent.toArgb()
                             } else {
-                                window.navigationBarColor = colorScheme.background
+                                window.navigationBarColor = colorSchemeUpdated.background
                                     .copy(alpha = SketchesColors.UiAlphaLowTransparency)
                                     .toArgb()
                             }
@@ -142,8 +140,8 @@ fun SketchesApp(
                             .asPaddingValues()
                             .calculateBottomPadding()
                         NavigationBar(
-                            containerColor = colorScheme.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                            contentColor = colorScheme.onBackground,
+                            containerColor = colorSchemeUpdated.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                            contentColor = colorSchemeUpdated.onBackground,
                             modifier = Modifier
                                 .height(SketchesDimens.BottomBarHeight + bottomSystemBarHeight)
                                 .align(Alignment.BottomStart)
@@ -154,9 +152,9 @@ fun SketchesApp(
                                 NavigationBarItem(
                                     selected = selected,
                                     colors = NavigationBarItemDefaults.colors(
-                                        selectedIconColor = colorScheme.onPrimary,
-                                        unselectedIconColor = colorScheme.onBackground,
-                                        indicatorColor = colorScheme.primary
+                                        selectedIconColor = colorSchemeUpdated.onPrimary,
+                                        unselectedIconColor = colorSchemeUpdated.onBackground,
+                                        indicatorColor = colorSchemeUpdated.primary
                                     ),
                                     onClick = {
                                         coroutineScope.launch {
