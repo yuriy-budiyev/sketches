@@ -30,7 +30,6 @@ import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -192,7 +191,6 @@ fun ImageScreen(
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun ImageScreenLayout(
     index: Int,
     files: List<MediaStoreFile>,
@@ -343,7 +341,6 @@ private fun TopBar(
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun MediaPager(
     state: PagerState,
     items: List<MediaStoreFile>,
@@ -369,7 +366,6 @@ private fun MediaPager(
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun MediaPage(
     state: PagerState,
     number: Int,
@@ -414,7 +410,6 @@ private fun ImagePage(
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun VideoPage(
     state: PagerState,
     number: Int,
@@ -475,7 +470,6 @@ private fun VideoPage(
 }
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 private fun MediaBar(
     state: LazyListState,
     items: List<MediaStoreFile>,
