@@ -68,8 +68,12 @@ fun SketchesMediaPlayer(
     Box(modifier = modifier) {
         SketchesMediaDisplay(
             state = state,
-            modifier = Modifier.matchParentSize(),
-            backgroundColor = backgroundColor,
+            modifier = Modifier
+                .matchParentSize()
+                .background(
+                    color = backgroundColor,
+                    shape = RectangleShape
+                ),
             enableImagePlaceholder = enableImagePlaceholder,
             enableErrorIndicator = enableErrorIndicator
         )
@@ -93,60 +97,46 @@ fun SketchesMediaPlayer(
 fun SketchesMediaDisplay(
     state: SketchesMediaState,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colorScheme.background,
     enableImagePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
     Box(modifier = modifier) {
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .background(
-                    color = backgroundColor,
-                    shape = RectangleShape
-                )
-        )
-        val displayAspectRatio = state.displayAspectRatio
-        AndroidView(
-            modifier = Modifier
-                .aspectRatio(
-                    ratio = displayAspectRatio,
-                    matchHeightConstraintsFirst = displayAspectRatio < 1f
-                )
-                .align(Alignment.Center),
-            factory = { context -> TextureView(context) },
-            update = { view -> state.setVideoView(view) },
-            onReset = { view -> state.clearVideoView(view) },
-            onRelease = { view -> state.clearVideoView(view) },
-        )
-        if (!state.isVideoVisible) {
-            Box(
-                contentAlignment = Alignment.Center,
+        if (state.isVideoVisible) {
+            val displayAspectRatio = state.displayAspectRatio
+            AndroidView(
                 modifier = Modifier
-                    .matchParentSize()
-                    .background(
-                        color = backgroundColor,
-                        shape = RectangleShape
+                    .aspectRatio(
+                        ratio = displayAspectRatio,
+                        matchHeightConstraintsFirst = displayAspectRatio < 1f
                     )
-            ) {
-                if (state.isPlaybackError) {
-                    if (enableErrorIndicator) {
-                        Icon(
-                            imageVector = SketchesIcons.ImageError,
-                            contentDescription = stringResource(id = R.string.image_error),
-                            modifier = Modifier.size(48.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                } else {
-                    if (enableImagePlaceholder) {
-                        Icon(
-                            imageVector = SketchesIcons.ImageLoading,
-                            contentDescription = stringResource(id = R.string.image),
-                            modifier = Modifier.size(48.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
+                    .align(Alignment.Center),
+                factory = { context -> TextureView(context) },
+                update = { view -> state.setVideoView(view) },
+                onReset = { view -> state.clearVideoView(view) },
+                onRelease = { view -> state.clearVideoView(view) },
+            )
+        } else {
+            if (state.isPlaybackError) {
+                if (enableErrorIndicator) {
+                    Icon(
+                        imageVector = SketchesIcons.ImageError,
+                        contentDescription = stringResource(id = R.string.image_error),
+                        modifier = Modifier
+                            .size(48.dp)
+                            .align(Alignment.Center),
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            } else {
+                if (enableImagePlaceholder) {
+                    Icon(
+                        imageVector = SketchesIcons.ImageLoading,
+                        contentDescription = stringResource(id = R.string.image),
+                        modifier = Modifier
+                            .size(48.dp)
+                            .align(Alignment.Center),
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
                 }
             }
         }
