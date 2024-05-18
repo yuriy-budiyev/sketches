@@ -37,7 +37,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,8 +68,12 @@ fun SketchesMediaPlayer(
     Box(modifier = modifier) {
         SketchesMediaDisplay(
             state = state,
-            modifier = Modifier.matchParentSize(),
-            backgroundColor = backgroundColor,
+            modifier = Modifier
+                .matchParentSize()
+                .background(
+                    color = backgroundColor,
+                    shape = RectangleShape
+                ),
             enableImagePlaceholder = enableImagePlaceholder,
             enableErrorIndicator = enableErrorIndicator
         )
@@ -94,25 +97,12 @@ fun SketchesMediaPlayer(
 fun SketchesMediaDisplay(
     state: SketchesMediaState,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colorScheme.background,
     enableImagePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
     Box(modifier = modifier) {
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .background(
-                    color = backgroundColor,
-                    shape = RectangleShape
-                )
-        )
-        val displayAspectRatio = state.displayAspectRatio
-        val videoVisible = state.isVideoVisible
-        key(
-            displayAspectRatio,
-            videoVisible
-        ) {
+        if (state.isVideoVisible) {
+            val displayAspectRatio = state.displayAspectRatio
             AndroidView(
                 modifier = Modifier
                     .aspectRatio(
@@ -125,35 +115,28 @@ fun SketchesMediaDisplay(
                 onReset = { view -> state.clearVideoView(view) },
                 onRelease = { view -> state.clearVideoView(view) },
             )
-            if (!videoVisible) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .matchParentSize()
-                        .background(
-                            color = backgroundColor,
-                            shape = RectangleShape
-                        )
-                ) {
-                    if (state.isPlaybackError) {
-                        if (enableErrorIndicator) {
-                            Icon(
-                                imageVector = SketchesIcons.ImageError,
-                                contentDescription = stringResource(id = R.string.image_error),
-                                modifier = Modifier.size(48.dp),
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-                    } else {
-                        if (enableImagePlaceholder) {
-                            Icon(
-                                imageVector = SketchesIcons.ImageLoading,
-                                contentDescription = stringResource(id = R.string.image),
-                                modifier = Modifier.size(48.dp),
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-                    }
+        } else {
+            if (state.isPlaybackError) {
+                if (enableErrorIndicator) {
+                    Icon(
+                        imageVector = SketchesIcons.ImageError,
+                        contentDescription = stringResource(id = R.string.image_error),
+                        modifier = Modifier
+                            .size(48.dp)
+                            .align(Alignment.Center),
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            } else {
+                if (enableImagePlaceholder) {
+                    Icon(
+                        imageVector = SketchesIcons.ImageLoading,
+                        contentDescription = stringResource(id = R.string.image),
+                        modifier = Modifier
+                            .size(48.dp)
+                            .align(Alignment.Center),
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
                 }
             }
         }
