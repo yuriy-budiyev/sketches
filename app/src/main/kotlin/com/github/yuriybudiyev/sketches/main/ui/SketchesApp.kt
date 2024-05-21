@@ -73,6 +73,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.collections.LinkedHashMap
 import com.github.yuriybudiyev.sketches.core.common.permissions.media.MediaAccess
 import com.github.yuriybudiyev.sketches.core.common.permissions.media.checkMediaAccess
 import com.github.yuriybudiyev.sketches.core.common.permissions.media.rememberMediaAccessRequestLauncher
@@ -229,7 +230,7 @@ fun SketchesApp() {
 @Composable
 private fun rememberTopLevelNavigationRoutes(): Map<String, TopLevelNavigationRoute> =
     remember {
-        LinkedHashMap<String, TopLevelNavigationRoute>(4).also { routes ->
+        LinkedHashMap<String, TopLevelNavigationRoute>(2).also { routes ->
             routes[serialName<ImagesRoute>()] = ImagesRoute
             routes[serialName<BucketsRoute>()] = BucketsRoute
         }

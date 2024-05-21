@@ -238,7 +238,7 @@ private class SketchesMediaStateImpl(
     private fun isVolumeEnabledInternal(): Boolean =
         player.callWithCheck(
             Player.COMMAND_GET_VOLUME,
-            available = { volume > 0f },
+            available = { volume > 0.0F },
             unavailable = { false },
         )
 
@@ -251,13 +251,13 @@ private class SketchesMediaStateImpl(
 
     override fun enableVolume() {
         player.callWithCheck(Player.COMMAND_SET_VOLUME) {
-            volume = 1f
+            volume = 1.0F
         }
     }
 
     override fun disableVolume() {
         player.callWithCheck(Player.COMMAND_SET_VOLUME) {
-            volume = 0f
+            volume = 0.0F
         }
     }
 
@@ -302,10 +302,10 @@ private class SketchesMediaStateImpl(
     private fun displayAspectRatioInternal(videoSize: VideoSize = player.videoSize): Float {
         val width = videoSize.width.toFloat()
         val height = videoSize.height.toFloat()
-        return if (width > 0f && height > 0f) {
+        return if (width > 0.0F && height > 0.0F) {
             width * videoSize.pixelWidthHeightRatio / height
         } else {
-            1f
+            1.0F
         }
     }
 

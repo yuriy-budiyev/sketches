@@ -64,7 +64,7 @@ fun SketchesMediaVerticalGrid(
                 type = file.mediaType,
                 videoIconPadding = SketchesDimens.LazyGridVideoIconPadding,
                 modifier = Modifier
-                    .aspectRatio(ratio = 1f)
+                    .aspectRatio(ratio = 1.0F)
                     .clip(shape = smallMaterialShape)
                     .border(
                         width = SketchesDimens.MediaItemBorderThickness,

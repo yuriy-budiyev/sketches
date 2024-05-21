@@ -172,7 +172,7 @@ private fun BucketsScreenLayout(
                     contentDescription = stringResource(id = R.string.bucket_cover),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(ratio = 1f)
+                        .aspectRatio(ratio = 1.0F)
                         .clip(shape = smallMaterialShape)
                         .border(
                             width = SketchesDimens.MediaItemBorderThickness,

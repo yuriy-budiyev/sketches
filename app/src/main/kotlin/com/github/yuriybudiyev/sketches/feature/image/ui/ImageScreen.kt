@@ -252,7 +252,7 @@ private fun ImageScreenLayout(
                 coroutineScope = coroutineScope,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
+                    .weight(1.0F),
             )
             MediaBar(
                 state = barState,

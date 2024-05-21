@@ -113,7 +113,7 @@ fun SketchesMediaDisplay(
             modifier = Modifier
                 .aspectRatio(
                     ratio = displayAspectRatio,
-                    matchHeightConstraintsFirst = displayAspectRatio < 1f
+                    matchHeightConstraintsFirst = displayAspectRatio < 1.0F
                 )
                 .align(Alignment.Center),
             factory = { context -> TextureView(context) },
@@ -205,7 +205,7 @@ fun SketchesMediaController(
             value = if (position != SketchesMediaState.UnknownTime && duration != SketchesMediaState.UnknownTime) {
                 (position.toDouble() / duration.toDouble()).toFloat()
             } else {
-                0f
+                0.0F
             },
             onValueChange = { value ->
                 if (duration != SketchesMediaState.UnknownTime) {
@@ -215,7 +215,7 @@ fun SketchesMediaController(
                     }
                 }
             },
-            modifier = Modifier.weight(weight = 1f),
+            modifier = Modifier.weight(weight = 1.0F),
             thumbColor = color,
             trackColor = color.copy(alpha = SketchesColors.UiAlphaLowTransparency)
         )

@@ -22,31 +22,22 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.colors
+package com.github.yuriybudiyev.sketches.core.collections
 
-import androidx.compose.ui.graphics.Color
+fun <K, V> LinkedHashMap(
+    expectedSize: Int,
+    accessOrder: Boolean = false,
+): LinkedHashMap<K, V> =
+    LinkedHashMap(
+        when {
+            expectedSize < 0 -> throw IllegalArgumentException("Expected size can't be less than zero")
+            expectedSize < 3 -> expectedSize + 1
+            expectedSize < INT_MAX_POWER_OF_TWO -> ((expectedSize / LOAD_FACTOR) + 1.0F).toInt()
+            else -> Int.MAX_VALUE
+        },
+        LOAD_FACTOR,
+        accessOrder
+    )
 
-object SketchesColors {
-
-    val Primary = Color(0xFF6B69D6)
-    val OnPrimary = Color(0xFFFFFFFF)
-
-    object Light {
-
-        val Secondary = Color(0xFF7F7DDB)
-        val Tertiary = Color(0xFF9391E1)
-        val Background = Color(0xFFEFEFEF)
-        val OnBackground = Color(0xFF000000)
-    }
-
-    object Dark {
-
-        val Secondary = Color(0xFF5755D1)
-        val Tertiary = Color(0xFF4341CB)
-        val Background = Color(0xFF0F0F0F)
-        val OnBackground = Color(0xFFFFFFFF)
-    }
-
-    const val UiAlphaLowTransparency = 0.75F
-    const val UiAlphaHighTransparency = 0.25F
-}
+private const val LOAD_FACTOR: Float = 0.75F
+private const val INT_MAX_POWER_OF_TWO: Int = 1 shl (Int.SIZE_BITS - 2)
