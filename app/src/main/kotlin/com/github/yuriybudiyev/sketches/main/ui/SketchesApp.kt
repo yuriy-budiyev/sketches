@@ -230,7 +230,7 @@ fun SketchesApp() {
 @Composable
 private fun rememberTopLevelNavigationRoutes(): Map<String, TopLevelNavigationRoute> =
     remember {
-        LinkedHashMap<String, TopLevelNavigationRoute>(2).also { routes ->
+        LinkedHashMap<String, TopLevelNavigationRoute>(expectedSize = 2).also { routes ->
             routes[serialName<ImagesRoute>()] = ImagesRoute
             routes[serialName<BucketsRoute>()] = BucketsRoute
         }
