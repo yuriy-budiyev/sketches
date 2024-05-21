@@ -70,6 +70,7 @@ fun SketchesMediaPlayer(
             state = state,
             modifier = Modifier.matchParentSize(),
             backgroundColor = backgroundColor,
+            indicatorColor = controlsColor,
             enableImagePlaceholder = enableImagePlaceholder,
             enableErrorIndicator = enableErrorIndicator
         )
@@ -94,6 +95,7 @@ fun SketchesMediaDisplay(
     state: SketchesMediaState,
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
+    indicatorColor: Color = MaterialTheme.colorScheme.onBackground,
     enableImagePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
@@ -136,7 +138,7 @@ fun SketchesMediaDisplay(
                         modifier = Modifier
                             .size(48.dp)
                             .align(Alignment.Center),
-                        tint = MaterialTheme.colorScheme.onBackground
+                        tint = indicatorColor
                     )
                 }
             } else {
@@ -147,7 +149,7 @@ fun SketchesMediaDisplay(
                         modifier = Modifier
                             .size(48.dp)
                             .align(Alignment.Center),
-                        tint = MaterialTheme.colorScheme.onBackground
+                        tint = indicatorColor
                     )
                 }
             }
