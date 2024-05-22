@@ -33,13 +33,13 @@ fun log(
 ) {
     if (throwable != null) {
         Log.d(
-            LogTag,
+            LOG_TAG,
             message.toString(),
             throwable
         )
     } else {
         Log.d(
-            LogTag,
+            LOG_TAG,
             message.toString()
         )
     }
@@ -49,10 +49,10 @@ fun log(
 fun logStackTrace(message: Any? = "Stack trace") {
     val exception = Exception("Stack trace")
     Log.d(
-        LogTag,
+        LOG_TAG,
         message.toString(),
         exception
     )
 }
 
-private const val LogTag = "SketchesDebug"
+private const val LOG_TAG: String = "SketchesDebug"
