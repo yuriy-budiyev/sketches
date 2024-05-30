@@ -2,7 +2,7 @@
 agp = "8.4.1"
 java = "1.8"
 kotlin = "2.0.0"
-kotlin-coroutines = "1.8.1"
+kotlin-coroutines = "1.9.0-RC"
 kotlin-serialization = "1.6.3"
 kotlin-ksp = "2.0.0-1.0.21"
 androidx-annotation = "1.8.0"
