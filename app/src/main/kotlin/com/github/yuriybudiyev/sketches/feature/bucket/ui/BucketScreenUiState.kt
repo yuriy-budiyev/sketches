@@ -37,5 +37,5 @@ sealed interface BucketScreenUiState {
         val files: List<MediaStoreFile>,
     ): BucketScreenUiState
 
-    data class Error(val thrown: Exception): BucketScreenUiState
+    data class Error(val thrown: Throwable): BucketScreenUiState
 }

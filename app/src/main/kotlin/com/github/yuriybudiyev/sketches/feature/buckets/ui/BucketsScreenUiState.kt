@@ -34,5 +34,5 @@ sealed interface BucketsScreenUiState {
 
     data class Buckets(val buckets: List<MediaStoreBucket>): BucketsScreenUiState
 
-    data class Error(val thrown: Exception): BucketsScreenUiState
+    data class Error(val thrown: Throwable): BucketsScreenUiState
 }

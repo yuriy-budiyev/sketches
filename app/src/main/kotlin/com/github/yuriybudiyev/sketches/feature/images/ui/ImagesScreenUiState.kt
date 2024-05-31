@@ -34,5 +34,5 @@ sealed interface ImagesScreenUiState {
 
     data class Images(val files: List<MediaStoreFile>): ImagesScreenUiState
 
-    data class Error(val thrown: Exception): ImagesScreenUiState
+    data class Error(val thrown: Throwable): ImagesScreenUiState
 }
