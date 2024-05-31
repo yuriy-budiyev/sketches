@@ -51,7 +51,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -111,7 +110,8 @@ fun SketchesApp() {
             MediaAccess.Full, MediaAccess.UserSelected -> {
                 val navController = rememberNavController()
                 val topLevelNavigationRoutes = rememberTopLevelNavigationRoutes()
-                val currentTopLevelRoute by navController.currentTopLevelNavigationRoute(topLevelNavigationRoutes)
+                val currentTopLevelRoute =
+                    navController.currentTopLevelNavigationRoute(topLevelNavigationRoutes)
                 Box(modifier = Modifier.fillMaxSize()) {
                     SketchesNavHost(
                         navController = navController,
@@ -239,14 +239,14 @@ private fun rememberTopLevelNavigationRoutes(): Map<String, TopLevelNavigationRo
 @Composable
 private fun NavHostController.currentTopLevelNavigationRoute(
     routes: Map<String, TopLevelNavigationRoute>,
-): State<TopLevelNavigationRoute?> =
+): TopLevelNavigationRoute? =
     currentBackStackEntryFlow
         .map { backStackEntry ->
             backStackEntry.destination.route?.let { route ->
                 routes[route.substringBefore('/')]
             }
         }
-        .collectAsStateWithLifecycle(null)
+        .collectAsStateWithLifecycle(null).value
 
 @OptIn(ExperimentalSerializationApi::class)
 private inline fun <reified T: Any> serialName(): String =
