@@ -46,7 +46,7 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
     ): List<MediaStoreFile> {
         val contentUri = contentUriFor(mediaType)
         val cursor = withContext(Dispatchers.IO) {
-            context.contentResolver.query(
+            return@withContext context.contentResolver.query(
                 contentUri,
                 arrayOf(
                     MediaStore.MediaColumns._ID,
@@ -125,7 +125,7 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
     ) {
         val contentUri = contentUriFor(mediaType)
         val cursor = withContext(Dispatchers.IO) {
-            context.contentResolver.query(
+            return@withContext context.contentResolver.query(
                 contentUri,
                 arrayOf(
                     MediaStore.MediaColumns._ID,
