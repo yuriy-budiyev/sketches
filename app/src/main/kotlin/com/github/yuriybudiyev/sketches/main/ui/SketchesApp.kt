@@ -54,7 +54,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -67,31 +66,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.collections.linkedHashMapWithExpectedSize
 import com.github.yuriybudiyev.sketches.core.common.permissions.media.MediaAccess
 import com.github.yuriybudiyev.sketches.core.common.permissions.media.checkMediaAccess
 import com.github.yuriybudiyev.sketches.core.common.permissions.media.rememberMediaAccessRequestLauncher
-import com.github.yuriybudiyev.sketches.core.navigation.TopLevelNavigationRoute
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesOutlinedButton
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
-import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
-import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesRoute
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavHost
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.serializer
 
 @Composable
-fun SketchesApp() {
-    val coroutineScope = rememberCoroutineScope()
+fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
     val appContextUpdated by rememberUpdatedState(LocalContext.current.applicationContext)
     var mediaAccess by remember { mutableStateOf(appContextUpdated.checkMediaAccess()) }
     val mediaAccessLauncher = rememberMediaAccessRequestLauncher { result ->
@@ -108,14 +94,11 @@ fun SketchesApp() {
     ) {
         when (mediaAccess) {
             MediaAccess.Full, MediaAccess.UserSelected -> {
-                val navController = rememberNavController()
-                val topLevelNavigationRoutes = rememberTopLevelNavigationRoutes()
-                val currentTopLevelRoute =
-                    navController.currentTopLevelNavigationRoute(topLevelNavigationRoutes)
+                val topLevelNavigationRoutes = appState.topLevelNavigationRoutes
+                val currentTopLevelRoute = appState.currentTopLevelNavigationRoute
                 Box(modifier = Modifier.fillMaxSize()) {
                     SketchesNavHost(
-                        navController = navController,
-                        coroutineScope = coroutineScope,
+                        appState = appState,
                         modifier = Modifier.matchParentSize(),
                         onRequestUserSelectedMedia = if (mediaAccess == MediaAccess.UserSelected) {
                             { mediaAccessLauncher.requestMediaAccess() }
@@ -148,7 +131,7 @@ fun SketchesApp() {
                                 .align(Alignment.BottomStart)
                                 .fillMaxWidth()
                         ) {
-                            topLevelNavigationRoutes.forEach { (_, route) ->
+                            topLevelNavigationRoutes.forEach { route ->
                                 val selected = route == currentTopLevelRoute
                                 NavigationBarItem(
                                     selected = selected,
@@ -158,15 +141,7 @@ fun SketchesApp() {
                                         indicatorColor = colorSchemeUpdated.primary
                                     ),
                                     onClick = {
-                                        coroutineScope.launch {
-                                            navController.navigate(route) {
-                                                popUpTo(navController.graph.findStartDestination().id) {
-                                                    saveState = true
-                                                }
-                                                launchSingleTop = true
-                                                restoreState = true
-                                            }
-                                        }
+                                        appState.navigateToTopLevelNavigationRoute(route)
                                     },
                                     icon = {
                                         Icon(
@@ -206,48 +181,19 @@ fun SketchesApp() {
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     SketchesOutlinedButton(text = stringResource(id = R.string.open_settings)) {
-                        coroutineScope.launch {
-                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            intent.data = Uri.fromParts(
-                                "package",
-                                appContextUpdated.packageName,
-                                null
-                            )
-                            settingsLauncher.launch(intent)
-                        }
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        intent.data = Uri.fromParts(
+                            "package",
+                            appContextUpdated.packageName,
+                            null
+                        )
+                        settingsLauncher.launch(intent)
                     }
                 }
                 LaunchedEffect(Unit) {
-                    coroutineScope.launch {
-                        mediaAccessLauncher.requestMediaAccess()
-                    }
+                    mediaAccessLauncher.requestMediaAccess()
                 }
             }
         }
     }
 }
-
-@Composable
-private fun rememberTopLevelNavigationRoutes(): Map<String, TopLevelNavigationRoute> =
-    remember {
-        linkedHashMapWithExpectedSize<String, TopLevelNavigationRoute>(2).also { routes ->
-            routes[serialName<ImagesRoute>()] = ImagesRoute
-            routes[serialName<BucketsRoute>()] = BucketsRoute
-        }
-    }
-
-@Composable
-private fun NavHostController.currentTopLevelNavigationRoute(
-    routes: Map<String, TopLevelNavigationRoute>,
-): TopLevelNavigationRoute? =
-    currentBackStackEntryFlow
-        .map { backStackEntry ->
-            backStackEntry.destination.route?.let { route ->
-                routes[route.substringBefore('/')]
-            }
-        }
-        .collectAsStateWithLifecycle(null).value
-
-@OptIn(ExperimentalSerializationApi::class)
-private inline fun <reified T: Any> serialName(): String =
-    serializer<T>().descriptor.serialName

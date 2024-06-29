@@ -25,129 +25,70 @@
 package com.github.yuriybudiyev.sketches.main.navigation
 
 import android.content.Intent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketRoute
-import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
-import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
-import com.github.yuriybudiyev.sketches.feature.buckets.ui.BucketsRoute
-import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageRoute
-import com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute
+import com.github.yuriybudiyev.sketches.feature.bucket.navigation.bucketScreen
+import com.github.yuriybudiyev.sketches.feature.bucket.navigation.navigateToBucket
+import com.github.yuriybudiyev.sketches.feature.buckets.navigation.bucketsScreen
+import com.github.yuriybudiyev.sketches.feature.image.navigation.imageScreen
+import com.github.yuriybudiyev.sketches.feature.image.navigation.navigateToImage
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesRoute
-import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import com.github.yuriybudiyev.sketches.feature.images.navigation.imagesScreen
+import com.github.yuriybudiyev.sketches.main.ui.SketchesAppState
 
 @Composable
 fun SketchesNavHost(
-    navController: NavHostController,
-    coroutineScope: CoroutineScope,
+    appState: SketchesAppState,
     modifier: Modifier = Modifier,
     onRequestUserSelectedMedia: (() -> Unit)? = null,
 ) {
-    val navControllerUpdated by rememberUpdatedState(navController)
-    val coroutineScopeUpdated by rememberUpdatedState(coroutineScope)
-    val onRequestUserSelectedMediaUpdated by rememberUpdatedState(onRequestUserSelectedMedia)
+    val navController = appState.navController
+    val context = LocalContext.current
     NavHost(
         modifier = modifier,
-        navController = navControllerUpdated,
+        navController = navController,
         startDestination = ImagesRoute
     ) {
-        composable<ImagesRoute>(
-            enterTransition = { fadeIn() },
-            exitTransition = { fadeOut() },
-        ) {
-            ImagesRoute(
-                onImageClick = { index, image ->
-                    coroutineScopeUpdated.launch {
-                        navControllerUpdated.navigate(
-                            ImageRoute(
-                                imageIndex = index,
-                                imageId = image.id,
-                                bucketId = Long.MIN_VALUE
+        imagesScreen(
+            onImageClick = { index, image ->
+                navController.navigateToImage(
+                    index,
+                    image.id,
+                    Long.MIN_VALUE
+                )
+            },
+            onRequestUserSelectedMedia = onRequestUserSelectedMedia,
+        )
+        bucketsScreen(onBucketClick = { _, bucket ->
+            navController.navigateToBucket(
+                bucket.id,
+                bucket.name
+            )
+        })
+        imageScreen(onShare = { _, file ->
+            context.startActivity(
+                Intent
+                    .createChooser(
+                        Intent(Intent.ACTION_SEND)
+                            .putExtra(
+                                Intent.EXTRA_STREAM,
+                                file.uri
                             )
-                        )
-                    }
-                },
-                onRequestUserSelectedMedia = onRequestUserSelectedMediaUpdated,
+                            .setType(file.mimeType),
+                        context.getString(R.string.share_image)
+                    )
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
-        }
-        composable<BucketsRoute>(
-            enterTransition = { fadeIn() },
-            exitTransition = { fadeOut() },
-        ) {
-            BucketsRoute(
-                onBucketClick = { _, bucket ->
-                    coroutineScopeUpdated.launch {
-                        navControllerUpdated.navigate(
-                            BucketRoute(
-                                bucketId = bucket.id,
-                                bucketName = bucket.name
-                            )
-                        )
-                    }
-                },
+        })
+        bucketScreen(onImageClick = { index, image ->
+            navController.navigateToImage(
+                index,
+                image.id,
+                image.bucketId
             )
-        }
-        composable<BucketRoute>(
-            enterTransition = { fadeIn() },
-            exitTransition = { fadeOut() },
-        ) { backStackEntry ->
-            val route = backStackEntry.toRoute<BucketRoute>()
-            BucketRoute(
-                id = route.bucketId,
-                name = route.bucketName,
-                onImageClick = { index, image ->
-                    coroutineScopeUpdated.launch {
-                        navControllerUpdated.navigate(
-                            ImageRoute(
-                                imageIndex = index,
-                                imageId = image.id,
-                                bucketId = image.bucketId
-                            )
-                        )
-                    }
-                },
-            )
-        }
-        composable<ImageRoute>(
-            enterTransition = { fadeIn() },
-            exitTransition = { fadeOut() },
-        ) { backStackEntry ->
-            val route = backStackEntry.toRoute<ImageRoute>()
-            val contextUpdated by rememberUpdatedState(LocalContext.current)
-            ImageRoute(
-                fileIndex = route.imageIndex,
-                fileId = route.imageId,
-                bucketId = route.bucketId,
-                onShare = { _, file ->
-                    coroutineScopeUpdated.launch {
-                        contextUpdated.startActivity(
-                            Intent
-                                .createChooser(
-                                    Intent(Intent.ACTION_SEND)
-                                        .putExtra(
-                                            Intent.EXTRA_STREAM,
-                                            file.uri
-                                        )
-                                        .setType(file.mimeType),
-                                    contextUpdated.getString(R.string.share_image)
-                                )
-                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        )
-                    }
-                },
-            )
-        }
+        })
     }
 }
