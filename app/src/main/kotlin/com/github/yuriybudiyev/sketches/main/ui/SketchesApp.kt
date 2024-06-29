@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.main.ui
 
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -50,7 +49,6 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,10 +56,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -106,19 +101,6 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                             null
                         }
                     )
-                    val view = LocalView.current
-                    if (!view.isInEditMode) {
-                        SideEffect {
-                            val window = (view.context as Activity).window
-                            if (currentTopLevelRoute != null) {
-                                window.navigationBarColor = Color.Transparent.toArgb()
-                            } else {
-                                window.navigationBarColor = colorSchemeUpdated.background
-                                    .copy(alpha = SketchesColors.UiAlphaLowTransparency)
-                                    .toArgb()
-                            }
-                        }
-                    }
                     if (currentTopLevelRoute != null) {
                         val bottomSystemBarHeight = WindowInsets.systemBars
                             .asPaddingValues()

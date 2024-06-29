@@ -53,15 +53,22 @@ fun SketchesTheme(content: @Composable () -> Unit) {
         SideEffect {
             val window = (view.context as Activity).window
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                window.isStatusBarContrastEnforced = false
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                    @Suppress("DEPRECATION")
+                    window.isStatusBarContrastEnforced = false
+                }
                 window.isNavigationBarContrastEnforced = false
             }
             WindowCompat.setDecorFitsSystemWindows(
                 window,
                 false
             )
-            window.statusBarColor = Color.Transparent.toArgb()
-            window.navigationBarColor = Color.Transparent.toArgb()
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                @Suppress("DEPRECATION")
+                window.statusBarColor = Color.Transparent.toArgb()
+                @Suppress("DEPRECATION")
+                window.navigationBarColor = Color.Transparent.toArgb()
+            }
             val insetsController = WindowCompat.getInsetsController(
                 window,
                 view
