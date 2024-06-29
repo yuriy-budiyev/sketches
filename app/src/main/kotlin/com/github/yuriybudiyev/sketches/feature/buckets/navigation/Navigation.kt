@@ -25,12 +25,36 @@
 package com.github.yuriybudiyev.sketches.feature.buckets.navigation
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptions
+import androidx.navigation.compose.composable
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.navigation.TopLevelNavigationRoute
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
+import com.github.yuriybudiyev.sketches.feature.buckets.ui.BucketsRoute
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+
+fun NavController.navigateToBuckets(navOptions: NavOptions? = null) {
+    navigate(
+        BucketsRoute,
+        navOptions
+    )
+}
+
+fun NavGraphBuilder.bucketsScreen(onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit) {
+    composable<BucketsRoute>(
+        enterTransition = { fadeIn() },
+        exitTransition = { fadeOut() },
+    ) {
+        BucketsRoute(onBucketClick = onBucketClick)
+    }
+}
 
 @Serializable
 data object BucketsRoute: TopLevelNavigationRoute {

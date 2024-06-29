@@ -24,7 +24,47 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.navigation
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptions
+import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute
 import kotlinx.serialization.Serializable
+
+fun NavController.navigateToImage(
+    imageIndex: Int,
+    imageId: Long,
+    bucketId: Long,
+    navOptions: NavOptions? = null,
+) {
+    navigate(
+        ImageRoute(
+            imageIndex,
+            imageId,
+            bucketId
+        ),
+        navOptions
+    )
+}
+
+fun NavGraphBuilder.imageScreen(onShare: (index: Int, file: MediaStoreFile) -> Unit) {
+    composable<ImageRoute>(
+        enterTransition = { fadeIn() },
+        exitTransition = { fadeOut() },
+    ) { backStackEntry ->
+        val route = backStackEntry.toRoute<ImageRoute>()
+        ImageRoute(
+            fileIndex = route.imageIndex,
+            fileId = route.imageId,
+            bucketId = route.bucketId,
+            onShare = onShare,
+        )
+    }
+}
 
 @Serializable
 data class ImageRoute(

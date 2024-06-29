@@ -24,7 +24,44 @@
 
 package com.github.yuriybudiyev.sketches.feature.bucket.navigation
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptions
+import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
 import kotlinx.serialization.Serializable
+
+fun NavController.navigateToBucket(
+    bucketId: Long,
+    bucketName: String,
+    navOptions: NavOptions? = null,
+) {
+    navigate(
+        BucketRoute(
+            bucketId,
+            bucketName
+        ),
+        navOptions
+    )
+}
+
+fun NavGraphBuilder.bucketScreen(onImageClick: (index: Int, file: MediaStoreFile) -> Unit) {
+    composable<BucketRoute>(
+        enterTransition = { fadeIn() },
+        exitTransition = { fadeOut() },
+    ) { backStackEntry ->
+        val route = backStackEntry.toRoute<BucketRoute>()
+        BucketRoute(
+            id = route.bucketId,
+            name = route.bucketName,
+            onImageClick = onImageClick,
+        )
+    }
+}
 
 @Serializable
 data class BucketRoute(
