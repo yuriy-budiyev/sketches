@@ -28,9 +28,7 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
@@ -39,13 +37,6 @@ import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-
-fun NavController.navigateToImages(navOptions: NavOptions? = null) {
-    navigate(
-        ImagesRoute,
-        navOptions
-    )
-}
 
 fun NavGraphBuilder.imagesScreen(
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
