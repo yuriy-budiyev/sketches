@@ -81,11 +81,11 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         mediaAccess = appContextUpdated.checkMediaAccess()
     }
-    val colorSchemeUpdated by rememberUpdatedState(MaterialTheme.colorScheme)
+    val colorScheme = MaterialTheme.colorScheme
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = colorSchemeUpdated.background,
-        contentColor = colorSchemeUpdated.onBackground
+        color = colorScheme.background,
+        contentColor = colorScheme.onBackground
     ) {
         when (mediaAccess) {
             MediaAccess.Full, MediaAccess.UserSelected -> {
@@ -106,8 +106,8 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                             .asPaddingValues()
                             .calculateBottomPadding()
                         NavigationBar(
-                            containerColor = colorSchemeUpdated.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                            contentColor = colorSchemeUpdated.onBackground,
+                            containerColor = colorScheme.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                            contentColor = colorScheme.onBackground,
                             modifier = Modifier
                                 .height(SketchesDimens.BottomBarHeight + bottomSystemBarHeight)
                                 .align(Alignment.BottomStart)
@@ -118,9 +118,9 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                                 NavigationBarItem(
                                     selected = selected,
                                     colors = NavigationBarItemDefaults.colors(
-                                        selectedIconColor = colorSchemeUpdated.onPrimary,
-                                        unselectedIconColor = colorSchemeUpdated.onBackground,
-                                        indicatorColor = colorSchemeUpdated.primary
+                                        selectedIconColor = colorScheme.onPrimary,
+                                        unselectedIconColor = colorScheme.onBackground,
+                                        indicatorColor = colorScheme.primary
                                     ),
                                     onClick = {
                                         appState.navigateToTopLevelNavigationRoute(route)
