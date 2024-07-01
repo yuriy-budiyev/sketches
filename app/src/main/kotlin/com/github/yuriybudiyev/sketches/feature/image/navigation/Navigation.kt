@@ -35,7 +35,7 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute
 import kotlinx.serialization.Serializable
 
-fun NavController.navigateToImage(
+fun NavController.navigateToImageScreen(
     imageIndex: Int,
     imageId: Long,
     bucketId: Long,
@@ -51,7 +51,7 @@ fun NavController.navigateToImage(
     )
 }
 
-fun NavGraphBuilder.imageScreen(onShare: (index: Int, file: MediaStoreFile) -> Unit) {
+fun NavGraphBuilder.registerImageScreen(onShare: (index: Int, file: MediaStoreFile) -> Unit) {
     composable<ImageRoute>(
         enterTransition = { fadeIn() },
         exitTransition = { fadeOut() },

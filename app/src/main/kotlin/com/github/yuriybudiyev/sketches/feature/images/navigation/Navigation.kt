@@ -38,7 +38,7 @@ import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
-fun NavGraphBuilder.imagesScreen(
+fun NavGraphBuilder.registerImagesScreen(
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
     onRequestUserSelectedMedia: (() -> Unit)? = null,
 ) {

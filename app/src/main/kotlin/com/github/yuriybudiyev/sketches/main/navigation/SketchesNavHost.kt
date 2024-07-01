@@ -30,13 +30,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.feature.bucket.navigation.bucketScreen
-import com.github.yuriybudiyev.sketches.feature.bucket.navigation.navigateToBucket
-import com.github.yuriybudiyev.sketches.feature.buckets.navigation.bucketsScreen
-import com.github.yuriybudiyev.sketches.feature.image.navigation.imageScreen
-import com.github.yuriybudiyev.sketches.feature.image.navigation.navigateToImage
+import com.github.yuriybudiyev.sketches.feature.bucket.navigation.navigateToBucketScreen
+import com.github.yuriybudiyev.sketches.feature.bucket.navigation.registerBucketScreen
+import com.github.yuriybudiyev.sketches.feature.buckets.navigation.registerBucketsScreen
+import com.github.yuriybudiyev.sketches.feature.image.navigation.navigateToImageScreen
+import com.github.yuriybudiyev.sketches.feature.image.navigation.registerImageScreen
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesRoute
-import com.github.yuriybudiyev.sketches.feature.images.navigation.imagesScreen
+import com.github.yuriybudiyev.sketches.feature.images.navigation.registerImagesScreen
 import com.github.yuriybudiyev.sketches.main.ui.SketchesAppState
 
 @Composable
@@ -52,9 +52,9 @@ fun SketchesNavHost(
         navController = navController,
         startDestination = ImagesRoute
     ) {
-        imagesScreen(
+        registerImagesScreen(
             onImageClick = { index, image ->
-                navController.navigateToImage(
+                navController.navigateToImageScreen(
                     index,
                     image.id,
                     Long.MIN_VALUE
@@ -62,13 +62,13 @@ fun SketchesNavHost(
             },
             onRequestUserSelectedMedia = onRequestUserSelectedMedia,
         )
-        bucketsScreen(onBucketClick = { _, bucket ->
-            navController.navigateToBucket(
+        registerBucketsScreen(onBucketClick = { _, bucket ->
+            navController.navigateToBucketScreen(
                 bucket.id,
                 bucket.name
             )
         })
-        imageScreen(onShare = { _, file ->
+        registerImageScreen(onShare = { _, file ->
             context.startActivity(
                 Intent
                     .createChooser(
@@ -83,8 +83,8 @@ fun SketchesNavHost(
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
         })
-        bucketScreen(onImageClick = { index, image ->
-            navController.navigateToImage(
+        registerBucketScreen(onImageClick = { index, image ->
+            navController.navigateToImageScreen(
                 index,
                 image.id,
                 image.bucketId

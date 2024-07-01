@@ -38,7 +38,7 @@ import com.github.yuriybudiyev.sketches.feature.buckets.ui.BucketsRoute
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
-fun NavGraphBuilder.bucketsScreen(onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit) {
+fun NavGraphBuilder.registerBucketsScreen(onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit) {
     composable<BucketsRoute>(
         enterTransition = { fadeIn() },
         exitTransition = { fadeOut() },

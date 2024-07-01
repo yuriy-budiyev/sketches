@@ -35,7 +35,7 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
 import kotlinx.serialization.Serializable
 
-fun NavController.navigateToBucket(
+fun NavController.navigateToBucketScreen(
     bucketId: Long,
     bucketName: String,
     navOptions: NavOptions? = null,
@@ -49,7 +49,7 @@ fun NavController.navigateToBucket(
     )
 }
 
-fun NavGraphBuilder.bucketScreen(onImageClick: (index: Int, file: MediaStoreFile) -> Unit) {
+fun NavGraphBuilder.registerBucketScreen(onImageClick: (index: Int, file: MediaStoreFile) -> Unit) {
     composable<BucketRoute>(
         enterTransition = { fadeIn() },
         exitTransition = { fadeOut() },
