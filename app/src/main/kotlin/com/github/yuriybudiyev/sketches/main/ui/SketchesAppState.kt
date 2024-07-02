@@ -28,15 +28,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.github.yuriybudiyev.sketches.core.navigation.TopLevelNavigationRoute
-import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
-import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesRoute
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.serializer
 
 @Composable
@@ -52,10 +52,13 @@ class SketchesAppState(val navController: NavHostController) {
         @Composable get() = navController.currentBackStackEntryFlow
             .map {
                 it.destination.route?.let { route ->
-                    topLevelRoutesInternal[route.substringBefore('/')]
+                    topLevelRoutesMapInternal[route.substringBefore('/')]
                 }
             }
             .collectAsState(null).value
+
+    val topLevelNavigationRoutes: List<TopLevelNavigationRoute>
+        get() = topLevelRoutesListInternal
 
     fun navigateToTopLevelNavigationRoute(route: TopLevelNavigationRoute) {
         navController.navigate(route) {
@@ -67,16 +70,23 @@ class SketchesAppState(val navController: NavHostController) {
         }
     }
 
-    private val topLevelRoutesInternal: SnapshotStateMap<String, TopLevelNavigationRoute> =
-        SnapshotStateMap<String, TopLevelNavigationRoute>().also { routes ->
-            routes[serialName<ImagesRoute>()] = ImagesRoute
-            routes[serialName<BucketsRoute>()] = BucketsRoute
+    @OptIn(
+        InternalSerializationApi::class,
+        ExperimentalSerializationApi::class
+    )
+    fun registerTopLevelNavigationRoute(route: TopLevelNavigationRoute) {
+        if (topLevelRoutesMapInternal.put(
+                route::class.serializer().descriptor.serialName,
+                route
+            ) == null
+        ) {
+            topLevelRoutesListInternal.add(route)
         }
+    }
 
-    val topLevelNavigationRoutes: Collection<TopLevelNavigationRoute> =
-        topLevelRoutesInternal.values
+    private val topLevelRoutesMapInternal: SnapshotStateMap<String, TopLevelNavigationRoute> =
+        SnapshotStateMap()
 
-    @OptIn(ExperimentalSerializationApi::class)
-    private inline fun <reified T: Any> serialName(): String =
-        serializer<T>().descriptor.serialName
+    private val topLevelRoutesListInternal: SnapshotStateList<TopLevelNavigationRoute> =
+        SnapshotStateList()
 }

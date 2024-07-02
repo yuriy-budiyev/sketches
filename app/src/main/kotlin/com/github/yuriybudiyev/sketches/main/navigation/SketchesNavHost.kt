@@ -32,6 +32,7 @@ import androidx.navigation.compose.NavHost
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.navigateToBucketScreen
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.registerBucketScreen
+import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.registerBucketsScreen
 import com.github.yuriybudiyev.sketches.feature.image.navigation.navigateToImageScreen
 import com.github.yuriybudiyev.sketches.feature.image.navigation.registerImageScreen
@@ -52,6 +53,7 @@ fun SketchesNavHost(
         navController = navController,
         startDestination = ImagesRoute
     ) {
+        appState.registerTopLevelNavigationRoute(ImagesRoute)
         registerImagesScreen(
             onImageClick = { index, image ->
                 navController.navigateToImageScreen(
@@ -62,6 +64,7 @@ fun SketchesNavHost(
             },
             onRequestUserSelectedMedia = onRequestUserSelectedMedia,
         )
+        appState.registerTopLevelNavigationRoute(BucketsRoute)
         registerBucketsScreen(onBucketClick = { _, bucket ->
             navController.navigateToBucketScreen(
                 bucket.id,
