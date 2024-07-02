@@ -28,10 +28,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.github.yuriybudiyev.sketches.core.collections.linkedHashMapWithExpectedSize
 import com.github.yuriybudiyev.sketches.core.navigation.TopLevelNavigationRoute
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesRoute
@@ -67,8 +67,8 @@ class SketchesAppState(val navController: NavHostController) {
         }
     }
 
-    private val topLevelRoutesInternal: MutableMap<String, TopLevelNavigationRoute> =
-        linkedHashMapWithExpectedSize<String, TopLevelNavigationRoute>(2).also { routes ->
+    private val topLevelRoutesInternal: SnapshotStateMap<String, TopLevelNavigationRoute> =
+        SnapshotStateMap<String, TopLevelNavigationRoute>().also { routes ->
             routes[serialName<ImagesRoute>()] = ImagesRoute
             routes[serialName<BucketsRoute>()] = BucketsRoute
         }
