@@ -82,6 +82,7 @@ dependencies {
     implementation(libs.bundles.androidx.tracing)
     implementation(libs.bundles.hilt)
     implementation(libs.bundles.coil)
+    implementation(libs.okhttp)
     implementation(libs.okio)
     ksp(libs.bundles.hilt.compiler)
     debugImplementation(libs.bundles.androidx.compose.tooling)

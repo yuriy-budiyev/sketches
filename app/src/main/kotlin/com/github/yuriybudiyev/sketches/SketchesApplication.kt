@@ -25,19 +25,18 @@
 package com.github.yuriybudiyev.sketches
 
 import android.app.Application
-import coil3.ImageLoader
-import coil3.PlatformContext
-import coil3.SingletonImageLoader
+import coil.ImageLoader
+import coil.ImageLoaderFactory
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 import javax.inject.Provider
 
 @HiltAndroidApp
-class SketchesApplication: Application(), SingletonImageLoader.Factory {
+class SketchesApplication: Application(), ImageLoaderFactory {
 
     @Inject
     lateinit var imageLoaderProvider: Provider<ImageLoader>
 
-    override fun newImageLoader(context: PlatformContext): ImageLoader =
+    override fun newImageLoader(): ImageLoader =
         imageLoaderProvider.get()
 }
