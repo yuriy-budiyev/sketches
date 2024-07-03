@@ -36,10 +36,17 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import com.github.yuriybudiyev.sketches.core.data.utils.contentUriFor
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class MediaStoreRepositoryImpl(private val context: Context): MediaStoreRepository {
+@Singleton
+class MediaStoreRepositoryImpl @Inject constructor(
+    @ApplicationContext
+    private val context: Context,
+): MediaStoreRepository {
 
     private suspend fun collectFiles(
         mediaType: MediaType,

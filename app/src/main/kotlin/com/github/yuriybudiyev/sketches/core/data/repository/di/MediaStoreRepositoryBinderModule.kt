@@ -22,27 +22,19 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.di
+package com.github.yuriybudiyev.sketches.core.data.repository.di
 
-import android.content.Context
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import com.github.yuriybudiyev.sketches.core.data.repository.implementation.MediaStoreRepositoryImpl
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object MediaStoreRepositoryModule {
+interface MediaStoreRepositoryBinderModule {
 
-    @Provides
-    @Singleton
-    fun provideMediaStoreRepository(
-        @ApplicationContext
-        context: Context,
-    ): MediaStoreRepository =
-        MediaStoreRepositoryImpl(context)
+    @Binds
+    fun bindMediaStoreRepository(repository: MediaStoreRepositoryImpl): MediaStoreRepository
 }
