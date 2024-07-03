@@ -27,7 +27,7 @@ package com.github.yuriybudiyev.sketches.feature.buckets.ui
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.common.coroutines.excludeCancellation
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import com.github.yuriybudiyev.sketches.core.domain.GetMediaBucketsUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -43,7 +43,7 @@ import javax.inject.Inject
 class BucketsScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
-    private val repository: MediaStoreRepository,
+    private val getMediaBuckets: GetMediaBucketsUseCase,
 ): MediaObservingViewModel(context) {
 
     private val uiStateInternal: MutableStateFlow<BucketsScreenUiState> =
@@ -59,9 +59,7 @@ class BucketsScreenViewModel @Inject constructor(
                 uiStateInternal.value = BucketsScreenUiState.Loading
             }
             try {
-                val buckets = withContext(Dispatchers.Default) {
-                    repository.getBuckets()
-                }
+                val buckets = withContext(Dispatchers.Default) { getMediaBuckets() }
                 if (buckets.isNotEmpty()) {
                     uiStateInternal.value = BucketsScreenUiState.Buckets(buckets)
                 } else {

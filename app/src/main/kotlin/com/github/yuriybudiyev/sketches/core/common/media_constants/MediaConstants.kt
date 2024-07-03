@@ -22,18 +22,9 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.repository
+package com.github.yuriybudiyev.sketches.core.common.media_constants
 
-import android.net.Uri
-import com.github.yuriybudiyev.sketches.core.common.media_constants.MediaConstants
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+object MediaConstants {
 
-interface MediaStoreRepository {
-
-    suspend fun getFiles(bucketId: Long = MediaConstants.AllBuckets): List<MediaStoreFile>
-
-    suspend fun deleteFile(uri: Uri): Boolean
-
-    suspend fun getBuckets(): List<MediaStoreBucket>
+    const val AllBuckets: Long = Long.MIN_VALUE
 }

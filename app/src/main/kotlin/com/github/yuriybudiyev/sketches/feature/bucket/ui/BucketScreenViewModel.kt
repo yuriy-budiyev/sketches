@@ -27,7 +27,7 @@ package com.github.yuriybudiyev.sketches.feature.bucket.ui
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.common.coroutines.excludeCancellation
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -43,7 +43,7 @@ import javax.inject.Inject
 class BucketScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
-    private val repository: MediaStoreRepository,
+    private val getMediaFiles: GetMediaFilesUseCase,
 ): MediaObservingViewModel(context) {
 
     private val uiStateInternal: MutableStateFlow<BucketScreenUiState> =
@@ -63,7 +63,7 @@ class BucketScreenViewModel @Inject constructor(
                 uiStateInternal.value = BucketScreenUiState.Loading
             }
             try {
-                val files = withContext(Dispatchers.Default) { repository.getFiles(bucketId) }
+                val files = withContext(Dispatchers.Default) { getMediaFiles(bucketId) }
                 if (files.isNotEmpty()) {
                     uiStateInternal.value = BucketScreenUiState.Bucket(
                         bucketId,

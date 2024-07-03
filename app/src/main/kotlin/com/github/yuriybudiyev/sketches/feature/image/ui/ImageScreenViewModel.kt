@@ -28,7 +28,8 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.common.coroutines.excludeCancellation
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFileUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -44,7 +45,8 @@ import javax.inject.Inject
 class ImageScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
-    private val repository: MediaStoreRepository,
+    private val getMediaFiles: GetMediaFilesUseCase,
+    private val deleteMediaFile: DeleteMediaFileUseCase,
 ): MediaObservingViewModel(context) {
 
     private val uiStateInternal: MutableStateFlow<ImageScreenUiState> =
@@ -80,7 +82,7 @@ class ImageScreenViewModel @Inject constructor(
                 uiStateInternal.value = ImageScreenUiState.Loading
             }
             try {
-                val files = withContext(Dispatchers.Default) { repository.getFiles(bucketId) }
+                val files = withContext(Dispatchers.Default) { getMediaFiles(bucketId) }
                 val filesSize = files.size
                 if (filesSize > 0) {
                     if (fileIndex < filesSize && files[fileIndex].id == fileId) {
@@ -138,7 +140,7 @@ class ImageScreenViewModel @Inject constructor(
         currentJob = viewModelScope.launch {
             try {
                 withContext(Dispatchers.Default) {
-                    repository.deleteFile(uri)
+                    deleteMediaFile(uri)
                 }
             } catch (e: Exception) {
                 excludeCancellation(e) {

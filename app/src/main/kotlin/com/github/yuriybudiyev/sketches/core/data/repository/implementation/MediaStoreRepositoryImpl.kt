@@ -30,6 +30,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import androidx.collection.MutableLongObjectMap
 import androidx.core.database.getStringOrNull
+import com.github.yuriybudiyev.sketches.core.common.media_constants.MediaConstants
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
@@ -54,12 +55,12 @@ class MediaStoreRepositoryImpl(private val context: Context): MediaStoreReposito
                     MediaStore.MediaColumns.DATE_ADDED,
                     MediaStore.MediaColumns.MIME_TYPE,
                 ),
-                if (bucketId != Long.MIN_VALUE) {
+                if (bucketId != MediaConstants.AllBuckets) {
                     "${MediaStore.MediaColumns.BUCKET_ID}=?"
                 } else {
                     null
                 },
-                if (bucketId != Long.MIN_VALUE) {
+                if (bucketId != MediaConstants.AllBuckets) {
                     arrayOf(bucketId.toString())
                 } else {
                     null
