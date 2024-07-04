@@ -22,27 +22,9 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.utils
+package com.github.yuriybudiyev.sketches.core.common.constants
 
-import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
-import com.github.yuriybudiyev.sketches.core.data.model.MediaType
+object MediaConstants {
 
-fun contentUriFor(mediaType: MediaType): Uri =
-    when (mediaType) {
-        MediaType.Image -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-            } else {
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-            }
-        }
-        MediaType.Video -> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-            } else {
-                MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-            }
-        }
-    }
+    const val AllBuckets: Long = Long.MIN_VALUE
+}

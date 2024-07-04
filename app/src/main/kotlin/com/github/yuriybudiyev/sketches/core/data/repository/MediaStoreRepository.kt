@@ -25,7 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.data.repository
 
 import android.net.Uri
-import com.github.yuriybudiyev.sketches.core.common.media_constants.MediaConstants
+import com.github.yuriybudiyev.sketches.core.common.constants.MediaConstants
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 

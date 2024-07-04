@@ -30,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.common.media_constants.MediaConstants
+import com.github.yuriybudiyev.sketches.core.common.constants.MediaConstants
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.navigateToBucketScreen
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.registerBucketScreen
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute

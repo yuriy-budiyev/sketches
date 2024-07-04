@@ -24,7 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.domain
 
-import com.github.yuriybudiyev.sketches.core.common.media_constants.MediaConstants
+import com.github.yuriybudiyev.sketches.core.common.constants.MediaConstants
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import javax.inject.Inject
