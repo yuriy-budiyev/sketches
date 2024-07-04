@@ -26,8 +26,10 @@ package com.github.yuriybudiyev.sketches.core.domain
 
 import android.net.Uri
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import dagger.Reusable
 import javax.inject.Inject
 
+@Reusable
 class DeleteMediaFileUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
     suspend operator fun invoke(uri: Uri): Boolean =
