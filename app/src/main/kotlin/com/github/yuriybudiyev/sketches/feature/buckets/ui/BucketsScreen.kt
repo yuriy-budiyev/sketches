@@ -62,7 +62,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndica
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -87,7 +86,6 @@ fun BucketsRoute(
     }
     BucketsScreen(
         uiState = uiState,
-        coroutineScope = coroutineScope,
         onBucketClick = onBucketClick,
     )
 }
@@ -95,7 +93,6 @@ fun BucketsRoute(
 @Composable
 fun BucketsScreen(
     uiState: BucketsScreenUiState,
-    coroutineScope: CoroutineScope,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -113,7 +110,6 @@ fun BucketsScreen(
                 BucketsScreenLayout(
                     buckets = uiState.buckets,
                     onBucketClick = onBucketClick,
-                    coroutineScope = coroutineScope,
                     modifier = Modifier.matchParentSize(),
                 )
             }
@@ -138,7 +134,6 @@ fun BucketsScreen(
 private fun BucketsScreenLayout(
     buckets: List<MediaStoreBucket>,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
-    coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
     val bucketsUpdated by rememberUpdatedState(buckets)
@@ -158,12 +153,10 @@ private fun BucketsScreenLayout(
                 modifier = Modifier
                     .clip(shape = smallMaterialShape)
                     .clickable {
-                        coroutineScope.launch {
-                            onBucketClickUpdated(
-                                index,
-                                item,
-                            )
-                        }
+                        onBucketClickUpdated(
+                            index,
+                            item,
+                        )
                     },
             ) {
                 val colorScheme = MaterialTheme.colorScheme
