@@ -22,18 +22,40 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.imageloader.executor
+package com.github.yuriybudiyev.sketches.core.common.imageloader.executor
 
-import java.util.concurrent.ThreadFactory
-import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.CancellationException
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.Future
+import java.util.concurrent.ScheduledThreadPoolExecutor
 
-class ImageLoaderThreadFactory: ThreadFactory {
+class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
+    Runtime
+        .getRuntime()
+        .availableProcessors()
+        .coerceAtMost(4),
+    ImageLoaderThreadFactory(),
+    AbortPolicy(),
+) {
 
-    override fun newThread(r: Runnable): Thread =
-        ImageLoaderThread(
-            r,
-            "image-loader-${counter.getAndIncrement()}"
-        )
+    override fun afterExecute(
+        r: Runnable,
+        t: Throwable?,
+    ) {
+        if (t == null && r is Future<*> && r.isDone) {
+            try {
+                r.get()
+            } catch (_: CancellationException) {
+            } catch (_: InterruptedException) {
+            } catch (e: ExecutionException) {
+                throw RuntimeException(e.cause)
+            }
+        }
+    }
 
-    private val counter: AtomicLong = AtomicLong(1L)
+    init {
+        continueExistingPeriodicTasksAfterShutdownPolicy = false
+        executeExistingDelayedTasksAfterShutdownPolicy = false
+        removeOnCancelPolicy = true
+    }
 }

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.imageloader.di
+package com.github.yuriybudiyev.sketches.core.common.imageloader.di
 
 import android.content.Context
 import android.os.Build
@@ -31,7 +31,7 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
 import coil.decode.VideoFrameDecoder
-import com.github.yuriybudiyev.sketches.core.imageloader.executor.ImageLoaderExecutor
+import com.github.yuriybudiyev.sketches.core.common.imageloader.executor.ImageLoaderExecutor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

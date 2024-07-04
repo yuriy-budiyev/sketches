@@ -22,20 +22,18 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.imageloader.executor
+package com.github.yuriybudiyev.sketches.core.common.imageloader.executor
 
-import android.os.Process
+import java.util.concurrent.ThreadFactory
+import java.util.concurrent.atomic.AtomicLong
 
-class ImageLoaderThread(
-    target: Runnable,
-    name: String,
-): Thread(
-    target,
-    name
-) {
+class ImageLoaderThreadFactory: ThreadFactory {
 
-    override fun run() {
-        Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
-        super.run()
-    }
+    override fun newThread(r: Runnable): Thread =
+        ImageLoaderThread(
+            r,
+            "image-loader-${counter.getAndIncrement()}"
+        )
+
+    private val counter: AtomicLong = AtomicLong(1L)
 }
