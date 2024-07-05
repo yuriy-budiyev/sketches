@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.common.constants.MediaConstants
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.navigateToBucketScreen
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.registerBucketScreen
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
@@ -59,8 +58,7 @@ fun SketchesNavHost(
             onImageClick = { index, image ->
                 navController.navigateToImageScreen(
                     index,
-                    image.id,
-                    MediaConstants.AllBuckets
+                    image.id
                 )
             },
             onRequestUserSelectedMedia = onRequestUserSelectedMedia,
