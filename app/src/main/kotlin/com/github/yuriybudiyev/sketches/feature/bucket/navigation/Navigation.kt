@@ -32,6 +32,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.navigation.NavigationRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
 import kotlinx.serialization.Serializable
 
@@ -67,4 +68,4 @@ fun NavGraphBuilder.registerBucketScreen(onImageClick: (index: Int, file: MediaS
 data class BucketRoute(
     val bucketId: Long,
     val bucketName: String,
-)
+): NavigationRoute

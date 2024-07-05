@@ -32,6 +32,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.navigation.NavigationRoute
 import com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute
 import kotlinx.serialization.Serializable
 
@@ -71,4 +72,4 @@ data class ImageRoute(
     val imageIndex: Int,
     val imageId: Long,
     val bucketId: Long,
-)
+): NavigationRoute
