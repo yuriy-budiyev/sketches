@@ -75,7 +75,8 @@ class SketchesAppState(val navController: NavHostController) {
         ExperimentalSerializationApi::class
     )
     fun registerTopLevelNavigationRoute(route: TopLevelNavigationRoute) {
-        if (topLevelRoutesMapInternal.put(
+        if (
+            topLevelRoutesMapInternal.put(
                 route::class.serializer().descriptor.serialName,
                 route
             ) == null
