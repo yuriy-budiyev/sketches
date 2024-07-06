@@ -40,7 +40,9 @@ import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.serializer
 
 @Composable
-fun rememberSketchesAppState(navController: NavHostController = rememberNavController()): SketchesAppState =
+fun rememberSketchesAppState(
+    navController: NavHostController = rememberNavController(),
+): SketchesAppState =
     remember(navController) {
         SketchesAppState(navController)
     }
