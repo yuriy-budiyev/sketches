@@ -81,8 +81,8 @@ class SketchesTest {
     suspend fun getDocument(id: String): Document =
         Document(id)
 
-    suspend fun getDocuments(): List<Document> {
-        return coroutineScope {
+    suspend fun getDocuments(): List<Document> =
+        coroutineScope {
             getDocumentIds()
                 .map { id ->
                     async {
@@ -94,5 +94,4 @@ class SketchesTest {
                 }
                 .awaitAll()
         }
-    }
 }
