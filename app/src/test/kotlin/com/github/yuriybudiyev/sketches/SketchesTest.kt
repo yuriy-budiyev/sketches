@@ -25,73 +25,11 @@
 
 package com.github.yuriybudiyev.sketches
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import org.junit.Test
 
 class SketchesTest {
 
     @Test
-    fun test(): Unit =
-        runBlocking {
-            val documents = getDocuments()
-            documents.forEach {
-                println(it)
-            }
-        }
-
-    data class Document(val id: String)
-
-    @Suppress("RedundantSuspendModifier")
-    suspend fun getDocumentIds(): List<String> {
-        var counter = 0
-        return listOf(
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter++).toString(),
-            (counter).toString(),
-        )
+    fun test() {
     }
-
-    @Suppress("RedundantSuspendModifier")
-    suspend fun getDocument(id: String): Document =
-        Document(id)
-
-    suspend fun getDocuments(): List<Document> =
-        coroutineScope {
-            getDocumentIds()
-                .map { id ->
-                    async {
-                        withContext(Dispatchers.Default) {
-                            println("async $id")
-                            getDocument(id)
-                        }
-                    }
-                }
-                .awaitAll()
-        }
 }
