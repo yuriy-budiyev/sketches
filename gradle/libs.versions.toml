@@ -52,6 +52,7 @@ kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.re
 kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlin" }
 kotlin-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlin-coroutines" }
+kotlin-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
 kotlin-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlin-serialization" }
 kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlin-serialization" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
@@ -164,7 +165,8 @@ kotlin = [
 ]
 kotlin-test = [
     "kotlin-test",
-    "kotlin-test-junit"
+    "kotlin-test-junit",
+    "kotlin-coroutines-test"
 ]
 androidx-annotation = [
     "androidx-annotation",
