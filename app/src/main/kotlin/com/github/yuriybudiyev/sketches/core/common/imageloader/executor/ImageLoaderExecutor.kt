@@ -71,19 +71,19 @@ class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
             )
 
         private val counter: AtomicLong = AtomicLong(1L)
+    }
 
-        private class ImageLoaderThread(
-            target: Runnable,
-            name: String,
-        ): Thread(
-            target,
-            name
-        ) {
+    private class ImageLoaderThread(
+        target: Runnable,
+        name: String,
+    ): Thread(
+        target,
+        name
+    ) {
 
-            override fun run() {
-                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
-                super.run()
-            }
+        override fun run() {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
+            super.run()
         }
     }
 }
