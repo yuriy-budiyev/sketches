@@ -26,6 +26,7 @@ package com.github.yuriybudiyev.sketches.feature.bucket.ui
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.github.yuriybudiyev.sketches.core.common.constants.SketchesConstants
 import com.github.yuriybudiyev.sketches.core.common.coroutines.excludeCancellation
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
@@ -87,5 +88,5 @@ class BucketScreenViewModel @Inject constructor(
     }
 
     private var currentJob: Job? = null
-    private var currentBucketId: Long = Long.MIN_VALUE
+    private var currentBucketId: Long = SketchesConstants.NO_ID
 }
