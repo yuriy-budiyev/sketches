@@ -24,10 +24,13 @@
 
 package com.github.yuriybudiyev.sketches.core.common.imageloader.executor
 
+import android.os.Process
 import java.util.concurrent.CancellationException
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
 import java.util.concurrent.ScheduledThreadPoolExecutor
+import java.util.concurrent.ThreadFactory
+import java.util.concurrent.atomic.AtomicLong
 
 class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
     Runtime
@@ -57,5 +60,30 @@ class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
         continueExistingPeriodicTasksAfterShutdownPolicy = false
         executeExistingDelayedTasksAfterShutdownPolicy = false
         removeOnCancelPolicy = true
+    }
+
+    private class ImageLoaderThreadFactory: ThreadFactory {
+
+        override fun newThread(r: Runnable): Thread =
+            ImageLoaderThread(
+                r,
+                "image-loader-${counter.getAndIncrement()}"
+            )
+
+        private val counter: AtomicLong = AtomicLong(1L)
+    }
+
+    private class ImageLoaderThread(
+        target: Runnable,
+        name: String,
+    ): Thread(
+        target,
+        name
+    ) {
+
+        override fun run() {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
+            super.run()
+        }
     }
 }
