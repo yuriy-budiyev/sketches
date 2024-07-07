@@ -25,13 +25,13 @@
 package com.github.yuriybudiyev.sketches.core.data.repository
 
 import android.net.Uri
-import com.github.yuriybudiyev.sketches.core.common.constants.MediaConstants
+import com.github.yuriybudiyev.sketches.core.common.constants.SketchesConstants
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
 interface MediaStoreRepository {
 
-    suspend fun getFiles(bucketId: Long = MediaConstants.AllBuckets): List<MediaStoreFile>
+    suspend fun getFiles(bucketId: Long = SketchesConstants.NO_ID): List<MediaStoreFile>
 
     suspend fun deleteFile(uri: Uri): Boolean
 

@@ -24,7 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.common.constants
 
-object MediaConstants {
+object SketchesConstants {
 
-    const val AllBuckets: Long = Long.MIN_VALUE
+    const val NO_ID: Long = Long.MIN_VALUE
 }

@@ -27,6 +27,7 @@ package com.github.yuriybudiyev.sketches.feature.image.ui
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
+import com.github.yuriybudiyev.sketches.core.common.constants.SketchesConstants
 import com.github.yuriybudiyev.sketches.core.common.coroutines.excludeCancellation
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFileUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
@@ -156,8 +157,8 @@ class ImageScreenViewModel @Inject constructor(
 
     private var currentJob: Job? = null
     private var currentFileIndex: Int = -1
-    private var currentFileId: Long = Long.MIN_VALUE
-    private var currentBucketId: Long = Long.MIN_VALUE
+    private var currentFileId: Long = SketchesConstants.NO_ID
+    private var currentBucketId: Long = SketchesConstants.NO_ID
 
     private fun updateMediaInternal() {
         val fileIndex = currentFileIndex
