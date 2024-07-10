@@ -37,7 +37,7 @@ class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
         .getRuntime()
         .availableProcessors()
         .minus(2)
-        .coerceAtLeast(2),
+        .coerceAtLeast(1),
     ImageLoaderThreadFactory(),
     AbortPolicy(),
 ) {
