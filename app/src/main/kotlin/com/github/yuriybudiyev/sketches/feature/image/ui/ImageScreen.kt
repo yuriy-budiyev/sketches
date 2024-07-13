@@ -255,6 +255,7 @@ private fun ImageScreenLayout(
                     .weight(1.0F),
             )
             MediaBar(
+                currentIndex = currentIndex,
                 state = barState,
                 items = filesUpdated,
                 onItemClick = { index, _ ->
@@ -471,11 +472,13 @@ private fun VideoPage(
 
 @Composable
 private fun MediaBar(
+    currentIndex: Int,
     state: LazyListState,
     items: List<MediaStoreFile>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val currentIndexUpdated by rememberUpdatedState(currentIndex)
     val itemsUpdated by rememberUpdatedState(items)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
     LazyRow(
@@ -505,7 +508,13 @@ private fun MediaBar(
                     .clip(shape = smallMaterialShape)
                     .border(
                         width = SketchesDimens.MediaItemBorderThickness,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                        color = MaterialTheme.colorScheme.onBackground.copy(
+                            alpha = if (position == currentIndexUpdated) {
+                                SketchesColors.UiAlphaLowTransparency
+                            } else {
+                                SketchesColors.UiAlphaHighTransparency
+                            }
+                        ),
                         shape = smallMaterialShape,
                     )
                     .clickable {
