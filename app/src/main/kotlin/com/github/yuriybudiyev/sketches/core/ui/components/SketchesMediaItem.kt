@@ -92,7 +92,7 @@ private fun SketchesVideoMediaItem(
     Box(modifier = modifier) {
         SketchesAsyncImage(
             uri = uri,
-            contentDescription = stringResource(id = R.string.image),
+            contentDescription = stringResource(id = R.string.video),
             modifier = Modifier.matchParentSize(),
             contentScale = ContentScale.Crop,
             filterQuality = FilterQuality.Low,
