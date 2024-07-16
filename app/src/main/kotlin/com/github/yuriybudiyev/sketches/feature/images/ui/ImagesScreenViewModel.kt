@@ -26,11 +26,11 @@ package com.github.yuriybudiyev.sketches.feature.images.ui
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.common.coroutines.excludeCancellation
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,11 +65,11 @@ class ImagesScreenViewModel @Inject constructor(
                 } else {
                     uiStateInternal.value = ImagesScreenUiState.Empty
                 }
+            } catch (_: CancellationException) {
+                // Do nothing
             } catch (e: Exception) {
                 if (!silent) {
-                    excludeCancellation(e) {
-                        uiStateInternal.value = ImagesScreenUiState.Error(e)
-                    }
+                    uiStateInternal.value = ImagesScreenUiState.Error(e)
                 }
             }
         }

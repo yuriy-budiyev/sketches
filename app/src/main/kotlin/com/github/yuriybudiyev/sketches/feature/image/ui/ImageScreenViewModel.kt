@@ -28,12 +28,12 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.common.constants.SketchesConstants
-import com.github.yuriybudiyev.sketches.core.common.coroutines.excludeCancellation
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFileUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -126,11 +126,11 @@ class ImageScreenViewModel @Inject constructor(
                 } else {
                     uiStateInternal.value = ImageScreenUiState.Empty
                 }
+            } catch (_: CancellationException) {
+                // Do nothing
             } catch (e: Exception) {
                 if (!silent) {
-                    excludeCancellation(e) {
-                        uiStateInternal.value = ImageScreenUiState.Error(e)
-                    }
+                    uiStateInternal.value = ImageScreenUiState.Error(e)
                 }
             }
         }
@@ -143,10 +143,10 @@ class ImageScreenViewModel @Inject constructor(
                 withContext(Dispatchers.Default) {
                     deleteMediaFile(uri)
                 }
+            } catch (_: CancellationException) {
+                // Do nothing
             } catch (e: Exception) {
-                excludeCancellation(e) {
-                    uiStateInternal.value = ImageScreenUiState.Error(e)
-                }
+                uiStateInternal.value = ImageScreenUiState.Error(e)
             }
         }
     }

@@ -27,11 +27,11 @@ package com.github.yuriybudiyev.sketches.feature.bucket.ui
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.common.constants.SketchesConstants
-import com.github.yuriybudiyev.sketches.core.common.coroutines.excludeCancellation
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,11 +73,11 @@ class BucketScreenViewModel @Inject constructor(
                 } else {
                     uiStateInternal.value = BucketScreenUiState.Empty
                 }
+            } catch (_: CancellationException) {
+                // Do nothing
             } catch (e: Exception) {
                 if (!silent) {
-                    excludeCancellation(e) {
-                        uiStateInternal.value = BucketScreenUiState.Error(e)
-                    }
+                    uiStateInternal.value = BucketScreenUiState.Error(e)
                 }
             }
         }
