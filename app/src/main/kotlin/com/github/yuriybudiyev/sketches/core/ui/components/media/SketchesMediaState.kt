@@ -59,6 +59,7 @@ import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import com.github.yuriybudiyev.sketches.core.common.bundle.getParcelableCompat
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -469,7 +470,11 @@ private class SketchesMediaStateImpl(
         positionPeriodicUpdateJob?.cancel()
         positionPeriodicUpdateJob = coroutineScope.launch {
             while (isActive) {
-                delay(16L)
+                try {
+                    delay(16L)
+                } catch (_: CancellationException) {
+                    // Do nothing
+                }
                 updatePosition()
             }
         }
