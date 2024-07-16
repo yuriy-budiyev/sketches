@@ -43,11 +43,6 @@ import com.github.yuriybudiyev.sketches.core.ui.typography.SketchesTypography
 @Composable
 fun SketchesTheme(content: @Composable () -> Unit) {
     val darkTheme = isSystemInDarkTheme()
-    val colorScheme = if (darkTheme) {
-        SketchesDarkColorScheme
-    } else {
-        SketchesLightColorScheme
-    }
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
@@ -85,7 +80,11 @@ fun SketchesTheme(content: @Composable () -> Unit) {
         }
     }
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = if (darkTheme) {
+            SketchesDarkColorScheme
+        } else {
+            SketchesLightColorScheme
+        },
         typography = SketchesTypography,
         content = content
     )

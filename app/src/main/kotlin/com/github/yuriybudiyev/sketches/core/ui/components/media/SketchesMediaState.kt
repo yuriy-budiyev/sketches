@@ -469,7 +469,7 @@ private class SketchesMediaStateImpl(
         positionPeriodicUpdateJob?.cancel()
         positionPeriodicUpdateJob = coroutineScope.launch {
             while (isActive) {
-                delay(timeMillis = 33L)
+                delay(16L)
                 updatePosition()
             }
         }
