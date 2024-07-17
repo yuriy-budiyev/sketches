@@ -76,7 +76,9 @@ fun Context.checkMediaAccess(): MediaAccess =
     }
 
 @JvmInline
-value class MediaAccessRequestLauncher(private val launcher: ActivityResultLauncher<Array<String>>) {
+value class MediaAccessRequestLauncher(
+    private val launcher: ActivityResultLauncher<Array<String>>,
+) {
 
     fun requestMediaAccess() {
         launcher.launch(
@@ -104,7 +106,9 @@ value class MediaAccessRequestLauncher(private val launcher: ActivityResultLaunc
 }
 
 @Composable
-inline fun rememberMediaAccessRequestLauncher(crossinline onResult: (MediaAccess) -> Unit): MediaAccessRequestLauncher {
+inline fun rememberMediaAccessRequestLauncher(
+    crossinline onResult: (MediaAccess) -> Unit,
+): MediaAccessRequestLauncher {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
         onResult = { grantResults ->
