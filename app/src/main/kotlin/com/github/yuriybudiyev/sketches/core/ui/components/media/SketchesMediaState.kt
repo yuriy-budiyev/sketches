@@ -46,6 +46,7 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -62,7 +63,6 @@ import com.github.yuriybudiyev.sketches.core.common.bundle.getParcelableCompat
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.contracts.ExperimentalContracts
@@ -471,8 +471,9 @@ private class SketchesMediaStateImpl(
         positionPeriodicUpdateJob = coroutineScope.launch {
             try {
                 while (isActive) {
-                    updatePosition()
-                    delay(16L)
+                    withFrameNanos {
+                        updatePosition()
+                    }
                 }
             } catch (_: CancellationException) {
                 // Do nothing
