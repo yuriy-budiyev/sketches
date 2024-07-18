@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
 import android.content.Context
-import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.common.constants.SketchesConstants
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFileUseCase
@@ -136,7 +135,7 @@ class ImageScreenViewModel @Inject constructor(
         }
     }
 
-    fun deleteMedia(uri: Uri) {
+    fun deleteMedia(uri: String) {
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
             try {

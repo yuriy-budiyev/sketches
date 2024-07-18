@@ -277,7 +277,7 @@ private fun ImageScreenLayout(
                                 .Builder(
                                     MediaStore.createDeleteRequest(
                                         contextUpdated.contentResolver,
-                                        listOf(filesUpdated[currentIndex].uri)
+                                        listOf(Uri.parse(filesUpdated[currentIndex].uri))
                                     ).intentSender
                                 )
                                 .build()
@@ -370,7 +370,7 @@ private fun MediaPager(
 private fun MediaPage(
     state: PagerState,
     number: Int,
-    fileUri: Uri,
+    fileUri: String,
     fileType: MediaType,
     coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
@@ -396,7 +396,7 @@ private fun MediaPage(
 
 @Composable
 private fun ImagePage(
-    fileUri: Uri,
+    fileUri: String,
     modifier: Modifier = Modifier,
 ) {
     SketchesAsyncImage(
@@ -414,7 +414,7 @@ private fun ImagePage(
 private fun VideoPage(
     state: PagerState,
     number: Int,
-    fileUri: Uri,
+    fileUri: String,
     coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {

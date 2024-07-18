@@ -24,12 +24,10 @@
 
 package com.github.yuriybudiyev.sketches.core.data.model
 
-import android.net.Uri
-
 data class MediaStoreBucket(
     val id: Long,
     val name: String,
     val size: Int,
-    val coverUri: Uri,
+    val coverUri: String,
     val coverDateAdded: Long,
 )

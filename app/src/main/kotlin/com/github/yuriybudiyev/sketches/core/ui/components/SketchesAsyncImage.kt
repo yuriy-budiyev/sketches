@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
-import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -44,7 +43,7 @@ import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 
 @Composable
 fun SketchesAsyncImage(
-    uri: Uri,
+    uri: String,
     contentDescription: String,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,

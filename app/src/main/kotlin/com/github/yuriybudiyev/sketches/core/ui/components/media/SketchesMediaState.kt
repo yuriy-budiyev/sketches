@@ -27,7 +27,6 @@ package com.github.yuriybudiyev.sketches.core.ui.components.media
 import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
-import android.net.Uri
 import android.os.Bundle
 import android.view.Surface
 import android.view.SurfaceView
@@ -59,7 +58,6 @@ import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
-import com.github.yuriybudiyev.sketches.core.common.bundle.getParcelableCompat
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -145,10 +143,10 @@ interface SketchesMediaState {
 
     fun seek(position: Long)
 
-    val uri: Uri?
+    val uri: String?
 
     fun open(
-        uri: Uri,
+        uri: String,
         position: Long = 0L,
         playWhenReady: Boolean = false,
         volumeEnabled: Boolean = false,
@@ -486,11 +484,11 @@ private class SketchesMediaStateImpl(
         positionPeriodicUpdateJob = null
     }
 
-    override var uri: Uri? by mutableStateOf(null)
+    override var uri: String? by mutableStateOf(null)
         private set
 
     override fun open(
-        uri: Uri,
+        uri: String,
         position: Long,
         playWhenReady: Boolean,
         volumeEnabled: Boolean,
@@ -574,7 +572,7 @@ private class SketchesMediaStateImplSaver(
                 Keys.RepeatEnabled,
                 false
             )
-            val uri = value.getParcelableCompat<Uri>(Keys.Uri)
+            val uri = value.getString(Keys.Uri)
             if (uri != null) {
                 val playing = value.getBoolean(
                     Keys.Playing,
@@ -623,7 +621,7 @@ private class SketchesMediaStateImplSaver(
                 Keys.Position,
                 value.position
             )
-            putParcelable(
+            putString(
                 Keys.Uri,
                 value.uri
             )

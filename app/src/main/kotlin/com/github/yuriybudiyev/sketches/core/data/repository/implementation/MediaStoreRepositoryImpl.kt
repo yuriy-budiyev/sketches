@@ -92,10 +92,12 @@ class MediaStoreRepositoryImpl @Inject constructor(
                         MediaType.Image -> "image/*"
                         MediaType.Video -> "video/*"
                     },
-                    uri = ContentUris.withAppendedId(
-                        contentUri,
-                        id
-                    )
+                    uri = ContentUris
+                        .withAppendedId(
+                            contentUri,
+                            id
+                        )
+                        .toString()
                 )
             }
             return files
@@ -118,10 +120,10 @@ class MediaStoreRepositoryImpl @Inject constructor(
         return files
     }
 
-    override suspend fun deleteFile(uri: Uri): Boolean =
+    override suspend fun deleteFile(uri: String): Boolean =
         withContext(Dispatchers.IO) {
             context.contentResolver.delete(
-                uri,
+                Uri.parse(uri),
                 null,
                 null
             )
@@ -160,10 +162,12 @@ class MediaStoreRepositoryImpl @Inject constructor(
                     BucketInfo(
                         id = bucketId,
                         name = c.getStringOrNull(bucketNameColumn) ?: id.toString(),
-                        coverUri = ContentUris.withAppendedId(
-                            contentUri,
-                            id
-                        ),
+                        coverUri = ContentUris
+                            .withAppendedId(
+                                contentUri,
+                                id
+                            )
+                            .toString(),
                         coverDateAdded = dateAdded,
                         size = 0
                     )
@@ -171,10 +175,12 @@ class MediaStoreRepositoryImpl @Inject constructor(
                 bucketInfo.size++
                 if (bucketInfo.coverDateAdded < dateAdded) {
                     bucketInfo.coverDateAdded = dateAdded
-                    bucketInfo.coverUri = ContentUris.withAppendedId(
-                        contentUri,
-                        id
-                    )
+                    bucketInfo.coverUri = ContentUris
+                        .withAppendedId(
+                            contentUri,
+                            id
+                        )
+                        .toString()
                 }
             }
         }
@@ -208,7 +214,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         val id: Long,
         val name: String,
         var size: Int,
-        var coverUri: Uri,
+        var coverUri: String,
         var coverDateAdded: Long,
     )
 }

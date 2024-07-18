@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -45,7 +44,7 @@ import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 
 @Composable
 fun SketchesMediaItem(
-    uri: Uri,
+    uri: String,
     type: MediaType,
     videoIconPadding: Dp,
     modifier: Modifier = Modifier,
@@ -69,7 +68,7 @@ fun SketchesMediaItem(
 
 @Composable
 private fun SketchesImageMediaItem(
-    uri: Uri,
+    uri: String,
     modifier: Modifier = Modifier,
 ) {
     SketchesAsyncImage(
@@ -85,7 +84,7 @@ private fun SketchesImageMediaItem(
 
 @Composable
 private fun SketchesVideoMediaItem(
-    uri: Uri,
+    uri: String,
     iconPadding: Dp,
     modifier: Modifier = Modifier,
 ) {

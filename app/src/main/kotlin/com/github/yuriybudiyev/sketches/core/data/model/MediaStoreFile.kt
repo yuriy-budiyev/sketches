@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.data.model
 
-import android.net.Uri
 import com.github.yuriybudiyev.sketches.core.common.content.MediaType
 
 data class MediaStoreFile(
@@ -33,5 +32,5 @@ data class MediaStoreFile(
     val dateAdded: Long,
     val mediaType: MediaType,
     val mimeType: String,
-    val uri: Uri,
+    val uri: String,
 )
