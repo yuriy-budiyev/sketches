@@ -26,5 +26,5 @@ package com.github.yuriybudiyev.sketches.core.common.constants
 
 object SketchesConstants {
 
-    const val NO_ID: Long = Long.MIN_VALUE
+    const val NoId: Long = Long.MIN_VALUE
 }

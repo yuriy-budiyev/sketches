@@ -88,5 +88,5 @@ class BucketScreenViewModel @Inject constructor(
     }
 
     private var currentJob: Job? = null
-    private var currentBucketId: Long = SketchesConstants.NO_ID
+    private var currentBucketId: Long = SketchesConstants.NoId
 }

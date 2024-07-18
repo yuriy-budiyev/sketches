@@ -62,12 +62,12 @@ class MediaStoreRepositoryImpl @Inject constructor(
                     MediaStore.MediaColumns.DATE_ADDED,
                     MediaStore.MediaColumns.MIME_TYPE,
                 ),
-                if (bucketId != SketchesConstants.NO_ID) {
+                if (bucketId != SketchesConstants.NoId) {
                     "${MediaStore.MediaColumns.BUCKET_ID}=?"
                 } else {
                     null
                 },
-                if (bucketId != SketchesConstants.NO_ID) {
+                if (bucketId != SketchesConstants.NoId) {
                     arrayOf(bucketId.toString())
                 } else {
                     null

@@ -40,7 +40,7 @@ import kotlinx.serialization.Serializable
 fun NavController.navigateToImageScreen(
     imageIndex: Int,
     imageId: Long,
-    bucketId: Long = SketchesConstants.NO_ID,
+    bucketId: Long = SketchesConstants.NoId,
     navOptions: NavOptions? = null,
 ) {
     navigate(

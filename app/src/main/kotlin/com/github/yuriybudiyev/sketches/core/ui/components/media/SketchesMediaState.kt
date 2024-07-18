@@ -157,7 +157,7 @@ interface SketchesMediaState {
 
     companion object {
 
-        const val UNKNOWN_TIME: Long = Long.MIN_VALUE
+        const val UnknownTime: Long = Long.MIN_VALUE
     }
 }
 
@@ -374,10 +374,10 @@ private class SketchesMediaStateImpl(
                 if (contentDuration != C.TIME_UNSET) {
                     contentDuration.coerceAtLeast(0L)
                 } else {
-                    SketchesMediaState.UNKNOWN_TIME
+                    SketchesMediaState.UnknownTime
                 }
             },
-            unavailable = { SketchesMediaState.UNKNOWN_TIME },
+            unavailable = { SketchesMediaState.UnknownTime },
         )
 
     override var duration: Long by mutableLongStateOf(durationInternal())
@@ -395,10 +395,10 @@ private class SketchesMediaStateImpl(
                     position = contentPosition,
                     duration = contentDuration,
                     unknownToCheck = C.TIME_UNSET,
-                    unknownToReturn = SketchesMediaState.UNKNOWN_TIME
+                    unknownToReturn = SketchesMediaState.UnknownTime
                 )
             },
-            unavailable = { SketchesMediaState.UNKNOWN_TIME },
+            unavailable = { SketchesMediaState.UnknownTime },
         )
 
     override var position: Long by mutableLongStateOf(positionInternal())
@@ -411,8 +411,8 @@ private class SketchesMediaStateImpl(
     private fun correctPosition(
         position: Long = this.position,
         duration: Long = this.duration,
-        unknownToCheck: Long = SketchesMediaState.UNKNOWN_TIME,
-        unknownToReturn: Long = SketchesMediaState.UNKNOWN_TIME,
+        unknownToCheck: Long = SketchesMediaState.UnknownTime,
+        unknownToReturn: Long = SketchesMediaState.UnknownTime,
     ): Long =
         when {
             position != unknownToCheck && duration != unknownToCheck -> {
@@ -442,7 +442,7 @@ private class SketchesMediaStateImpl(
         position: Long = this.position,
         duration: Long = this.duration,
     ): Boolean =
-        if (position != SketchesMediaState.UNKNOWN_TIME && duration != SketchesMediaState.UNKNOWN_TIME) {
+        if (position != SketchesMediaState.UnknownTime && duration != SketchesMediaState.UnknownTime) {
             position == duration
         } else {
             false
@@ -452,7 +452,7 @@ private class SketchesMediaStateImpl(
         player.callWithCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
             stopPositionPeriodicUpdate()
             val correctedPosition = correctPosition(position)
-            if (correctedPosition != SketchesMediaState.UNKNOWN_TIME) {
+            if (correctedPosition != SketchesMediaState.UnknownTime) {
                 seekTo(correctedPosition)
                 updatePosition(correctedPosition)
             }
@@ -629,11 +629,11 @@ private class SketchesMediaStateImplSaver(
 
     private object Keys {
 
-        const val Playing = "playing"
-        const val VolumeEnabled = "volume_enabled"
-        const val RepeatEnabled = "repeat_enabled"
-        const val Position = "position"
-        const val Uri = "uri"
+        const val Playing: String = "playing"
+        const val VolumeEnabled: String = "volume_enabled"
+        const val RepeatEnabled: String = "repeat_enabled"
+        const val Position: String = "position"
+        const val Uri: String = "uri"
     }
 }
 

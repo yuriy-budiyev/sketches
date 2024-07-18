@@ -30,7 +30,7 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
 interface MediaStoreRepository {
 
-    suspend fun getFiles(bucketId: Long = SketchesConstants.NO_ID): List<MediaStoreFile>
+    suspend fun getFiles(bucketId: Long = SketchesConstants.NoId): List<MediaStoreFile>
 
     suspend fun deleteFile(uri: String): Boolean
 

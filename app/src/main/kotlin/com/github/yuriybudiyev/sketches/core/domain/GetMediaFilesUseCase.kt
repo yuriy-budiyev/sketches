@@ -33,6 +33,6 @@ import javax.inject.Inject
 @Reusable
 class GetMediaFilesUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    suspend operator fun invoke(bucketId: Long = SketchesConstants.NO_ID): List<MediaStoreFile> =
+    suspend operator fun invoke(bucketId: Long = SketchesConstants.NoId): List<MediaStoreFile> =
         repository.getFiles(bucketId)
 }

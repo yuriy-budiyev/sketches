@@ -202,13 +202,13 @@ fun SketchesMediaController(
         val position = state.position
         val duration = state.duration
         SketchesSlider(
-            value = if (position != SketchesMediaState.UNKNOWN_TIME && duration != SketchesMediaState.UNKNOWN_TIME) {
+            value = if (position != SketchesMediaState.UnknownTime && duration != SketchesMediaState.UnknownTime) {
                 (position.toDouble() / duration.toDouble()).toFloat()
             } else {
                 0.0F
             },
             onValueChange = { value ->
-                if (duration != SketchesMediaState.UNKNOWN_TIME) {
+                if (duration != SketchesMediaState.UnknownTime) {
                     val newPosition = (duration.toDouble() * value.toDouble()).roundToLong()
                     coroutineScope.launch {
                         state.seek(newPosition)
