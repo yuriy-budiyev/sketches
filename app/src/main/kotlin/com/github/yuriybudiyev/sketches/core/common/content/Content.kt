@@ -27,7 +27,12 @@ package com.github.yuriybudiyev.sketches.core.common.content
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import com.github.yuriybudiyev.sketches.core.data.model.MediaType
+
+enum class MediaType {
+
+    Image,
+    Video
+}
 
 fun contentUriFor(mediaType: MediaType): Uri =
     when (mediaType) {

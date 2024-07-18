@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.data.model
 
 import android.net.Uri
+import com.github.yuriybudiyev.sketches.core.common.content.MediaType
 
 data class MediaStoreFile(
     val id: Long,
