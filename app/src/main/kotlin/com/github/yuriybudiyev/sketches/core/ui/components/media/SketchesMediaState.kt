@@ -89,7 +89,7 @@ fun rememberSketchesMediaState(
 }
 
 @Stable
-interface SketchesMediaState {
+sealed interface SketchesMediaState {
 
     val isLoading: Boolean
 
