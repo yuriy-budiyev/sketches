@@ -125,8 +125,8 @@ fun ImageRoute(
     }
     ImageScreen(
         uiState = uiState,
-        coroutineScope,
-        { index, file ->
+        coroutineScope = coroutineScope,
+        onChange = { index, file ->
             coroutineScope.launch {
                 viewModel.setCurrentMediaData(
                     index,
