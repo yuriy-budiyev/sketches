@@ -28,7 +28,6 @@ import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
-import androidx.collection.MutableLongObjectMap
 import androidx.core.database.getStringOrNull
 import com.github.yuriybudiyev.sketches.core.common.constants.SketchesConstants
 import com.github.yuriybudiyev.sketches.core.common.content.MediaType
@@ -131,7 +130,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
 
     private suspend fun collectBucketsInfo(
         mediaType: MediaType,
-        destination: MutableLongObjectMap<BucketInfo>,
+        destination: MutableMap<Long, BucketInfo>,
     ) {
         val contentUri = contentUriFor(mediaType)
         val cursor = withContext(Dispatchers.IO) {
@@ -187,7 +186,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getBuckets(): List<MediaStoreBucket> {
-        val bucketsInfo = MutableLongObjectMap<BucketInfo>(256)
+        val bucketsInfo = LinkedHashMap<Long, BucketInfo>()
         collectBucketsInfo(
             MediaType.Image,
             bucketsInfo
@@ -197,7 +196,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
             bucketsInfo
         )
         val buckets = ArrayList<MediaStoreBucket>(bucketsInfo.size)
-        bucketsInfo.forEachValue { info ->
+        bucketsInfo.forEach { (_, info) ->
             buckets += MediaStoreBucket(
                 info.id,
                 info.name,
