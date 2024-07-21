@@ -23,3 +23,21 @@
  */
 
 package com.github.yuriybudiyev.sketches.core.common.collections
+
+fun <K, V> linkedHashMapWithExpectedSize(
+    expectedSize: Int,
+    accessOrder: Boolean = false,
+): LinkedHashMap<K, V> =
+    LinkedHashMap(
+        when {
+            expectedSize < 0 -> throw IllegalArgumentException("Expected size can't be less than zero")
+            expectedSize < 3 -> expectedSize + 1
+            expectedSize < IntMaxPowerOfTwo -> ((expectedSize / LoadFactor) + 1.0F).toInt()
+            else -> Int.MAX_VALUE
+        },
+        LoadFactor,
+        accessOrder
+    )
+
+private const val LoadFactor: Float = 0.75F
+private const val IntMaxPowerOfTwo: Int = 1 shl (Int.SIZE_BITS - 2)
