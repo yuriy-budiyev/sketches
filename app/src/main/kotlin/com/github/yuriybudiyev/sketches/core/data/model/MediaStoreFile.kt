@@ -24,7 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.data.model
 
-import com.github.yuriybudiyev.sketches.core.common.content.MediaType
+import com.github.yuriybudiyev.sketches.core.common.platform.content.MediaType
 
 data class MediaStoreFile(
     val id: Long,
