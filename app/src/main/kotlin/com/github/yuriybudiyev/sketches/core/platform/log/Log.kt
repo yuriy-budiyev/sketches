@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.platform.log
 
 import android.util.Log
+import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
 
 @Suppress("unused")
 fun log(
@@ -33,13 +34,13 @@ fun log(
 ): Boolean =
     if (throwable != null) {
         Log.d(
-            LogTag,
+            SketchesConstants.DebugLogTag,
             message.toString(),
             throwable
         ) > 0
     } else {
         Log.d(
-            LogTag,
+            SketchesConstants.DebugLogTag,
             message.toString()
         ) > 0
     }
@@ -48,10 +49,8 @@ fun log(
 fun logStackTrace(message: Any? = "Stack trace"): Boolean {
     val exception = Exception("Stack trace")
     return Log.d(
-        LogTag,
+        SketchesConstants.DebugLogTag,
         message.toString(),
         exception
     ) > 0
 }
-
-private const val LogTag: String = "SketchesDebug"
