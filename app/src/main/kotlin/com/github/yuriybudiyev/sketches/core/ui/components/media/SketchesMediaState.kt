@@ -58,6 +58,7 @@ import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -154,11 +155,6 @@ sealed interface SketchesMediaState {
     )
 
     fun close()
-
-    companion object {
-
-        const val UnknownTime: Long = Long.MIN_VALUE
-    }
 }
 
 @Stable
@@ -374,10 +370,10 @@ private class SketchesMediaStateImpl(
                 if (contentDuration != C.TIME_UNSET) {
                     contentDuration.coerceAtLeast(0L)
                 } else {
-                    SketchesMediaState.UnknownTime
+                    SketchesConstants.UnknownTime
                 }
             },
-            unavailable = { SketchesMediaState.UnknownTime },
+            unavailable = { SketchesConstants.UnknownTime },
         )
 
     override var duration: Long by mutableLongStateOf(durationInternal())
@@ -395,10 +391,10 @@ private class SketchesMediaStateImpl(
                     position = contentPosition,
                     duration = contentDuration,
                     unknownToCheck = C.TIME_UNSET,
-                    unknownToReturn = SketchesMediaState.UnknownTime
+                    unknownToReturn = SketchesConstants.UnknownTime
                 )
             },
-            unavailable = { SketchesMediaState.UnknownTime },
+            unavailable = { SketchesConstants.UnknownTime },
         )
 
     override var position: Long by mutableLongStateOf(positionInternal())
@@ -411,8 +407,8 @@ private class SketchesMediaStateImpl(
     private fun correctPosition(
         position: Long = this.position,
         duration: Long = this.duration,
-        unknownToCheck: Long = SketchesMediaState.UnknownTime,
-        unknownToReturn: Long = SketchesMediaState.UnknownTime,
+        unknownToCheck: Long = SketchesConstants.UnknownTime,
+        unknownToReturn: Long = SketchesConstants.UnknownTime,
     ): Long =
         when {
             position != unknownToCheck && duration != unknownToCheck -> {
@@ -442,7 +438,7 @@ private class SketchesMediaStateImpl(
         position: Long = this.position,
         duration: Long = this.duration,
     ): Boolean =
-        if (position != SketchesMediaState.UnknownTime && duration != SketchesMediaState.UnknownTime) {
+        if (position != SketchesConstants.UnknownTime && duration != SketchesConstants.UnknownTime) {
             position == duration
         } else {
             false
@@ -452,7 +448,7 @@ private class SketchesMediaStateImpl(
         player.callWithCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
             stopPositionPeriodicUpdate()
             val correctedPosition = correctPosition(position)
-            if (correctedPosition != SketchesMediaState.UnknownTime) {
+            if (correctedPosition != SketchesConstants.UnknownTime) {
                 seekTo(correctedPosition)
                 updatePosition(correctedPosition)
             }

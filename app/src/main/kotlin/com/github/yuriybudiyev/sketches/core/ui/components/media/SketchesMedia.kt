@@ -47,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
@@ -202,13 +203,16 @@ fun SketchesMediaController(
         val position = state.position
         val duration = state.duration
         SketchesSlider(
-            value = if (position != SketchesMediaState.UnknownTime && duration != SketchesMediaState.UnknownTime) {
+            value = if (
+                position != SketchesConstants.UnknownTime
+                && duration != SketchesConstants.UnknownTime
+            ) {
                 (position.toDouble() / duration.toDouble()).toFloat()
             } else {
                 0.0F
             },
             onValueChange = { value ->
-                if (duration != SketchesMediaState.UnknownTime) {
+                if (duration != SketchesConstants.UnknownTime) {
                     val newPosition = (duration.toDouble() * value.toDouble()).roundToLong()
                     coroutineScope.launch {
                         state.seek(newPosition)
