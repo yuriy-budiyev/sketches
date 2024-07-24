@@ -33,10 +33,10 @@ import androidx.annotation.CallSuper
 import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.common.platform.content.MediaType
-import com.github.yuriybudiyev.sketches.core.common.platform.content.contentUriFor
-import com.github.yuriybudiyev.sketches.core.common.platform.permissions.media.MediaAccess
-import com.github.yuriybudiyev.sketches.core.common.platform.permissions.media.checkMediaAccess
+import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
+import com.github.yuriybudiyev.sketches.core.platform.content.contentUriFor
+import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
+import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

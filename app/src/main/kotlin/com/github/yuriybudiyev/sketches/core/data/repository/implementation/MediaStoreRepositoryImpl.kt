@@ -31,11 +31,11 @@ import android.provider.MediaStore
 import androidx.collection.MutableLongObjectMap
 import androidx.core.database.getStringOrNull
 import com.github.yuriybudiyev.sketches.core.common.constants.SketchesConstants
-import com.github.yuriybudiyev.sketches.core.common.platform.content.MediaType
-import com.github.yuriybudiyev.sketches.core.common.platform.content.contentUriFor
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
+import com.github.yuriybudiyev.sketches.core.platform.content.contentUriFor
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

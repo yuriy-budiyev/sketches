@@ -62,9 +62,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.common.platform.permissions.media.MediaAccess
-import com.github.yuriybudiyev.sketches.core.common.platform.permissions.media.checkMediaAccess
-import com.github.yuriybudiyev.sketches.core.common.platform.permissions.media.rememberMediaAccessRequestLauncher
+import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
+import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
+import com.github.yuriybudiyev.sketches.core.platform.permissions.media.rememberMediaAccessRequestLauncher
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesOutlinedButton
