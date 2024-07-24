@@ -31,7 +31,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.github.yuriybudiyev.sketches.core.common.constants.SketchesConstants
+import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.navigation.NavigationRoute
 import com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.common.constants
+package com.github.yuriybudiyev.sketches.core.constants
 
 object SketchesConstants {
 

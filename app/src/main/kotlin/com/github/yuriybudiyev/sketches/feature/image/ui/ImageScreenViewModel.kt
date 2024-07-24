@@ -26,7 +26,7 @@ package com.github.yuriybudiyev.sketches.feature.image.ui
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.common.constants.SketchesConstants
+import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFileUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel

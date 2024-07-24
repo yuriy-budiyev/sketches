@@ -24,7 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.data.repository
 
-import com.github.yuriybudiyev.sketches.core.common.constants.SketchesConstants
+import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
