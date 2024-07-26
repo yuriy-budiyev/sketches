@@ -198,9 +198,9 @@ private fun BucketsScreenLayout(
                         bottom = 4.dp,
                     ),
                     color = colorScheme.onBackground,
+                    fontSize = 14.sp,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
-                    fontSize = 14.sp,
                 )
             }
         }
