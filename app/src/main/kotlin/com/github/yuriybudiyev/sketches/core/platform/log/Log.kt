@@ -45,13 +45,11 @@ fun log(
     }
 
 @Suppress("unused")
-fun logStackTrace(message: Any? = "Stack trace"): Boolean {
-    val exception = Exception("Stack trace")
-    return Log.d(
+fun logStackTrace(message: Any? = "Stack trace"): Boolean =
+    Log.d(
         LogTag,
         message.toString(),
-        exception
+        Exception("Stack trace")
     ) > 0
-}
 
 private const val LogTag: String = "SketchesDebug"
