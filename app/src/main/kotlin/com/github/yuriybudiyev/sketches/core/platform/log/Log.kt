@@ -54,4 +54,4 @@ fun logStackTrace(message: Any? = "Stack trace"): Boolean {
     ) > 0
 }
 
-const val LogTag: String = "SketchesDebug"
+private const val LogTag: String = "SketchesDebug"
