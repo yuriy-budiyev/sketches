@@ -198,7 +198,7 @@ private class SketchesMediaStateImpl(
             stopPositionPeriodicUpdate()
             updatePosition()
             if (checkEndOfContent()) {
-                player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
+                player.withCheck(Player.COMMAND_PLAY_PAUSE) {
                     playWhenReady = false
                 }
             }
@@ -213,7 +213,7 @@ private class SketchesMediaStateImpl(
     }
 
     override fun play() {
-        player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
+        player.withCheck(Player.COMMAND_PLAY_PAUSE) {
             if (checkEndOfContent()) {
                 seek(0L)
             }
@@ -222,20 +222,20 @@ private class SketchesMediaStateImpl(
     }
 
     override fun pause() {
-        player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
+        player.withCheck(Player.COMMAND_PLAY_PAUSE) {
             pause()
         }
     }
 
     override fun stop() {
-        player.callWithCheck(Player.COMMAND_STOP) {
+        player.withCheck(Player.COMMAND_STOP) {
             pause()
             seek(0L)
         }
     }
 
     private fun isVolumeEnabledInternal(): Boolean =
-        player.callWithCheck(
+        player.withCheck(
             Player.COMMAND_GET_VOLUME,
             available = { volume > 0.0F },
             unavailable = { false },
@@ -249,13 +249,13 @@ private class SketchesMediaStateImpl(
     }
 
     override fun enableVolume() {
-        player.callWithCheck(Player.COMMAND_SET_VOLUME) {
+        player.withCheck(Player.COMMAND_SET_VOLUME) {
             volume = 1.0F
         }
     }
 
     override fun disableVolume() {
-        player.callWithCheck(Player.COMMAND_SET_VOLUME) {
+        player.withCheck(Player.COMMAND_SET_VOLUME) {
             volume = 0.0F
         }
     }
@@ -277,13 +277,13 @@ private class SketchesMediaStateImpl(
     }
 
     override fun enableRepeat() {
-        player.callWithCheck(Player.COMMAND_SET_REPEAT_MODE) {
+        player.withCheck(Player.COMMAND_SET_REPEAT_MODE) {
             repeatMode = Player.REPEAT_MODE_ALL
         }
     }
 
     override fun disableRepeat() {
-        player.callWithCheck(Player.COMMAND_SET_REPEAT_MODE) {
+        player.withCheck(Player.COMMAND_SET_REPEAT_MODE) {
             repeatMode = Player.REPEAT_MODE_OFF
         }
     }
@@ -325,49 +325,49 @@ private class SketchesMediaStateImpl(
     }
 
     override fun setVideoView(view: SurfaceView) {
-        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+        player.withCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
             setVideoSurfaceView(view)
         }
     }
 
     override fun clearVideoView(view: SurfaceView) {
-        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+        player.withCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
             clearVideoSurfaceView(view)
         }
     }
 
     override fun setVideoView(view: TextureView) {
-        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+        player.withCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
             setVideoTextureView(view)
         }
     }
 
     override fun clearVideoView(view: TextureView) {
-        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+        player.withCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
             clearVideoTextureView(view)
         }
     }
 
     override fun setVideoSurface(surface: Surface) {
-        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+        player.withCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
             setVideoSurface(surface)
         }
     }
 
     override fun clearVideoSurface(surface: Surface) {
-        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+        player.withCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
             clearVideoSurface(surface)
         }
     }
 
     override fun clearVideoSurfaceOrView() {
-        player.callWithCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
+        player.withCheck(Player.COMMAND_SET_VIDEO_SURFACE) {
             clearVideoSurface()
         }
     }
 
     private fun durationInternal(): Long =
-        player.callWithCheck(
+        player.withCheck(
             Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
             available = {
                 val contentDuration = contentDuration
@@ -388,7 +388,7 @@ private class SketchesMediaStateImpl(
     }
 
     private fun positionInternal(): Long =
-        player.callWithCheck(
+        player.withCheck(
             Player.COMMAND_GET_CURRENT_MEDIA_ITEM,
             available = {
                 correctPosition(
@@ -452,7 +452,7 @@ private class SketchesMediaStateImpl(
         }
 
     override fun seek(position: Long) {
-        player.callWithCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
+        player.withCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {
             stopPositionPeriodicUpdate()
             val correctedPosition = correctPosition(position)
             if (correctedPosition != SketchesMediaState.UnknownTime) {
@@ -497,14 +497,14 @@ private class SketchesMediaStateImpl(
         volumeEnabled: Boolean,
         repeatEnabled: Boolean,
     ) {
-        player.callWithCheck(Player.COMMAND_CHANGE_MEDIA_ITEMS) {
+        player.withCheck(Player.COMMAND_CHANGE_MEDIA_ITEMS) {
             setMediaItem(
                 MediaItem.fromUri(uri),
                 position
             )
             this@SketchesMediaStateImpl.uri = uri
         }
-        player.callWithCheck(Player.COMMAND_PREPARE) {
+        player.withCheck(Player.COMMAND_PREPARE) {
             prepare()
         }
         if (volumeEnabled) {
@@ -517,7 +517,7 @@ private class SketchesMediaStateImpl(
         } else {
             disableRepeat()
         }
-        player.callWithCheck(Player.COMMAND_PLAY_PAUSE) {
+        player.withCheck(Player.COMMAND_PLAY_PAUSE) {
             setPlayWhenReady(playWhenReady)
         }
     }
@@ -525,16 +525,16 @@ private class SketchesMediaStateImpl(
     private fun releasePlayer() {
         uri = null
         stopPositionPeriodicUpdate()
-        player.callWithCheck(Player.COMMAND_RELEASE) {
+        player.withCheck(Player.COMMAND_RELEASE) {
             release()
         }
     }
 
     override fun close() {
-        player.callWithCheck(Player.COMMAND_STOP) {
+        player.withCheck(Player.COMMAND_STOP) {
             player.stop()
         }
-        player.callWithCheck(Player.COMMAND_CHANGE_MEDIA_ITEMS) {
+        player.withCheck(Player.COMMAND_CHANGE_MEDIA_ITEMS) {
             player.clearMediaItems()
         }
         releasePlayer()
@@ -641,7 +641,7 @@ private class SketchesMediaStateImplSaver(
 }
 
 @kotlin.OptIn(ExperimentalContracts::class)
-private inline fun Player.callWithCheck(
+private inline fun Player.withCheck(
     @Player.Command
     command: Int,
     available: Player.() -> Unit,
@@ -658,7 +658,7 @@ private inline fun Player.callWithCheck(
 }
 
 @kotlin.OptIn(ExperimentalContracts::class)
-private inline fun <T> Player.callWithCheck(
+private inline fun <T> Player.withCheck(
     @Player.Command
     command: Int,
     available: Player.() -> T,
