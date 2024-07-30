@@ -27,6 +27,4 @@ package com.github.yuriybudiyev.sketches.core.constants
 object SketchesConstants {
 
     const val NoId: Long = Long.MIN_VALUE
-    const val UnknownTime: Long = Long.MIN_VALUE
-    const val DebugLogTag: String = "SketchesDebug"
 }
