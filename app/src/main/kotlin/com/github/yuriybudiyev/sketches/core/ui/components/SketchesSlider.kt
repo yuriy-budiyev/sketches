@@ -105,8 +105,7 @@ fun SketchesSlider(
         track = {
             SliderDefaults.Track(
                 sliderState = it,
-                modifier = Modifier
-                    .height(trackHeight),
+                modifier = Modifier.height(trackHeight),
                 thumbTrackGapSize = 0.dp,
                 trackInsideCornerSize = 0.dp,
                 drawStopIndicator = null,
