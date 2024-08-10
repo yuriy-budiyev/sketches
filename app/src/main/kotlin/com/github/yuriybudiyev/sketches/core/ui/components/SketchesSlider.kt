@@ -50,8 +50,13 @@ fun SketchesSlider(
     value: Float,
     onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
-    thumbColor: Color = MaterialTheme.colorScheme.onBackground,
-    trackColor: Color = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlphaLowTransparency),
+    thumbColor: Color = MaterialTheme
+        .colorScheme
+        .onBackground,
+    trackColor: Color = MaterialTheme
+        .colorScheme
+        .onBackground
+        .copy(alpha = SketchesColors.UiAlphaLowTransparency),
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val trackHeight = 4.dp
