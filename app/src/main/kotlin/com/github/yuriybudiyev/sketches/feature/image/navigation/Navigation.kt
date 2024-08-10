@@ -53,7 +53,9 @@ fun NavController.navigateToImageScreen(
     )
 }
 
-fun NavGraphBuilder.registerImageScreen(onShare: (index: Int, file: MediaStoreFile) -> Unit) {
+fun NavGraphBuilder.registerImageScreen(
+    onShare: (index: Int, file: MediaStoreFile) -> Unit,
+) {
     composable<ImageRoute>(
         enterTransition = { fadeIn() },
         exitTransition = { fadeOut() },

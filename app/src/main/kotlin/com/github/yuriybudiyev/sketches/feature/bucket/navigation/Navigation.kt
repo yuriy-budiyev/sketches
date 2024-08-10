@@ -50,7 +50,9 @@ fun NavController.navigateToBucketScreen(
     )
 }
 
-fun NavGraphBuilder.registerBucketScreen(onImageClick: (index: Int, file: MediaStoreFile) -> Unit) {
+fun NavGraphBuilder.registerBucketScreen(
+    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+) {
     composable<BucketRoute>(
         enterTransition = { fadeIn() },
         exitTransition = { fadeOut() },
