@@ -30,6 +30,7 @@ androidx-test-espresso = "3.6.1"
 androidx-test-uiautomator = "2.3.0"
 androidx-tracing = "1.2.0"
 hilt = "2.52"
+guava = "33.3.0-android"
 okhttp = "4.12.0"
 okio = "3.9.1"
 coil = "2.7.0"
@@ -143,6 +144,7 @@ androidx-tracing-ktx = { group = "androidx.tracing", name = "tracing-ktx", versi
 hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-test = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okio = { group = "com.squareup.okio", name = "okio", version.ref = "okio" }
 coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
