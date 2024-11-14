@@ -26,11 +26,13 @@ package com.github.yuriybudiyev.sketches.main.imageloader.di
 
 import android.content.Context
 import android.os.Build
-import coil.ImageLoader
-import coil.decode.GifDecoder
-import coil.decode.ImageDecoderDecoder
-import coil.decode.SvgDecoder
-import coil.decode.VideoFrameDecoder
+import coil3.ImageLoader
+import coil3.gif.AnimatedImageDecoder
+import coil3.gif.GifDecoder
+import coil3.serviceLoaderEnabled
+import coil3.svg.SvgDecoder
+import coil3.video.VideoFrameDecoder
+
 import com.github.yuriybudiyev.sketches.main.imageloader.executor.ImageLoaderExecutor
 import dagger.Module
 import dagger.Provides
@@ -49,23 +51,19 @@ object ImageLoaderModule {
     fun provideImageLoader(
         @ApplicationContext
         context: Context,
-    ): ImageLoader {
-        val dispatcher = ImageLoaderExecutor().asCoroutineDispatcher()
-        return ImageLoader
+    ): ImageLoader =
+        ImageLoader
             .Builder(context)
+            .serviceLoaderEnabled(false)
+            .coroutineContext(ImageLoaderExecutor().asCoroutineDispatcher())
             .components {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    add(ImageDecoderDecoder.Factory())
+                    add(AnimatedImageDecoder.Factory())
                 } else {
                     add(GifDecoder.Factory())
                 }
                 add(SvgDecoder.Factory())
                 add(VideoFrameDecoder.Factory())
             }
-            .fetcherDispatcher(dispatcher)
-            .decoderDispatcher(dispatcher)
-            .transformationDispatcher(dispatcher)
-            .interceptorDispatcher(dispatcher)
             .build()
-    }
 }
