@@ -4,7 +4,7 @@ java = "11"
 kotlin = "2.0.21"
 kotlin-coroutines = "1.9.0"
 kotlin-serialization = "1.7.3"
-kotlin-ksp = "2.0.21-1.0.27"
+kotlin-ksp = "2.0.21-1.0.28"
 androidx-annotation = "1.9.1"
 androidx-annotation-experimental = "1.4.1"
 androidx-core = "1.15.0"
@@ -31,9 +31,8 @@ androidx-test-uiautomator = "2.3.0"
 androidx-tracing = "1.2.0"
 hilt = "2.52"
 guava = "33.3.1-android"
-okhttp = "4.12.0"
 okio = "3.9.1"
-coil = "3.0.2"
+coil = "3.0.3"
 junit = "4.13.2"
 
 [plugins]
@@ -119,7 +118,6 @@ androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx"
 androidx-media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "androidx-media3" }
 androidx-media3-database = { group = "androidx.media3", name = "media3-database", version.ref = "androidx-media3" }
 androidx-media3-datasource = { group = "androidx.media3", name = "media3-datasource", version.ref = "androidx-media3" }
-androidx-media3-datasource-okhttp = { group = "androidx.media3", name = "media3-datasource-okhttp", version.ref = "androidx-media3" }
 androidx-media3-container = { group = "androidx.media3", name = "media3-container", version.ref = "androidx-media3" }
 androidx-media3-extractor = { group = "androidx.media3", name = "media3-extractor", version.ref = "androidx-media3" }
 androidx-media3-decoder = { group = "androidx.media3", name = "media3-decoder", version.ref = "androidx-media3" }
@@ -145,7 +143,6 @@ hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt
 hilt-test = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okio = { group = "com.squareup.okio", name = "okio", version.ref = "okio" }
 coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
@@ -255,7 +252,6 @@ androidx-media3 = [
     "androidx-media3-common",
     "androidx-media3-database",
     "androidx-media3-datasource",
-    "androidx-media3-datasource-okhttp",
     "androidx-media3-decoder",
     "androidx-media3-container",
     "androidx-media3-extractor",

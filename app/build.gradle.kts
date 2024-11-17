@@ -83,7 +83,6 @@ dependencies {
     implementation(libs.bundles.hilt)
     implementation(libs.bundles.coil)
     implementation(libs.guava)
-    implementation(libs.okhttp)
     implementation(libs.okio)
     ksp(libs.bundles.hilt.compiler)
     debugImplementation(libs.bundles.androidx.compose.tooling)
