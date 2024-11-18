@@ -24,4 +24,11 @@
 
 package com.github.yuriybudiyev.convention
 
-class Placeholder
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+
+class Placeholder: Plugin<Project> {
+
+    override fun apply(target: Project) {
+    }
+}
