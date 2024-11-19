@@ -29,5 +29,17 @@ tasks {
 
 gradlePlugin {
     plugins {
+        register("SketchesApplication") {
+            id = "sketches.plugins.application"
+            implementationClass = "ApplicationConventionPlugin"
+        }
+        register("SketchesFeature") {
+            id = "sketches.plugins.feature"
+            implementationClass = "FeatureConventionPlugin"
+        }
+        register("SketchesLibrary") {
+            id = "sketches.plugins.library"
+            implementationClass = "LibraryConventionPlugin"
+        }
     }
 }
