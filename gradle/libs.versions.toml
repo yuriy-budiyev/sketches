@@ -43,6 +43,9 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+sketches-application = { id = "sketches.plugins.application" }
+sketches-feature = { id = "sketches.plugins.feature" }
+sketches-library = { id = "sketches.plugins.library" }
 
 [libraries]
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
