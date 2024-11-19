@@ -18,18 +18,18 @@ kotlin {
 }
 
 dependencies {
-    compileOnly(libs.bundles.kotlin)
-    compileOnly(libs.kotlin.gradle)
-    compileOnly(libs.kotlin.ksp.gradle)
-    compileOnly(libs.kotlin.compose.gradle)
-    compileOnly(libs.agp)
-    compileOnly(libs.android.tools.common)
+    implementation(libs.bundles.kotlin)
+    implementation(libs.kotlin.gradle)
+    implementation(libs.kotlin.ksp.gradle)
+    implementation(libs.kotlin.compose.gradle)
+    implementation(libs.agp)
+    implementation(libs.android.tools.common)
 }
 
 tasks {
     validatePlugins {
-        enableStricterValidation.set(true)
-        failOnWarning.set(true)
+        enableStricterValidation = true
+        failOnWarning = true
     }
 }
 
