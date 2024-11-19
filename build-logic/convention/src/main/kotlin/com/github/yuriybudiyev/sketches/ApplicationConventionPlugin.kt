@@ -73,6 +73,7 @@
 package com.github.yuriybudiyev.sketches
 
 import com.android.build.api.dsl.ApplicationExtension
+import com.github.yuriybudiyev.sketches.utils.configureCommon
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -82,6 +83,10 @@ class ApplicationConventionPlugin: Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             extensions.configure<ApplicationExtension> {
+                defaultConfig {
+                    targetSdk = 35
+                }
+                configureCommon(this)
             }
         }
     }

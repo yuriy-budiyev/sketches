@@ -28,8 +28,8 @@ dependencies {
 
 tasks {
     validatePlugins {
-        enableStricterValidation = true
-        failOnWarning = true
+        enableStricterValidation.set(true)
+        failOnWarning.set(true)
     }
 }
 
