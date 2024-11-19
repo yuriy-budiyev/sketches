@@ -18,6 +18,12 @@ kotlin {
 }
 
 dependencies {
+    implementation(libs.bundles.kotlin)
+    implementation(libs.kotlin.gradle)
+    implementation(libs.kotlin.ksp.gradle)
+    implementation(libs.kotlin.compose.gradle)
+    implementation(libs.agp)
+    implementation(libs.android.tools.common)
 }
 
 tasks {
@@ -31,15 +37,15 @@ gradlePlugin {
     plugins {
         register("SketchesApplication") {
             id = "sketches.plugins.application"
-            implementationClass = "ApplicationConventionPlugin"
+            implementationClass = "com.github.yuriybudiyev.sketches.ApplicationConventionPlugin"
         }
         register("SketchesFeature") {
             id = "sketches.plugins.feature"
-            implementationClass = "FeatureConventionPlugin"
+            implementationClass = "com.github.yuriybudiyev.sketches.FeatureConventionPlugin"
         }
         register("SketchesLibrary") {
             id = "sketches.plugins.library"
-            implementationClass = "LibraryConventionPlugin"
+            implementationClass = "com.github.yuriybudiyev.sketches.LibraryConventionPlugin"
         }
     }
 }

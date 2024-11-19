@@ -67,7 +67,7 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring(libs.desugar)
+    coreLibraryDesugaring(libs.android.tools.desugar)
     implementation(libs.bundles.kotlin)
     implementation(libs.bundles.androidx.annotation)
     implementation(libs.bundles.androidx.core)
