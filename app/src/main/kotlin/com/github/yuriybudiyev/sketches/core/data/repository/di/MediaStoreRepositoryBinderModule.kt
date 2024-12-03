@@ -36,5 +36,5 @@ import dagger.hilt.components.SingletonComponent
 interface MediaStoreRepositoryBinderModule {
 
     @Binds
-    fun bindMediaStoreRepository(repository: MediaStoreRepositoryImpl): MediaStoreRepository
+    fun bindMediaStoreRepositoryImplToMediaStoreRepository(repository: MediaStoreRepositoryImpl): MediaStoreRepository
 }
