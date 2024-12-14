@@ -40,13 +40,13 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility(libs.versions.java.get())
+        targetCompatibility(libs.versions.java.get())
         isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = libs.versions.java.get()
     }
 
     buildFeatures {
