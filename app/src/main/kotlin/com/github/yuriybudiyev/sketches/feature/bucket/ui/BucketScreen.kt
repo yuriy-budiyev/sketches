@@ -93,13 +93,13 @@ fun BucketScreen(
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {
-            BucketScreenUiState.Empty -> {
+            is BucketScreenUiState.Empty -> {
                 SketchesCenteredMessage(
                     text = stringResource(id = R.string.no_images_found),
                     modifier = Modifier.matchParentSize(),
                 )
             }
-            BucketScreenUiState.Loading -> {
+            is BucketScreenUiState.Loading -> {
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
             }
             is BucketScreenUiState.Bucket -> {

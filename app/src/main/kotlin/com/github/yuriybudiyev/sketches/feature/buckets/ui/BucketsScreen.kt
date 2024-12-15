@@ -97,13 +97,13 @@ fun BucketsScreen(
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {
-            BucketsScreenUiState.Empty -> {
+            is BucketsScreenUiState.Empty -> {
                 SketchesCenteredMessage(
                     text = stringResource(id = R.string.no_buckets_found),
                     modifier = Modifier.matchParentSize(),
                 )
             }
-            BucketsScreenUiState.Loading -> {
+            is BucketsScreenUiState.Loading -> {
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
             }
             is BucketsScreenUiState.Buckets -> {
