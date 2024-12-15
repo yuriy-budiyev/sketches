@@ -160,13 +160,13 @@ fun ImageScreen(
             .fillMaxSize()
     ) {
         when (uiState) {
-            ImageScreenUiState.Empty -> {
+            is ImageScreenUiState.Empty -> {
                 SketchesCenteredMessage(
                     text = stringResource(id = R.string.no_images_found),
                     modifier = Modifier.matchParentSize(),
                 )
             }
-            ImageScreenUiState.Loading -> {
+            is ImageScreenUiState.Loading -> {
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
             }
             is ImageScreenUiState.Image -> {
