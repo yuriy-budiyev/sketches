@@ -153,7 +153,6 @@ private fun BucketScreenLayout(
                     RectangleShape
                 )
                 .align(Alignment.BottomCenter)
-
         )
     }
 }
