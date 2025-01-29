@@ -1,10 +1,10 @@
 [versions]
 agp = "8.8.0"
 java = "11"
-kotlin = "2.1.0"
+kotlin = "2.1.10"
 kotlin-coroutines = "1.10.1"
 kotlin-serialization = "1.8.0"
-kotlin-ksp = "2.1.0-1.0.29"
+kotlin-ksp = "2.1.10-1.0.29"
 desugar = "2.1.4"
 androidx-annotation = "1.9.1"
 androidx-annotation-experimental = "1.4.1"
