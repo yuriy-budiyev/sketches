@@ -35,7 +35,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.github.yuriybudiyev.sketches.core.navigation.TopLevelNavigationRoute
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.serializer
 
@@ -72,10 +71,7 @@ class SketchesAppState(val navController: NavHostController) {
         }
     }
 
-    @OptIn(
-        InternalSerializationApi::class,
-        ExperimentalSerializationApi::class
-    )
+    @OptIn(InternalSerializationApi::class)
     fun registerTopLevelNavigationRoute(route: TopLevelNavigationRoute) {
         if (
             topLevelRoutesMapInternal.put(
