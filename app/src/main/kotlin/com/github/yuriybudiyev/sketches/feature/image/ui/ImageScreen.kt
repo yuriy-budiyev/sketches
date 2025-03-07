@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
-import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -68,6 +67,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -277,7 +277,7 @@ private fun ImageScreenLayout(
                                 .Builder(
                                     MediaStore.createDeleteRequest(
                                         contextUpdated.contentResolver,
-                                        listOf(Uri.parse(filesUpdated[currentIndex].uri))
+                                        listOf(filesUpdated[currentIndex].uri.toUri())
                                     ).intentSender
                                 )
                                 .build()

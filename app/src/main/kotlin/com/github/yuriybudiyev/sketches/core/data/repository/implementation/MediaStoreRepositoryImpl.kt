@@ -26,10 +26,10 @@ package com.github.yuriybudiyev.sketches.core.data.repository.implementation
 
 import android.content.ContentUris
 import android.content.Context
-import android.net.Uri
 import android.provider.MediaStore
 import androidx.collection.MutableLongObjectMap
 import androidx.core.database.getStringOrNull
+import androidx.core.net.toUri
 import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
@@ -123,7 +123,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     override suspend fun deleteFile(uri: String): Boolean =
         withContext(Dispatchers.IO) {
             context.contentResolver.delete(
-                Uri.parse(uri),
+                uri.toUri(),
                 null,
                 null
             )
