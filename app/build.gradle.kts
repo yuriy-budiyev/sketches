@@ -13,9 +13,9 @@ android {
     defaultConfig {
         applicationId = "com.github.yuriybudiyev.sketches"
         minSdk = 26
-        targetSdk = 35
-        compileSdk = 35
-        buildToolsVersion = "35.0.1"
+        targetSdk = 36
+        compileSdk = 36
+        buildToolsVersion = "36.0.0"
         versionCode = 1
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
