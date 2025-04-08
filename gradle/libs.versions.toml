@@ -2,7 +2,7 @@
 agp = "8.9.1"
 java = "11"
 kotlin = "2.1.20"
-kotlin-coroutines = "1.10.1"
+kotlin-coroutines = "1.10.2"
 kotlin-serialization = "1.8.0"
 kotlin-ksp = "2.1.20-1.0.32"
 android-tools-desugar = "2.1.5"
