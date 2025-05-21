@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import android.content.ClipData
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,15 +32,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.github.yuriybudiyev.sketches.BuildConfig
 import com.github.yuriybudiyev.sketches.R
+import kotlinx.coroutines.launch
 
 @Composable
 fun SketchesErrorMessage(
@@ -47,8 +52,9 @@ fun SketchesErrorMessage(
     modifier: Modifier = Modifier,
 ) {
     if (BuildConfig.DEBUG) {
-        val clipboardManagerUpdated by rememberUpdatedState(LocalClipboardManager.current)
+        val clipboardUpdated by rememberUpdatedState(LocalClipboard.current)
         val thrownUpdated by rememberUpdatedState(thrown)
+        val coroutineScope = rememberCoroutineScope()
         Column(
             modifier = modifier,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -64,11 +70,16 @@ fun SketchesErrorMessage(
                 text = thrownUpdated.toString(),
                 modifier = Modifier
                     .clickable {
-                        clipboardManagerUpdated.setText(
-                            AnnotatedString
-                                .Builder(thrownUpdated.stackTraceToString())
-                                .toAnnotatedString(),
-                        )
+                        coroutineScope.launch {
+                            clipboardUpdated.setClipEntry(
+                                ClipEntry(
+                                    ClipData.newPlainText(
+                                        "Stack trace",
+                                        thrownUpdated.stackTraceToString()
+                                    )
+                                )
+                            )
+                        }
                     }
                     .fillMaxWidth()
                     .padding(16.dp),
