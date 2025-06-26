@@ -44,7 +44,7 @@ import javax.inject.Singleton
 
 @Singleton
 class MediaStoreRepositoryImpl @Inject constructor(
-    @ApplicationContext
+    @param:ApplicationContext
     private val context: Context,
 ): MediaStoreRepository {
 
