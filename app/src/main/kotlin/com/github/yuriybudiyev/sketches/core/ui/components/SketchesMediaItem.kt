@@ -104,7 +104,8 @@ private fun SketchesVideoMediaItem(
                 .align(alignment = Alignment.BottomEnd)
                 .padding(all = iconPadding)
                 .background(
-                    color = colorScheme.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                    color = colorScheme.background
+                        .copy(alpha = SketchesColors.UiAlphaLowTransparency),
                     shape = CircleShape
                 ),
         ) {
