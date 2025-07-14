@@ -125,7 +125,8 @@ fun BucketsScreen(
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
             text = stringResource(id = BucketsRoute.titleRes),
-            backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
+            backgroundColor = MaterialTheme.colorScheme.background
+                .copy(alpha = SketchesColors.UiAlphaLowTransparency),
         )
     }
 }
@@ -148,10 +149,9 @@ private fun BucketsScreenLayout(
             key = { index -> bucketsUpdated[index].id },
         ) { index ->
             val item = bucketsUpdated[index]
-            val smallMaterialShape = MaterialTheme.shapes.small
             Column(
                 modifier = Modifier
-                    .clip(shape = smallMaterialShape)
+                    .clip(shape = MaterialTheme.shapes.small)
                     .clickable {
                         onBucketClickUpdated(
                             index,
@@ -166,11 +166,12 @@ private fun BucketsScreenLayout(
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(ratio = 1.0F)
-                        .clip(shape = smallMaterialShape)
+                        .clip(shape = MaterialTheme.shapes.small)
                         .border(
                             width = SketchesDimens.MediaItemBorderThickness,
-                            color = colorScheme.onBackground.copy(alpha = SketchesColors.UiAlphaHighTransparency),
-                            shape = smallMaterialShape,
+                            color = colorScheme.onBackground
+                                .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                            shape = MaterialTheme.shapes.small,
                         ),
                     contentScale = ContentScale.Crop,
                     enableLoadingIndicator = true,

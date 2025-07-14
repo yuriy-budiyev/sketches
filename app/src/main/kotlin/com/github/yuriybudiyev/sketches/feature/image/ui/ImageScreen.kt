@@ -326,7 +326,8 @@ private fun TopBar(
 ) {
     SketchesTopAppBar(
         modifier = modifier,
-        backgroundColor = MaterialTheme.colorScheme.background.copy(alpha = SketchesColors.UiAlphaLowTransparency),
+        backgroundColor = MaterialTheme.colorScheme.background
+            .copy(alpha = SketchesColors.UiAlphaLowTransparency),
     ) {
         SketchesAppBarActionButton(
             icon = SketchesIcons.Delete,
@@ -498,14 +499,13 @@ private fun MediaBar(
             contentType = { position -> itemsUpdated[position].mediaType },
         ) { position ->
             val file = itemsUpdated[position]
-            val smallMaterialShape = MaterialTheme.shapes.small
             SketchesMediaItem(
                 uri = file.uri,
                 type = file.mediaType,
                 videoIconPadding = SketchesDimens.MediaBarVideoIconPadding,
                 modifier = Modifier
                     .size(size = SketchesDimens.MediaBarItemSize)
-                    .clip(shape = smallMaterialShape)
+                    .clip(shape = MaterialTheme.shapes.small)
                     .border(
                         width = SketchesDimens.MediaItemBorderThickness,
                         color = MaterialTheme.colorScheme.onBackground.copy(
@@ -515,7 +515,7 @@ private fun MediaBar(
                                 SketchesColors.UiAlphaHighTransparency
                             }
                         ),
-                        shape = smallMaterialShape,
+                        shape = MaterialTheme.shapes.small,
                     )
                     .clickable {
                         onItemClickUpdated(

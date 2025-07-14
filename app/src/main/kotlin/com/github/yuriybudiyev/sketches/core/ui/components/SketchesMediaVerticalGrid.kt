@@ -58,18 +58,18 @@ fun SketchesMediaVerticalGrid(
             contentType = { index -> filesUpdated[index].mediaType },
         ) { index ->
             val file = filesUpdated[index]
-            val smallMaterialShape = MaterialTheme.shapes.small
             SketchesMediaItem(
                 uri = file.uri,
                 type = file.mediaType,
                 videoIconPadding = SketchesDimens.LazyGridVideoIconPadding,
                 modifier = Modifier
                     .aspectRatio(ratio = 1.0F)
-                    .clip(shape = smallMaterialShape)
+                    .clip(shape = MaterialTheme.shapes.small)
                     .border(
                         width = SketchesDimens.MediaItemBorderThickness,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = SketchesColors.UiAlphaHighTransparency),
-                        shape = smallMaterialShape
+                        color = MaterialTheme.colorScheme.onBackground
+                            .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                        shape = MaterialTheme.shapes.small
                     )
                     .clickable {
                         onItemClickUpdated(
