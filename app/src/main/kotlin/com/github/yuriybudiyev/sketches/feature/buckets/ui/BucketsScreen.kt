@@ -159,7 +159,6 @@ private fun BucketsScreenLayout(
                         )
                     },
             ) {
-                val colorScheme = MaterialTheme.colorScheme
                 SketchesAsyncImage(
                     uri = item.coverUri,
                     contentDescription = stringResource(id = R.string.bucket_cover),
@@ -169,7 +168,7 @@ private fun BucketsScreenLayout(
                         .clip(shape = MaterialTheme.shapes.small)
                         .border(
                             width = SketchesDimens.MediaItemBorderThickness,
-                            color = colorScheme.onBackground
+                            color = MaterialTheme.colorScheme.onBackground
                                 .copy(alpha = SketchesColors.UiAlphaHighTransparency),
                             shape = MaterialTheme.shapes.small,
                         ),
@@ -185,7 +184,7 @@ private fun BucketsScreenLayout(
                         end = 4.dp,
                         bottom = 0.dp,
                     ),
-                    color = colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 16.sp,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
@@ -198,7 +197,7 @@ private fun BucketsScreenLayout(
                         end = 4.dp,
                         bottom = 4.dp,
                     ),
-                    color = colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 14.sp,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
