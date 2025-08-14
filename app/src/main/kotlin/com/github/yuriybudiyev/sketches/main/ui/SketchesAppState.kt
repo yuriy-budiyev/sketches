@@ -26,6 +26,7 @@ package com.github.yuriybudiyev.sketches.main.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.annotation.RememberInComposition
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -47,7 +48,7 @@ fun rememberSketchesAppState(
     }
 
 @Stable
-class SketchesAppState(val navController: NavHostController) {
+class SketchesAppState @RememberInComposition constructor(val navController: NavHostController) {
 
     val currentTopLevelNavigationRoute: TopLevelNavigationRoute?
         @Composable get() = navController.currentBackStackEntryFlow
