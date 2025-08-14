@@ -36,6 +36,7 @@ import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.annotation.RememberInComposition
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -163,7 +164,7 @@ sealed interface SketchesMediaState {
 
 @Stable
 @UnstableApi
-private class SketchesMediaStateImpl(
+private class SketchesMediaStateImpl @RememberInComposition constructor(
     context: Context,
     private val coroutineScope: CoroutineScope,
 ): SketchesMediaState, Player.Listener, RememberObserver {
