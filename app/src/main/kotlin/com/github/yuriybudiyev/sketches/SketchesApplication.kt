@@ -25,6 +25,8 @@
 package com.github.yuriybudiyev.sketches
 
 import android.app.Application
+import androidx.compose.runtime.Composer
+import androidx.compose.runtime.ExperimentalComposeRuntimeApi
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
@@ -34,6 +36,12 @@ import javax.inject.Provider
 
 @HiltAndroidApp
 class SketchesApplication: Application(), SingletonImageLoader.Factory {
+
+    @OptIn(ExperimentalComposeRuntimeApi::class)
+    override fun onCreate() {
+        super.onCreate()
+        Composer.setDiagnosticStackTraceEnabled(BuildConfig.DEBUG)
+    }
 
     @Inject
     lateinit var imageLoaderProvider: Provider<ImageLoader>
