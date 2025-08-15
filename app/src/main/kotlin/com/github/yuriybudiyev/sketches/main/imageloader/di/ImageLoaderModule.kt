@@ -50,7 +50,7 @@ object ImageLoaderModule {
     @Singleton
     fun provideImageLoader(
         @ApplicationContext
-        context: Context,
+        context: Context
     ): ImageLoader =
         ImageLoader
             .Builder(context)
