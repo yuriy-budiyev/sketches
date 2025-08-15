@@ -37,9 +37,13 @@ import javax.inject.Provider
 @HiltAndroidApp
 class SketchesApplication: Application(), SingletonImageLoader.Factory {
 
-    @OptIn(ExperimentalComposeRuntimeApi::class)
     override fun onCreate() {
         super.onCreate()
+        enableComposeDiagnosticStackTraceForDebugBuilds()
+    }
+
+    @OptIn(ExperimentalComposeRuntimeApi::class)
+    private fun enableComposeDiagnosticStackTraceForDebugBuilds() {
         Composer.setDiagnosticStackTraceEnabled(BuildConfig.DEBUG)
     }
 
