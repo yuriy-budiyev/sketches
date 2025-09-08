@@ -37,8 +37,6 @@ import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepositor
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.contentUriFor
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -53,28 +51,26 @@ class MediaStoreRepositoryImpl @Inject constructor(
         bucketId: Long,
     ): List<MediaStoreFile> {
         val contentUri = contentUriFor(mediaType)
-        val cursor = withContext(Dispatchers.IO) {
-            return@withContext context.contentResolver.query(
-                contentUri,
-                arrayOf(
-                    MediaStore.MediaColumns._ID,
-                    MediaStore.MediaColumns.BUCKET_ID,
-                    MediaStore.MediaColumns.DATE_ADDED,
-                    MediaStore.MediaColumns.MIME_TYPE,
-                ),
-                if (bucketId != SketchesConstants.NoId) {
-                    "${MediaStore.MediaColumns.BUCKET_ID}=?"
-                } else {
-                    null
-                },
-                if (bucketId != SketchesConstants.NoId) {
-                    arrayOf(bucketId.toString())
-                } else {
-                    null
-                },
+        val cursor = context.contentResolver.query(
+            contentUri,
+            arrayOf(
+                MediaStore.MediaColumns._ID,
+                MediaStore.MediaColumns.BUCKET_ID,
+                MediaStore.MediaColumns.DATE_ADDED,
+                MediaStore.MediaColumns.MIME_TYPE,
+            ),
+            if (bucketId != SketchesConstants.NoId) {
+                "${MediaStore.MediaColumns.BUCKET_ID}=?"
+            } else {
                 null
-            )
-        } ?: return emptyList()
+            },
+            if (bucketId != SketchesConstants.NoId) {
+                arrayOf(bucketId.toString())
+            } else {
+                null
+            },
+            null
+        ) ?: return emptyList()
         cursor.use { c ->
             val files = ArrayList<MediaStoreFile>(c.count)
             val idColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
@@ -121,33 +117,29 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteFile(uri: String): Boolean =
-        withContext(Dispatchers.IO) {
-            context.contentResolver.delete(
-                uri.toUri(),
-                null,
-                null
-            )
-        } > 0
+        context.contentResolver.delete(
+            uri.toUri(),
+            null,
+            null
+        ) > 0
 
     private suspend fun collectBucketsInfo(
         mediaType: MediaType,
         destination: MutableLongObjectMap<BucketInfo>,
     ) {
         val contentUri = contentUriFor(mediaType)
-        val cursor = withContext(Dispatchers.IO) {
-            return@withContext context.contentResolver.query(
-                contentUri,
-                arrayOf(
-                    MediaStore.MediaColumns._ID,
-                    MediaStore.MediaColumns.BUCKET_ID,
-                    MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
-                    MediaStore.MediaColumns.DATE_ADDED,
-                ),
-                null,
-                null,
-                null
-            )
-        } ?: return
+        val cursor = context.contentResolver.query(
+            contentUri,
+            arrayOf(
+                MediaStore.MediaColumns._ID,
+                MediaStore.MediaColumns.BUCKET_ID,
+                MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
+                MediaStore.MediaColumns.DATE_ADDED,
+            ),
+            null,
+            null,
+            null
+        ) ?: return
         cursor.use { c ->
             val idColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
             val bucketIdColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_ID)

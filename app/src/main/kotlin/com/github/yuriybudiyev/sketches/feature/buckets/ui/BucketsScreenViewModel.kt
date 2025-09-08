@@ -59,7 +59,7 @@ class BucketsScreenViewModel @Inject constructor(
                 uiStateInternal.value = BucketsScreenUiState.Loading
             }
             try {
-                val buckets = withContext(Dispatchers.Default) { getMediaBuckets() }
+                val buckets = withContext(Dispatchers.IO) { getMediaBuckets() }
                 if (buckets.isNotEmpty()) {
                     uiStateInternal.value = BucketsScreenUiState.Buckets(buckets)
                 } else {

@@ -59,7 +59,7 @@ class ImagesScreenViewModel @Inject constructor(
                 uiStateInternal.value = ImagesScreenUiState.Loading
             }
             try {
-                val files = withContext(Dispatchers.Default) { getMediaFiles() }
+                val files = withContext(Dispatchers.IO) { getMediaFiles() }
                 if (files.isNotEmpty()) {
                     uiStateInternal.value = ImagesScreenUiState.Images(files)
                 } else {

@@ -64,7 +64,7 @@ class BucketScreenViewModel @Inject constructor(
                 uiStateInternal.value = BucketScreenUiState.Loading
             }
             try {
-                val files = withContext(Dispatchers.Default) { getMediaFiles(bucketId) }
+                val files = withContext(Dispatchers.IO) { getMediaFiles(bucketId) }
                 if (files.isNotEmpty()) {
                     uiStateInternal.value = BucketScreenUiState.Bucket(
                         bucketId,

@@ -82,7 +82,7 @@ class ImageScreenViewModel @Inject constructor(
                 uiStateInternal.value = ImageScreenUiState.Loading
             }
             try {
-                val files = withContext(Dispatchers.Default) { getMediaFiles(bucketId) }
+                val files = withContext(Dispatchers.IO) { getMediaFiles(bucketId) }
                 val filesSize = files.size
                 if (filesSize > 0) {
                     if (fileIndex < filesSize && files[fileIndex].id == fileId) {
@@ -139,7 +139,7 @@ class ImageScreenViewModel @Inject constructor(
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
             try {
-                withContext(Dispatchers.Default) {
+                withContext(Dispatchers.IO) {
                     deleteMediaFile(uri)
                 }
             } catch (_: CancellationException) {
