@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Yuriy Budiyev
+ * Copyright (c) 2025 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +22,18 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.repository.di
+package com.github.yuriybudiyev.sketches.core.dispatchers
 
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
-import com.github.yuriybudiyev.sketches.core.data.repository.implementation.MediaStoreRepositoryImpl
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.MainCoroutineDispatcher
 
-@Module
-@InstallIn(SingletonComponent::class)
-interface MediaStoreRepositoryBinderModule {
+interface SketchesDispatchers {
 
-    @Binds
-    fun bindMediaStoreRepositoryImplToMediaStoreRepository(
-        repositoryImpl: MediaStoreRepositoryImpl
-    ): MediaStoreRepository
+    val main: MainCoroutineDispatcher
+
+    val default: CoroutineDispatcher
+
+    val io: CoroutineDispatcher
+
+    val unconfined: CoroutineDispatcher
 }

@@ -27,13 +27,13 @@ package com.github.yuriybudiyev.sketches.feature.image.ui
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
+import com.github.yuriybudiyev.sketches.core.dispatchers.SketchesDispatchers
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFileUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,9 +45,13 @@ import javax.inject.Inject
 class ImageScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
+    private val dispatchers: SketchesDispatchers,
     private val getMediaFiles: GetMediaFilesUseCase,
     private val deleteMediaFile: DeleteMediaFileUseCase,
-): MediaObservingViewModel(context) {
+): MediaObservingViewModel(
+    context,
+    dispatchers
+) {
 
     private val uiStateInternal: MutableStateFlow<ImageScreenUiState> =
         MutableStateFlow(ImageScreenUiState.Loading)
@@ -82,7 +86,7 @@ class ImageScreenViewModel @Inject constructor(
                 uiStateInternal.value = ImageScreenUiState.Loading
             }
             try {
-                val files = withContext(Dispatchers.IO) { getMediaFiles(bucketId) }
+                val files = withContext(dispatchers.io) { getMediaFiles(bucketId) }
                 val filesSize = files.size
                 if (filesSize > 0) {
                     if (fileIndex < filesSize && files[fileIndex].id == fileId) {
@@ -139,7 +143,7 @@ class ImageScreenViewModel @Inject constructor(
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
             try {
-                withContext(Dispatchers.IO) {
+                withContext(dispatchers.io) {
                     deleteMediaFile(uri)
                 }
             } catch (_: CancellationException) {

@@ -26,12 +26,12 @@ package com.github.yuriybudiyev.sketches.feature.images.ui
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.github.yuriybudiyev.sketches.core.dispatchers.SketchesDispatchers
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -43,8 +43,12 @@ import javax.inject.Inject
 class ImagesScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
+    private val dispatchers: SketchesDispatchers,
     private val getMediaFiles: GetMediaFilesUseCase,
-): MediaObservingViewModel(context) {
+): MediaObservingViewModel(
+    context,
+    dispatchers
+) {
 
     private val uiStateInternal: MutableStateFlow<ImagesScreenUiState> =
         MutableStateFlow(ImagesScreenUiState.Loading)
@@ -59,7 +63,7 @@ class ImagesScreenViewModel @Inject constructor(
                 uiStateInternal.value = ImagesScreenUiState.Loading
             }
             try {
-                val files = withContext(Dispatchers.IO) { getMediaFiles() }
+                val files = withContext(dispatchers.io) { getMediaFiles() }
                 if (files.isNotEmpty()) {
                     uiStateInternal.value = ImagesScreenUiState.Images(files)
                 } else {

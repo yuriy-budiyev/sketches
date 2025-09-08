@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Yuriy Budiyev
+ * Copyright (c) 2025 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +22,27 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.repository.di
+package com.github.yuriybudiyev.sketches.core.dispatchers.implementation
 
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
-import com.github.yuriybudiyev.sketches.core.data.repository.implementation.MediaStoreRepositoryImpl
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import com.github.yuriybudiyev.sketches.core.dispatchers.SketchesDispatchers
+import dagger.Reusable
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainCoroutineDispatcher
+import javax.inject.Inject
 
-@Module
-@InstallIn(SingletonComponent::class)
-interface MediaStoreRepositoryBinderModule {
+@Reusable
+class SketchesDispatchersImpl @Inject constructor(): SketchesDispatchers {
 
-    @Binds
-    fun bindMediaStoreRepositoryImplToMediaStoreRepository(
-        repositoryImpl: MediaStoreRepositoryImpl
-    ): MediaStoreRepository
+    override val main: MainCoroutineDispatcher
+        get() = Dispatchers.Main
+
+    override val default: CoroutineDispatcher
+        get() = Dispatchers.Default
+
+    override val io: CoroutineDispatcher
+        get() = Dispatchers.IO
+
+    override val unconfined: CoroutineDispatcher
+        get() = Dispatchers.Unconfined
 }

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Yuriy Budiyev
+ * Copyright (c) 2025 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.repository.di
+package com.github.yuriybudiyev.sketches.core.dispatchers.di
 
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
-import com.github.yuriybudiyev.sketches.core.data.repository.implementation.MediaStoreRepositoryImpl
+import com.github.yuriybudiyev.sketches.core.dispatchers.SketchesDispatchers
+import com.github.yuriybudiyev.sketches.core.dispatchers.implementation.SketchesDispatchersImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -33,10 +33,10 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface MediaStoreRepositoryBinderModule {
+interface SketchersDispatchersBinderModule {
 
     @Binds
-    fun bindMediaStoreRepositoryImplToMediaStoreRepository(
-        repositoryImpl: MediaStoreRepositoryImpl
-    ): MediaStoreRepository
+    fun bindSketchersDispatchersImplToSketchersDispatchers(
+        dispatchersImpl: SketchesDispatchersImpl
+    ): SketchesDispatchers
 }

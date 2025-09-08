@@ -33,15 +33,18 @@ import androidx.annotation.CallSuper
 import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.yuriybudiyev.sketches.core.dispatchers.SketchesDispatchers
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.contentUriFor
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-abstract class MediaObservingViewModel(context: Context): ViewModel() {
+abstract class MediaObservingViewModel(
+    context: Context,
+    private val dispatchers: SketchesDispatchers
+): ViewModel() {
 
     @MainThread
     protected abstract fun onMediaChanged()
@@ -52,7 +55,7 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
         mediaAccess = updated
         if (current != updated || updated == MediaAccess.UserSelected) {
             viewModelScope.launch {
-                withContext(Dispatchers.Main) {
+                withContext(dispatchers.main) {
                     onMediaChanged()
                 }
             }
@@ -94,7 +97,7 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
 
         override fun onChange(selfChange: Boolean) {
             viewModelScope.launch {
-                withContext(Dispatchers.Main) {
+                withContext(dispatchers.main) {
                     onMediaChanged()
                 }
             }
