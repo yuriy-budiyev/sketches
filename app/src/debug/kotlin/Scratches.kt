@@ -67,7 +67,7 @@ fun TestScreen() {
         )
         Box(modifier = Modifier.fillMaxSize()) {
             Button(
-                {},
+                onClick = {},
                 modifier = Modifier.align(Alignment.Center)
             ) {
                 Text("${16f / 9f}")
