@@ -127,6 +127,8 @@ androidx-media3-extractor = { group = "androidx.media3", name = "media3-extracto
 androidx-media3-decoder = { group = "androidx.media3", name = "media3-decoder", version.ref = "androidx-media3" }
 androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "androidx-media3" }
 androidx-hilt-common = { group = "androidx.hilt", name = "hilt-common", version.ref = "androidx-hilt" }
+androidx-hilt-lifecycle-viewmodel = { group = "androidx.hilt", name = "hilt-lifecycle-viewmodel", version.ref = "androidx-hilt" }
+androidx-hilt-lifecycle-viewmodel-compose = { group = "androidx.hilt", name = "hilt-lifecycle-viewmodel-compose", version.ref = "androidx-hilt" }
 androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "androidx-hilt" }
 androidx-hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation", version.ref = "androidx-hilt" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidx-hilt" }
@@ -282,6 +284,8 @@ androidx-tracing = [
 hilt = [
     "hilt",
     "androidx-hilt-common",
+    "androidx-hilt-lifecycle-viewmodel",
+    "androidx-hilt-lifecycle-viewmodel-compose",
     "androidx-hilt-work",
     "androidx-hilt-navigation",
     "androidx-hilt-navigation-compose"
