@@ -37,6 +37,6 @@ interface SketchersDispatchersBinderModule {
 
     @Binds
     fun bindSketchersDispatchersImplToSketchersDispatchers(
-        dispatchersImpl: SketchesDispatchersImpl
+        dispatchersImpl: SketchesDispatchersImpl,
     ): SketchesDispatchers
 }

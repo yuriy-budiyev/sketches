@@ -84,7 +84,7 @@ interface LegacyDataSource<T> {
 class LatestCombinerColdFlow<A, B, R>(
     private val sourceA: LegacyDataSource<A>,
     private val sourceB: LegacyDataSource<B>,
-    private val combine: suspend (A, B) -> R
+    private val combine: suspend (A, B) -> R,
 ) {
 
     fun start(): Flow<R> =
@@ -106,7 +106,7 @@ class LatestCombinerHotFlow<A, B, R>(
     sourceA: LegacyDataSource<A>,
     sourceB: LegacyDataSource<B>,
     private val coroutineScope: CoroutineScope,
-    private val combine: suspend (A, B) -> R
+    private val combine: suspend (A, B) -> R,
 ) {
 
     fun start(): Flow<R> =
@@ -153,7 +153,7 @@ class LatestCombinerHotFlow<A, B, R>(
 class LatestCombinerCallback<A, B, R>(
     private val sourceA: LegacyDataSource<A>,
     private val sourceB: LegacyDataSource<B>,
-    private val combine: (A, B) -> R
+    private val combine: (A, B) -> R,
 ) {
 
     fun start(onCombined: (R) -> Unit) {
@@ -210,19 +210,19 @@ interface LegacyApi {
 
     fun request(
         request: Request,
-        onResult: (Result) -> Unit
+        onResult: (Result) -> Unit,
     )
 }
 
 class LegacyApiBatchWrapper(
     private val legacyApi: LegacyApi,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
 ) {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun request(
         requests: Iterable<Request>,
-        onResults: suspend (List<Result>) -> Unit
+        onResults: suspend (List<Result>) -> Unit,
     ) {
         coroutineScope.launch {
             val results = requests

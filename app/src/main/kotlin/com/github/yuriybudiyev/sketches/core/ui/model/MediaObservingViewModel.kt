@@ -43,7 +43,7 @@ import kotlinx.coroutines.withContext
 
 abstract class MediaObservingViewModel(
     context: Context,
-    private val dispatchers: SketchesDispatchers
+    private val dispatchers: SketchesDispatchers,
 ): ViewModel() {
 
     @MainThread

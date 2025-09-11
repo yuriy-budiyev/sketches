@@ -37,6 +37,6 @@ interface MediaStoreRepositoryBinderModule {
 
     @Binds
     fun bindMediaStoreRepositoryImplToMediaStoreRepository(
-        repositoryImpl: MediaStoreRepositoryImpl
+        repositoryImpl: MediaStoreRepositoryImpl,
     ): MediaStoreRepository
 }
