@@ -24,6 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.main
 
+import android.content.pm.ActivityInfo
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -36,6 +38,10 @@ class MainActivity: ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            window.colorMode = ActivityInfo.COLOR_MODE_HDR
+            window.desiredHdrHeadroom = 1.5f
+        }
         setContent {
             SketchesTheme {
                 SketchesApp()
