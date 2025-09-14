@@ -2,6 +2,7 @@
 <resources>
 
     <style name="Theme.Sketches.Base" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:background">#FFEFEFEF</item>
         <item name="android:windowBackground">#FFEFEFEF</item>
         <item name="android:statusBarColor">#FFEFEFEF</item>
         <item name="android:navigationBarColor">#FFEFEFEF</item>
