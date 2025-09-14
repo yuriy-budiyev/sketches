@@ -47,6 +47,14 @@ class MainActivity: ComponentActivity() {
             window,
             false
         )
+        val insetsController = WindowCompat.getInsetsController(
+            window,
+            window.decorView
+        )
+        val darkTheme = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+            Configuration.UI_MODE_NIGHT_YES
+        insetsController.isAppearanceLightStatusBars = !darkTheme
+        insetsController.isAppearanceLightNavigationBars = !darkTheme
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             @Suppress("DEPRECATION")
             window.statusBarColor = Color.TRANSPARENT
@@ -60,14 +68,6 @@ class MainActivity: ComponentActivity() {
             }
             window.isNavigationBarContrastEnforced = false
         }
-        val insetsController = WindowCompat.getInsetsController(
-            window,
-            window.decorView
-        )
-        val darkTheme = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
-            Configuration.UI_MODE_NIGHT_YES
-        insetsController.isAppearanceLightStatusBars = !darkTheme
-        insetsController.isAppearanceLightNavigationBars = !darkTheme
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.attributes.layoutInDisplayCutoutMode =
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
