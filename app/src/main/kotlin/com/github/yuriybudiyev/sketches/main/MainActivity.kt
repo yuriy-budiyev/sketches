@@ -43,13 +43,6 @@ class MainActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val window = window
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                @Suppress("DEPRECATION")
-                window.isStatusBarContrastEnforced = false
-            }
-            window.isNavigationBarContrastEnforced = false
-        }
         WindowCompat.setDecorFitsSystemWindows(
             window,
             false
@@ -59,6 +52,13 @@ class MainActivity: ComponentActivity() {
             window.statusBarColor = Color.TRANSPARENT
             @Suppress("DEPRECATION")
             window.navigationBarColor = Color.TRANSPARENT
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                @Suppress("DEPRECATION")
+                window.isStatusBarContrastEnforced = false
+            }
+            window.isNavigationBarContrastEnforced = false
         }
         val insetsController = WindowCompat.getInsetsController(
             window,
