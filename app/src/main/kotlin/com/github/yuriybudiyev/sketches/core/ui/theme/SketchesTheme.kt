@@ -24,63 +24,20 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.theme
 
-import android.app.Activity
-import android.os.Build
-import android.view.WindowManager
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
+import androidx.compose.runtime.NonRestartableComposable
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.typography.SketchesTypography
 
 @Composable
+@NonRestartableComposable
 fun SketchesTheme(content: @Composable () -> Unit) {
-    val darkTheme = isSystemInDarkTheme()
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                    @Suppress("DEPRECATION")
-                    window.isStatusBarContrastEnforced = false
-                }
-                window.isNavigationBarContrastEnforced = false
-            }
-            WindowCompat.setDecorFitsSystemWindows(
-                window,
-                false
-            )
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                @Suppress("DEPRECATION")
-                window.statusBarColor = Color.Transparent.toArgb()
-                @Suppress("DEPRECATION")
-                window.navigationBarColor = Color.Transparent.toArgb()
-            }
-            val insetsController = WindowCompat.getInsetsController(
-                window,
-                view
-            )
-            insetsController.isAppearanceLightStatusBars = !darkTheme
-            insetsController.isAppearanceLightNavigationBars = !darkTheme
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                window.attributes.layoutInDisplayCutoutMode =
-                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                window.attributes.layoutInDisplayCutoutMode =
-                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-            }
-        }
-    }
     MaterialTheme(
-        colorScheme = if (darkTheme) {
+        colorScheme = if (isSystemInDarkTheme()) {
             SketchesDarkColorScheme
         } else {
             SketchesLightColorScheme
