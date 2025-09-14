@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin) apply false
@@ -9,7 +11,7 @@ plugins {
 
 subprojects {
     tasks
-        .withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>()
+        .withType<KotlinCompile>()
         .configureEach {
             compilerOptions {
                 if (project.findProperty("composeCompilerReports") == "true") {
