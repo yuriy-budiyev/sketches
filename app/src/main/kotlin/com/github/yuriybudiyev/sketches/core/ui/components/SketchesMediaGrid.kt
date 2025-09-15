@@ -42,7 +42,7 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 
 @Composable
-fun SketchesMediaVerticalGrid(
+fun SketchesMediaGrid(
     files: List<MediaStoreFile>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
@@ -51,7 +51,7 @@ fun SketchesMediaVerticalGrid(
 ) {
     val filesUpdated by rememberUpdatedState(files)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
-    SketchesLazyVerticalGrid(
+    SketchesLazyGrid(
         overlayTop = overlayTop,
         overlayBottom = overlayBottom,
         modifier = modifier,
@@ -88,7 +88,7 @@ fun SketchesMediaVerticalGrid(
 
 //TODO
 @Composable
-fun SketchesMediaVerticalGrid(
+fun SketchesMediaGrid(
     files: List<MediaStoreFile>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     onSelectionChanged: (index: Int, selectedIndexes: Set<Int>) -> Unit,
@@ -100,7 +100,7 @@ fun SketchesMediaVerticalGrid(
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
     val onSelectionChangedUpdated by rememberUpdatedState(onSelectionChanged)
     val selectedIndexes = remember { SnapshotStateSet<Int>() }
-    SketchesLazyVerticalGrid(
+    SketchesLazyGrid(
         modifier = modifier,
         overlayTop = overlayTop,
         overlayBottom = overlayBottom,

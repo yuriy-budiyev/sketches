@@ -57,7 +57,7 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyVerticalGrid
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
@@ -139,7 +139,7 @@ private fun BucketsScreenLayout(
 ) {
     val bucketsUpdated by rememberUpdatedState(buckets)
     val onBucketClickUpdated by rememberUpdatedState(onBucketClick)
-    SketchesLazyVerticalGrid(
+    SketchesLazyGrid(
         modifier = modifier,
         overlayTop = true,
         overlayBottom = true,

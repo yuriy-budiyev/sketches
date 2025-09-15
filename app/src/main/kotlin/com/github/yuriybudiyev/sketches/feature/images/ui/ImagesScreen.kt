@@ -46,7 +46,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionB
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaVerticalGrid
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesRoute
@@ -98,7 +98,7 @@ fun ImagesScreen(
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
             }
             is ImagesScreenUiState.Images -> {
-                SketchesMediaVerticalGrid(
+                SketchesMediaGrid(
                     files = uiState.files,
                     onItemClick = onImageClick,
                     modifier = Modifier.matchParentSize(),

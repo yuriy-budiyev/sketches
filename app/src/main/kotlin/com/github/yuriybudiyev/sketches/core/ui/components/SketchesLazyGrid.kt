@@ -40,7 +40,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 
 @Composable
-fun SketchesLazyVerticalGrid(
+fun SketchesLazyGrid(
     modifier: Modifier = Modifier,
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,

@@ -51,7 +51,7 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaVerticalGrid
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import kotlinx.coroutines.launch
 
@@ -134,7 +134,7 @@ private fun BucketScreenLayout(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
-        SketchesMediaVerticalGrid(
+        SketchesMediaGrid(
             files = files,
             onItemClick = onItemClick,
             modifier = Modifier.matchParentSize(),
