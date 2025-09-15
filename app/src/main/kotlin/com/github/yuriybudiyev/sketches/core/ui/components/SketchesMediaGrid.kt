@@ -118,6 +118,7 @@ fun SketchesMediaGrid(
                     width = SketchesDimens.MediaItemBorderThickness,
                     color = if (index in selectedIndexes) {
                         MaterialTheme.colorScheme.primary
+                            .copy(alpha = SketchesColors.UiAlphaLowTransparency)
                     } else {
                         MaterialTheme.colorScheme.onBackground
                             .copy(alpha = SketchesColors.UiAlphaHighTransparency)
