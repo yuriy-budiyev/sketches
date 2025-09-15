@@ -26,14 +26,18 @@ package com.github.yuriybudiyev.sketches.core.ui.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 
@@ -61,7 +65,7 @@ fun SketchesMediaVerticalGrid(
             SketchesMediaItem(
                 uri = file.uri,
                 type = file.mediaType,
-                videoIconPadding = SketchesDimens.LazyGridVideoIconPadding,
+                videoIconPadding = SketchesDimens.MediaGridVideoIconPadding,
                 modifier = Modifier
                     .aspectRatio(ratio = 1.0F)
                     .clip(shape = MaterialTheme.shapes.small)
@@ -78,6 +82,92 @@ fun SketchesMediaVerticalGrid(
                         )
                     },
             )
+        }
+    }
+}
+
+//TODO
+@Composable
+fun SketchesMediaVerticalGrid(
+    files: List<MediaStoreFile>,
+    onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onSelectionChanged: (index: Int, selectedIndexes: Set<Int>) -> Unit,
+    modifier: Modifier = Modifier,
+    overlayTop: Boolean = false,
+    overlayBottom: Boolean = false,
+) {
+    val filesUpdated by rememberUpdatedState(files)
+    val onItemClickUpdated by rememberUpdatedState(onItemClick)
+    val onSelectionChangedUpdated by rememberUpdatedState(onSelectionChanged)
+    val selectedIndexes = remember { SnapshotStateSet<Int>() }
+    SketchesLazyVerticalGrid(
+        modifier = modifier,
+        overlayTop = overlayTop,
+        overlayBottom = overlayBottom,
+    ) {
+        items(
+            count = filesUpdated.size,
+            key = { index -> filesUpdated[index].id },
+            contentType = { index -> filesUpdated[index].mediaType },
+        ) { index ->
+            val file = filesUpdated[index]
+            val itemModifier = Modifier
+                .aspectRatio(ratio = 1.0F)
+                .clip(shape = MaterialTheme.shapes.small)
+                .border(
+                    width = SketchesDimens.MediaItemBorderThickness,
+                    color = if (index in selectedIndexes) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onBackground
+                            .copy(alpha = SketchesColors.UiAlphaHighTransparency)
+                    },
+                    shape = MaterialTheme.shapes.small,
+                )
+                .combinedClickable(
+                    onLongClick = {
+                        if (selectedIndexes.isEmpty()) {
+                            selectedIndexes += index
+                            onSelectionChangedUpdated(
+                                index,
+                                selectedIndexes.toSet(),
+                            )
+                        }
+                    },
+                    onClick = {
+                        if (selectedIndexes.isNotEmpty()) {
+                            if (index in selectedIndexes) {
+                                selectedIndexes += index
+                            } else {
+                                selectedIndexes -= index
+                            }
+                            onSelectionChangedUpdated(
+                                index,
+                                selectedIndexes.toSet(),
+                            )
+                        } else {
+                            onItemClickUpdated(
+                                index,
+                                file,
+                            )
+                        }
+                    },
+                )
+            when (file.mediaType) {
+                MediaType.Image -> {
+                    SketchesImageMediaItem(
+                        uri = file.uri,
+                        modifier = itemModifier,
+                    )
+                }
+                MediaType.Video -> {
+                    SketchesVideoMediaItem(
+                        uri = file.uri,
+                        iconPadding = SketchesDimens.MediaGridVideoIconPadding,
+                        modifier = itemModifier,
+                    )
+                }
+            }
         }
     }
 }

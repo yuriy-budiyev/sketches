@@ -69,7 +69,7 @@ fun SketchesMediaItem(
 
 @Composable
 @NonRestartableComposable
-private fun SketchesImageMediaItem(
+fun SketchesImageMediaItem(
     uri: String,
     modifier: Modifier = Modifier,
 ) {
@@ -85,7 +85,7 @@ private fun SketchesImageMediaItem(
 }
 
 @Composable
-private fun SketchesVideoMediaItem(
+fun SketchesVideoMediaItem(
     uri: String,
     iconPadding: Dp,
     modifier: Modifier = Modifier,
@@ -102,7 +102,7 @@ private fun SketchesVideoMediaItem(
         )
         Box(
             modifier = Modifier
-                .align(alignment = Alignment.BottomEnd)
+                .align(alignment = Alignment.BottomStart)
                 .padding(all = iconPadding)
                 .background(
                     color = MaterialTheme.colorScheme.background
