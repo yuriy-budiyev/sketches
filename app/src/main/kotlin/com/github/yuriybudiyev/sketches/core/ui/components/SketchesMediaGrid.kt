@@ -44,7 +44,7 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 fun SketchesMediaGrid(
     files: List<MediaStoreFile>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
-    onSelectionChanged: (index: Int, selectedIndexes: Set<Int>) -> Unit,
+    onSelectionChanged: (index: Int, file: MediaStoreFile, selectedFiles: Set<MediaStoreFile>) -> Unit,
     modifier: Modifier = Modifier,
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
@@ -52,7 +52,7 @@ fun SketchesMediaGrid(
     val filesUpdated by rememberUpdatedState(files)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
     val onSelectionChangedUpdated by rememberUpdatedState(onSelectionChanged)
-    val selectedIndexes = rememberSaveable { SnapshotStateSet<Int>() }
+    val selectedFiles = rememberSaveable { SnapshotStateSet<MediaStoreFile>() }
     SketchesLazyGrid(
         modifier = modifier,
         overlayTop = overlayTop,
@@ -68,12 +68,12 @@ fun SketchesMediaGrid(
                 .aspectRatio(ratio = 1.0F)
                 .clip(shape = MaterialTheme.shapes.small)
                 .border(
-                    width = if (index in selectedIndexes) {
+                    width = if (file in selectedFiles) {
                         SketchesDimens.MediaItemBorderThicknessSelected
                     } else {
                         SketchesDimens.MediaItemBorderThicknessDefault
                     },
-                    color = if (index in selectedIndexes) {
+                    color = if (file in selectedFiles) {
                         MaterialTheme.colorScheme.primary
                     } else {
                         MaterialTheme.colorScheme.onBackground
@@ -83,30 +83,32 @@ fun SketchesMediaGrid(
                 )
                 .combinedClickable(
                     onLongClick = {
-                        if (selectedIndexes.isEmpty()) {
-                            selectedIndexes += index
+                        if (selectedFiles.isEmpty()) {
+                            selectedFiles += file
                         } else {
-                            if (index in selectedIndexes) {
-                                selectedIndexes.clear()
+                            if (file in selectedFiles) {
+                                selectedFiles.clear()
                             } else {
-                                selectedIndexes += files.indices
+                                selectedFiles += files
                             }
                         }
                         onSelectionChangedUpdated(
                             index,
-                            selectedIndexes.toSet(),
+                            file,
+                            selectedFiles.toSet(),
                         )
                     },
                     onClick = {
-                        if (selectedIndexes.isNotEmpty()) {
-                            if (index in selectedIndexes) {
-                                selectedIndexes -= index
+                        if (selectedFiles.isNotEmpty()) {
+                            if (file in selectedFiles) {
+                                selectedFiles -= file
                             } else {
-                                selectedIndexes += index
+                                selectedFiles += file
                             }
                             onSelectionChangedUpdated(
                                 index,
-                                selectedIndexes.toSet(),
+                                file,
+                                selectedFiles.toSet(),
                             )
                         } else {
                             onItemClickUpdated(

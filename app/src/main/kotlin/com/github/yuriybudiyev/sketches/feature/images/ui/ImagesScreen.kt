@@ -101,7 +101,7 @@ fun ImagesScreen(
                 SketchesMediaGrid(
                     files = uiState.files,
                     onItemClick = onImageClick,
-                    onSelectionChanged = { _, _ -> },
+                    onSelectionChanged = { _, _, _ -> },
                     modifier = Modifier.matchParentSize(),
                     overlayTop = true,
                     overlayBottom = true,

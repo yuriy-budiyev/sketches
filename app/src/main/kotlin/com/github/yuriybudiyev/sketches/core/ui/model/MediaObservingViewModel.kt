@@ -35,7 +35,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.dispatchers.SketchesDispatchers
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
-import com.github.yuriybudiyev.sketches.core.platform.content.contentUriFor
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
 import kotlinx.coroutines.launch
@@ -81,12 +80,12 @@ abstract class MediaObservingViewModel(
     init {
         with(appContext.contentResolver) {
             registerContentObserver(
-                contentUriFor(MediaType.Image),
+                MediaType.Image.contentUri,
                 true,
                 imagesObserver
             )
             registerContentObserver(
-                contentUriFor(MediaType.Video),
+                MediaType.Video.contentUri,
                 true,
                 videoObserver
             )

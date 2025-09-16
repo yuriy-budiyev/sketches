@@ -35,7 +35,6 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
-import com.github.yuriybudiyev.sketches.core.platform.content.contentUriFor
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -46,11 +45,11 @@ class MediaStoreRepositoryImpl @Inject constructor(
     private val context: Context,
 ): MediaStoreRepository {
 
-    private suspend fun collectFiles(
+    private fun collectFiles(
         mediaType: MediaType,
         bucketId: Long,
     ): List<MediaStoreFile> {
-        val contentUri = contentUriFor(mediaType)
+        val contentUri = mediaType.contentUri
         val cursor = context.contentResolver.query(
             contentUri,
             arrayOf(
@@ -123,11 +122,11 @@ class MediaStoreRepositoryImpl @Inject constructor(
             null
         ) > 0
 
-    private suspend fun collectBucketsInfo(
+    private fun collectBucketsInfo(
         mediaType: MediaType,
         destination: MutableLongObjectMap<BucketInfo>,
     ) {
-        val contentUri = contentUriFor(mediaType)
+        val contentUri = mediaType.contentUri
         val cursor = context.contentResolver.query(
             contentUri,
             arrayOf(
