@@ -507,14 +507,17 @@ private fun MediaBar(
                     .size(size = SketchesDimens.MediaBarItemSize)
                     .clip(shape = MaterialTheme.shapes.small)
                     .border(
-                        width = SketchesDimens.MediaItemBorderThickness.Default,
-                        color = MaterialTheme.colorScheme.onBackground.copy(
-                            alpha = if (position == currentIndexUpdated) {
-                                SketchesColors.UiAlphaLowTransparency
-                            } else {
-                                SketchesColors.UiAlphaHighTransparency
-                            }
-                        ),
+                        width = if (position == currentIndexUpdated) {
+                            SketchesDimens.MediaItemBorderThickness.Selected
+                        } else {
+                            SketchesDimens.MediaItemBorderThickness.Default
+                        },
+                        color = if (position == currentIndexUpdated) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onBackground
+                                .copy(alpha = SketchesColors.UiAlphaHighTransparency)
+                        },
                         shape = MaterialTheme.shapes.small,
                     )
                     .clickable {
