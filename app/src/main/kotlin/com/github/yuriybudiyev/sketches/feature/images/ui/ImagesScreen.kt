@@ -88,9 +88,10 @@ fun ImagesScreen(
     onRequestUserSelectedMedia: (() -> Unit)?,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
 ) {
-    rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
     var selectedFiles by remember { mutableStateOf<Set<MediaStoreFile>>(emptySet()) }
-    rememberLauncherForActivityResult(
+    var deleteDialogVisible by remember { mutableStateOf(false) }
+    val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { },
     )
