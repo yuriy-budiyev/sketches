@@ -29,6 +29,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -53,6 +54,12 @@ fun SketchesMediaGrid(
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
     val onSelectionChangedUpdated by rememberUpdatedState(onSelectionChanged)
     val selectedFiles = rememberSaveable { SnapshotStateSet<MediaStoreFile>() }
+    LaunchedEffect(
+        selectedFiles,
+        filesUpdated,
+    ) {
+        selectedFiles.retainAll(filesUpdated)
+    }
     SketchesLazyGrid(
         modifier = modifier,
         overlayTop = overlayTop,
