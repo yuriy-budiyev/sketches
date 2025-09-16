@@ -167,7 +167,7 @@ private fun BucketsScreenLayout(
                         .aspectRatio(ratio = 1.0F)
                         .clip(shape = MaterialTheme.shapes.small)
                         .border(
-                            width = SketchesDimens.MediaItemBorderThickness.Default,
+                            width = SketchesDimens.MediaItemBorderThicknessDefault,
                             color = MaterialTheme.colorScheme.onBackground
                                 .copy(alpha = SketchesColors.UiAlphaHighTransparency),
                             shape = MaterialTheme.shapes.small,

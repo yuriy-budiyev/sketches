@@ -39,33 +39,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
-
-@Composable
-fun SketchesMediaItem(
-    uri: String,
-    type: MediaType,
-    videoIconPadding: Dp,
-    modifier: Modifier = Modifier,
-) {
-    when (type) {
-        MediaType.Image -> {
-            SketchesImageMediaItem(
-                uri = uri,
-                modifier = modifier,
-            )
-        }
-        MediaType.Video -> {
-            SketchesVideoMediaItem(
-                uri = uri,
-                iconPadding = videoIconPadding,
-                modifier = modifier,
-            )
-        }
-    }
-}
 
 @Composable
 @NonRestartableComposable

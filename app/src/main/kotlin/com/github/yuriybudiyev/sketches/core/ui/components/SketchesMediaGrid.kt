@@ -69,9 +69,9 @@ fun SketchesMediaGrid(
                 .clip(shape = MaterialTheme.shapes.small)
                 .border(
                     width = if (index in selectedIndexes) {
-                        SketchesDimens.MediaItemBorderThickness.Selected
+                        SketchesDimens.MediaItemBorderThicknessSelected
                     } else {
-                        SketchesDimens.MediaItemBorderThickness.Default
+                        SketchesDimens.MediaItemBorderThicknessDefault
                     },
                     color = if (index in selectedIndexes) {
                         MaterialTheme.colorScheme.primary
@@ -86,7 +86,11 @@ fun SketchesMediaGrid(
                         if (selectedIndexes.isEmpty()) {
                             selectedIndexes += index
                         } else {
-                            selectedIndexes.clear()
+                            if (index in selectedIndexes) {
+                                selectedIndexes.clear()
+                            } else {
+                                selectedIndexes += files.indices
+                            }
                         }
                         onSelectionChangedUpdated(
                             index,

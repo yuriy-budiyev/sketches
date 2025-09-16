@@ -81,9 +81,10 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionB
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesImageMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesVideoMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
@@ -499,34 +500,44 @@ private fun MediaBar(
             contentType = { position -> itemsUpdated[position].mediaType },
         ) { position ->
             val file = itemsUpdated[position]
-            SketchesMediaItem(
-                uri = file.uri,
-                type = file.mediaType,
-                videoIconPadding = SketchesDimens.MediaBarVideoIconPadding,
-                modifier = Modifier
-                    .size(size = SketchesDimens.MediaBarItemSize)
-                    .clip(shape = MaterialTheme.shapes.small)
-                    .border(
-                        width = if (position == currentIndexUpdated) {
-                            SketchesDimens.MediaItemBorderThickness.Selected
-                        } else {
-                            SketchesDimens.MediaItemBorderThickness.Default
-                        },
-                        color = if (position == currentIndexUpdated) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.onBackground
-                                .copy(alpha = SketchesColors.UiAlphaHighTransparency)
-                        },
-                        shape = MaterialTheme.shapes.small,
-                    )
-                    .clickable {
-                        onItemClickUpdated(
-                            position,
-                            file,
-                        )
+            val itemModifier = Modifier
+                .size(size = SketchesDimens.MediaBarItemSize)
+                .clip(shape = MaterialTheme.shapes.small)
+                .border(
+                    width = if (position == currentIndexUpdated) {
+                        SketchesDimens.MediaItemBorderThicknessSelected
+                    } else {
+                        SketchesDimens.MediaItemBorderThicknessDefault
                     },
-            )
+                    color = if (position == currentIndexUpdated) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onBackground
+                            .copy(alpha = SketchesColors.UiAlphaHighTransparency)
+                    },
+                    shape = MaterialTheme.shapes.small,
+                )
+                .clickable {
+                    onItemClickUpdated(
+                        position,
+                        file,
+                    )
+                }
+            when (file.mediaType) {
+                MediaType.Image -> {
+                    SketchesImageMediaItem(
+                        uri = file.uri,
+                        modifier = itemModifier,
+                    )
+                }
+                MediaType.Video -> {
+                    SketchesVideoMediaItem(
+                        uri = file.uri,
+                        iconPadding = SketchesDimens.MediaBarVideoIconPadding,
+                        modifier = itemModifier,
+                    )
+                }
+            }
         }
     }
 }
