@@ -58,7 +58,7 @@ fun SketchesMediaGrid(
         selectedFiles,
         filesUpdated,
     ) {
-        //TODO
+        //TODO: Check performance
         selectedFiles.retainAll(filesUpdated)
     }
     SketchesLazyGrid(
