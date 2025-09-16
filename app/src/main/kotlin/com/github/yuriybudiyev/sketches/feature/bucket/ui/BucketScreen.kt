@@ -137,7 +137,7 @@ private fun BucketScreenLayout(
         SketchesMediaGrid(
             files = files,
             onItemClick = onItemClick,
-            onSelectionChanged = { _, _, _ -> },
+            onSelectionChanged = { },
             modifier = Modifier.matchParentSize(),
             overlayTop = true,
             overlayBottom = false,

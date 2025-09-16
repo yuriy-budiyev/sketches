@@ -33,6 +33,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,7 +46,7 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 fun SketchesMediaGrid(
     files: List<MediaStoreFile>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
-    onSelectionChanged: (index: Int, file: MediaStoreFile, selectedFiles: Set<MediaStoreFile>) -> Unit,
+    onSelectionChanged: (files: Set<MediaStoreFile>) -> Unit,
     modifier: Modifier = Modifier,
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
@@ -54,9 +55,13 @@ fun SketchesMediaGrid(
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
     val onSelectionChangedUpdated by rememberUpdatedState(onSelectionChanged)
     val selectedFiles = rememberSaveable { SnapshotStateSet<MediaStoreFile>() }
-    LaunchedEffect(files) {
-        //TODO: Check performance
-        selectedFiles.retainAll(files)
+    LaunchedEffect(Unit) {
+        selectedFiles.retainAll(filesUpdated)
+    }
+    LaunchedEffect(Unit) {
+        snapshotFlow { selectedFiles.toSet() }.collect { files ->
+            onSelectionChangedUpdated(files)
+        }
     }
     SketchesLazyGrid(
         modifier = modifier,
@@ -97,11 +102,6 @@ fun SketchesMediaGrid(
                                 selectedFiles += files
                             }
                         }
-                        onSelectionChangedUpdated(
-                            index,
-                            file,
-                            selectedFiles.toSet(),
-                        )
                     },
                     onClick = {
                         if (selectedFiles.isNotEmpty()) {
@@ -110,11 +110,6 @@ fun SketchesMediaGrid(
                             } else {
                                 selectedFiles += file
                             }
-                            onSelectionChangedUpdated(
-                                index,
-                                file,
-                                selectedFiles.toSet(),
-                            )
                         } else {
                             onItemClickUpdated(
                                 index,

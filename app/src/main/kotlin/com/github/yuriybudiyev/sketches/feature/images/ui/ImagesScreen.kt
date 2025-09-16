@@ -105,7 +105,7 @@ fun ImagesScreen(
                 SketchesMediaGrid(
                     files = uiState.files,
                     onItemClick = onImageClick,
-                    onSelectionChanged = { _, _, files ->
+                    onSelectionChanged = { files ->
                         selectedFiles = files
                     },
                     modifier = Modifier.matchParentSize(),
