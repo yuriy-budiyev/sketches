@@ -54,12 +54,9 @@ fun SketchesMediaGrid(
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
     val onSelectionChangedUpdated by rememberUpdatedState(onSelectionChanged)
     val selectedFiles = rememberSaveable { SnapshotStateSet<MediaStoreFile>() }
-    LaunchedEffect(
-        selectedFiles,
-        filesUpdated,
-    ) {
+    LaunchedEffect(files) {
         //TODO: Check performance
-        selectedFiles.retainAll(filesUpdated)
+        selectedFiles.retainAll(files)
     }
     SketchesLazyGrid(
         modifier = modifier,
