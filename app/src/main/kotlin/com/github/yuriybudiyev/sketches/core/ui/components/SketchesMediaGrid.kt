@@ -58,6 +58,7 @@ fun SketchesMediaGrid(
         selectedFiles,
         filesUpdated,
     ) {
+        //TODO
         selectedFiles.retainAll(filesUpdated)
     }
     SketchesLazyGrid(
