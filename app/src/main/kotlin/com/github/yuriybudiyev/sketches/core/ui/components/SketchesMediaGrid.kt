@@ -56,6 +56,7 @@ fun SketchesMediaGrid(
     val onSelectionChangedUpdated by rememberUpdatedState(onSelectionChanged)
     val selectedFiles = rememberSaveable { SnapshotStateSet<MediaStoreFile>() }
     LaunchedEffect(Unit) {
+        //TODO
         selectedFiles.retainAll(filesUpdated)
     }
     LaunchedEffect(Unit) {
