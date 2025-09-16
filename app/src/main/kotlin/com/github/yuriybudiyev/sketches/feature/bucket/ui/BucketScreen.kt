@@ -57,20 +57,16 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun BucketRoute(
-    id: Long,
-    name: String?,
+    bucketId: Long,
+    bucketName: String?,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
     viewModel: BucketScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
-    LaunchedEffect(
-        id,
-        viewModel,
-        coroutineScope,
-    ) {
+    LaunchedEffect(bucketId) {
         coroutineScope.launch {
-            viewModel.updateMedia(id)
+            viewModel.updateMedia(bucketId)
         }
     }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
@@ -79,7 +75,7 @@ fun BucketRoute(
         }
     }
     BucketScreen(
-        name = name,
+        name = bucketName,
         uiState = uiState,
         onImageClick = onImageClick,
     )

@@ -24,6 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.feature.images.ui
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -63,10 +65,7 @@ fun ImagesRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
-    LaunchedEffect(
-        coroutineScope,
-        viewModel
-    ) {
+    LaunchedEffect(Unit) {
         coroutineScope.launch {
             viewModel.updateMedia()
         }
@@ -89,8 +88,13 @@ fun ImagesScreen(
     onRequestUserSelectedMedia: (() -> Unit)?,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
 ) {
+    rememberCoroutineScope()
+    var selectedFiles by remember { mutableStateOf<Set<MediaStoreFile>>(emptySet()) }
+    rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult(),
+        onResult = { },
+    )
     Box(modifier = Modifier.fillMaxSize()) {
-        var selectedFiles by remember { mutableStateOf<Set<MediaStoreFile>>(emptySet()) }
         when (uiState) {
             is ImagesScreenUiState.Empty -> {
                 SketchesCenteredMessage(

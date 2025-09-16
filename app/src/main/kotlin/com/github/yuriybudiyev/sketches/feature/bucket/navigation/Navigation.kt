@@ -59,8 +59,8 @@ fun NavGraphBuilder.registerBucketScreen(
     ) { backStackEntry ->
         val route = backStackEntry.toRoute<BucketRoute>()
         BucketRoute(
-            id = route.bucketId,
-            name = route.bucketName,
+            bucketId = route.bucketId,
+            bucketName = route.bucketName,
             onImageClick = onImageClick,
         )
     }

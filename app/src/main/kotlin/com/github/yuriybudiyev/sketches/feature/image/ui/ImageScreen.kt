@@ -107,9 +107,7 @@ fun ImageRoute(
     LaunchedEffect(
         fileIndex,
         fileId,
-        bucketId,
-        viewModel,
-        coroutineScope,
+        bucketId
     ) {
         coroutineScope.launch {
             viewModel.updateMedia(
@@ -216,21 +214,14 @@ private fun ImageScreenLayout(
         onResult = { },
     )
     var deleteDialogVisible by remember { mutableStateOf(false) }
-    LaunchedEffect(
-        pagerState,
-        coroutineScope,
-    ) {
+    LaunchedEffect(Unit) {
         snapshotFlow { indexUpdated }.collect { page ->
             coroutineScope.launch {
                 pagerState.scrollToPage(page)
             }
         }
     }
-    LaunchedEffect(
-        pagerState,
-        barState,
-        coroutineScope,
-    ) {
+    LaunchedEffect(Unit) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
             currentIndex = page
             onChangeUpdated(
@@ -422,20 +413,13 @@ private fun VideoPage(
 ) {
     val numberUpdated by rememberUpdatedState(number)
     val mediaState = rememberSketchesMediaState(coroutineScope)
-    DisposableEffect(
-        mediaState,
-        fileUri
-    ) {
+    DisposableEffect(fileUri) {
         mediaState.open(fileUri)
         onDispose {
             mediaState.close()
         }
     }
-    LaunchedEffect(
-        coroutineScope,
-        mediaState,
-        state,
-    ) {
+    LaunchedEffect(Unit) {
         snapshotFlow { state.currentPage }.collect { currentPage ->
             if (currentPage == numberUpdated) {
                 coroutineScope.launch {
