@@ -31,7 +31,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -87,6 +90,7 @@ fun ImagesScreen(
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
+        var selectedFiles by remember { mutableStateOf<Set<MediaStoreFile>>(emptySet()) }
         when (uiState) {
             is ImagesScreenUiState.Empty -> {
                 SketchesCenteredMessage(
@@ -101,7 +105,9 @@ fun ImagesScreen(
                 SketchesMediaGrid(
                     files = uiState.files,
                     onItemClick = onImageClick,
-                    onSelectionChanged = { _, _, _ -> },
+                    onSelectionChanged = { _, _, files ->
+                        selectedFiles = files
+                    },
                     modifier = Modifier.matchParentSize(),
                     overlayTop = true,
                     overlayBottom = true,
@@ -129,6 +135,13 @@ fun ImagesScreen(
                         onClick = {
                             onRequestUserSelectedMedia()
                         },
+                    )
+                }
+                if (selectedFiles.isNotEmpty()) {
+                    SketchesAppBarActionButton(
+                        icon = SketchesIcons.Delete,
+                        description = stringResource(id = R.string.delete_selected),
+                        onClick = { },
                     )
                 }
             },
