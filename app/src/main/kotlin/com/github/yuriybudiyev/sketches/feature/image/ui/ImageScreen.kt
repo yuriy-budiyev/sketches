@@ -507,7 +507,7 @@ private fun MediaBar(
                     .size(size = SketchesDimens.MediaBarItemSize)
                     .clip(shape = MaterialTheme.shapes.small)
                     .border(
-                        width = SketchesDimens.MediaItemBorderThickness,
+                        width = SketchesDimens.MediaItemBorderThickness.Default,
                         color = MaterialTheme.colorScheme.onBackground.copy(
                             alpha = if (position == currentIndexUpdated) {
                                 SketchesColors.UiAlphaLowTransparency

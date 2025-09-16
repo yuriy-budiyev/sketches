@@ -35,8 +35,13 @@ object SketchesDimens {
     val LazyGridItemSpacing = 8.dp
     val MediaGridVideoIconPadding = 4.dp
     val AsyncImageStateIconSize = 48.dp
-    val MediaItemBorderThickness = 1.dp
     val MediaBarItemSize = 56.dp
     val MediaBarItemSpacing = 4.dp
     val MediaBarVideoIconPadding = 2.dp
+
+    object MediaItemBorderThickness {
+
+        val Default = 1.dp
+        val Selected = 2.dp
+    }
 }

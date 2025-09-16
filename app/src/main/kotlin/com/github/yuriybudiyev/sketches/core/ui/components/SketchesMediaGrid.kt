@@ -25,14 +25,13 @@
 package com.github.yuriybudiyev.sketches.core.ui.components
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,52 +44,6 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 fun SketchesMediaGrid(
     files: List<MediaStoreFile>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
-    modifier: Modifier = Modifier,
-    overlayTop: Boolean = false,
-    overlayBottom: Boolean = false,
-) {
-    val filesUpdated by rememberUpdatedState(files)
-    val onItemClickUpdated by rememberUpdatedState(onItemClick)
-    SketchesLazyGrid(
-        overlayTop = overlayTop,
-        overlayBottom = overlayBottom,
-        modifier = modifier,
-    ) {
-        items(
-            count = filesUpdated.size,
-            key = { index -> filesUpdated[index].id },
-            contentType = { index -> filesUpdated[index].mediaType },
-        ) { index ->
-            val file = filesUpdated[index]
-            SketchesMediaItem(
-                uri = file.uri,
-                type = file.mediaType,
-                videoIconPadding = SketchesDimens.MediaGridVideoIconPadding,
-                modifier = Modifier
-                    .aspectRatio(ratio = 1.0F)
-                    .clip(shape = MaterialTheme.shapes.small)
-                    .border(
-                        width = SketchesDimens.MediaItemBorderThickness,
-                        color = MaterialTheme.colorScheme.onBackground
-                            .copy(alpha = SketchesColors.UiAlphaHighTransparency),
-                        shape = MaterialTheme.shapes.small
-                    )
-                    .clickable {
-                        onItemClickUpdated(
-                            index,
-                            file
-                        )
-                    },
-            )
-        }
-    }
-}
-
-//TODO
-@Composable
-fun SketchesMediaGrid(
-    files: List<MediaStoreFile>,
-    onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     onSelectionChanged: (index: Int, selectedIndexes: Set<Int>) -> Unit,
     modifier: Modifier = Modifier,
     overlayTop: Boolean = false,
@@ -99,7 +52,7 @@ fun SketchesMediaGrid(
     val filesUpdated by rememberUpdatedState(files)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
     val onSelectionChangedUpdated by rememberUpdatedState(onSelectionChanged)
-    val selectedIndexes = remember { SnapshotStateSet<Int>() }
+    val selectedIndexes = rememberSaveable { SnapshotStateSet<Int>() }
     SketchesLazyGrid(
         modifier = modifier,
         overlayTop = overlayTop,
@@ -115,10 +68,13 @@ fun SketchesMediaGrid(
                 .aspectRatio(ratio = 1.0F)
                 .clip(shape = MaterialTheme.shapes.small)
                 .border(
-                    width = SketchesDimens.MediaItemBorderThickness,
+                    width = if (index in selectedIndexes) {
+                        SketchesDimens.MediaItemBorderThickness.Selected
+                    } else {
+                        SketchesDimens.MediaItemBorderThickness.Default
+                    },
                     color = if (index in selectedIndexes) {
                         MaterialTheme.colorScheme.primary
-                            .copy(alpha = SketchesColors.UiAlphaLowTransparency)
                     } else {
                         MaterialTheme.colorScheme.onBackground
                             .copy(alpha = SketchesColors.UiAlphaHighTransparency)
@@ -129,18 +85,20 @@ fun SketchesMediaGrid(
                     onLongClick = {
                         if (selectedIndexes.isEmpty()) {
                             selectedIndexes += index
-                            onSelectionChangedUpdated(
-                                index,
-                                selectedIndexes.toSet(),
-                            )
+                        } else {
+                            selectedIndexes.clear()
                         }
+                        onSelectionChangedUpdated(
+                            index,
+                            selectedIndexes.toSet(),
+                        )
                     },
                     onClick = {
                         if (selectedIndexes.isNotEmpty()) {
                             if (index in selectedIndexes) {
-                                selectedIndexes += index
-                            } else {
                                 selectedIndexes -= index
+                            } else {
+                                selectedIndexes += index
                             }
                             onSelectionChangedUpdated(
                                 index,
