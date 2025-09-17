@@ -89,6 +89,8 @@ class ImagesScreenViewModel @Inject constructor(
                     deleteMediaFiles(files)
                 }
             } catch (_: CancellationException) {
+            } catch (e: Exception) {
+                uiStateInternal.value = ImagesScreenUiState.Error(e)
             }
         }
     }

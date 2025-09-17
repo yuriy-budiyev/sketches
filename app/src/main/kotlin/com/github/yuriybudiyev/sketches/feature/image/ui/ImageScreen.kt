@@ -134,10 +134,8 @@ fun ImageRoute(
             }
         },
         onDelete = { _, file ->
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-                coroutineScope.launch {
-                    viewModel.deleteMedia(file.uri)
-                }
+            coroutineScope.launch {
+                viewModel.deleteMedia(file.uri)
             }
         },
         onShare = onShare,
