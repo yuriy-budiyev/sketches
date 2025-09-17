@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.images.ui
 
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -36,17 +37,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAlertDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
@@ -79,6 +85,11 @@ fun ImagesRoute(
         uiState = uiState,
         onRequestUserSelectedMedia = onRequestUserSelectedMedia,
         onImageClick = onImageClick,
+        onDeleteMedia = { files ->
+            coroutineScope.launch {
+                viewModel.deleteMedia(files)
+            }
+        }
     )
 }
 
@@ -87,8 +98,11 @@ fun ImagesScreen(
     uiState: ImagesScreenUiState,
     onRequestUserSelectedMedia: (() -> Unit)?,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val contextUpdated by rememberUpdatedState(LocalContext.current)
+    val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     var selectedFiles by remember { mutableStateOf<Set<MediaStoreFile>>(emptySet()) }
     var deleteDialogVisible by remember { mutableStateOf(false) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
@@ -146,10 +160,36 @@ fun ImagesScreen(
                     SketchesAppBarActionButton(
                         icon = SketchesIcons.Delete,
                         description = stringResource(id = R.string.delete_selected),
-                        onClick = { },
+                        onClick = {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                coroutineScope.launch {
+                                    deleteRequestLauncher.launchDeleteMediaRequest(
+                                        contextUpdated,
+                                        selectedFiles.map { it.uri.toUri() }
+                                    )
+                                }
+                            } else {
+                                deleteDialogVisible = true
+                            }
+                        },
                     )
                 }
             },
         )
+        if (deleteDialogVisible) {
+            SketchesAlertDialog(
+                titleText = stringResource(id = R.string.delete_image_dialog_title),
+                contentText = stringResource(id = R.string.delete_selected_images_dialog_content),
+                positiveButtonText = stringResource(id = R.string.delete_image_dialog_positive),
+                negativeButtonText = stringResource(id = R.string.delete_image_dialog_negative),
+                onPositiveResult = {
+                    deleteDialogVisible = false
+                    onDeleteMediaUpdated(selectedFiles)
+                },
+                onNegativeResult = {
+                    deleteDialogVisible = false
+                },
+            )
+        }
     }
 }

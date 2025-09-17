@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Yuriy Budiyev
+ * Copyright (c) 2025 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +22,21 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.repository
+package com.github.yuriybudiyev.sketches.core.coroutines.di
 
-import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.coroutines.SketchesDispatchers
+import com.github.yuriybudiyev.sketches.core.coroutines.implementation.SketchesDispatchersImpl
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
-interface MediaStoreRepository {
+@Module
+@InstallIn(SingletonComponent::class)
+interface SketchersDispatchersBinderModule {
 
-    suspend fun getFiles(bucketId: Long = SketchesConstants.NoId): List<MediaStoreFile>
-
-    suspend fun deleteFile(uri: String): Boolean
-
-    suspend fun deleteFiles(files: Collection<MediaStoreFile>): Boolean
-
-    suspend fun getBuckets(): List<MediaStoreBucket>
+    @Binds
+    fun bindSketchersDispatchersImplToSketchersDispatchers(
+        dispatchersImpl: SketchesDispatchersImpl,
+    ): SketchesDispatchers
 }

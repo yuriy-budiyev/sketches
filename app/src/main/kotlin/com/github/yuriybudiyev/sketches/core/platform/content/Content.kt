@@ -24,9 +24,13 @@
 
 package com.github.yuriybudiyev.sketches.core.platform.content
 
+import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
+import androidx.annotation.RequiresApi
 
 enum class MediaType(val contentUri: Uri) {
 
@@ -44,5 +48,22 @@ enum class MediaType(val contentUri: Uri) {
         } else {
             MediaStore.Video.Media.EXTERNAL_CONTENT_URI
         }
+    )
+}
+
+@RequiresApi(Build.VERSION_CODES.R)
+fun ActivityResultLauncher<IntentSenderRequest>.launchDeleteMediaRequest(
+    context: Context,
+    uris: Collection<Uri>,
+) {
+    launch(
+        IntentSenderRequest
+            .Builder(
+                MediaStore.createDeleteRequest(
+                    context.contentResolver,
+                    uris
+                ).intentSender
+            )
+            .build()
     )
 }

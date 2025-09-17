@@ -22,27 +22,16 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.dispatchers.implementation
+package com.github.yuriybudiyev.sketches.core.domain
 
-import com.github.yuriybudiyev.sketches.core.dispatchers.SketchesDispatchers
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.Reusable
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainCoroutineDispatcher
 import javax.inject.Inject
 
 @Reusable
-class SketchesDispatchersImpl @Inject constructor(): SketchesDispatchers {
+class DeleteMediaFilesUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    override val main: MainCoroutineDispatcher
-        get() = Dispatchers.Main
-
-    override val default: CoroutineDispatcher
-        get() = Dispatchers.Default
-
-    override val io: CoroutineDispatcher
-        get() = Dispatchers.IO
-
-    override val unconfined: CoroutineDispatcher
-        get() = Dispatchers.Unconfined
+    suspend operator fun invoke(files: Collection<MediaStoreFile>): Boolean =
+        repository.deleteFiles(files)
 }

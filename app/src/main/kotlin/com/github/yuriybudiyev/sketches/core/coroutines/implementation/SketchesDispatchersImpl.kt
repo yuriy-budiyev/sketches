@@ -22,21 +22,27 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.dispatchers.di
+package com.github.yuriybudiyev.sketches.core.coroutines.implementation
 
-import com.github.yuriybudiyev.sketches.core.dispatchers.SketchesDispatchers
-import com.github.yuriybudiyev.sketches.core.dispatchers.implementation.SketchesDispatchersImpl
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import com.github.yuriybudiyev.sketches.core.coroutines.SketchesDispatchers
+import dagger.Reusable
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainCoroutineDispatcher
+import javax.inject.Inject
 
-@Module
-@InstallIn(SingletonComponent::class)
-interface SketchersDispatchersBinderModule {
+@Reusable
+class SketchesDispatchersImpl @Inject constructor(): SketchesDispatchers {
 
-    @Binds
-    fun bindSketchersDispatchersImplToSketchersDispatchers(
-        dispatchersImpl: SketchesDispatchersImpl,
-    ): SketchesDispatchers
+    override val main: MainCoroutineDispatcher
+        get() = Dispatchers.Main
+
+    override val default: CoroutineDispatcher
+        get() = Dispatchers.Default
+
+    override val io: CoroutineDispatcher
+        get() = Dispatchers.IO
+
+    override val unconfined: CoroutineDispatcher
+        get() = Dispatchers.Unconfined
 }

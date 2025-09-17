@@ -26,7 +26,9 @@ package com.github.yuriybudiyev.sketches.feature.images.ui
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.dispatchers.SketchesDispatchers
+import com.github.yuriybudiyev.sketches.core.coroutines.SketchesDispatchers
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,6 +47,7 @@ class ImagesScreenViewModel @Inject constructor(
     context: Context,
     private val dispatchers: SketchesDispatchers,
     private val getMediaFiles: GetMediaFilesUseCase,
+    private val deleteMediaFiles: DeleteMediaFilesUseCase,
 ): MediaObservingViewModel(
     context,
     dispatchers
@@ -57,8 +60,8 @@ class ImagesScreenViewModel @Inject constructor(
         get() = uiStateInternal
 
     fun updateMedia(silent: Boolean = uiState.value is ImagesScreenUiState.Images) {
-        currentJob?.cancel()
-        currentJob = viewModelScope.launch {
+        updateJob?.cancel()
+        updateJob = viewModelScope.launch {
             if (!silent) {
                 uiStateInternal.value = ImagesScreenUiState.Loading
             }
@@ -70,7 +73,6 @@ class ImagesScreenViewModel @Inject constructor(
                     uiStateInternal.value = ImagesScreenUiState.Empty
                 }
             } catch (_: CancellationException) {
-                // Do nothing
             } catch (e: Exception) {
                 if (!silent) {
                     uiStateInternal.value = ImagesScreenUiState.Error(e)
@@ -79,9 +81,22 @@ class ImagesScreenViewModel @Inject constructor(
         }
     }
 
+    fun deleteMedia(files: Collection<MediaStoreFile>) {
+        deleteJob?.cancel()
+        deleteJob = viewModelScope.launch {
+            try {
+                withContext(dispatchers.io) {
+                    deleteMediaFiles(files)
+                }
+            } catch (_: CancellationException) {
+            }
+        }
+    }
+
     override fun onMediaChanged() {
         updateMedia()
     }
 
-    private var currentJob: Job? = null
+    private var updateJob: Job? = null
+    private var deleteJob: Job? = null
 }

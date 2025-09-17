@@ -25,9 +25,7 @@
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
 import android.os.Build
-import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -75,6 +73,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
+import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAlertDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
@@ -264,15 +263,9 @@ private fun ImageScreenLayout(
             onDelete = {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     coroutineScope.launch {
-                        deleteRequestLauncher.launch(
-                            IntentSenderRequest
-                                .Builder(
-                                    MediaStore.createDeleteRequest(
-                                        contextUpdated.contentResolver,
-                                        listOf(filesUpdated[currentIndex].uri.toUri())
-                                    ).intentSender
-                                )
-                                .build()
+                        deleteRequestLauncher.launchDeleteMediaRequest(
+                            contextUpdated,
+                            listOf(filesUpdated[currentIndex].uri.toUri())
                         )
                     }
                 } else {
