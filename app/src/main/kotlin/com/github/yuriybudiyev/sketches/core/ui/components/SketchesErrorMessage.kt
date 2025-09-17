@@ -84,8 +84,13 @@ fun SketchesErrorMessage(
             )
         }
     } else {
+        val message = thrown.message
         SketchesCenteredMessage(
-            text = stringResource(id = R.string.unexpected_error),
+            text = if (message.isNullOrEmpty()) {
+                stringResource(id = R.string.unexpected_error)
+            } else {
+                stringResource(id = R.string.unexpected_error) + "\n${thrown.message}"
+            },
             modifier = modifier,
         )
     }

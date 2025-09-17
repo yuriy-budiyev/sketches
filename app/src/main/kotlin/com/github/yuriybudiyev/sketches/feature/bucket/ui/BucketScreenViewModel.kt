@@ -27,7 +27,7 @@ package com.github.yuriybudiyev.sketches.feature.bucket.ui
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
-import com.github.yuriybudiyev.sketches.core.coroutines.SketchesDispatchers
+import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,7 +44,7 @@ import javax.inject.Inject
 class BucketScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
-    private val dispatchers: SketchesDispatchers,
+    private val dispatchers: SketchesCoroutineDispatchers,
     private val getMediaFiles: GetMediaFilesUseCase,
 ): MediaObservingViewModel(
     context,

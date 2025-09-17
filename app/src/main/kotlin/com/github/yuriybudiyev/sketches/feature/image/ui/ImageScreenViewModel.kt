@@ -27,8 +27,9 @@ package com.github.yuriybudiyev.sketches.feature.image.ui
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
-import com.github.yuriybudiyev.sketches.core.coroutines.SketchesDispatchers
-import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFileUseCase
+import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,9 +46,9 @@ import javax.inject.Inject
 class ImageScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
-    private val dispatchers: SketchesDispatchers,
+    private val dispatchers: SketchesCoroutineDispatchers,
     private val getMediaFiles: GetMediaFilesUseCase,
-    private val deleteMediaFile: DeleteMediaFileUseCase,
+    private val deleteMediaFiles: DeleteMediaFilesUseCase,
 ): MediaObservingViewModel(
     context,
     dispatchers
@@ -130,7 +131,6 @@ class ImageScreenViewModel @Inject constructor(
                     uiStateInternal.value = ImageScreenUiState.Empty
                 }
             } catch (_: CancellationException) {
-                // Do nothing
             } catch (e: Exception) {
                 if (!silent) {
                     uiStateInternal.value = ImageScreenUiState.Error(e)
@@ -139,15 +139,14 @@ class ImageScreenViewModel @Inject constructor(
         }
     }
 
-    fun deleteMedia(uri: String) {
+    fun deleteMedia(files: Collection<MediaStoreFile>) {
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
             try {
                 withContext(dispatchers.io) {
-                    deleteMediaFile(uri)
+                    deleteMediaFiles(files)
                 }
             } catch (_: CancellationException) {
-                // Do nothing
             } catch (e: Exception) {
                 uiStateInternal.value = ImageScreenUiState.Error(e)
             }

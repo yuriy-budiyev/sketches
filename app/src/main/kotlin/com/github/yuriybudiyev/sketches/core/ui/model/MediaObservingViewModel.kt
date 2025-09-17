@@ -33,7 +33,7 @@ import androidx.annotation.CallSuper
 import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.coroutines.SketchesDispatchers
+import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
@@ -42,7 +42,7 @@ import kotlinx.coroutines.withContext
 
 abstract class MediaObservingViewModel(
     context: Context,
-    private val dispatchers: SketchesDispatchers,
+    private val dispatchers: SketchesCoroutineDispatchers,
 ): ViewModel() {
 
     @MainThread

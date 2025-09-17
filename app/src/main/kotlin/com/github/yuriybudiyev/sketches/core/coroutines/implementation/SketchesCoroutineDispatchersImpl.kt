@@ -24,7 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.coroutines.implementation
 
-import com.github.yuriybudiyev.sketches.core.coroutines.SketchesDispatchers
+import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
 import dagger.Reusable
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +32,7 @@ import kotlinx.coroutines.MainCoroutineDispatcher
 import javax.inject.Inject
 
 @Reusable
-class SketchesDispatchersImpl @Inject constructor(): SketchesDispatchers {
+class SketchesCoroutineDispatchersImpl @Inject constructor(): SketchesCoroutineDispatchers {
 
     override val main: MainCoroutineDispatcher
         get() = Dispatchers.Main

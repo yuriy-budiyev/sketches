@@ -26,7 +26,7 @@ package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.coroutines.SketchesDispatchers
+import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaBucketsUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -43,7 +43,7 @@ import javax.inject.Inject
 class BucketsScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
-    private val dispatchers: SketchesDispatchers,
+    private val dispatchers: SketchesCoroutineDispatchers,
     private val getMediaBuckets: GetMediaBucketsUseCase,
 ): MediaObservingViewModel(
     context,

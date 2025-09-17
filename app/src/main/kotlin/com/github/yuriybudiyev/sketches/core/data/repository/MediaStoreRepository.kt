@@ -32,8 +32,6 @@ interface MediaStoreRepository {
 
     suspend fun getFiles(bucketId: Long = SketchesConstants.NoId): List<MediaStoreFile>
 
-    suspend fun deleteFile(uri: String): Boolean
-
     suspend fun deleteFiles(files: Collection<MediaStoreFile>): Boolean
 
     suspend fun getBuckets(): List<MediaStoreBucket>

@@ -26,7 +26,7 @@ package com.github.yuriybudiyev.sketches.feature.images.ui
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.coroutines.SketchesDispatchers
+import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
@@ -45,7 +45,7 @@ import javax.inject.Inject
 class ImagesScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
-    private val dispatchers: SketchesDispatchers,
+    private val dispatchers: SketchesCoroutineDispatchers,
     private val getMediaFiles: GetMediaFilesUseCase,
     private val deleteMediaFiles: DeleteMediaFilesUseCase,
 ): MediaObservingViewModel(
