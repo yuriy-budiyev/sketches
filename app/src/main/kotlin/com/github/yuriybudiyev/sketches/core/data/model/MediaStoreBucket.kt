@@ -30,4 +30,15 @@ data class MediaStoreBucket(
     val size: Int,
     val coverUri: String,
     val coverDateAdded: Long,
-)
+) {
+
+    override fun hashCode(): Int =
+        id.hashCode()
+
+    override fun equals(other: Any?): Boolean =
+        when {
+            other === this -> true
+            other is MediaStoreBucket -> other.id == this.id
+            else -> false
+        }
+}
