@@ -28,4 +28,5 @@
     <string name="update_selected_media">Обновить выбранные изображения</string>
     <string name="delete_selected">Удалить выбранное</string>
     <string name="delete_selected_images_dialog_content">Вы действительно хотите удалить выбранные изображения?</string>
+    <string name="share_selected">Поделиться выбранным</string>
 </resources>

@@ -24,21 +24,33 @@
 
 package com.github.yuriybudiyev.sketches.main
 
+import android.app.PendingIntent
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
+import com.github.yuriybudiyev.sketches.core.platform.chooser.LocalShareManager
+import com.github.yuriybudiyev.sketches.core.platform.chooser.ShareManager
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
 import com.github.yuriybudiyev.sketches.main.ui.SketchesApp
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MainActivity: ComponentActivity() {
+class MainActivity: ComponentActivity(), ShareManager {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,8 +92,119 @@ class MainActivity: ComponentActivity() {
             window.desiredHdrHeadroom = 1.5f
         }
         setContent {
-            SketchesTheme {
-                SketchesApp()
+            CompositionLocalProvider(LocalShareManager provides this) {
+                SketchesTheme {
+                    SketchesApp()
+                }
+            }
+        }
+        ContextCompat.registerReceiver(
+            this,
+            shareReceiver,
+            IntentFilter(ACTION_SHARE_RESEND),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+    }
+
+    override fun onDestroy() {
+        unregisterReceiver(shareReceiver)
+        super.onDestroy()
+    }
+
+    override fun startChooserActivity(
+        uri: Uri,
+        mimeType: String,
+        title: CharSequence,
+    ) {
+        val shareIntent = Intent(Intent.ACTION_SEND)
+            .putExtra(
+                Intent.EXTRA_STREAM,
+                uri,
+            )
+            .setType(mimeType)
+        val chooserIntent = Intent.createChooser(
+            shareIntent,
+            title,
+        )
+        startActivity(chooserIntent)
+    }
+
+    override fun startChooserActivity(
+        content: ArrayList<Uri>,
+        mimeType: String,
+        title: CharSequence,
+        listenerAction: String,
+    ) {
+        val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
+            .putParcelableArrayListExtra(
+                Intent.EXTRA_STREAM,
+                content,
+            )
+            .setType(mimeType)
+        val callbackIntent = PendingIntent.getBroadcast(
+            applicationContext,
+            listenerAction.hashCode(),
+            Intent(
+                applicationContext,
+                ShareReceiver::class.java
+            ).apply {
+                setAction(listenerAction)
+            },
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val chooserIntent = Intent.createChooser(
+            shareIntent,
+            title,
+            callbackIntent.intentSender,
+        )
+        startActivity(chooserIntent)
+    }
+
+    override fun addOnSharedListener(
+        listenerAction: String,
+        onShared: () -> Unit,
+    ) {
+        onSharedListeners[listenerAction] = onShared
+    }
+
+    override fun removeOnSharedListener(listenerAction: String) {
+        onSharedListeners.remove(listenerAction)
+    }
+
+    private val onSharedListeners: MutableMap<String?, () -> Unit> = LinkedHashMap()
+    private val shareReceiver: BroadcastReceiver = DynamicShareReceiver()
+
+    private companion object {
+
+        const val ACTION_SHARE_RESEND = "com.github.yuriybudiyev.sketches.ACTION_SHARE_RESEND"
+        const val EXTRA_SHARE_ACTION = "share_action"
+    }
+
+    class ShareReceiver: BroadcastReceiver() {
+
+        override fun onReceive(
+            context: Context,
+            intent: Intent,
+        ) {
+            context.sendBroadcast(
+                Intent(ACTION_SHARE_RESEND)
+                    .putExtra(
+                        EXTRA_SHARE_ACTION,
+                        intent.action
+                    )
+                    .setPackage(context.packageName)
+            )
+        }
+    }
+
+    private inner class DynamicShareReceiver: BroadcastReceiver() {
+
+        override fun onReceive(
+            context: Context,
+            intent: Intent,
+        ) {
+            lifecycleScope.launch {
+                onSharedListeners[intent.getStringExtra(EXTRA_SHARE_ACTION)]?.invoke()
             }
         }
     }

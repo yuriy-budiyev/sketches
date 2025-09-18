@@ -85,7 +85,6 @@ fun BucketRoute(
     LaunchedEffect(
         bucketId,
         viewModel,
-        coroutineScope,
     ) {
         coroutineScope.launch {
             viewModel.updateMedia(bucketId)
