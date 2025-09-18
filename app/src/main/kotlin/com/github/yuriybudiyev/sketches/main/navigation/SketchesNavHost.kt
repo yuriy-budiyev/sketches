@@ -51,46 +51,52 @@ fun SketchesNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = ImagesRoute
+        startDestination = ImagesRoute,
     ) {
         appState.registerTopLevelNavigationRoute(ImagesRoute)
         registerImagesScreen(
             onImageClick = { index, image ->
                 navController.navigateToImageScreen(
-                    index,
-                    image.id
+                    imageIndex = index,
+                    imageId = image.id
                 )
             },
             onRequestUserSelectedMedia = onRequestUserSelectedMedia,
         )
         appState.registerTopLevelNavigationRoute(BucketsRoute)
-        registerBucketsScreen(onBucketClick = { _, bucket ->
-            navController.navigateToBucketScreen(
-                bucket.id,
-                bucket.name
-            )
-        })
-        registerImageScreen(onShare = { _, file ->
-            context.startActivity(
-                Intent
-                    .createChooser(
-                        Intent(Intent.ACTION_SEND)
-                            .putExtra(
-                                Intent.EXTRA_STREAM,
-                                file.uri
-                            )
-                            .setType(file.mimeType),
-                        context.getString(R.string.share_image)
-                    )
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            )
-        })
-        registerBucketScreen(onImageClick = { index, image ->
-            navController.navigateToImageScreen(
-                index,
-                image.id,
-                image.bucketId
-            )
-        })
+        registerBucketsScreen(
+            onBucketClick = { _, bucket ->
+                navController.navigateToBucketScreen(
+                    bucketId = bucket.id,
+                    bucketName = bucket.name,
+                )
+            },
+        )
+        registerImageScreen(
+            onShare = { _, file ->
+                context.startActivity(
+                    Intent
+                        .createChooser(
+                            Intent(Intent.ACTION_SEND)
+                                .putExtra(
+                                    Intent.EXTRA_STREAM,
+                                    file.uri
+                                )
+                                .setType(file.mimeType),
+                            context.getString(R.string.share_image)
+                        )
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
+            },
+        )
+        registerBucketScreen(
+            onImageClick = { index, image ->
+                navController.navigateToImageScreen(
+                    imageIndex = index,
+                    imageId = image.id,
+                    bucketId = image.bucketId,
+                )
+            },
+        )
     }
 }
