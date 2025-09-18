@@ -83,16 +83,17 @@ fun SketchesMediaGrid(
             contentType = { index -> filesUpdated[index].mediaType },
         ) { index ->
             val file = filesUpdated[index]
+            val fileSelectedOnComposition = file in selectedFiles
             val itemModifier = Modifier
                 .aspectRatio(ratio = 1.0F)
                 .clip(shape = MaterialTheme.shapes.small)
                 .border(
-                    width = if (file in selectedFiles) {
+                    width = if (fileSelectedOnComposition) {
                         SketchesDimens.MediaItemBorderThicknessSelected
                     } else {
                         SketchesDimens.MediaItemBorderThicknessDefault
                     },
-                    color = if (file in selectedFiles) {
+                    color = if (fileSelectedOnComposition) {
                         MaterialTheme.colorScheme.primary
                     } else {
                         MaterialTheme.colorScheme.onBackground
