@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -62,6 +63,7 @@ fun SketchesImageMediaItem(
 @Composable
 fun SketchesVideoMediaItem(
     uri: String,
+    iconColor: Color,
     iconPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
@@ -88,7 +90,7 @@ fun SketchesVideoMediaItem(
             Icon(
                 imageVector = SketchesIcons.Video,
                 contentDescription = stringResource(id = R.string.video),
-                tint = MaterialTheme.colorScheme.onBackground,
+                tint = iconColor,
             )
         }
     }

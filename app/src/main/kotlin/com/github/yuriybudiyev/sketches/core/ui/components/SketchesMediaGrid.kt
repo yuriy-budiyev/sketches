@@ -138,6 +138,11 @@ fun SketchesMediaGrid(
                 MediaType.Video -> {
                     SketchesVideoMediaItem(
                         uri = file.uri,
+                        iconColor = if (fileSelectedOnComposition) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onBackground
+                        },
                         iconPadding = SketchesDimens.MediaGridVideoIconPadding,
                         modifier = itemModifier,
                     )

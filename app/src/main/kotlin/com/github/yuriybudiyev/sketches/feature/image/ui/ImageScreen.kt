@@ -482,16 +482,17 @@ private fun MediaBar(
             contentType = { position -> itemsUpdated[position].mediaType },
         ) { position ->
             val file = itemsUpdated[position]
+            val fileIsCurrent = position == currentIndexUpdated
             val itemModifier = Modifier
                 .size(size = SketchesDimens.MediaBarItemSize)
                 .clip(shape = MaterialTheme.shapes.small)
                 .border(
-                    width = if (position == currentIndexUpdated) {
+                    width = if (fileIsCurrent) {
                         SketchesDimens.MediaItemBorderThicknessSelected
                     } else {
                         SketchesDimens.MediaItemBorderThicknessDefault
                     },
-                    color = if (position == currentIndexUpdated) {
+                    color = if (fileIsCurrent) {
                         MaterialTheme.colorScheme.primary
                     } else {
                         MaterialTheme.colorScheme.onBackground
@@ -515,6 +516,11 @@ private fun MediaBar(
                 MediaType.Video -> {
                     SketchesVideoMediaItem(
                         uri = file.uri,
+                        iconColor = if (fileIsCurrent) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onBackground
+                        },
                         iconPadding = SketchesDimens.MediaBarVideoIconPadding,
                         modifier = itemModifier,
                     )
