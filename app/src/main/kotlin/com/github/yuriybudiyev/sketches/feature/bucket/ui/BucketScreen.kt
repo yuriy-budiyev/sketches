@@ -24,8 +24,11 @@
 
 package com.github.yuriybudiyev.sketches.feature.bucket.ui
 
+import android.app.Activity
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.component1
+import androidx.activity.result.component2
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -43,7 +46,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -113,11 +118,27 @@ fun BucketScreen(
     val coroutineScope = rememberCoroutineScope()
     val contextUpdated by rememberUpdatedState(LocalContext.current)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
-    var selectedFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptySet()) }
+    val selectedFiles = rememberSaveable { SnapshotStateSet<MediaStoreFile>() }
     var deleteDialogVisible by remember { mutableStateOf(false) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
-        onResult = { },
+        onResult = { (resultCode, _) ->
+            if (resultCode == Activity.RESULT_OK) {
+                coroutineScope.launch {
+                    selectedFiles.clear()
+                }
+            }
+        },
+    )
+    val shareRequestLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { (resultCode, _) ->
+            if (resultCode == Activity.RESULT_OK) {
+                coroutineScope.launch {
+                    selectedFiles.clear()
+                }
+            }
+        },
     )
     Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {
@@ -133,10 +154,8 @@ fun BucketScreen(
             is BucketScreenUiState.Bucket -> {
                 BucketScreenLayout(
                     files = uiState.files,
+                    selectedFiles = selectedFiles,
                     onItemClick = onImageClick,
-                    onSelectionChanged = { files ->
-                        selectedFiles = files
-                    },
                     modifier = Modifier.matchParentSize(),
                 )
             }
@@ -195,15 +214,15 @@ fun BucketScreen(
 @Composable
 private fun BucketScreenLayout(
     files: List<MediaStoreFile>,
+    selectedFiles: SnapshotStateSet<MediaStoreFile>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
-    onSelectionChanged: (files: Collection<MediaStoreFile>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
         SketchesMediaGrid(
             files = files,
+            selectedFiles = selectedFiles,
             onItemClick = onItemClick,
-            onSelectionChanged = onSelectionChanged,
             modifier = Modifier.matchParentSize(),
             overlayTop = true,
             overlayBottom = false,

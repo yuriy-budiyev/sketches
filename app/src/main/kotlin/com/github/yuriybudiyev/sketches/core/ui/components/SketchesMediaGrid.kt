@@ -32,8 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,16 +43,14 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 @Composable
 fun SketchesMediaGrid(
     files: List<MediaStoreFile>,
+    selectedFiles: SnapshotStateSet<MediaStoreFile>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
-    onSelectionChanged: (files: Collection<MediaStoreFile>) -> Unit,
     modifier: Modifier = Modifier,
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
     val filesUpdated by rememberUpdatedState(files)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
-    val onSelectionChangedUpdated by rememberUpdatedState(onSelectionChanged)
-    val selectedFiles = rememberSaveable { SnapshotStateSet<MediaStoreFile>() }
     LaunchedEffect(
         files,
         selectedFiles,
@@ -65,11 +61,6 @@ fun SketchesMediaGrid(
             } else {
                 selectedFiles.retainAll(files)
             }
-        }
-    }
-    LaunchedEffect(selectedFiles) {
-        snapshotFlow { selectedFiles.toSet() }.collect { files ->
-            onSelectionChangedUpdated(files)
         }
     }
     SketchesLazyGrid(
