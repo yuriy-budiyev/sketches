@@ -493,7 +493,7 @@ private fun MediaBar(
                         SketchesDimens.MediaItemBorderThicknessDefault
                     },
                     color = if (fileIsCurrent) {
-                        MaterialTheme.colorScheme.primary
+                        MaterialTheme.colorScheme.onBackground
                     } else {
                         MaterialTheme.colorScheme.onBackground
                             .copy(alpha = SketchesColors.UiAlphaHighTransparency)
@@ -516,11 +516,7 @@ private fun MediaBar(
                 MediaType.Video -> {
                     SketchesVideoMediaItem(
                         uri = file.uri,
-                        iconColor = if (fileIsCurrent) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.onBackground
-                        },
+                        iconColor = MaterialTheme.colorScheme.onBackground,
                         iconPadding = SketchesDimens.MediaBarVideoIconPadding,
                         modifier = itemModifier,
                     )

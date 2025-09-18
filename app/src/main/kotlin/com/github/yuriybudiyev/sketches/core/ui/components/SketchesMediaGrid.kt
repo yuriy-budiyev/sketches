@@ -94,7 +94,7 @@ fun SketchesMediaGrid(
                         SketchesDimens.MediaItemBorderThicknessDefault
                     },
                     color = if (fileSelectedOnComposition) {
-                        MaterialTheme.colorScheme.primary
+                        MaterialTheme.colorScheme.onBackground
                     } else {
                         MaterialTheme.colorScheme.onBackground
                             .copy(alpha = SketchesColors.UiAlphaHighTransparency)
@@ -138,11 +138,7 @@ fun SketchesMediaGrid(
                 MediaType.Video -> {
                     SketchesVideoMediaItem(
                         uri = file.uri,
-                        iconColor = if (fileSelectedOnComposition) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.onBackground
-                        },
+                        iconColor = MaterialTheme.colorScheme.onBackground,
                         iconPadding = SketchesDimens.MediaGridVideoIconPadding,
                         modifier = itemModifier,
                     )
