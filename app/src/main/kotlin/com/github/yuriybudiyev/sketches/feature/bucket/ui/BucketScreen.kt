@@ -24,6 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.feature.bucket.ui
 
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
@@ -36,23 +39,33 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAlertDialog
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import kotlinx.coroutines.launch
 
 @Composable
@@ -82,6 +95,11 @@ fun BucketRoute(
         name = bucketName,
         uiState = uiState,
         onImageClick = onImageClick,
+        onDeleteMedia = { files ->
+            coroutineScope.launch {
+                viewModel.deleteMedia(files)
+            }
+        }
     )
 }
 
@@ -90,7 +108,17 @@ fun BucketScreen(
     name: String?,
     uiState: BucketScreenUiState,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val contextUpdated by rememberUpdatedState(LocalContext.current)
+    val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
+    var selectedFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptySet()) }
+    var deleteDialogVisible by remember { mutableStateOf(false) }
+    val deleteRequestLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult(),
+        onResult = { },
+    )
     Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {
             is BucketScreenUiState.Empty -> {
@@ -106,13 +134,16 @@ fun BucketScreen(
                 BucketScreenLayout(
                     files = uiState.files,
                     onItemClick = onImageClick,
-                    Modifier.matchParentSize()
+                    onSelectionChanged = { files ->
+                        selectedFiles = files
+                    },
+                    modifier = Modifier.matchParentSize(),
                 )
             }
             is BucketScreenUiState.Error -> {
                 SketchesErrorMessage(
                     thrown = uiState.thrown,
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier.matchParentSize(),
                 )
             }
         }
@@ -123,7 +154,41 @@ fun BucketScreen(
             text = name,
             backgroundColor = MaterialTheme.colorScheme.background
                 .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-        )
+        ) {
+            if (selectedFiles.isNotEmpty()) {
+                SketchesAppBarActionButton(
+                    icon = SketchesIcons.Delete,
+                    description = stringResource(id = R.string.delete_selected),
+                    onClick = {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            coroutineScope.launch {
+                                deleteRequestLauncher.launchDeleteMediaRequest(
+                                    contextUpdated,
+                                    selectedFiles.map { it.uri.toUri() }
+                                )
+                            }
+                        } else {
+                            deleteDialogVisible = true
+                        }
+                    },
+                )
+            }
+        }
+        if (deleteDialogVisible) {
+            SketchesAlertDialog(
+                titleText = stringResource(id = R.string.delete_image_dialog_title),
+                contentText = stringResource(id = R.string.delete_selected_images_dialog_content),
+                positiveButtonText = stringResource(id = R.string.delete_image_dialog_positive),
+                negativeButtonText = stringResource(id = R.string.delete_image_dialog_negative),
+                onPositiveResult = {
+                    deleteDialogVisible = false
+                    onDeleteMediaUpdated(selectedFiles)
+                },
+                onNegativeResult = {
+                    deleteDialogVisible = false
+                },
+            )
+        }
     }
 }
 
@@ -131,13 +196,14 @@ fun BucketScreen(
 private fun BucketScreenLayout(
     files: List<MediaStoreFile>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onSelectionChanged: (files: Collection<MediaStoreFile>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
         SketchesMediaGrid(
             files = files,
             onItemClick = onItemClick,
-            onSelectionChanged = { },
+            onSelectionChanged = onSelectionChanged,
             modifier = Modifier.matchParentSize(),
             overlayTop = true,
             overlayBottom = false,

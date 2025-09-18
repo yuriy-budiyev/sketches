@@ -149,36 +149,35 @@ fun ImagesScreen(
             text = stringResource(id = ImagesRoute.titleRes),
             backgroundColor = MaterialTheme.colorScheme.background
                 .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-            actions = {
-                if (onRequestUserSelectedMedia != null) {
-                    SketchesAppBarActionButton(
-                        icon = SketchesIcons.UpdateMediaSelection,
-                        description = stringResource(id = R.string.update_selected_media),
-                        onClick = {
-                            onRequestUserSelectedMedia()
-                        },
-                    )
-                }
-                if (selectedFiles.isNotEmpty()) {
-                    SketchesAppBarActionButton(
-                        icon = SketchesIcons.Delete,
-                        description = stringResource(id = R.string.delete_selected),
-                        onClick = {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                coroutineScope.launch {
-                                    deleteRequestLauncher.launchDeleteMediaRequest(
-                                        contextUpdated,
-                                        selectedFiles.map { it.uri.toUri() }
-                                    )
-                                }
-                            } else {
-                                deleteDialogVisible = true
+        ) {
+            if (onRequestUserSelectedMedia != null) {
+                SketchesAppBarActionButton(
+                    icon = SketchesIcons.UpdateMediaSelection,
+                    description = stringResource(id = R.string.update_selected_media),
+                    onClick = {
+                        onRequestUserSelectedMedia()
+                    },
+                )
+            }
+            if (selectedFiles.isNotEmpty()) {
+                SketchesAppBarActionButton(
+                    icon = SketchesIcons.Delete,
+                    description = stringResource(id = R.string.delete_selected),
+                    onClick = {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            coroutineScope.launch {
+                                deleteRequestLauncher.launchDeleteMediaRequest(
+                                    contextUpdated,
+                                    selectedFiles.map { it.uri.toUri() }
+                                )
                             }
-                        },
-                    )
-                }
-            },
-        )
+                        } else {
+                            deleteDialogVisible = true
+                        }
+                    },
+                )
+            }
+        }
         if (deleteDialogVisible) {
             SketchesAlertDialog(
                 titleText = stringResource(id = R.string.delete_image_dialog_title),

@@ -89,7 +89,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketche
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.ui.utils.animateScrollToItemCentered
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -125,7 +124,6 @@ fun ImageRoute(
     }
     ImageScreen(
         uiState = uiState,
-        coroutineScope = coroutineScope,
         onChange = { index, file ->
             coroutineScope.launch {
                 viewModel.setCurrentMediaData(
@@ -147,7 +145,6 @@ fun ImageRoute(
 @Composable
 fun ImageScreen(
     uiState: ImageScreenUiState,
-    coroutineScope: CoroutineScope,
     onChange: (index: Int, file: MediaStoreFile) -> Unit,
     onDelete: (index: Int, file: MediaStoreFile) -> Unit,
     onShare: (index: Int, file: MediaStoreFile) -> Unit,
@@ -171,7 +168,6 @@ fun ImageScreen(
                 ImageScreenLayout(
                     index = uiState.fileIndex,
                     files = uiState.files,
-                    coroutineScope = coroutineScope,
                     onChange = onChange,
                     onDelete = onDelete,
                     onShare = onShare,
@@ -192,7 +188,6 @@ fun ImageScreen(
 private fun ImageScreenLayout(
     index: Int,
     files: List<MediaStoreFile>,
-    coroutineScope: CoroutineScope,
     onChange: (index: Int, file: MediaStoreFile) -> Unit,
     onDelete: (index: Int, file: MediaStoreFile) -> Unit,
     onShare: (index: Int, file: MediaStoreFile) -> Unit,
@@ -205,6 +200,7 @@ private fun ImageScreenLayout(
     val onChangeUpdated by rememberUpdatedState(onChange)
     val onDeleteUpdated by rememberUpdatedState(onDelete)
     val onShareUpdated by rememberUpdatedState(onShare)
+    val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState(currentIndex) { filesUpdated.size }
     val barState = rememberLazyListState(currentIndex)
     val barItemSize = with(LocalDensity.current) { SketchesDimens.MediaBarItemSize.roundToPx() }
@@ -247,7 +243,6 @@ private fun ImageScreenLayout(
             MediaPager(
                 state = pagerState,
                 items = filesUpdated,
-                coroutineScope = coroutineScope,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1.0F),
@@ -338,7 +333,6 @@ private fun TopBar(
 private fun MediaPager(
     state: PagerState,
     items: List<MediaStoreFile>,
-    coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
     val filesUpdated by rememberUpdatedState(items)
@@ -353,7 +347,6 @@ private fun MediaPager(
             number = page,
             fileUri = file.uri,
             fileType = file.mediaType,
-            coroutineScope = coroutineScope,
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -365,7 +358,6 @@ private fun MediaPage(
     number: Int,
     fileUri: String,
     fileType: MediaType,
-    coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
     when (fileType) {
@@ -380,7 +372,6 @@ private fun MediaPage(
                 state = state,
                 number = number,
                 fileUri = fileUri,
-                coroutineScope = coroutineScope,
                 modifier = modifier,
             )
         }
@@ -408,9 +399,9 @@ private fun VideoPage(
     state: PagerState,
     number: Int,
     fileUri: String,
-    coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier,
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val numberUpdated by rememberUpdatedState(number)
     val mediaState = rememberSketchesMediaState(coroutineScope)
     DisposableEffect(

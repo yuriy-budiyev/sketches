@@ -28,6 +28,8 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
 import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -46,6 +48,7 @@ class BucketScreenViewModel @Inject constructor(
     context: Context,
     private val dispatchers: SketchesCoroutineDispatchers,
     private val getMediaFiles: GetMediaFilesUseCase,
+    private val deleteMediaFiles: DeleteMediaFilesUseCase,
 ): MediaObservingViewModel(
     context,
     dispatchers
@@ -62,8 +65,8 @@ class BucketScreenViewModel @Inject constructor(
         silent: Boolean = uiState.value is BucketScreenUiState.Bucket,
     ) {
         currentBucketId = bucketId
-        currentJob?.cancel()
-        currentJob = viewModelScope.launch {
+        updateJob?.cancel()
+        updateJob = viewModelScope.launch {
             if (!silent) {
                 uiStateInternal.value = BucketScreenUiState.Loading
             }
@@ -78,7 +81,6 @@ class BucketScreenViewModel @Inject constructor(
                     uiStateInternal.value = BucketScreenUiState.Empty
                 }
             } catch (_: CancellationException) {
-                // Do nothing
             } catch (e: Exception) {
                 if (!silent) {
                     uiStateInternal.value = BucketScreenUiState.Error(e)
@@ -87,10 +89,25 @@ class BucketScreenViewModel @Inject constructor(
         }
     }
 
+    fun deleteMedia(files: Collection<MediaStoreFile>) {
+        deleteJob?.cancel()
+        deleteJob = viewModelScope.launch {
+            try {
+                withContext(dispatchers.io) {
+                    deleteMediaFiles(files)
+                }
+            } catch (_: CancellationException) {
+            } catch (e: Exception) {
+                uiStateInternal.value = BucketScreenUiState.Error(e)
+            }
+        }
+    }
+
     override fun onMediaChanged() {
         updateMedia()
     }
 
-    private var currentJob: Job? = null
+    private var updateJob: Job? = null
+    private var deleteJob: Job? = null
     private var currentBucketId: Long = SketchesConstants.NoId
 }
