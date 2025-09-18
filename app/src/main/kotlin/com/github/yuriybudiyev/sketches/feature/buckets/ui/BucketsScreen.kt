@@ -71,7 +71,10 @@ fun BucketsRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
-    LaunchedEffect(Unit) {
+    LaunchedEffect(
+        viewModel,
+        coroutineScope,
+    ) {
         coroutineScope.launch {
             viewModel.updateBuckets()
         }

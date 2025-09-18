@@ -64,7 +64,11 @@ fun BucketRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
-    LaunchedEffect(bucketId) {
+    LaunchedEffect(
+        bucketId,
+        viewModel,
+        coroutineScope,
+    ) {
         coroutineScope.launch {
             viewModel.updateMedia(bucketId)
         }

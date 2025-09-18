@@ -71,7 +71,10 @@ fun ImagesRoute(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
-    LaunchedEffect(Unit) {
+    LaunchedEffect(
+        viewModel,
+        coroutineScope,
+    ) {
         coroutineScope.launch {
             viewModel.updateMedia()
         }
@@ -103,7 +106,7 @@ fun ImagesScreen(
     val coroutineScope = rememberCoroutineScope()
     val contextUpdated by rememberUpdatedState(LocalContext.current)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
-    var selectedFiles by remember { mutableStateOf<Set<MediaStoreFile>>(emptySet()) }
+    var selectedFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptySet()) }
     var deleteDialogVisible by remember { mutableStateOf(false) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),

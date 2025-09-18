@@ -46,7 +46,7 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 fun SketchesMediaGrid(
     files: List<MediaStoreFile>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
-    onSelectionChanged: (files: Set<MediaStoreFile>) -> Unit,
+    onSelectionChanged: (files: Collection<MediaStoreFile>) -> Unit,
     modifier: Modifier = Modifier,
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
@@ -55,11 +55,19 @@ fun SketchesMediaGrid(
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
     val onSelectionChangedUpdated by rememberUpdatedState(onSelectionChanged)
     val selectedFiles = rememberSaveable { SnapshotStateSet<MediaStoreFile>() }
-    LaunchedEffect(Unit) {
-        //TODO
-        selectedFiles.retainAll(filesUpdated)
+    LaunchedEffect(
+        files,
+        selectedFiles,
+    ) {
+        if (selectedFiles.isNotEmpty()) {
+            if (files.isEmpty()) {
+                selectedFiles.clear()
+            } else {
+                selectedFiles.retainAll(files)
+            }
+        }
     }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(selectedFiles) {
         snapshotFlow { selectedFiles.toSet() }.collect { files ->
             onSelectionChangedUpdated(files)
         }
