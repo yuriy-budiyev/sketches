@@ -40,6 +40,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,6 +62,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.platform.chooser.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAlertDialog
@@ -116,6 +118,7 @@ fun BucketScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val contextUpdated by rememberUpdatedState(LocalContext.current)
+    val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     val selectedFiles = rememberSaveable { SnapshotStateSet<MediaStoreFile>() }
     var deleteDialogVisible by remember { mutableStateOf(false) }
@@ -129,16 +132,16 @@ fun BucketScreen(
             }
         },
     )
-    val shareRequestLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { (resultCode, _) ->
-            if (resultCode == Activity.RESULT_OK) {
-                coroutineScope.launch {
-                    selectedFiles.clear()
-                }
+    DisposableEffect(Unit) {
+        shareManagerUpdated.addOnSharedListener(ACTION_SHARE) {
+            coroutineScope.launch {
+                selectedFiles.clear()
             }
-        },
-    )
+        }
+        onDispose {
+            shareManagerUpdated.removeOnSharedListener(ACTION_SHARE)
+        }
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {
             is BucketScreenUiState.Empty -> {
@@ -187,6 +190,24 @@ fun BucketScreen(
                             }
                         } else {
                             deleteDialogVisible = true
+                        }
+                    },
+                )
+                val shareDescription = stringResource(id = R.string.share_selected)
+                SketchesAppBarActionButton(
+                    icon = SketchesIcons.Share,
+                    description = shareDescription,
+                    onClick = {
+                        coroutineScope.launch {
+                            shareManagerUpdated.startChooserActivity(
+                                content = selectedFiles.mapTo(
+                                    destination = ArrayList(selectedFiles.size),
+                                    transform = { file -> file.uri.toUri() },
+                                ),
+                                mimeType = "*/*",
+                                title = shareDescription,
+                                listenerAction = ACTION_SHARE,
+                            )
                         }
                     },
                 )
@@ -243,3 +264,5 @@ private fun BucketScreenLayout(
         )
     }
 }
+
+private const val ACTION_SHARE = "com.github.yuriybudiyev.sketches.feature.bucket.ui.ACTION_SHARE"

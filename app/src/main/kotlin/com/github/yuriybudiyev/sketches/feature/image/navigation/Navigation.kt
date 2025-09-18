@@ -32,9 +32,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.navigation.NavigationRoute
-import com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute
 import kotlinx.serialization.Serializable
 
 fun NavController.navigateToImageScreen(
@@ -53,19 +51,16 @@ fun NavController.navigateToImageScreen(
     )
 }
 
-fun NavGraphBuilder.registerImageScreen(
-    onShare: (index: Int, file: MediaStoreFile) -> Unit,
-) {
+fun NavGraphBuilder.registerImageScreen() {
     composable<ImageRoute>(
         enterTransition = { fadeIn() },
         exitTransition = { fadeOut() },
     ) { backStackEntry ->
         val route = backStackEntry.toRoute<ImageRoute>()
-        ImageRoute(
+        com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute(
             fileIndex = route.imageIndex,
             fileId = route.imageId,
             bucketId = route.bucketId,
-            onShare = onShare,
         )
     }
 }

@@ -72,6 +72,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.platform.chooser.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
@@ -96,7 +97,6 @@ fun ImageRoute(
     fileIndex: Int,
     fileId: Long,
     bucketId: Long,
-    onShare: (index: Int, file: MediaStoreFile) -> Unit,
     viewModel: ImageScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -137,7 +137,6 @@ fun ImageRoute(
                 viewModel.deleteMedia(listOf(file))
             }
         },
-        onShare = onShare,
     )
 }
 
@@ -146,7 +145,6 @@ fun ImageScreen(
     uiState: ImageScreenUiState,
     onChange: (index: Int, file: MediaStoreFile) -> Unit,
     onDelete: (index: Int, file: MediaStoreFile) -> Unit,
-    onShare: (index: Int, file: MediaStoreFile) -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -169,7 +167,6 @@ fun ImageScreen(
                     files = uiState.files,
                     onChange = onChange,
                     onDelete = onDelete,
-                    onShare = onShare,
                     modifier = Modifier.matchParentSize(),
                 )
             }
@@ -189,16 +186,15 @@ private fun ImageScreenLayout(
     files: List<MediaStoreFile>,
     onChange: (index: Int, file: MediaStoreFile) -> Unit,
     onDelete: (index: Int, file: MediaStoreFile) -> Unit,
-    onShare: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var currentIndex by remember { mutableIntStateOf(index) }
     val contextUpdated by rememberUpdatedState(LocalContext.current)
+    val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
     val indexUpdated by rememberUpdatedState(index)
     val filesUpdated by rememberUpdatedState(files)
     val onChangeUpdated by rememberUpdatedState(onChange)
     val onDeleteUpdated by rememberUpdatedState(onDelete)
-    val onShareUpdated by rememberUpdatedState(onShare)
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState(currentIndex) { filesUpdated.size }
     val barState = rememberLazyListState(currentIndex)
@@ -253,6 +249,7 @@ private fun ImageScreenLayout(
                     .fillMaxWidth(),
             )
         }
+        val shareDescription = stringResource(R.string.share_image)
         TopBar(
             onDelete = {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -267,10 +264,14 @@ private fun ImageScreenLayout(
                 }
             },
             onShare = {
-                onShareUpdated(
-                    currentIndex,
-                    filesUpdated[currentIndex],
-                )
+                coroutineScope.launch {
+                    val file = filesUpdated[currentIndex]
+                    shareManagerUpdated.startChooserActivity(
+                        file.uri.toUri(),
+                        file.mimeType,
+                        shareDescription
+                    )
+                }
             },
             modifier = Modifier
                 .align(Alignment.TopStart)

@@ -24,12 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.main.navigation
 
-import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
-import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.navigateToBucketScreen
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.registerBucketScreen
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
@@ -47,7 +44,6 @@ fun SketchesNavHost(
     onRequestUserSelectedMedia: (() -> Unit)? = null,
 ) {
     val navController = appState.navController
-    val context = LocalContext.current
     NavHost(
         modifier = modifier,
         navController = navController,
@@ -72,23 +68,7 @@ fun SketchesNavHost(
                 )
             },
         )
-        registerImageScreen(
-            onShare = { _, file ->
-                context.startActivity(
-                    Intent
-                        .createChooser(
-                            Intent(Intent.ACTION_SEND)
-                                .putExtra(
-                                    Intent.EXTRA_STREAM,
-                                    file.uri
-                                )
-                                .setType(file.mimeType),
-                            context.getString(R.string.share_image)
-                        )
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                )
-            },
-        )
+        registerImageScreen()
         registerBucketScreen(
             onImageClick = { index, image ->
                 navController.navigateToImageScreen(
