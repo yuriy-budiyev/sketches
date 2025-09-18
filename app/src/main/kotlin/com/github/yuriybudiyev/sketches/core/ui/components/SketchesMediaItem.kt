@@ -29,7 +29,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.ui.Alignment
@@ -40,7 +39,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 
 @Composable
@@ -64,6 +62,7 @@ fun SketchesImageMediaItem(
 fun SketchesVideoMediaItem(
     uri: String,
     iconColor: Color,
+    iconBackgroundColor: Color,
     iconPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
@@ -82,8 +81,7 @@ fun SketchesVideoMediaItem(
                 .align(alignment = Alignment.BottomStart)
                 .padding(all = iconPadding)
                 .background(
-                    color = MaterialTheme.colorScheme.background
-                        .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                    color = iconBackgroundColor,
                     shape = CircleShape
                 ),
         ) {
