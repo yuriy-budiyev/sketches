@@ -40,7 +40,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,7 +53,6 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.roundToLong
 
@@ -62,7 +60,6 @@ import kotlin.math.roundToLong
 fun SketchesMediaPlayer(
     state: SketchesMediaState,
     modifier: Modifier = Modifier,
-    coroutineScope: CoroutineScope = rememberCoroutineScope(),
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     controlsBackgroundColor: Color = backgroundColor
         .copy(alpha = SketchesColors.UiAlphaLowTransparency),
@@ -89,7 +86,6 @@ fun SketchesMediaPlayer(
                 .height(height = 64.dp)
                 .padding(horizontal = 4.dp)
                 .align(alignment = Alignment.BottomCenter),
-            coroutineScope = coroutineScope,
             color = controlsColor
         )
     }
@@ -166,7 +162,6 @@ fun SketchesMediaDisplay(
 fun SketchesMediaController(
     state: SketchesMediaState,
     modifier: Modifier = Modifier,
-    coroutineScope: CoroutineScope = rememberCoroutineScope(),
     color: Color = MaterialTheme.colorScheme.onBackground,
 ) {
     Row(
@@ -178,7 +173,7 @@ fun SketchesMediaController(
                 .size(size = 48.dp)
                 .clip(shape = CircleShape)
                 .clickable {
-                    coroutineScope.launch {
+                    state.coroutineScope.launch {
                         if (state.isPlaying) {
                             state.pause()
                         } else {
@@ -222,14 +217,14 @@ fun SketchesMediaController(
                     seeking = true
                     playingOnSeek = state.isPlaying
                     if (playingOnSeek) {
-                        coroutineScope.launch {
+                        state.coroutineScope.launch {
                             state.pause()
                         }
                     }
                 }
                 if (duration != SketchesMediaState.UnknownTime) {
                     val newPosition = (duration.toDouble() * value.toDouble()).roundToLong()
-                    coroutineScope.launch {
+                    state.coroutineScope.launch {
                         state.seek(newPosition)
                     }
                 }
@@ -237,7 +232,7 @@ fun SketchesMediaController(
             onValueChangeFinished = {
                 if (playingOnSeek) {
                     playingOnSeek = false
-                    coroutineScope.launch {
+                    state.coroutineScope.launch {
                         state.play()
                     }
                 }
@@ -252,7 +247,7 @@ fun SketchesMediaController(
                 .size(size = 48.dp)
                 .clip(shape = CircleShape)
                 .clickable {
-                    coroutineScope.launch {
+                    state.coroutineScope.launch {
                         if (state.isVolumeEnabled) {
                             state.disableVolume()
                         } else {

@@ -394,19 +394,22 @@ private fun VideoPage(
     fileUri: String,
     modifier: Modifier = Modifier,
 ) {
-    val coroutineScope = rememberCoroutineScope()
     val numberUpdated by rememberUpdatedState(number)
-    val mediaState = rememberSketchesMediaState(coroutineScope)
+    val mediaState = rememberSketchesMediaState()
     DisposableEffect(fileUri) {
-        mediaState.open(fileUri)
+        mediaState.coroutineScope.launch {
+            mediaState.open(fileUri)
+        }
         onDispose {
-            mediaState.close()
+            mediaState.coroutineScope.launch {
+                mediaState.close()
+            }
         }
     }
     LaunchedEffect(state) {
         snapshotFlow { state.currentPage }.collect { currentPage ->
             if (currentPage == numberUpdated) {
-                coroutineScope.launch {
+                mediaState.coroutineScope.launch {
                     if (mediaState.isVolumeEnabled) {
                         mediaState.disableVolume()
                     }
@@ -415,9 +418,9 @@ private fun VideoPage(
                     }
                 }
             } else {
-                coroutineScope.launch {
+                mediaState.coroutineScope.launch {
                     if (mediaState.isPlaying) {
-                        mediaState.stop()
+                        mediaState.pause()
                     }
                     if (mediaState.isVolumeEnabled) {
                         mediaState.disableVolume()
@@ -427,14 +430,13 @@ private fun VideoPage(
         }
     }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
-        coroutineScope.launch {
+        mediaState.coroutineScope.launch {
             mediaState.pause()
         }
     }
     SketchesMediaPlayer(
         state = mediaState,
         modifier = modifier,
-        coroutineScope = coroutineScope,
         enableImagePlaceholder = false,
         enableErrorIndicator = true
     )

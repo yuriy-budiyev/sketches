@@ -92,6 +92,8 @@ fun rememberSketchesMediaState(
 @Stable
 sealed interface SketchesMediaState {
 
+    val coroutineScope: CoroutineScope
+
     val isLoading: Boolean
 
     val isPlaying: Boolean
@@ -166,7 +168,7 @@ sealed interface SketchesMediaState {
 @UnstableApi
 private class SketchesMediaStateImpl @RememberInComposition constructor(
     context: Context,
-    private val coroutineScope: CoroutineScope,
+    override val coroutineScope: CoroutineScope,
 ): SketchesMediaState, Player.Listener, RememberObserver {
 
     private val player: Player = ExoPlayer
@@ -478,7 +480,6 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
                     }
                 }
             } catch (_: CancellationException) {
-                // Do nothing
             }
         }
     }
