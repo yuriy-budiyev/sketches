@@ -61,9 +61,9 @@ import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaR
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAlertDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGrid
@@ -219,19 +219,15 @@ fun ImagesScreen(
             }
         }
         if (deleteDialogVisible) {
-            SketchesAlertDialog(
-                titleText = stringResource(id = R.string.delete_image_dialog_title),
-                contentText = stringResource(id = R.string.delete_selected_images_dialog_content),
-                positiveButtonText = stringResource(id = R.string.delete_image_dialog_positive),
-                negativeButtonText = stringResource(id = R.string.delete_image_dialog_negative),
-                onPositiveResult = {
+            SketchesDeleteConfirmationDialog(
+                onDelete = {
                     deleteDialogVisible = false
                     onDeleteMediaUpdated(selectedFiles)
                     coroutineScope.launch {
                         selectedFiles.clear()
                     }
                 },
-                onNegativeResult = {
+                onDismiss = {
                     deleteDialogVisible = false
                 },
             )

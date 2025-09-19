@@ -76,10 +76,10 @@ import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAlertDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesImageMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
@@ -256,7 +256,7 @@ private fun ImageScreenLayout(
                     coroutineScope.launch {
                         deleteRequestLauncher.launchDeleteMediaRequest(
                             contextUpdated,
-                            listOf(filesUpdated[currentIndex].uri.toUri())
+                            listOf(filesUpdated[currentIndex].uri.toUri()),
                         )
                     }
                 } else {
@@ -269,7 +269,7 @@ private fun ImageScreenLayout(
                     shareManagerUpdated.startChooserActivity(
                         file.uri.toUri(),
                         file.mimeType,
-                        shareDescription
+                        shareDescription,
                     )
                 }
             },
@@ -278,19 +278,15 @@ private fun ImageScreenLayout(
                 .fillMaxWidth(),
         )
         if (deleteDialogVisible) {
-            SketchesAlertDialog(
-                titleText = stringResource(id = R.string.delete_image_dialog_title),
-                contentText = stringResource(id = R.string.delete_image_dialog_content),
-                positiveButtonText = stringResource(id = R.string.delete_image_dialog_positive),
-                negativeButtonText = stringResource(id = R.string.delete_image_dialog_negative),
-                onPositiveResult = {
+            SketchesDeleteConfirmationDialog(
+                onDelete = {
                     deleteDialogVisible = false
                     onDeleteUpdated(
                         currentIndex,
-                        filesUpdated[currentIndex]
+                        filesUpdated[currentIndex],
                     )
                 },
-                onNegativeResult = {
+                onDismiss = {
                     deleteDialogVisible = false
                 },
             )
