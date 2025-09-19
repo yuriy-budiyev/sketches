@@ -83,10 +83,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
                     bucketId = c.getLong(bucketIdColumn),
                     dateAdded = c.getLong(dateAddedColumn) * 1000L,
                     mediaType = mediaType,
-                    mimeType = c.getStringOrNull(mimeTypeColumn) ?: when (mediaType) {
-                        MediaType.Image -> "image/*"
-                        MediaType.Video -> "video/*"
-                    },
+                    mimeType = c.getStringOrNull(mimeTypeColumn) ?: mediaType.mimeType,
                     uri = ContentUris
                         .withAppendedId(
                             contentUri,

@@ -32,22 +32,27 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.annotation.RequiresApi
 
-enum class MediaType(val contentUri: Uri) {
+enum class MediaType(
+    val contentUri: Uri,
+    val mimeType: String,
+) {
 
     Image(
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        contentUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
         } else {
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        }
+        },
+        mimeType = "image/*",
     ),
 
     Video(
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        contentUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
         } else {
             MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-        }
+        },
+        mimeType = "video/*",
     )
 }
 
