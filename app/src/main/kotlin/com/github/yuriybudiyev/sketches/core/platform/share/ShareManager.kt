@@ -51,5 +51,5 @@ interface ShareManager {
 }
 
 val LocalShareManager = staticCompositionLocalOf<ShareManager> {
-    error("No ShareProvider available")
+    error("CompositionLocal LocalShareManager not present")
 }

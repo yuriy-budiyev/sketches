@@ -26,6 +26,7 @@ package com.github.yuriybudiyev.sketches.feature.images.ui
 
 import android.app.Activity
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.component1
 import androidx.activity.result.component2
@@ -133,6 +134,9 @@ fun ImagesScreen(
         onDispose {
             shareManagerUpdated.unregisterOnSharedListener(ACTION_SHARE)
         }
+    }
+    BackHandler(selectedFiles.isNotEmpty()) {
+        selectedFiles.clear()
     }
     Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {
