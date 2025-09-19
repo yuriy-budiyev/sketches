@@ -224,6 +224,9 @@ fun ImagesScreen(
                 onPositiveResult = {
                     deleteDialogVisible = false
                     onDeleteMediaUpdated(selectedFiles)
+                    coroutineScope.launch {
+                        selectedFiles.clear()
+                    }
                 },
                 onNegativeResult = {
                     deleteDialogVisible = false

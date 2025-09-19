@@ -29,7 +29,6 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshots.SnapshotStateSet
@@ -50,19 +49,8 @@ fun SketchesMediaGrid(
     overlayBottom: Boolean = false,
 ) {
     val filesUpdated by rememberUpdatedState(files)
+    val selectedFilesUpdated by rememberUpdatedState(selectedFiles)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
-    LaunchedEffect(
-        files,
-        selectedFiles,
-    ) {
-        if (selectedFiles.isNotEmpty()) {
-            if (files.isEmpty()) {
-                selectedFiles.clear()
-            } else {
-                selectedFiles.retainAll(files)
-            }
-        }
-    }
     SketchesLazyGrid(
         modifier = modifier,
         overlayTop = overlayTop,
@@ -74,7 +62,7 @@ fun SketchesMediaGrid(
             contentType = { index -> filesUpdated[index].mediaType },
         ) { index ->
             val file = filesUpdated[index]
-            val fileSelectedOnComposition = file in selectedFiles
+            val fileSelectedOnComposition = file in selectedFilesUpdated
             val itemModifier = Modifier
                 .aspectRatio(ratio = 1.0F)
                 .clip(shape = MaterialTheme.shapes.small)
@@ -94,22 +82,22 @@ fun SketchesMediaGrid(
                 )
                 .combinedClickable(
                     onLongClick = {
-                        if (selectedFiles.isEmpty()) {
-                            selectedFiles += file
+                        if (selectedFilesUpdated.isEmpty()) {
+                            selectedFilesUpdated += file
                         } else {
-                            if (file in selectedFiles) {
-                                selectedFiles.clear()
+                            if (file in selectedFilesUpdated) {
+                                selectedFilesUpdated.clear()
                             } else {
-                                selectedFiles += files
+                                selectedFilesUpdated += files
                             }
                         }
                     },
                     onClick = {
-                        if (selectedFiles.isNotEmpty()) {
-                            if (file in selectedFiles) {
-                                selectedFiles -= file
+                        if (selectedFilesUpdated.isNotEmpty()) {
+                            if (file in selectedFilesUpdated) {
+                                selectedFilesUpdated -= file
                             } else {
-                                selectedFiles += file
+                                selectedFilesUpdated += file
                             }
                         } else {
                             onItemClickUpdated(

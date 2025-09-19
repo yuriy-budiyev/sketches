@@ -222,6 +222,9 @@ fun BucketScreen(
                 onPositiveResult = {
                     deleteDialogVisible = false
                     onDeleteMediaUpdated(selectedFiles)
+                    coroutineScope.launch {
+                        selectedFiles.clear()
+                    }
                 },
                 onNegativeResult = {
                     deleteDialogVisible = false
