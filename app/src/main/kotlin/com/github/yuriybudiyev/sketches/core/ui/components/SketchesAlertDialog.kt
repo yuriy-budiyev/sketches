@@ -24,14 +24,12 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import com.github.yuriybudiyev.sketches.R
@@ -93,6 +91,6 @@ fun SketchesDeleteConfirmationDialog(
         negativeButtonText = stringResource(id = R.string.delete_image_dialog_negative),
         onPositiveResult = onDelete,
         onNegativeResult = onDismiss,
-        modifier = modifier.background(Color.Transparent),
+        modifier = modifier,
     )
 }
