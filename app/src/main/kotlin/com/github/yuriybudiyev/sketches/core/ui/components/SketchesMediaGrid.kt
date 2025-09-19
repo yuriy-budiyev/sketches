@@ -62,7 +62,7 @@ fun SketchesMediaGrid(
             contentType = { index -> filesUpdated[index].mediaType },
         ) { index ->
             val file = filesUpdated[index]
-            val fileSelectedOnComposition = file in selectedFilesUpdated
+            val fileSelectedOnComposition = selectedFilesUpdated.contains(file)
             val itemModifier = Modifier
                 .aspectRatio(ratio = 1.0F)
                 .clip(shape = MaterialTheme.shapes.small)
@@ -83,21 +83,21 @@ fun SketchesMediaGrid(
                 .combinedClickable(
                     onLongClick = {
                         if (selectedFilesUpdated.isEmpty()) {
-                            selectedFilesUpdated += file
+                            selectedFilesUpdated.add(file)
                         } else {
-                            if (file in selectedFilesUpdated) {
+                            if (selectedFilesUpdated.contains(file)) {
                                 selectedFilesUpdated.clear()
                             } else {
-                                selectedFilesUpdated += files
+                                selectedFilesUpdated.addAll(files)
                             }
                         }
                     },
                     onClick = {
                         if (selectedFilesUpdated.isNotEmpty()) {
-                            if (file in selectedFilesUpdated) {
-                                selectedFilesUpdated -= file
+                            if (selectedFilesUpdated.contains(file)) {
+                                selectedFilesUpdated.remove(file)
                             } else {
-                                selectedFilesUpdated += file
+                                selectedFilesUpdated.add(file)
                             }
                         } else {
                             onItemClickUpdated(

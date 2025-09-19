@@ -1,4 +1,4 @@
-package com.github.yuriybudiyev.sketches.core.platform.chooser
+package com.github.yuriybudiyev.sketches.core.platform.share
 
 import android.net.Uri
 import androidx.compose.runtime.staticCompositionLocalOf

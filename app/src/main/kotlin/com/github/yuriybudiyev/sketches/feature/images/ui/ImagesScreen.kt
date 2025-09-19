@@ -56,8 +56,9 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.platform.chooser.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
+import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
+import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAlertDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
@@ -201,12 +202,10 @@ fun ImagesScreen(
                     description = shareDescription,
                     onClick = {
                         coroutineScope.launch {
+                            val shareInfo = selectedFiles.toShareInfo()
                             shareManagerUpdated.startChooserActivity(
-                                content = selectedFiles.mapTo(
-                                    destination = ArrayList(selectedFiles.size),
-                                    transform = { file -> file.uri.toUri() },
-                                ),
-                                mimeType = "*/*",
+                                content = shareInfo.uris,
+                                mimeType = shareInfo.mimeType,
                                 title = shareDescription,
                                 listenerAction = ACTION_SHARE,
                             )
