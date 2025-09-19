@@ -396,13 +396,9 @@ private fun VideoPage(
     val numberUpdated by rememberUpdatedState(number)
     val mediaState = rememberSketchesMediaState()
     DisposableEffect(fileUri) {
-        mediaState.coroutineScope.launch {
-            mediaState.open(fileUri)
-        }
+        mediaState.open(fileUri)
         onDispose {
-            mediaState.coroutineScope.launch {
-                mediaState.close()
-            }
+            mediaState.close()
         }
     }
     LaunchedEffect(state) {
