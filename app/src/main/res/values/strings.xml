@@ -9,8 +9,8 @@
     <string name="buckets">Albums</string>
     <string name="no_buckets_found">No albums found</string>
     <string name="open_settings">Settings</string>
-    <string name="share_image">Share image</string>
-    <string name="delete_image">Delete image</string>
+    <string name="share_image">Share</string>
+    <string name="delete_image">Delete</string>
     <string name="bucket_cover">Album cover</string>
     <string name="image">Image</string>
     <string name="video">Video</string>
