@@ -49,6 +49,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -342,6 +343,7 @@ private fun MediaPager(
 }
 
 @Composable
+@NonRestartableComposable
 private fun MediaPage(
     state: PagerState,
     number: Int,
@@ -368,6 +370,7 @@ private fun MediaPage(
 }
 
 @Composable
+@NonRestartableComposable
 private fun ImagePage(
     fileUri: String,
     modifier: Modifier = Modifier,
