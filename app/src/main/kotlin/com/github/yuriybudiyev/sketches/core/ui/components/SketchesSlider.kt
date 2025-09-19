@@ -49,6 +49,7 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 fun SketchesSlider(
     value: Float,
     onValueChange: (Float) -> Unit,
+    onValueChangeFinished: () -> Unit,
     modifier: Modifier = Modifier,
     thumbColor: Color = MaterialTheme
         .colorScheme
@@ -79,6 +80,7 @@ fun SketchesSlider(
     Slider(
         value = value,
         onValueChange = onValueChange,
+        onValueChangeFinished = onValueChangeFinished,
         modifier = Modifier
             .requiredSizeIn(
                 minWidth = thumbSize.width,

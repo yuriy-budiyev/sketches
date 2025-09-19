@@ -37,7 +37,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -202,6 +206,8 @@ fun SketchesMediaController(
         }
         val position = state.position
         val duration = state.duration
+        var seeking by remember { mutableStateOf(false) }
+        var playingOnSeek by remember { mutableStateOf(false) }
         SketchesSlider(
             value = if (
                 position != SketchesMediaState.UnknownTime
@@ -212,12 +218,30 @@ fun SketchesMediaController(
                 0.0F
             },
             onValueChange = { value ->
+                if (!seeking) {
+                    seeking = true
+                    playingOnSeek = state.isPlaying
+                    if (playingOnSeek) {
+                        coroutineScope.launch {
+                            state.pause()
+                        }
+                    }
+                }
                 if (duration != SketchesMediaState.UnknownTime) {
                     val newPosition = (duration.toDouble() * value.toDouble()).roundToLong()
                     coroutineScope.launch {
                         state.seek(newPosition)
                     }
                 }
+            },
+            onValueChangeFinished = {
+                if (playingOnSeek) {
+                    playingOnSeek = false
+                    coroutineScope.launch {
+                        state.play()
+                    }
+                }
+                seeking = false
             },
             modifier = Modifier.weight(weight = 1.0F),
             thumbColor = color,
