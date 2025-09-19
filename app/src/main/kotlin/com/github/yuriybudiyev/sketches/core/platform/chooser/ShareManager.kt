@@ -18,12 +18,12 @@ interface ShareManager {
         listenerAction: String,
     )
 
-    fun addOnSharedListener(
+    fun registerOnSharedListener(
         listenerAction: String,
         onShared: () -> Unit,
     )
 
-    fun removeOnSharedListener(listenerAction: String)
+    fun unregisterOnSharedListener(listenerAction: String)
 }
 
 val LocalShareManager = staticCompositionLocalOf<ShareManager> {

@@ -160,14 +160,14 @@ class MainActivity: ComponentActivity(), ShareManager {
         startActivity(chooserIntent)
     }
 
-    override fun addOnSharedListener(
+    override fun registerOnSharedListener(
         listenerAction: String,
         onShared: () -> Unit,
     ) {
         onSharedListeners[listenerAction] = onShared
     }
 
-    override fun removeOnSharedListener(listenerAction: String) {
+    override fun unregisterOnSharedListener(listenerAction: String) {
         onSharedListeners.remove(listenerAction)
     }
 

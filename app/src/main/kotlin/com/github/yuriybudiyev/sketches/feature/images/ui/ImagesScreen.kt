@@ -124,13 +124,13 @@ fun ImagesScreen(
         },
     )
     DisposableEffect(Unit) {
-        shareManagerUpdated.addOnSharedListener(ACTION_SHARE) {
+        shareManagerUpdated.registerOnSharedListener(ACTION_SHARE) {
             coroutineScope.launch {
                 selectedFiles.clear()
             }
         }
         onDispose {
-            shareManagerUpdated.removeOnSharedListener(ACTION_SHARE)
+            shareManagerUpdated.unregisterOnSharedListener(ACTION_SHARE)
         }
     }
     Box(modifier = Modifier.fillMaxSize()) {
