@@ -117,7 +117,7 @@ fun SketchesMediaGrid(
                                 )
                             }
                         },
-                    )
+                    ),
             ) {
                 SketchesAsyncImage(
                     uri = file.uri,

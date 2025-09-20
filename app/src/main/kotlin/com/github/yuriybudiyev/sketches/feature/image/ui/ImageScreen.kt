@@ -27,6 +27,7 @@ package com.github.yuriybudiyev.sketches.feature.image.ui
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -37,6 +38,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyListState
@@ -45,6 +47,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -82,10 +86,8 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesImageMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesVideoMediaItem
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
@@ -465,41 +467,58 @@ private fun MediaBar(
             contentType = { position -> itemsUpdated[position].mediaType },
         ) { position ->
             val file = itemsUpdated[position]
-            val itemModifier = Modifier
-                .size(size = SketchesDimens.MediaBarItemSize)
-                .clip(shape = MaterialTheme.shapes.small)
-                .border(
-                    width = SketchesDimens.MediaItemBorderThicknessDefault,
-                    color = if (position == currentIndexUpdated) {
-                        MaterialTheme.colorScheme.onBackground
-                    } else {
-                        MaterialTheme.colorScheme.onBackground
-                            .copy(alpha = SketchesColors.UiAlphaHighTransparency)
+            Box(
+                modifier = Modifier
+                    .size(size = SketchesDimens.MediaBarItemSize)
+                    .clip(shape = MaterialTheme.shapes.small)
+                    .border(
+                        width = SketchesDimens.MediaItemBorderThicknessDefault,
+                        color = if (position == currentIndexUpdated) {
+                            MaterialTheme.colorScheme.onBackground
+                        } else {
+                            MaterialTheme.colorScheme.onBackground
+                                .copy(alpha = SketchesColors.UiAlphaHighTransparency)
+                        },
+                        shape = MaterialTheme.shapes.small,
+                    )
+                    .clickable {
+                        onItemClickUpdated(
+                            position,
+                            file,
+                        )
                     },
-                    shape = MaterialTheme.shapes.small,
+            ) {
+                SketchesAsyncImage(
+                    uri = file.uri,
+                    contentDescription = stringResource(
+                        id = when (file.mediaType) {
+                            MediaType.Image -> R.string.image
+                            MediaType.Video -> R.string.video
+                        },
+                    ),
+                    modifier = Modifier.matchParentSize(),
+                    contentScale = ContentScale.Crop,
+                    filterQuality = FilterQuality.Low,
+                    enableLoadingIndicator = true,
+                    enableErrorIndicator = true,
                 )
-                .clickable {
-                    onItemClickUpdated(
-                        position,
-                        file,
-                    )
-                }
-            when (file.mediaType) {
-                MediaType.Image -> {
-                    SketchesImageMediaItem(
-                        uri = file.uri,
-                        modifier = itemModifier,
-                    )
-                }
-                MediaType.Video -> {
-                    SketchesVideoMediaItem(
-                        uri = file.uri,
-                        iconColor = MaterialTheme.colorScheme.onBackground,
-                        iconBackgroundColor = MaterialTheme.colorScheme.background
-                            .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                        iconPadding = SketchesDimens.MediaBarVideoIconPadding,
-                        modifier = itemModifier,
-                    )
+                if (file.mediaType == MediaType.Video) {
+                    Box(
+                        modifier = Modifier
+                            .align(alignment = Alignment.BottomStart)
+                            .padding(all = SketchesDimens.MediaBarVideoIconPadding)
+                            .background(
+                                color = MaterialTheme.colorScheme.background
+                                    .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                                shape = CircleShape
+                            ),
+                    ) {
+                        Icon(
+                            imageVector = SketchesIcons.Video,
+                            contentDescription = stringResource(id = R.string.video),
+                            tint = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
                 }
             }
         }
