@@ -71,7 +71,7 @@ fun SketchesLazyGrid(
     val bottomPadding = systemBarInsets
         .calculateBottomPadding()
         .plus(
-            if (overlayTop) {
+            if (overlayBottom) {
                 SketchesDimens.LazyGridOverlayBottom
             } else {
                 SketchesDimens.LazyGridItemSpacing
