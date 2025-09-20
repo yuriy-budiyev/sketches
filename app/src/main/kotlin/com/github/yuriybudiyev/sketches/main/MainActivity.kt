@@ -150,7 +150,7 @@ class MainActivity: ComponentActivity(), ShareManager {
             ).apply {
                 setAction(listenerAction)
             },
-            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
         val chooserIntent = Intent.createChooser(
             shareIntent,
