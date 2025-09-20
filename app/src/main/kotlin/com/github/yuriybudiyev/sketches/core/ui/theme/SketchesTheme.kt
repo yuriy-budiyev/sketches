@@ -48,19 +48,23 @@ fun SketchesTheme(content: @Composable () -> Unit) {
 }
 
 private val SketchesLightColorScheme = lightColorScheme(
-    primary = SketchesColors.Primary,
-    onPrimary = SketchesColors.OnPrimary,
-    secondary = SketchesColors.Light.Secondary,
-    tertiary = SketchesColors.Light.Tertiary,
+    primary = SketchesColors.Light.Primary,
+    onPrimary = SketchesColors.Light.OnPrimary,
     background = SketchesColors.Light.Background,
-    onBackground = SketchesColors.Light.OnBackground
+    onBackground = SketchesColors.Light.OnBackground,
+    surface = SketchesColors.Light.Surface,
+    onSurface = SketchesColors.Light.OnSurface,
+    onSurfaceVariant = SketchesColors.Light.OnSurfaceVariant,
+    surfaceContainerHigh = SketchesColors.Light.SurfaceContainerHigh,
 )
 
 private val SketchesDarkColorScheme = darkColorScheme(
-    primary = SketchesColors.Primary,
-    onPrimary = SketchesColors.OnPrimary,
-    secondary = SketchesColors.Dark.Secondary,
-    tertiary = SketchesColors.Dark.Tertiary,
+    primary = SketchesColors.Dark.Primary,
+    onPrimary = SketchesColors.Dark.OnPrimary,
     background = SketchesColors.Dark.Background,
-    onBackground = SketchesColors.Dark.OnBackground
+    onBackground = SketchesColors.Dark.OnBackground,
+    surface = SketchesColors.Dark.Surface,
+    onSurface = SketchesColors.Dark.OnSurface,
+    onSurfaceVariant = SketchesColors.Dark.OnSurfaceVariant,
+    surfaceContainerHigh = SketchesColors.Dark.SurfaceContainerHigh,
 )

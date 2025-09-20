@@ -81,11 +81,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         mediaAccess = appContextUpdated.checkMediaAccess()
     }
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.onBackground
-    ) {
+    Surface(modifier = Modifier.fillMaxSize()) {
         when (mediaAccess) {
             MediaAccess.Full, MediaAccess.UserSelected -> {
                 val topLevelNavigationRoutes = appState.topLevelNavigationRoutes

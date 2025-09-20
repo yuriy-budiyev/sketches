@@ -28,23 +28,28 @@ import androidx.compose.ui.graphics.Color
 
 object SketchesColors {
 
-    val Primary = Color(0xFF6B69D6)
-    val OnPrimary = Color(0xFFFFFFFF)
-
     object Light {
 
-        val Secondary = Color(0xFF7F7DDB)
-        val Tertiary = Color(0xFF9391E1)
+        val Primary = Color(0xFF000000)
+        val OnPrimary = Color(0xFFEFEFEF)
         val Background = Color(0xFFEFEFEF)
         val OnBackground = Color(0xFF000000)
+        val Surface = Color(0xFFEFEFEF)
+        val OnSurface = Color(0xFF000000)
+        val OnSurfaceVariant = Color(0xFF000000)
+        val SurfaceContainerHigh = Color(0xFFE7E7E7)
     }
 
     object Dark {
 
-        val Secondary = Color(0xFF5755D1)
-        val Tertiary = Color(0xFF4341CB)
+        val Primary = Color(0xFFFFFFFF)
+        val OnPrimary = Color(0xFF0F0F0F)
         val Background = Color(0xFF0F0F0F)
         val OnBackground = Color(0xFFFFFFFF)
+        val Surface = Color(0xFF0F0F0F)
+        val OnSurface = Color(0xFFFFFFFF)
+        val OnSurfaceVariant = Color(0xFFFFFFFF)
+        val SurfaceContainerHigh = Color(0xFF272727)
     }
 
     const val UiAlphaLowTransparency = 0.75F
