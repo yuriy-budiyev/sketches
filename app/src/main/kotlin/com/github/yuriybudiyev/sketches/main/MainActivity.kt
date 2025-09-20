@@ -57,11 +57,11 @@ class MainActivity: ComponentActivity(), ShareManager {
         val window = window
         WindowCompat.setDecorFitsSystemWindows(
             window,
-            false
+            false,
         )
         val insetsController = WindowCompat.getInsetsController(
             window,
-            window.decorView
+            window.decorView,
         )
         val darkTheme = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
             Configuration.UI_MODE_NIGHT_YES
@@ -102,7 +102,7 @@ class MainActivity: ComponentActivity(), ShareManager {
             this,
             shareReceiver,
             IntentFilter(ACTION_SHARE_RESEND),
-            ContextCompat.RECEIVER_NOT_EXPORTED
+            ContextCompat.RECEIVER_NOT_EXPORTED,
         )
     }
 
@@ -146,7 +146,7 @@ class MainActivity: ComponentActivity(), ShareManager {
             listenerAction.hashCode(),
             Intent(
                 applicationContext,
-                ShareReceiver::class.java
+                ShareReceiver::class.java,
             ).apply {
                 setAction(listenerAction)
             },
@@ -190,7 +190,7 @@ class MainActivity: ComponentActivity(), ShareManager {
                 Intent(ACTION_SHARE_RESEND)
                     .putExtra(
                         EXTRA_SHARE_ACTION,
-                        intent.action
+                        intent.action,
                     )
                     .setPackage(context.packageName)
             )
