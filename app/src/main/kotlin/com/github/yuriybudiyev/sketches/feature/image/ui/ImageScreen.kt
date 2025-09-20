@@ -304,7 +304,7 @@ private fun TopBar(
     SketchesTopAppBar(
         modifier = modifier,
         backgroundColor = MaterialTheme.colorScheme.background
-            .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+            .copy(alpha = SketchesColors.UiAlphaHighTransparency),
     ) {
         SketchesAppBarActionButton(
             icon = SketchesIcons.Delete,

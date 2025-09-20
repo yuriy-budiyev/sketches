@@ -62,7 +62,7 @@ fun SketchesMediaPlayer(
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     controlsBackgroundColor: Color = backgroundColor
-        .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+        .copy(alpha = SketchesColors.UiAlphaHighTransparency),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
     enableImagePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,
