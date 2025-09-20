@@ -60,6 +60,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -204,7 +205,7 @@ private fun ImageScreenLayout(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { },
     )
-    var deleteDialogVisible by remember { mutableStateOf(false) }
+    var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         snapshotFlow { indexUpdated }.collect { page ->
             coroutineScope.launch {
@@ -250,34 +251,45 @@ private fun ImageScreenLayout(
                     .fillMaxWidth(),
             )
         }
-        val shareDescription = stringResource(R.string.share_image)
-        TopBar(
-            onDelete = {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    coroutineScope.launch {
-                        deleteRequestLauncher.launchDeleteMediaRequest(
-                            contextUpdated,
-                            listOf(filesUpdated[currentIndex].uri.toUri()),
-                        )
-                    }
-                } else {
-                    deleteDialogVisible = true
-                }
-            },
-            onShare = {
-                coroutineScope.launch {
-                    val file = filesUpdated[currentIndex]
-                    shareManagerUpdated.startChooserActivity(
-                        file.uri.toUri(),
-                        file.mimeType,
-                        shareDescription,
-                    )
-                }
-            },
+        SketchesTopAppBar(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
-        )
+            backgroundColor = MaterialTheme.colorScheme.background
+                .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+        ) {
+            SketchesAppBarActionButton(
+                icon = SketchesIcons.Delete,
+                description = stringResource(id = R.string.delete_image),
+                onClick = {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        coroutineScope.launch {
+                            deleteRequestLauncher.launchDeleteMediaRequest(
+                                contextUpdated,
+                                listOf(filesUpdated[currentIndex].uri.toUri()),
+                            )
+                        }
+                    } else {
+                        deleteDialogVisible = true
+                    }
+                },
+            )
+            val shareDescription = stringResource(R.string.share_image)
+            SketchesAppBarActionButton(
+                icon = SketchesIcons.Share,
+                description = shareDescription,
+                onClick = {
+                    coroutineScope.launch {
+                        val file = filesUpdated[currentIndex]
+                        shareManagerUpdated.startChooserActivity(
+                            file.uri.toUri(),
+                            file.mimeType,
+                            shareDescription,
+                        )
+                    }
+                },
+            )
+        }
         if (deleteDialogVisible) {
             SketchesDeleteConfirmationDialog(
                 onDelete = {
@@ -292,30 +304,6 @@ private fun ImageScreenLayout(
                 },
             )
         }
-    }
-}
-
-@Composable
-private fun TopBar(
-    onDelete: () -> Unit,
-    onShare: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    SketchesTopAppBar(
-        modifier = modifier,
-        backgroundColor = MaterialTheme.colorScheme.background
-            .copy(alpha = SketchesColors.UiAlphaHighTransparency),
-    ) {
-        SketchesAppBarActionButton(
-            icon = SketchesIcons.Delete,
-            description = stringResource(id = R.string.delete_image),
-            onClick = onDelete,
-        )
-        SketchesAppBarActionButton(
-            icon = SketchesIcons.Share,
-            description = stringResource(id = R.string.share_image),
-            onClick = onShare,
-        )
     }
 }
 

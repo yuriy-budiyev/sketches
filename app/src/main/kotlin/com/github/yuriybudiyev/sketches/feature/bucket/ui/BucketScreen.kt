@@ -45,7 +45,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -121,7 +120,7 @@ fun BucketScreen(
     val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     val selectedFiles = rememberSaveable { SnapshotStateSet<MediaStoreFile>() }
-    var deleteDialogVisible by remember { mutableStateOf(false) }
+    var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->
@@ -142,8 +141,15 @@ fun BucketScreen(
             shareManagerUpdated.unregisterOnSharedListener(ACTION_SHARE)
         }
     }
+    LaunchedEffect(Unit) {
+        if (selectedFiles.isEmpty()) {
+            deleteDialogVisible = false
+        }
+    }
     BackHandler(selectedFiles.isNotEmpty()) {
-        selectedFiles.clear()
+        coroutineScope.launch {
+            selectedFiles.clear()
+        }
     }
     Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {
