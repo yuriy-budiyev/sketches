@@ -24,20 +24,31 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshots.SnapshotStateSet
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
+import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
+import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 
 @Composable
 fun SketchesMediaGrid(
@@ -62,67 +73,93 @@ fun SketchesMediaGrid(
             contentType = { index -> filesUpdated[index].mediaType },
         ) { index ->
             val file = filesUpdated[index]
-            val fileSelectedOnComposition = selectedFilesUpdated.contains(file)
-            val itemModifier = Modifier
-                .aspectRatio(ratio = 1.0F)
-                .clip(shape = MaterialTheme.shapes.small)
-                .border(
-                    width = if (fileSelectedOnComposition) {
-                        SketchesDimens.MediaItemBorderThicknessSelected
-                    } else {
-                        SketchesDimens.MediaItemBorderThicknessDefault
-                    },
-                    color = if (fileSelectedOnComposition) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onBackground
-                            .copy(alpha = SketchesColors.UiAlphaHighTransparency)
-                    },
-                    shape = MaterialTheme.shapes.small,
-                )
-                .combinedClickable(
-                    onLongClick = {
-                        if (selectedFilesUpdated.isEmpty()) {
-                            selectedFilesUpdated.add(file)
+            Box(
+                modifier = Modifier
+                    .aspectRatio(ratio = 1.0F)
+                    .clip(shape = MaterialTheme.shapes.small)
+                    .border(
+                        width = if (selectedFilesUpdated.contains(file)) {
+                            SketchesDimens.MediaItemBorderThicknessSelected
                         } else {
-                            if (selectedFilesUpdated.contains(file)) {
-                                selectedFilesUpdated.clear()
-                            } else {
-                                selectedFilesUpdated.addAll(files)
-                            }
-                        }
-                    },
-                    onClick = {
-                        if (selectedFilesUpdated.isNotEmpty()) {
-                            if (selectedFilesUpdated.contains(file)) {
-                                selectedFilesUpdated.remove(file)
-                            } else {
+                            SketchesDimens.MediaItemBorderThicknessDefault
+                        },
+                        color = if (selectedFilesUpdated.contains(file)) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onBackground
+                                .copy(alpha = SketchesColors.UiAlphaHighTransparency)
+                        },
+                        shape = MaterialTheme.shapes.small,
+                    )
+                    .combinedClickable(
+                        onLongClick = {
+                            if (selectedFilesUpdated.isEmpty()) {
                                 selectedFilesUpdated.add(file)
+                            } else {
+                                if (selectedFilesUpdated.contains(file)) {
+                                    selectedFilesUpdated.clear()
+                                } else {
+                                    selectedFilesUpdated.addAll(files)
+                                }
                             }
-                        } else {
-                            onItemClickUpdated(
-                                index,
-                                file,
-                            )
-                        }
-                    },
+                        },
+                        onClick = {
+                            if (selectedFilesUpdated.isNotEmpty()) {
+                                if (selectedFilesUpdated.contains(file)) {
+                                    selectedFilesUpdated.remove(file)
+                                } else {
+                                    selectedFilesUpdated.add(file)
+                                }
+                            } else {
+                                onItemClickUpdated(
+                                    index,
+                                    file,
+                                )
+                            }
+                        },
+                    )
+            ) {
+                SketchesAsyncImage(
+                    uri = file.uri,
+                    contentDescription = stringResource(
+                        id = when (file.mediaType) {
+                            MediaType.Image -> R.string.image
+                            MediaType.Video -> R.string.video
+                        },
+                    ),
+                    modifier = Modifier.matchParentSize(),
+                    contentScale = ContentScale.Crop,
+                    filterQuality = FilterQuality.Low,
+                    enableLoadingIndicator = true,
+                    enableErrorIndicator = true,
                 )
-            when (file.mediaType) {
-                MediaType.Image -> {
-                    SketchesImageMediaItem(
-                        uri = file.uri,
-                        modifier = itemModifier,
+                if (selectedFilesUpdated.contains(file)) {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .background(
+                                color = MaterialTheme.colorScheme.background
+                                    .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                            ),
                     )
                 }
-                MediaType.Video -> {
-                    SketchesVideoMediaItem(
-                        uri = file.uri,
-                        iconColor = MaterialTheme.colorScheme.onBackground,
-                        iconBackgroundColor = MaterialTheme.colorScheme.background
-                            .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                        iconPadding = SketchesDimens.MediaGridVideoIconPadding,
-                        modifier = itemModifier,
-                    )
+                if (file.mediaType == MediaType.Video) {
+                    Box(
+                        modifier = Modifier
+                            .align(alignment = Alignment.BottomStart)
+                            .padding(all = SketchesDimens.MediaGridVideoIconPadding)
+                            .background(
+                                color = MaterialTheme.colorScheme.background
+                                    .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                                shape = CircleShape,
+                            ),
+                    ) {
+                        Icon(
+                            imageVector = SketchesIcons.Video,
+                            contentDescription = stringResource(id = R.string.video),
+                            tint = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
                 }
             }
         }
