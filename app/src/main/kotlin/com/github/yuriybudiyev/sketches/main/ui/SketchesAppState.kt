@@ -51,13 +51,15 @@ fun rememberSketchesAppState(
 class SketchesAppState @RememberInComposition constructor(val navController: NavHostController) {
 
     val currentTopLevelNavigationRoute: TopLevelNavigationRoute?
-        @Composable get() = navController.currentBackStackEntryFlow
-            .map {
-                it.destination.route?.let { route ->
+        @Composable get() = navController
+            .currentBackStackEntryFlow
+            .map { entry ->
+                entry.destination.route?.let { route ->
                     topLevelRoutesMapInternal[route.substringBefore('/')]
                 }
             }
-            .collectAsState(null).value
+            .collectAsState(null)
+            .value
 
     val topLevelNavigationRoutes: List<TopLevelNavigationRoute>
         get() = topLevelRoutesListInternal
@@ -77,7 +79,7 @@ class SketchesAppState @RememberInComposition constructor(val navController: Nav
         if (
             topLevelRoutesMapInternal.put(
                 route::class.serializer().descriptor.serialName,
-                route
+                route,
             ) == null
         ) {
             topLevelRoutesListInternal.add(route)
