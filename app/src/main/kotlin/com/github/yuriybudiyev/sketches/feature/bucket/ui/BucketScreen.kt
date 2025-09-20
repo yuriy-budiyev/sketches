@@ -220,7 +220,7 @@ fun BucketScreen(
             SketchesDeleteConfirmationDialog(
                 onDelete = {
                     deleteDialogVisible = false
-                    onDeleteMediaUpdated(selectedFiles)
+                    onDeleteMediaUpdated(selectedFiles.toSet())
                     coroutineScope.launch {
                         selectedFiles.clear()
                     }
