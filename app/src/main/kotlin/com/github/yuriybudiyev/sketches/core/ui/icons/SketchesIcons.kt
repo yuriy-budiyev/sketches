@@ -25,20 +25,20 @@
 package com.github.yuriybudiyev.sketches.core.ui.icons
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.VolumeOff
-import androidx.compose.material.icons.automirrored.filled.VolumeUp
-import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PermMedia
+import androidx.compose.material.icons.automirrored.rounded.VolumeOff
+import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.PhotoLibrary
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Photo
 import androidx.compose.material.icons.outlined.PhotoLibrary
-import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.rounded.BrokenImage
+import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.material.icons.rounded.Image
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PermMedia
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.PlayCircleOutline
+import androidx.compose.material.icons.rounded.Share
 
 object SketchesIcons {
 
@@ -48,12 +48,12 @@ object SketchesIcons {
     val BucketsUnselected = Icons.Outlined.PhotoLibrary
     val ImageLoading = Icons.Rounded.Image
     val ImageError = Icons.Rounded.BrokenImage
-    val Share = Icons.Filled.Share
-    val Delete = Icons.Filled.DeleteForever
-    val Video = Icons.Outlined.PlayCircle
-    val Play = Icons.Filled.PlayArrow
-    val Pause = Icons.Filled.Pause
-    val VolumeEnabled = Icons.AutoMirrored.Filled.VolumeUp
-    val VolumeDisabled = Icons.AutoMirrored.Filled.VolumeOff
-    val UpdateMediaSelection = Icons.Filled.PermMedia
+    val Share = Icons.Rounded.Share
+    val Delete = Icons.Rounded.DeleteForever
+    val Video = Icons.Rounded.PlayCircleOutline
+    val Play = Icons.Rounded.PlayArrow
+    val Pause = Icons.Rounded.Pause
+    val VolumeEnabled = Icons.AutoMirrored.Rounded.VolumeUp
+    val VolumeDisabled = Icons.AutoMirrored.Rounded.VolumeOff
+    val UpdateMediaSelection = Icons.Rounded.PermMedia
 }

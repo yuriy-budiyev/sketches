@@ -73,24 +73,22 @@ fun SketchesMediaGrid(
             contentType = { index -> filesUpdated[index].mediaType },
         ) { index ->
             val file = filesUpdated[index]
+            val fileSelectedOnComposition = selectedFilesUpdated.contains(file)
             Box(
                 modifier = Modifier
                     .aspectRatio(ratio = 1.0F)
-                    .clip(shape = MaterialTheme.shapes.small)
                     .border(
-                        width = if (selectedFilesUpdated.contains(file)) {
-                            SketchesDimens.MediaItemBorderThicknessSelected
-                        } else {
-                            SketchesDimens.MediaItemBorderThicknessDefault
-                        },
-                        color = if (selectedFilesUpdated.contains(file)) {
-                            MaterialTheme.colorScheme.primary
+                        width = SketchesDimens.MediaItemBorderThickness,
+                        color = if (fileSelectedOnComposition) {
+                            MaterialTheme.colorScheme.onBackground
+                                .copy(alpha = SketchesColors.UiAlphaLowTransparency)
                         } else {
                             MaterialTheme.colorScheme.onBackground
                                 .copy(alpha = SketchesColors.UiAlphaHighTransparency)
                         },
-                        shape = MaterialTheme.shapes.small,
+                        shape = MaterialTheme.shapes.extraSmall,
                     )
+                    .clip(shape = MaterialTheme.shapes.extraSmall)
                     .combinedClickable(
                         onLongClick = {
                             if (selectedFilesUpdated.isEmpty()) {
@@ -133,7 +131,7 @@ fun SketchesMediaGrid(
                     enableLoadingIndicator = true,
                     enableErrorIndicator = true,
                 )
-                if (selectedFilesUpdated.contains(file)) {
+                if (fileSelectedOnComposition) {
                     Box(
                         modifier = Modifier
                             .matchParentSize()
@@ -148,11 +146,17 @@ fun SketchesMediaGrid(
                         modifier = Modifier
                             .align(alignment = Alignment.BottomStart)
                             .padding(all = SketchesDimens.MediaGridVideoIconPadding)
-                            .background(
-                                color = MaterialTheme.colorScheme.background
-                                    .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                                shape = CircleShape,
-                            ),
+                            .let { modifier ->
+                                if (!fileSelectedOnComposition) {
+                                    modifier.background(
+                                        color = MaterialTheme.colorScheme.background
+                                            .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                                        shape = CircleShape,
+                                    )
+                                } else {
+                                    modifier
+                                }
+                            },
                     ) {
                         Icon(
                             imageVector = SketchesIcons.Video,

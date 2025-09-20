@@ -456,17 +456,18 @@ private fun MediaBar(
             Box(
                 modifier = Modifier
                     .size(size = SketchesDimens.MediaBarItemSize)
-                    .clip(shape = MaterialTheme.shapes.small)
                     .border(
-                        width = SketchesDimens.MediaItemBorderThicknessDefault,
+                        width = SketchesDimens.MediaItemBorderThickness,
                         color = if (position == currentIndexUpdated) {
                             MaterialTheme.colorScheme.onBackground
+                                .copy(alpha = SketchesColors.UiAlphaLowTransparency)
                         } else {
                             MaterialTheme.colorScheme.onBackground
                                 .copy(alpha = SketchesColors.UiAlphaHighTransparency)
                         },
-                        shape = MaterialTheme.shapes.small,
+                        shape = MaterialTheme.shapes.extraSmall,
                     )
+                    .clip(shape = MaterialTheme.shapes.extraSmall)
                     .clickable {
                         onItemClickUpdated(
                             position,
@@ -495,7 +496,7 @@ private fun MediaBar(
                             .padding(all = SketchesDimens.MediaBarVideoIconPadding)
                             .background(
                                 color = MaterialTheme.colorScheme.background
-                                    .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                                    .copy(alpha = SketchesColors.UiAlphaHighTransparency),
                                 shape = CircleShape
                             ),
                     ) {
