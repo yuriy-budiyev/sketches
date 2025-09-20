@@ -81,9 +81,7 @@ fun ImagesRoute(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(viewModel) {
-        coroutineScope.launch {
-            viewModel.updateMedia()
-        }
+        viewModel.updateMedia()
     }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         coroutineScope.launch {

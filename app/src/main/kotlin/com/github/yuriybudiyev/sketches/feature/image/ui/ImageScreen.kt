@@ -111,13 +111,11 @@ fun ImageRoute(
         bucketId,
         viewModel,
     ) {
-        coroutineScope.launch {
-            viewModel.updateMedia(
-                fileIndex,
-                fileId,
-                bucketId,
-            )
-        }
+        viewModel.updateMedia(
+            fileIndex,
+            fileId,
+            bucketId,
+        )
     }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         coroutineScope.launch {

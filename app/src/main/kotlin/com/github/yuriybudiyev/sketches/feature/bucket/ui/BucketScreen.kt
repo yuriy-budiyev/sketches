@@ -90,9 +90,7 @@ fun BucketRoute(
         bucketId,
         viewModel,
     ) {
-        coroutineScope.launch {
-            viewModel.updateMedia(bucketId)
-        }
+        viewModel.updateMedia(bucketId)
     }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         coroutineScope.launch {
