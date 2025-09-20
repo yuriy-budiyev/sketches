@@ -146,7 +146,7 @@ private fun BucketsScreenLayout(
             val item = bucketsUpdated[index]
             Column(
                 modifier = Modifier
-                    .clip(shape = MaterialTheme.shapes.small)
+                    .clip(shape = MaterialTheme.shapes.extraSmall)
                     .clickable {
                         onBucketClickUpdated(
                             index,
