@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -50,10 +51,12 @@ fun SketchesLazyGrid(
 ) {
     val systemBarInsets = WindowInsets.systemBars.asPaddingValues()
     val waterfallInsets = WindowInsets.waterfall.asPaddingValues()
+    val cutoutInsets = WindowInsets.displayCutout.asPaddingValues()
     val layoutDirection = LocalLayoutDirection.current
     val startPadding = systemBarInsets
         .calculateStartPadding(layoutDirection)
         .coerceAtLeast(waterfallInsets.calculateStartPadding(layoutDirection))
+        .coerceAtLeast(cutoutInsets.calculateStartPadding(layoutDirection))
         .coerceAtLeast(SketchesDimens.LazyGridItemSpacing)
     val topPadding = systemBarInsets
         .calculateTopPadding()
@@ -67,6 +70,7 @@ fun SketchesLazyGrid(
     val endPadding = systemBarInsets
         .calculateEndPadding(layoutDirection)
         .coerceAtLeast(waterfallInsets.calculateEndPadding(layoutDirection))
+        .coerceAtLeast(cutoutInsets.calculateEndPadding(layoutDirection))
         .coerceAtLeast(SketchesDimens.LazyGridItemSpacing)
     val bottomPadding = systemBarInsets
         .calculateBottomPadding()
