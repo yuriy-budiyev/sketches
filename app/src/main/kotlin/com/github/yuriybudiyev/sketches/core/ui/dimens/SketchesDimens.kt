@@ -32,7 +32,7 @@ object SketchesDimens {
     val BottomBarHeight = Material3AppBarHeight
     val LazyGridOverlayTop = Material3AppBarHeight
     val LazyGridOverlayBottom = BottomBarHeight
-    val LazyGridItemSize = 96.dp
+    val LazyGridItemSize = 104.dp
     val LazyGridItemSpacing = 4.dp
     val MediaGridVideoIconPadding = 4.dp
     val AsyncImageStateIconSize = 48.dp
