@@ -24,22 +24,17 @@
 
 package com.github.yuriybudiyev.sketches.core.data.repository
 
-import androidx.annotation.WorkerThread
 import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
 interface MediaStoreRepository {
 
-    @WorkerThread
     suspend fun getFiles(bucketId: Long = SketchesConstants.NoId): List<MediaStoreFile>
 
-    @WorkerThread
     suspend fun deleteFiles(files: Collection<MediaStoreFile>): Boolean
 
-    @WorkerThread
     suspend fun getBuckets(): List<MediaStoreBucket>
 
-    @WorkerThread
     suspend fun getBucketsContent(buckets: Collection<MediaStoreBucket>): List<MediaStoreFile>
 }
