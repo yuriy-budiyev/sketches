@@ -24,13 +24,16 @@
 
 package com.github.yuriybudiyev.sketches.core.data.model
 
+import android.os.Parcel
+import android.os.Parcelable
+
 data class MediaStoreBucket(
     val id: Long,
     val name: String,
     val size: Int,
     val coverUri: String,
     val coverDateAdded: Long,
-) {
+): Parcelable {
 
     override fun hashCode(): Int =
         id.hashCode()
@@ -41,4 +44,33 @@ data class MediaStoreBucket(
             other is MediaStoreBucket -> other.id == this.id
             else -> false
         }
+
+    override fun describeContents(): Int =
+        0
+
+    override fun writeToParcel(
+        parcel: Parcel,
+        flags: Int,
+    ) {
+        parcel.writeLong(id)
+        parcel.writeString(name)
+        parcel.writeInt(size)
+        parcel.writeString(coverUri)
+        parcel.writeLong(coverDateAdded)
+    }
+
+    companion object CREATOR: Parcelable.Creator<MediaStoreBucket?> {
+
+        override fun createFromParcel(parcel: Parcel): MediaStoreBucket? =
+            MediaStoreBucket(
+                id = parcel.readLong(),
+                name = parcel.readString()!!,
+                size = parcel.readInt(),
+                coverUri = parcel.readString()!!,
+                coverDateAdded = parcel.readLong(),
+            )
+
+        override fun newArray(size: Int): Array<MediaStoreBucket?> =
+            arrayOfNulls(size)
+    }
 }

@@ -35,4 +35,6 @@ interface MediaStoreRepository {
     suspend fun deleteFiles(files: Collection<MediaStoreFile>): Boolean
 
     suspend fun getBuckets(): List<MediaStoreBucket>
+
+    suspend fun getBucketsContent(buckets: Collection<MediaStoreBucket>): List<MediaStoreFile>
 }

@@ -97,7 +97,7 @@ fun SketchesMediaGrid(
                                 if (selectedFilesUpdated.contains(file)) {
                                     selectedFilesUpdated.clear()
                                 } else {
-                                    selectedFilesUpdated.addAll(files)
+                                    selectedFilesUpdated.addAll(filesUpdated)
                                 }
                             }
                         },
