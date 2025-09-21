@@ -187,7 +187,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getBuckets(): List<MediaStoreBucket> {
-        val bucketsInfo = MutableLongObjectMap<BucketInfo>(128)
+        val bucketsInfo = MutableLongObjectMap<BucketInfo>(100)
         collectBucketsInfo(
             MediaType.Image,
             bucketsInfo,
