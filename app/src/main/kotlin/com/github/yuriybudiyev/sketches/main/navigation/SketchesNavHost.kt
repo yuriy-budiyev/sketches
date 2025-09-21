@@ -25,8 +25,10 @@
 package com.github.yuriybudiyev.sketches.main.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
+import com.github.yuriybudiyev.sketches.core.navigation.LocalNavController
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.navigateToBucketScreen
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.registerBucketScreen
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
@@ -44,39 +46,41 @@ fun SketchesNavHost(
     onRequestUserSelectedMedia: (() -> Unit)? = null,
 ) {
     val navController = appState.navController
-    NavHost(
-        modifier = modifier,
-        navController = navController,
-        startDestination = ImagesRoute,
-    ) {
-        appState.registerTopLevelNavigationRoute(ImagesRoute)
-        registerImagesScreen(
-            onImageClick = { index, image ->
-                navController.navigateToImageScreen(
-                    imageIndex = index,
-                    imageId = image.id
-                )
-            },
-            onRequestUserSelectedMedia = onRequestUserSelectedMedia,
-        )
-        appState.registerTopLevelNavigationRoute(BucketsRoute)
-        registerBucketsScreen(
-            onBucketClick = { _, bucket ->
-                navController.navigateToBucketScreen(
-                    bucketId = bucket.id,
-                    bucketName = bucket.name,
-                )
-            },
-        )
-        registerImageScreen()
-        registerBucketScreen(
-            onImageClick = { index, image ->
-                navController.navigateToImageScreen(
-                    imageIndex = index,
-                    imageId = image.id,
-                    bucketId = image.bucketId,
-                )
-            },
-        )
+    CompositionLocalProvider(LocalNavController provides navController) {
+        NavHost(
+            modifier = modifier,
+            navController = navController,
+            startDestination = ImagesRoute,
+        ) {
+            appState.registerTopLevelNavigationRoute(ImagesRoute)
+            registerImagesScreen(
+                onImageClick = { index, image ->
+                    navController.navigateToImageScreen(
+                        imageIndex = index,
+                        imageId = image.id
+                    )
+                },
+                onRequestUserSelectedMedia = onRequestUserSelectedMedia,
+            )
+            appState.registerTopLevelNavigationRoute(BucketsRoute)
+            registerBucketsScreen(
+                onBucketClick = { _, bucket ->
+                    navController.navigateToBucketScreen(
+                        bucketId = bucket.id,
+                        bucketName = bucket.name,
+                    )
+                },
+            )
+            registerImageScreen()
+            registerBucketScreen(
+                onImageClick = { index, image ->
+                    navController.navigateToImageScreen(
+                        imageIndex = index,
+                        imageId = image.id,
+                        bucketId = image.bucketId,
+                    )
+                },
+            )
+        }
     }
 }
