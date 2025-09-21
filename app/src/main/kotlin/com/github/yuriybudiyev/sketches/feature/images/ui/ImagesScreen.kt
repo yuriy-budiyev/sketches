@@ -212,7 +212,7 @@ fun ImagesScreen(
                         coroutineScope.launch {
                             val shareInfo = selectedFiles.toShareInfo()
                             shareManagerUpdated.startChooserActivity(
-                                content = shareInfo.uris,
+                                uris = shareInfo.uris,
                                 mimeType = shareInfo.mimeType,
                                 chooserTitle = shareDescription,
                                 listenerAction = ACTION_SHARE,

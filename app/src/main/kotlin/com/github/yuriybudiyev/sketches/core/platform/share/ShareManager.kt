@@ -37,7 +37,7 @@ interface ShareManager {
     )
 
     fun startChooserActivity(
-        content: ArrayList<Uri>,
+        uris: ArrayList<Uri>,
         mimeType: String,
         chooserTitle: CharSequence,
         listenerAction: String? = null,

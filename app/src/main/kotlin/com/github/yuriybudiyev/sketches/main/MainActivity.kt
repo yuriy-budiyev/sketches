@@ -138,7 +138,7 @@ class MainActivity: ComponentActivity(), ShareManager {
     }
 
     override fun startChooserActivity(
-        content: ArrayList<Uri>,
+        uris: ArrayList<Uri>,
         mimeType: String,
         chooserTitle: CharSequence,
         listenerAction: String?,
@@ -146,7 +146,7 @@ class MainActivity: ComponentActivity(), ShareManager {
         val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
             .putParcelableArrayListExtra(
                 Intent.EXTRA_STREAM,
-                content,
+                uris,
             )
             .setType(mimeType)
         if (listenerAction != null) {
