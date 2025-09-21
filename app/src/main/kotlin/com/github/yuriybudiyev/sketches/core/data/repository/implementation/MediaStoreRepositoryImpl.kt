@@ -107,7 +107,11 @@ class MediaStoreRepositoryImpl @Inject constructor(
             MediaType.Video,
             bucketId,
         )
-        val files = ArrayList<MediaStoreFile>(imageFiles.size + videoFiles.size)
+        val filesCount = imageFiles.size + videoFiles.size
+        if (filesCount == 0) {
+            return emptyList()
+        }
+        val files = ArrayList<MediaStoreFile>(filesCount)
         files.addAll(imageFiles)
         files.addAll(videoFiles)
         files.sortByDescending { file -> file.dateAdded }
@@ -183,7 +187,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getBuckets(): List<MediaStoreBucket> {
-        val bucketsInfo = MutableLongObjectMap<BucketInfo>(256)
+        val bucketsInfo = MutableLongObjectMap<BucketInfo>(128)
         collectBucketsInfo(
             MediaType.Image,
             bucketsInfo,
