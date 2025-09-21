@@ -132,7 +132,7 @@ class MainActivity: ComponentActivity(), ShareManager {
         } else {
             startChooserActivity(
                 targetIntent = shareIntent,
-                chooserTitle = chooserTitle
+                chooserTitle = chooserTitle,
             )
         }
     }
@@ -158,7 +158,7 @@ class MainActivity: ComponentActivity(), ShareManager {
         } else {
             startChooserActivity(
                 targetIntent = shareIntent,
-                chooserTitle = chooserTitle
+                chooserTitle = chooserTitle,
             )
         }
     }
