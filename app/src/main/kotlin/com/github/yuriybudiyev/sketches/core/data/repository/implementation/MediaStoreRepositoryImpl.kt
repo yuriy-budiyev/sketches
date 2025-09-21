@@ -205,7 +205,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getBucketsContent(buckets: Collection<MediaStoreBucket>): List<MediaStoreFile> =
-        buckets.flatMapTo(ArrayList(buckets.fold(0) { c, bucket -> c + bucket.size } + 10)) { bucket -> getFiles(bucket.id) }
+        buckets.flatMapTo(ArrayList(buckets.fold(0) { size, bucket -> size + bucket.size } + 10)) { bucket -> getFiles(bucket.id) }
 
     private data class BucketInfo(
         val id: Long,
