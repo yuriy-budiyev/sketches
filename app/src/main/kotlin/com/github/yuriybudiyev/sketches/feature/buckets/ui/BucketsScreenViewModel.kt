@@ -29,6 +29,8 @@ import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetBucketsContentUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaBucketsUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,9 +49,11 @@ class BucketsScreenViewModel @Inject constructor(
     context: Context,
     private val dispatchers: SketchesCoroutineDispatchers,
     private val getMediaBuckets: GetMediaBucketsUseCase,
+    private val getBucketsContent: GetBucketsContentUseCase,
+    private val deleteMediaFiles: DeleteMediaFilesUseCase,
 ): MediaObservingViewModel(
     context,
-    dispatchers
+    dispatchers,
 ) {
 
     private val uiStateInternal: MutableStateFlow<BucketsScreenUiState> =
@@ -95,9 +99,24 @@ class BucketsScreenViewModel @Inject constructor(
         }
     }
 
+    fun deleteMedia(files: Collection<MediaStoreFile>) {
+        deleteJob?.cancel()
+        deleteJob = viewModelScope.launch {
+            try {
+                withContext(dispatchers.io) {
+                    deleteMediaFiles(files)
+                }
+            } catch (_: CancellationException) {
+            } catch (e: Exception) {
+                uiStateInternal.value = BucketsScreenUiState.Error(e)
+            }
+        }
+    }
+
     override fun onMediaChanged() {
         updateBuckets()
     }
 
     private var updateJob: Job? = null
+    private var deleteJob: Job? = null
 }

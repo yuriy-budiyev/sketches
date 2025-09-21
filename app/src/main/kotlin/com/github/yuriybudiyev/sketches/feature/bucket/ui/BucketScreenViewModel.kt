@@ -51,7 +51,7 @@ class BucketScreenViewModel @Inject constructor(
     private val deleteMediaFiles: DeleteMediaFilesUseCase,
 ): MediaObservingViewModel(
     context,
-    dispatchers
+    dispatchers,
 ) {
 
     private val uiStateInternal: MutableStateFlow<BucketScreenUiState> =

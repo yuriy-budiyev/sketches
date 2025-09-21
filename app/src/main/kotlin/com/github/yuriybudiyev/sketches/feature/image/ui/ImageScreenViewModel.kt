@@ -51,7 +51,7 @@ class ImageScreenViewModel @Inject constructor(
     private val deleteMediaFiles: DeleteMediaFilesUseCase,
 ): MediaObservingViewModel(
     context,
-    dispatchers
+    dispatchers,
 ) {
 
     private val uiStateInternal: MutableStateFlow<ImageScreenUiState> =
@@ -79,7 +79,7 @@ class ImageScreenViewModel @Inject constructor(
         setCurrentMediaData(
             fileIndex,
             fileId,
-            bucketId
+            bucketId,
         )
         currentJob?.cancel()
         currentJob = viewModelScope.launch {
@@ -92,10 +92,10 @@ class ImageScreenViewModel @Inject constructor(
                 if (filesSize > 0) {
                     if (fileIndex < filesSize && files[fileIndex].id == fileId) {
                         uiStateInternal.value = ImageScreenUiState.Image(
-                            fileIndex,
-                            fileId,
-                            bucketId,
-                            files
+                            fileIndex = fileIndex,
+                            fileId = fileId,
+                            bucketId = bucketId,
+                            files = files,
                         )
                     } else {
                         var backwardIndex = fileIndex - 1
@@ -118,13 +118,13 @@ class ImageScreenViewModel @Inject constructor(
                             }
                         }
                         uiStateInternal.value = ImageScreenUiState.Image(
-                            actualIndex.coerceIn(
+                            fileIndex = actualIndex.coerceIn(
                                 0,
                                 filesSize - 1
                             ),
-                            fileId,
-                            bucketId,
-                            files
+                            fileId = fileId,
+                            bucketId = bucketId,
+                            files = files,
                         )
                     }
                 } else {
@@ -170,7 +170,7 @@ class ImageScreenViewModel @Inject constructor(
             updateMedia(
                 fileIndex,
                 fileId,
-                bucketId
+                bucketId,
             )
         }
     }

@@ -95,9 +95,12 @@ fun BucketsRoute(
     BucketsScreen(
         uiState = uiState,
         onBucketClick = onBucketClick,
-        onDeleteBuckets = {
+        onDeleteBuckets = { buckets ->
         },
-        onDeleteMedia = {
+        onDeleteMedia = { files ->
+            coroutineScope.launch {
+                viewModel.deleteMedia(files)
+            }
         },
     )
 }
