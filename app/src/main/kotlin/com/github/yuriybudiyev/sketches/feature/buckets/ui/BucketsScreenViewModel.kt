@@ -27,6 +27,8 @@ package com.github.yuriybudiyev.sketches.feature.buckets.ui
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaBucketsUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -56,21 +58,35 @@ class BucketsScreenViewModel @Inject constructor(
     val uiState: StateFlow<BucketsScreenUiState>
         get() = uiStateInternal
 
+    private fun makeUpdatedBucketsState(
+        oldState: BucketsScreenUiState,
+        newBuckets: List<MediaStoreBucket>? = null,
+        newFilesToDelete: List<MediaStoreFile>? = null,
+    ): BucketsScreenUiState.Buckets {
+        val oldBucketsState = oldState as? BucketsScreenUiState.Buckets
+        return BucketsScreenUiState.Buckets(
+            buckets = newBuckets ?: oldBucketsState?.buckets ?: emptyList(),
+            filesToDelete = newFilesToDelete ?: oldBucketsState?.filesToDelete ?: emptyList()
+        )
+    }
+
     fun updateBuckets(silent: Boolean = uiState.value is BucketsScreenUiState.Buckets) {
-        currentJob?.cancel()
-        currentJob = viewModelScope.launch {
+        updateJob?.cancel()
+        updateJob = viewModelScope.launch {
             if (!silent) {
                 uiStateInternal.value = BucketsScreenUiState.Loading
             }
             try {
                 val buckets = withContext(dispatchers.io) { getMediaBuckets() }
                 if (buckets.isNotEmpty()) {
-                    uiStateInternal.value = BucketsScreenUiState.Buckets(buckets)
+                    uiStateInternal.value = makeUpdatedBucketsState(
+                        oldState = uiStateInternal.value,
+                        newBuckets = buckets,
+                    )
                 } else {
                     uiStateInternal.value = BucketsScreenUiState.Empty
                 }
             } catch (_: CancellationException) {
-                // Do nothing
             } catch (e: Exception) {
                 if (!silent) {
                     uiStateInternal.value = BucketsScreenUiState.Error(e)
@@ -83,5 +99,5 @@ class BucketsScreenViewModel @Inject constructor(
         updateBuckets()
     }
 
-    private var currentJob: Job? = null
+    private var updateJob: Job? = null
 }

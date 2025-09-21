@@ -61,6 +61,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
@@ -94,6 +95,10 @@ fun BucketsRoute(
     BucketsScreen(
         uiState = uiState,
         onBucketClick = onBucketClick,
+        onDeleteBuckets = {
+        },
+        onDeleteMedia = {
+        },
     )
 }
 
@@ -101,6 +106,8 @@ fun BucketsRoute(
 fun BucketsScreen(
     uiState: BucketsScreenUiState,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
+    onDeleteBuckets: (buckets: Collection<MediaStoreBucket>) -> Unit,
+    onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
@@ -138,6 +145,9 @@ fun BucketsScreen(
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
             }
             is BucketsScreenUiState.Buckets -> {
+                val filesToDelete = uiState.filesToDelete
+                LaunchedEffect(filesToDelete) {
+                }
                 BucketsScreenLayout(
                     buckets = uiState.buckets,
                     selectedBuckets = selectedBuckets,
