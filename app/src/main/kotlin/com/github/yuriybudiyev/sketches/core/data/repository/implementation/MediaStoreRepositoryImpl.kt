@@ -68,7 +68,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
             } else {
                 null
             },
-            null
+            null,
         ) ?: return emptyList()
         cursor.use { c ->
             val files = ArrayList<MediaStoreFile>(c.count)
@@ -78,18 +78,20 @@ class MediaStoreRepositoryImpl @Inject constructor(
             val mimeTypeColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE)
             while (c.moveToNext()) {
                 val id = c.getLong(idColumn)
-                files += MediaStoreFile(
-                    id = id,
-                    bucketId = c.getLong(bucketIdColumn),
-                    dateAdded = c.getLong(dateAddedColumn) * 1000L,
-                    mediaType = mediaType,
-                    mimeType = c.getStringOrNull(mimeTypeColumn) ?: mediaType.mimeType,
-                    uri = ContentUris
-                        .withAppendedId(
-                            contentUri,
-                            id
-                        )
-                        .toString()
+                files.add(
+                    MediaStoreFile(
+                        id = id,
+                        bucketId = c.getLong(bucketIdColumn),
+                        dateAdded = c.getLong(dateAddedColumn) * 1000L,
+                        mediaType = mediaType,
+                        mimeType = c.getStringOrNull(mimeTypeColumn) ?: mediaType.mimeType,
+                        uri = ContentUris
+                            .withAppendedId(
+                                contentUri,
+                                id,
+                            )
+                            .toString(),
+                    ),
                 )
             }
             return files
@@ -99,11 +101,11 @@ class MediaStoreRepositoryImpl @Inject constructor(
     override suspend fun getFiles(bucketId: Long): List<MediaStoreFile> {
         val imageFiles = collectFiles(
             MediaType.Image,
-            bucketId
+            bucketId,
         )
         val videoFiles = collectFiles(
             MediaType.Video,
-            bucketId
+            bucketId,
         )
         val files = ArrayList<MediaStoreFile>(imageFiles.size + videoFiles.size)
         files.addAll(imageFiles)
@@ -119,7 +121,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
             count += contentResolver.delete(
                 file.uri.toUri(),
                 null,
-                null
+                null,
             )
         }
         return count > 0
@@ -140,7 +142,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
             ),
             null,
             null,
-            null
+            null,
         ) ?: return
         cursor.use { c ->
             val idColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
@@ -172,7 +174,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
                     bucketInfo.coverUri = ContentUris
                         .withAppendedId(
                             contentUri,
-                            id
+                            id,
                         )
                         .toString()
                 }
@@ -184,20 +186,22 @@ class MediaStoreRepositoryImpl @Inject constructor(
         val bucketsInfo = MutableLongObjectMap<BucketInfo>(256)
         collectBucketsInfo(
             MediaType.Image,
-            bucketsInfo
+            bucketsInfo,
         )
         collectBucketsInfo(
             MediaType.Video,
-            bucketsInfo
+            bucketsInfo,
         )
         val buckets = ArrayList<MediaStoreBucket>(bucketsInfo.size)
         bucketsInfo.forEachValue { info ->
-            buckets += MediaStoreBucket(
-                info.id,
-                info.name,
-                info.size,
-                info.coverUri,
-                info.coverDateAdded
+            buckets.add(
+                MediaStoreBucket(
+                    id = info.id,
+                    name = info.name,
+                    size = info.size,
+                    coverUri = info.coverUri,
+                    coverDateAdded = info.coverDateAdded,
+                ),
             )
         }
         buckets.sortByDescending { bucket -> bucket.coverDateAdded }
