@@ -101,7 +101,7 @@ class MainActivity: ComponentActivity(), ShareManager {
         ContextCompat.registerReceiver(
             this,
             shareReceiver,
-            IntentFilter(ACTION_SHARE_RESEND),
+            IntentFilter(ACTION_CHOOSER_CALLBACK_RESEND),
             ContextCompat.RECEIVER_NOT_EXPORTED,
         )
     }
@@ -114,7 +114,8 @@ class MainActivity: ComponentActivity(), ShareManager {
     override fun startChooserActivity(
         uri: Uri,
         mimeType: String,
-        title: CharSequence,
+        chooserTitle: CharSequence,
+        listenerAction: String?,
     ) {
         val shareIntent = Intent(Intent.ACTION_SEND)
             .putExtra(
@@ -122,18 +123,25 @@ class MainActivity: ComponentActivity(), ShareManager {
                 uri,
             )
             .setType(mimeType)
-        val chooserIntent = Intent.createChooser(
-            shareIntent,
-            title,
-        )
-        startActivity(chooserIntent)
+        if (listenerAction != null) {
+            startChooserActivityWithCallback(
+                targetIntent = shareIntent,
+                chooserTitle = chooserTitle,
+                callbackAction = listenerAction,
+            )
+        } else {
+            startChooserActivity(
+                targetIntent = shareIntent,
+                chooserTitle = chooserTitle
+            )
+        }
     }
 
     override fun startChooserActivity(
         content: ArrayList<Uri>,
         mimeType: String,
-        title: CharSequence,
-        listenerAction: String,
+        chooserTitle: CharSequence,
+        listenerAction: String?,
     ) {
         val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
             .putParcelableArrayListExtra(
@@ -141,20 +149,50 @@ class MainActivity: ComponentActivity(), ShareManager {
                 content,
             )
             .setType(mimeType)
+        if (listenerAction != null) {
+            startChooserActivityWithCallback(
+                targetIntent = shareIntent,
+                chooserTitle = chooserTitle,
+                callbackAction = listenerAction,
+            )
+        } else {
+            startChooserActivity(
+                targetIntent = shareIntent,
+                chooserTitle = chooserTitle
+            )
+        }
+    }
+
+    private fun startChooserActivity(
+        targetIntent: Intent,
+        chooserTitle: CharSequence,
+    ) {
+        val chooserIntent = Intent.createChooser(
+            targetIntent,
+            chooserTitle,
+        )
+        startActivity(chooserIntent)
+    }
+
+    private fun startChooserActivityWithCallback(
+        targetIntent: Intent,
+        chooserTitle: CharSequence,
+        callbackAction: String,
+    ) {
         val callbackIntent = PendingIntent.getBroadcast(
             applicationContext,
-            listenerAction.hashCode(),
+            callbackAction.hashCode(),
             Intent(
                 applicationContext,
-                ShareReceiver::class.java,
+                ChooserCallbackReceiver::class.java,
             ).apply {
-                setAction(listenerAction)
+                setAction(callbackAction)
             },
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
         val chooserIntent = Intent.createChooser(
-            shareIntent,
-            title,
+            targetIntent,
+            chooserTitle,
             callbackIntent.intentSender,
         )
         startActivity(chooserIntent)
@@ -172,24 +210,26 @@ class MainActivity: ComponentActivity(), ShareManager {
     }
 
     private val onSharedListeners: MutableMap<String?, () -> Unit> = LinkedHashMap()
-    private val shareReceiver: BroadcastReceiver = DynamicShareReceiver()
+    private val shareReceiver: BroadcastReceiver = DynamicChooserCallbackReceiver()
 
     private companion object {
 
-        const val ACTION_SHARE_RESEND = "com.github.yuriybudiyev.sketches.ACTION_SHARE_RESEND"
-        const val EXTRA_SHARE_ACTION = "share_action"
+        const val ACTION_CHOOSER_CALLBACK_RESEND =
+            "com.github.yuriybudiyev.sketches.main.ACTION_CHOOSER_CALLBACK_RESEND"
+
+        const val EXTRA_CHOOSER_CALLBACK_ACTION = "chooser_callback_action"
     }
 
-    class ShareReceiver: BroadcastReceiver() {
+    class ChooserCallbackReceiver: BroadcastReceiver() {
 
         override fun onReceive(
             context: Context,
             intent: Intent,
         ) {
             context.sendBroadcast(
-                Intent(ACTION_SHARE_RESEND)
+                Intent(ACTION_CHOOSER_CALLBACK_RESEND)
                     .putExtra(
-                        EXTRA_SHARE_ACTION,
+                        EXTRA_CHOOSER_CALLBACK_ACTION,
                         intent.action,
                     )
                     .setPackage(context.packageName)
@@ -197,14 +237,14 @@ class MainActivity: ComponentActivity(), ShareManager {
         }
     }
 
-    private inner class DynamicShareReceiver: BroadcastReceiver() {
+    private inner class DynamicChooserCallbackReceiver: BroadcastReceiver() {
 
         override fun onReceive(
             context: Context,
             intent: Intent,
         ) {
             lifecycleScope.launch {
-                onSharedListeners[intent.getStringExtra(EXTRA_SHARE_ACTION)]?.invoke()
+                onSharedListeners[intent.getStringExtra(EXTRA_CHOOSER_CALLBACK_ACTION)]?.invoke()
             }
         }
     }

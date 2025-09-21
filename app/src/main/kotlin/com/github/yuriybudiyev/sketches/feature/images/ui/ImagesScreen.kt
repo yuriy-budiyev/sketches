@@ -214,7 +214,7 @@ fun ImagesScreen(
                             shareManagerUpdated.startChooserActivity(
                                 content = shareInfo.uris,
                                 mimeType = shareInfo.mimeType,
-                                title = shareDescription,
+                                chooserTitle = shareDescription,
                                 listenerAction = ACTION_SHARE,
                             )
                         }

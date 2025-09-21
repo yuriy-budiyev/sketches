@@ -42,7 +42,7 @@
         </activity>
 
         <receiver
-            android:name=".main.MainActivity$ShareReceiver"
+            android:name=".main.MainActivity$ChooserCallbackReceiver"
             android:exported="false" />
     </application>
 </manifest>

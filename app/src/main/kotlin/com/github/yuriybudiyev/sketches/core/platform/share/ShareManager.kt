@@ -32,14 +32,15 @@ interface ShareManager {
     fun startChooserActivity(
         uri: Uri,
         mimeType: String,
-        title: CharSequence,
+        chooserTitle: CharSequence,
+        listenerAction: String? = null,
     )
 
     fun startChooserActivity(
         content: ArrayList<Uri>,
         mimeType: String,
-        title: CharSequence,
-        listenerAction: String,
+        chooserTitle: CharSequence,
+        listenerAction: String? = null,
     )
 
     fun registerOnSharedListener(
