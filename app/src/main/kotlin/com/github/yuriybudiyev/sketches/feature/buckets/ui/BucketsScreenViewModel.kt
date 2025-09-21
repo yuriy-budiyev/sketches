@@ -58,7 +58,6 @@ class BucketsScreenViewModel @Inject constructor(
     val uiState: StateFlow<BucketsScreenUiState>
         get() = uiStateInternal
 
-    //TODO: Concurrency?
     private fun makeUpdatedBucketsState(
         oldState: BucketsScreenUiState,
         newBuckets: List<MediaStoreBucket>? = null,
