@@ -24,8 +24,13 @@
 
 package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
+import android.app.Activity
 import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.component1
+import androidx.activity.result.component2
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
@@ -51,6 +56,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -96,6 +102,9 @@ fun BucketsRoute(
         uiState = uiState,
         onBucketClick = onBucketClick,
         onDeleteBuckets = { buckets ->
+            coroutineScope.launch {
+                viewModel.updateSelectedFiles(buckets)
+            }
         },
         onDeleteMedia = { files ->
             coroutineScope.launch {
@@ -113,9 +122,22 @@ fun BucketsScreen(
     onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val contextUpdated by rememberUpdatedState(LocalContext.current)
     val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
+    val onDeleteBucketsUpdated by rememberUpdatedState(onDeleteBuckets)
+    val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     val selectedBuckets = rememberSaveable { SnapshotStateSet<MediaStoreBucket>() }
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
+    val deleteRequestLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult(),
+        onResult = { (resultCode, _) ->
+            if (resultCode == Activity.RESULT_OK) {
+                coroutineScope.launch {
+                    selectedBuckets.clear()
+                }
+            }
+        },
+    )
     DisposableEffect(Unit) {
         shareManagerUpdated.registerOnSharedListener(ACTION_SHARE) {
             coroutineScope.launch {
@@ -148,9 +170,6 @@ fun BucketsScreen(
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
             }
             is BucketsScreenUiState.Buckets -> {
-                val filesToDelete = uiState.filesToDelete
-                LaunchedEffect(filesToDelete) {
-                }
                 BucketsScreenLayout(
                     buckets = uiState.buckets,
                     selectedBuckets = selectedBuckets,

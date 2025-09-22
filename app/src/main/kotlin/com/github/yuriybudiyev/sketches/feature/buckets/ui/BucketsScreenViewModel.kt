@@ -70,7 +70,7 @@ class BucketsScreenViewModel @Inject constructor(
         val oldBucketsState = oldState as? BucketsScreenUiState.Buckets
         return BucketsScreenUiState.Buckets(
             buckets = newBuckets ?: oldBucketsState?.buckets ?: emptyList(),
-            filesToDelete = newFilesToDelete ?: oldBucketsState?.filesToDelete ?: emptyList()
+            selectedFiles = newFilesToDelete ?: oldBucketsState?.selectedFiles ?: emptyList(),
         )
     }
 
@@ -99,6 +99,29 @@ class BucketsScreenViewModel @Inject constructor(
         }
     }
 
+    fun updateSelectedFiles(buckets: Collection<MediaStoreBucket>) {
+        deleteJob?.cancel()
+        deleteJob = viewModelScope.launch {
+            try {
+                if (buckets.isEmpty()) {
+                    uiStateInternal.value = makeUpdatedBucketsState(
+                        oldState = uiStateInternal.value,
+                        newFilesToDelete = emptyList(),
+                    )
+                } else {
+                    val files = withContext(dispatchers.io) { getBucketsContent(buckets) }
+                    uiStateInternal.value = makeUpdatedBucketsState(
+                        oldState = uiStateInternal.value,
+                        newFilesToDelete = files,
+                    )
+                }
+            } catch (_: CancellationException) {
+            } catch (e: Exception) {
+                uiStateInternal.value = BucketsScreenUiState.Error(e)
+            }
+        }
+    }
+
     fun deleteMedia(files: Collection<MediaStoreFile>) {
         deleteJob?.cancel()
         deleteJob = viewModelScope.launch {
@@ -118,5 +141,6 @@ class BucketsScreenViewModel @Inject constructor(
     }
 
     private var updateJob: Job? = null
+    private var contentJob: Job? = null
     private var deleteJob: Job? = null
 }

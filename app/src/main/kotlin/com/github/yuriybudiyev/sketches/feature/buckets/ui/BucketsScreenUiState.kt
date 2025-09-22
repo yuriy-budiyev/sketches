@@ -35,7 +35,7 @@ sealed interface BucketsScreenUiState {
 
     data class Buckets(
         val buckets: List<MediaStoreBucket>,
-        val filesToDelete: List<MediaStoreFile>,
+        val selectedFiles: List<MediaStoreFile>,
     ): BucketsScreenUiState
 
     data class Error(val thrown: Throwable): BucketsScreenUiState
