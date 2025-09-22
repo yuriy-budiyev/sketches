@@ -100,8 +100,8 @@ class BucketsScreenViewModel @Inject constructor(
     }
 
     fun updateSelectedFiles(buckets: Collection<MediaStoreBucket>) {
-        deleteJob?.cancel()
-        deleteJob = viewModelScope.launch {
+        selectedFilesJob?.cancel()
+        selectedFilesJob = viewModelScope.launch {
             try {
                 if (buckets.isEmpty()) {
                     uiStateInternal.value = makeUpdatedBucketsState(
@@ -141,6 +141,6 @@ class BucketsScreenViewModel @Inject constructor(
     }
 
     private var updateJob: Job? = null
-    private var contentJob: Job? = null
+    private var selectedFilesJob: Job? = null
     private var deleteJob: Job? = null
 }
