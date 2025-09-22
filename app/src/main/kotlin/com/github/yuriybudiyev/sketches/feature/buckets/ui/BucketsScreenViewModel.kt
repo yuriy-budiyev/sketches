@@ -65,12 +65,12 @@ class BucketsScreenViewModel @Inject constructor(
     private fun makeUpdatedBucketsState(
         oldState: BucketsScreenUiState,
         newBuckets: List<MediaStoreBucket>? = null,
-        newFilesToDelete: List<MediaStoreFile>? = null,
+        newSelectedFiles: List<MediaStoreFile>? = null,
     ): BucketsScreenUiState.Buckets {
         val oldBucketsState = oldState as? BucketsScreenUiState.Buckets
         return BucketsScreenUiState.Buckets(
             buckets = newBuckets ?: oldBucketsState?.buckets ?: emptyList(),
-            selectedFiles = newFilesToDelete ?: oldBucketsState?.selectedFiles ?: emptyList(),
+            selectedFiles = newSelectedFiles ?: oldBucketsState?.selectedFiles ?: emptyList(),
         )
     }
 
@@ -106,13 +106,13 @@ class BucketsScreenViewModel @Inject constructor(
                 if (buckets.isEmpty()) {
                     uiStateInternal.value = makeUpdatedBucketsState(
                         oldState = uiStateInternal.value,
-                        newFilesToDelete = emptyList(),
+                        newSelectedFiles = emptyList(),
                     )
                 } else {
                     val files = withContext(dispatchers.io) { getBucketsContent(buckets) }
                     uiStateInternal.value = makeUpdatedBucketsState(
                         oldState = uiStateInternal.value,
-                        newFilesToDelete = files,
+                        newSelectedFiles = files,
                     )
                 }
             } catch (_: CancellationException) {
