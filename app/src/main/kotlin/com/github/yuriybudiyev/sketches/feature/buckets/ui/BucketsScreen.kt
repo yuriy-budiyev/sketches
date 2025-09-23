@@ -139,8 +139,10 @@ fun BucketsScreen(
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     val selectedBuckets = rememberSaveable { SnapshotStateSet<MediaStoreBucket>() }
     var selectedFiles by remember { mutableStateOf<List<MediaStoreFile>>(emptyList()) }
+    var selectedFilesUpdating by remember { mutableStateOf(false) }
     LaunchedEffect(uiState) {
         selectedFiles = (uiState as? BucketsScreenUiState.Buckets)?.selectedFiles ?: emptyList()
+        selectedFilesUpdating = false
     }
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
@@ -203,6 +205,7 @@ fun BucketsScreen(
                 )
                 LaunchedEffect(Unit) {
                     snapshotFlow { selectedBuckets.toSet() }.collect { buckets ->
+                        selectedFilesUpdating = true
                         onSelectionChangedUpdated(buckets)
                     }
                 }
@@ -234,13 +237,20 @@ fun BucketsScreen(
                     onClick = {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             coroutineScope.launch {
-                                deleteRequestLauncher.launchDeleteMediaRequest(
-                                    contextUpdated,
-                                    selectedFiles.map { file -> file.uri.toUri() }
-                                )
+                                if (!selectedFilesUpdating) {
+                                    val files = selectedFiles
+                                    if (files.isNotEmpty()) {
+                                        deleteRequestLauncher.launchDeleteMediaRequest(
+                                            contextUpdated,
+                                            files.map { file -> file.uri.toUri() }
+                                        )
+                                    }
+                                }
                             }
                         } else {
-                            deleteDialogVisible = true
+                            if (!selectedFilesUpdating) {
+                                deleteDialogVisible = true
+                            }
                         }
                     },
                 )
@@ -250,13 +260,18 @@ fun BucketsScreen(
                     description = shareDescription,
                     onClick = {
                         coroutineScope.launch {
-                            val shareInfo = selectedFiles.toShareInfo()
-                            shareManagerUpdated.startChooserActivity(
-                                uris = shareInfo.uris,
-                                mimeType = shareInfo.mimeType,
-                                chooserTitle = shareDescription,
-                                listenerAction = ACTION_SHARE,
-                            )
+                            if (!selectedFilesUpdating) {
+                                val files = selectedFiles
+                                if (files.isNotEmpty()) {
+                                    val shareInfo = files.toShareInfo()
+                                    shareManagerUpdated.startChooserActivity(
+                                        uris = shareInfo.uris,
+                                        mimeType = shareInfo.mimeType,
+                                        chooserTitle = shareDescription,
+                                        listenerAction = ACTION_SHARE,
+                                    )
+                                }
+                            }
                         }
                     },
                 )
