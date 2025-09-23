@@ -75,9 +75,9 @@ class BucketsScreenViewModel @Inject constructor(
                     val oldState = uiStateInternal.value
                     val selectedBuckets = selectedBuckets
                     if (!selectedBuckets.isNullOrEmpty() && oldState is BucketsScreenUiState.Buckets) {
-                        val sb = LinkedList(selectedBuckets)
-                        sb.retainAll(HashSet(buckets))
-                        val sf = withContext(dispatchers.io) { getBucketsContent(sb) }
+                        val sbTemp = LinkedList(selectedBuckets)
+                        sbTemp.retainAll(HashSet(buckets))
+                        val sf = withContext(dispatchers.io) { getBucketsContent(sbTemp) }
                         uiStateInternal.value = BucketsScreenUiState.Buckets(
                             buckets = buckets,
                             selectedFiles = sf,
