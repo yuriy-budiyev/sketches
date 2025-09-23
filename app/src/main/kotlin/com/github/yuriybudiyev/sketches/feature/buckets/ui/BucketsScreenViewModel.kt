@@ -65,6 +65,7 @@ class BucketsScreenViewModel @Inject constructor(
 
     fun updateBuckets(silent: Boolean = uiState.value is BucketsScreenUiState.Buckets) {
         updateBucketsJob?.cancel()
+        updateSelectedFilesJob?.cancel()
         updateBucketsJob = viewModelScope.launch {
             if (!silent) {
                 uiStateInternal.value = BucketsScreenUiState.Loading
