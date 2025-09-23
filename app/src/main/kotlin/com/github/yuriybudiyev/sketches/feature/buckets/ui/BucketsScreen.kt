@@ -24,16 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
-import android.app.Activity
-import android.os.Build
-import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.component1
-import androidx.activity.result.component2
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -43,49 +35,32 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
-import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
-import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
-import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
 import kotlinx.coroutines.launch
 
@@ -104,24 +79,9 @@ fun BucketsRoute(
             viewModel.updateMediaAccess()
         }
     }
-    DisposableEffect(viewModel) {
-        onDispose {
-            viewModel.clearSelectedFiles()
-        }
-    }
     BucketsScreen(
         uiState = uiState,
         onBucketClick = onBucketClick,
-        onSelectionChanged = { buckets ->
-            coroutineScope.launch {
-                viewModel.updateSelectedFiles(buckets)
-            }
-        },
-        onDeleteMedia = { files ->
-            coroutineScope.launch {
-                viewModel.deleteMedia(files)
-            }
-        },
     )
 }
 
@@ -129,52 +89,7 @@ fun BucketsRoute(
 fun BucketsScreen(
     uiState: BucketsScreenUiState,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
-    onSelectionChanged: (buckets: Collection<MediaStoreBucket>) -> Unit,
-    onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    val contextUpdated by rememberUpdatedState(LocalContext.current)
-    val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
-    val onSelectionChangedUpdated by rememberUpdatedState(onSelectionChanged)
-    val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
-    val selectedBuckets = rememberSaveable { SnapshotStateSet<MediaStoreBucket>() }
-    var selectedFiles by remember { mutableStateOf<List<MediaStoreFile>>(emptyList()) }
-    var selectedFilesUpdating by remember { mutableStateOf(false) }
-    LaunchedEffect(uiState) {
-        selectedFiles = (uiState as? BucketsScreenUiState.Buckets)?.selectedFiles ?: emptyList()
-        selectedFilesUpdating = false
-    }
-    var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
-    val deleteRequestLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartIntentSenderForResult(),
-        onResult = { (resultCode, _) ->
-            if (resultCode == Activity.RESULT_OK) {
-                coroutineScope.launch {
-                    selectedBuckets.clear()
-                }
-            }
-        },
-    )
-    DisposableEffect(Unit) {
-        shareManagerUpdated.registerOnSharedListener(ACTION_SHARE) {
-            coroutineScope.launch {
-                selectedBuckets.clear()
-            }
-        }
-        onDispose {
-            shareManagerUpdated.unregisterOnSharedListener(ACTION_SHARE)
-        }
-    }
-    LaunchedEffect(Unit) {
-        if (selectedBuckets.isEmpty()) {
-            deleteDialogVisible = false
-        }
-    }
-    BackHandler(selectedBuckets.isNotEmpty()) {
-        coroutineScope.launch {
-            selectedBuckets.clear()
-        }
-    }
     Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {
             is BucketsScreenUiState.Empty -> {
@@ -182,44 +97,22 @@ fun BucketsScreen(
                     text = stringResource(id = R.string.no_buckets_found),
                     modifier = Modifier.matchParentSize(),
                 )
-                SideEffect {
-                    if (selectedBuckets.isNotEmpty()) {
-                        selectedBuckets.clear()
-                    }
-                }
             }
             is BucketsScreenUiState.Loading -> {
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
-                SideEffect {
-                    if (selectedBuckets.isNotEmpty()) {
-                        selectedBuckets.clear()
-                    }
-                }
             }
             is BucketsScreenUiState.Buckets -> {
                 BucketsScreenLayout(
                     buckets = uiState.buckets,
-                    selectedBuckets = selectedBuckets,
                     onBucketClick = onBucketClick,
                     modifier = Modifier.matchParentSize(),
                 )
-                LaunchedEffect(Unit) {
-                    snapshotFlow { selectedBuckets.toSet() }.collect { buckets ->
-                        selectedFilesUpdating = true
-                        onSelectionChangedUpdated(buckets)
-                    }
-                }
             }
             is BucketsScreenUiState.Error -> {
                 SketchesErrorMessage(
                     thrown = uiState.thrown,
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier.matchParentSize()
                 )
-                SideEffect {
-                    if (selectedBuckets.isNotEmpty()) {
-                        selectedBuckets.clear()
-                    }
-                }
             }
         }
         SketchesTopAppBar(
@@ -229,80 +122,17 @@ fun BucketsScreen(
             text = stringResource(id = BucketsRoute.titleRes),
             backgroundColor = MaterialTheme.colorScheme.background
                 .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-        ) {
-            if (selectedFiles.isNotEmpty()) {
-                SketchesAppBarActionButton(
-                    icon = SketchesIcons.Delete,
-                    description = stringResource(id = R.string.delete_selected),
-                    onClick = {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            coroutineScope.launch {
-                                if (!selectedFilesUpdating) {
-                                    val files = selectedFiles
-                                    if (files.isNotEmpty()) {
-                                        deleteRequestLauncher.launchDeleteMediaRequest(
-                                            contextUpdated,
-                                            files.map { file -> file.uri.toUri() }
-                                        )
-                                    }
-                                }
-                            }
-                        } else {
-                            if (!selectedFilesUpdating) {
-                                deleteDialogVisible = true
-                            }
-                        }
-                    },
-                )
-                val shareDescription = stringResource(id = R.string.share_selected)
-                SketchesAppBarActionButton(
-                    icon = SketchesIcons.Share,
-                    description = shareDescription,
-                    onClick = {
-                        coroutineScope.launch {
-                            if (!selectedFilesUpdating) {
-                                val files = selectedFiles
-                                if (files.isNotEmpty()) {
-                                    val shareInfo = files.toShareInfo()
-                                    shareManagerUpdated.startChooserActivity(
-                                        uris = shareInfo.uris,
-                                        mimeType = shareInfo.mimeType,
-                                        chooserTitle = shareDescription,
-                                        listenerAction = ACTION_SHARE,
-                                    )
-                                }
-                            }
-                        }
-                    },
-                )
-            }
-        }
-        if (deleteDialogVisible) {
-            SketchesDeleteConfirmationDialog(
-                onDelete = {
-                    deleteDialogVisible = false
-                    onDeleteMediaUpdated(selectedFiles)
-                    coroutineScope.launch {
-                        selectedBuckets.clear()
-                    }
-                },
-                onDismiss = {
-                    deleteDialogVisible = false
-                },
-            )
-        }
+        )
     }
 }
 
 @Composable
 private fun BucketsScreenLayout(
     buckets: List<MediaStoreBucket>,
-    selectedBuckets: SnapshotStateSet<MediaStoreBucket>,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val bucketsUpdated by rememberUpdatedState(buckets)
-    val selectedBucketsUpdated by rememberUpdatedState(selectedBuckets)
     val onBucketClickUpdated by rememberUpdatedState(onBucketClick)
     SketchesLazyGrid(
         modifier = modifier,
@@ -314,74 +144,33 @@ private fun BucketsScreenLayout(
             key = { index -> bucketsUpdated[index].id },
         ) { index ->
             val bucket = bucketsUpdated[index]
-            val bucketSelectedOnComposition = selectedBucketsUpdated.contains(bucket)
             Column(
                 modifier = Modifier
                     .clip(shape = MaterialTheme.shapes.extraSmall)
-                    .combinedClickable(
-                        onLongClick = {
-                            if (selectedBucketsUpdated.isEmpty()) {
-                                selectedBucketsUpdated.add(bucket)
-                            } else {
-                                if (selectedBucketsUpdated.contains(bucket)) {
-                                    selectedBucketsUpdated.clear()
-                                } else {
-                                    selectedBucketsUpdated.addAll(bucketsUpdated)
-                                }
-                            }
-                        },
-                        onClick = {
-                            if (selectedBucketsUpdated.isNotEmpty()) {
-                                if (selectedBucketsUpdated.contains(bucket)) {
-                                    selectedBucketsUpdated.remove(bucket)
-                                } else {
-                                    selectedBucketsUpdated.add(bucket)
-                                }
-                            } else {
-                                onBucketClickUpdated(
-                                    index,
-                                    bucket,
-                                )
-                            }
-                        },
-                    ),
+                    .clickable {
+                        onBucketClickUpdated(
+                            index,
+                            bucket,
+                        )
+                    },
             ) {
-                Box(
+                SketchesAsyncImage(
+                    uri = bucket.coverUri,
+                    contentDescription = stringResource(id = R.string.bucket_cover),
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(ratio = 1.0F)
                         .border(
                             width = SketchesDimens.MediaItemBorderThickness,
-                            color = if (bucketSelectedOnComposition) {
-                                MaterialTheme.colorScheme.onBackground
-                                    .copy(alpha = SketchesColors.UiAlphaLowTransparency)
-                            } else {
-                                MaterialTheme.colorScheme.onBackground
-                                    .copy(alpha = SketchesColors.UiAlphaHighTransparency)
-                            },
+                            color = MaterialTheme.colorScheme.onBackground
+                                .copy(alpha = SketchesColors.UiAlphaHighTransparency),
                             shape = MaterialTheme.shapes.extraSmall,
                         )
-                        .clip(shape = MaterialTheme.shapes.extraSmall)
-                ) {
-                    SketchesAsyncImage(
-                        uri = bucket.coverUri,
-                        contentDescription = stringResource(id = R.string.bucket_cover),
-                        modifier = Modifier.matchParentSize(),
-                        contentScale = ContentScale.Crop,
-                        enableLoadingIndicator = true,
-                        enableErrorIndicator = true,
-                    )
-                    if (bucketSelectedOnComposition) {
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .background(
-                                    color = MaterialTheme.colorScheme.background
-                                        .copy(alpha = SketchesColors.UiAlphaHighTransparency),
-                                ),
-                        )
-                    }
-                }
+                        .clip(shape = MaterialTheme.shapes.extraSmall),
+                    contentScale = ContentScale.Crop,
+                    enableLoadingIndicator = true,
+                    enableErrorIndicator = true,
+                )
                 Text(
                     text = bucket.name,
                     modifier = Modifier.padding(
@@ -412,5 +201,3 @@ private fun BucketsScreenLayout(
         }
     }
 }
-
-private const val ACTION_SHARE = "com.github.yuriybudiyev.sketches.feature.buckets.ui.ACTION_SHARE"

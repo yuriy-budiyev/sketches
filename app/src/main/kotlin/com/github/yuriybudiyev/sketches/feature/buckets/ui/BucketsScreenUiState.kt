@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
 sealed interface BucketsScreenUiState {
 
@@ -33,10 +32,7 @@ sealed interface BucketsScreenUiState {
 
     data object Loading: BucketsScreenUiState
 
-    data class Buckets(
-        val buckets: List<MediaStoreBucket>,
-        val selectedFiles: List<MediaStoreFile>,
-    ): BucketsScreenUiState
+    data class Buckets(val buckets: List<MediaStoreBucket>): BucketsScreenUiState
 
     data class Error(val thrown: Throwable): BucketsScreenUiState
 }
