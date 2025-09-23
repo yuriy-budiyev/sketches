@@ -34,7 +34,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshots.SnapshotStateSet
@@ -63,15 +62,6 @@ fun SketchesMediaGrid(
     val filesUpdated by rememberUpdatedState(files)
     val selectedFilesUpdated by rememberUpdatedState(selectedFiles)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
-    LaunchedEffect(files) {
-        if (selectedFiles.isNotEmpty()) {
-            if (files.isNotEmpty()) {
-                selectedFiles.retainAll(files)
-            } else {
-                selectedFiles.clear()
-            }
-        }
-    }
     SketchesLazyGrid(
         modifier = modifier,
         overlayTop = overlayTop,
