@@ -63,18 +63,6 @@ class BucketsScreenViewModel @Inject constructor(
     val uiState: StateFlow<BucketsScreenUiState>
         get() = uiStateInternal
 
-    private fun makeUpdatedBucketsState(
-        oldState: BucketsScreenUiState,
-        newBuckets: List<MediaStoreBucket>? = null,
-        newSelectedFiles: List<MediaStoreFile>? = null,
-    ): BucketsScreenUiState.Buckets {
-        val oldBucketsState = oldState as? BucketsScreenUiState.Buckets
-        return BucketsScreenUiState.Buckets(
-            buckets = newBuckets ?: oldBucketsState?.buckets ?: emptyList(),
-            selectedFiles = newSelectedFiles ?: oldBucketsState?.selectedFiles ?: emptyList(),
-        )
-    }
-
     fun updateBuckets(silent: Boolean = uiState.value is BucketsScreenUiState.Buckets) {
         updateBucketsJob?.cancel()
         updateBucketsJob = viewModelScope.launch {
