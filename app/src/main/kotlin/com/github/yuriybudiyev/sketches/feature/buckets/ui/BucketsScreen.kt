@@ -104,6 +104,11 @@ fun BucketsRoute(
             viewModel.updateMediaAccess()
         }
     }
+    DisposableEffect(viewModel) {
+        onDispose {
+            viewModel.clearSelectedFiles()
+        }
+    }
     BucketsScreen(
         uiState = uiState,
         onBucketClick = onBucketClick,
@@ -136,12 +141,6 @@ fun BucketsScreen(
     var selectedFiles by remember { mutableStateOf<List<MediaStoreFile>>(emptyList()) }
     LaunchedEffect(uiState) {
         selectedFiles = (uiState as? BucketsScreenUiState.Buckets)?.selectedFiles ?: emptyList()
-    }
-    LaunchedEffect(Unit) {
-        snapshotFlow { selectedBuckets.toSet() }.collect { buckets ->
-            selectedFiles = emptyList()
-            onSelectionChangedUpdated(buckets)
-        }
     }
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
@@ -202,6 +201,11 @@ fun BucketsScreen(
                     onBucketClick = onBucketClick,
                     modifier = Modifier.matchParentSize(),
                 )
+                LaunchedEffect(Unit) {
+                    snapshotFlow { selectedBuckets.toSet() }.collect { buckets ->
+                        onSelectionChangedUpdated(buckets)
+                    }
+                }
             }
             is BucketsScreenUiState.Error -> {
                 SketchesErrorMessage(

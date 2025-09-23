@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.LinkedList
 import javax.inject.Inject
 
 @HiltViewModel
@@ -75,18 +76,30 @@ class BucketsScreenViewModel @Inject constructor(
     }
 
     fun updateBuckets(silent: Boolean = uiState.value is BucketsScreenUiState.Buckets) {
-        updateJob?.cancel()
-        updateJob = viewModelScope.launch {
+        updateBucketsJob?.cancel()
+        updateBucketsJob = viewModelScope.launch {
             if (!silent) {
                 uiStateInternal.value = BucketsScreenUiState.Loading
             }
             try {
                 val buckets = withContext(dispatchers.io) { getMediaBuckets() }
                 if (buckets.isNotEmpty()) {
-                    uiStateInternal.value = makeUpdatedBucketsState(
-                        oldState = uiStateInternal.value,
-                        newBuckets = buckets,
-                    )
+                    val oldState = uiStateInternal.value
+                    val selectedBuckets = selectedBuckets
+                    if (!selectedBuckets.isNullOrEmpty() && oldState is BucketsScreenUiState.Buckets) {
+                        val sb = LinkedList(selectedBuckets)
+                        sb.retainAll(HashSet(buckets))
+                        val sf = withContext(dispatchers.io) { getBucketsContent(sb) }
+                        uiStateInternal.value = BucketsScreenUiState.Buckets(
+                            buckets = buckets,
+                            selectedFiles = sf,
+                        )
+                    } else {
+                        uiStateInternal.value = BucketsScreenUiState.Buckets(
+                            buckets = buckets,
+                            selectedFiles = emptyList(),
+                        )
+                    }
                 } else {
                     uiStateInternal.value = BucketsScreenUiState.Empty
                 }
@@ -99,32 +112,48 @@ class BucketsScreenViewModel @Inject constructor(
         }
     }
 
-    fun updateSelectedFiles(buckets: Collection<MediaStoreBucket>) {
-        selectedFilesJob?.cancel()
-        selectedFilesJob = viewModelScope.launch {
+    fun clearSelectedFiles() {
+        selectedBuckets = null
+        updateSelectedFilesJob?.cancel()
+        updateSelectedFilesJob = viewModelScope.launch {
             try {
-                if (buckets.isEmpty()) {
-                    uiStateInternal.value = makeUpdatedBucketsState(
-                        oldState = uiStateInternal.value,
-                        newSelectedFiles = emptyList(),
-                    )
-                } else {
-                    val files = withContext(dispatchers.io) { getBucketsContent(buckets) }
-                    uiStateInternal.value = makeUpdatedBucketsState(
-                        oldState = uiStateInternal.value,
-                        newSelectedFiles = files,
+                val oldState = uiStateInternal.value
+                if (oldState is BucketsScreenUiState.Buckets) {
+                    if (oldState.selectedFiles.isNotEmpty()) {
+                        uiStateInternal.value = BucketsScreenUiState.Buckets(
+                            buckets = oldState.buckets,
+                            selectedFiles = emptyList()
+                        )
+                    }
+                }
+            } catch (_: CancellationException) {
+            } catch (_: Exception) {
+            }
+        }
+    }
+
+    fun updateSelectedFiles(buckets: Collection<MediaStoreBucket>) {
+        selectedBuckets = buckets
+        updateSelectedFilesJob?.cancel()
+        updateSelectedFilesJob = viewModelScope.launch {
+            try {
+                val files = withContext(dispatchers.io) { getBucketsContent(buckets) }
+                val olsState = uiStateInternal.value
+                if (olsState is BucketsScreenUiState.Buckets) {
+                    uiStateInternal.value = BucketsScreenUiState.Buckets(
+                        buckets = olsState.buckets,
+                        selectedFiles = files,
                     )
                 }
             } catch (_: CancellationException) {
-            } catch (e: Exception) {
-                uiStateInternal.value = BucketsScreenUiState.Error(e)
+            } catch (_: Exception) {
             }
         }
     }
 
     fun deleteMedia(files: Collection<MediaStoreFile>) {
-        deleteJob?.cancel()
-        deleteJob = viewModelScope.launch {
+        deleteMediaJob?.cancel()
+        deleteMediaJob = viewModelScope.launch {
             try {
                 withContext(dispatchers.io) {
                     deleteMediaFiles(files)
@@ -140,7 +169,8 @@ class BucketsScreenViewModel @Inject constructor(
         updateBuckets()
     }
 
-    private var updateJob: Job? = null
-    private var selectedFilesJob: Job? = null
-    private var deleteJob: Job? = null
+    private var updateBucketsJob: Job? = null
+    private var updateSelectedFilesJob: Job? = null
+    private var deleteMediaJob: Job? = null
+    private var selectedBuckets: Collection<MediaStoreBucket>? = null
 }
