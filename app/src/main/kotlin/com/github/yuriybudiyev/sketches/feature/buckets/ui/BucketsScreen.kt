@@ -62,6 +62,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -69,7 +70,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
+import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAsyncImage
@@ -128,6 +131,9 @@ fun BucketsScreen(
     val onSelectionChangedUpdated by rememberUpdatedState(onSelectionChanged)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     val selectedBuckets = rememberSaveable { SnapshotStateSet<MediaStoreBucket>() }
+    val selectedFilesUpdated by rememberUpdatedState(
+        (uiState as? BucketsScreenUiState.Buckets)?.selectedFiles ?: emptyList()
+    )
     LaunchedEffect(selectedBuckets) {
         snapshotFlow { selectedBuckets.toSet() }.collect { buckets ->
             onSelectionChangedUpdated(buckets)
@@ -198,13 +204,18 @@ fun BucketsScreen(
             backgroundColor = MaterialTheme.colorScheme.background
                 .copy(alpha = SketchesColors.UiAlphaLowTransparency),
         ) {
-            if (selectedBuckets.isNotEmpty()) {
+            val selectedFiles = selectedFilesUpdated
+            if (selectedFiles.isNotEmpty()) {
                 SketchesAppBarActionButton(
                     icon = SketchesIcons.Delete,
                     description = stringResource(id = R.string.delete_selected),
                     onClick = {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             coroutineScope.launch {
+                                deleteRequestLauncher.launchDeleteMediaRequest(
+                                    contextUpdated,
+                                    selectedFiles.map { file -> file.uri.toUri() }
+                                )
                             }
                         } else {
                             deleteDialogVisible = true
@@ -217,6 +228,13 @@ fun BucketsScreen(
                     description = shareDescription,
                     onClick = {
                         coroutineScope.launch {
+                            val shareInfo = selectedFiles.toShareInfo()
+                            shareManagerUpdated.startChooserActivity(
+                                uris = shareInfo.uris,
+                                mimeType = shareInfo.mimeType,
+                                chooserTitle = shareDescription,
+                                listenerAction = ACTION_SHARE,
+                            )
                         }
                     },
                 )
@@ -226,6 +244,7 @@ fun BucketsScreen(
             SketchesDeleteConfirmationDialog(
                 onDelete = {
                     deleteDialogVisible = false
+                    onDeleteMediaUpdated(selectedFilesUpdated)
                     coroutineScope.launch {
                         selectedBuckets.clear()
                     }
