@@ -48,6 +48,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -110,6 +111,7 @@ fun BucketsRoute(
             coroutineScope.launch {
                 viewModel.updateSelectedFiles(buckets)
             }
+            true
         },
         onDeleteMedia = { files ->
             coroutineScope.launch {
@@ -123,7 +125,7 @@ fun BucketsRoute(
 fun BucketsScreen(
     uiState: BucketsScreenUiState,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
-    onSelectionChanged: (buckets: Collection<MediaStoreBucket>) -> Unit,
+    onSelectionChanged: (buckets: Collection<MediaStoreBucket>) -> Boolean,
     onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -135,9 +137,15 @@ fun BucketsScreen(
     val selectedFilesUpdated by rememberUpdatedState(
         (uiState as? BucketsScreenUiState.Buckets)?.selectedFiles ?: emptyList()
     )
-    LaunchedEffect(selectedBuckets) {
+    var selectedFilesUpdating by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
         snapshotFlow { selectedBuckets.toSet() }.collect { buckets ->
-            onSelectionChangedUpdated(buckets)
+            selectedFilesUpdating = onSelectionChangedUpdated(buckets)
+        }
+    }
+    LaunchedEffect(Unit) {
+        snapshotFlow { selectedFilesUpdated }.collect {
+            selectedFilesUpdating = false
         }
     }
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
@@ -226,15 +234,17 @@ fun BucketsScreen(
                     icon = SketchesIcons.Delete,
                     description = stringResource(id = R.string.delete_selected),
                     onClick = {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            coroutineScope.launch {
-                                deleteRequestLauncher.launchDeleteMediaRequest(
-                                    contextUpdated,
-                                    selectedFiles.map { file -> file.uri.toUri() }
-                                )
+                        if (!selectedFilesUpdating) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                coroutineScope.launch {
+                                    deleteRequestLauncher.launchDeleteMediaRequest(
+                                        contextUpdated,
+                                        selectedFiles.map { file -> file.uri.toUri() }
+                                    )
+                                }
+                            } else {
+                                deleteDialogVisible = true
                             }
-                        } else {
-                            deleteDialogVisible = true
                         }
                     },
                 )
@@ -243,14 +253,16 @@ fun BucketsScreen(
                     icon = SketchesIcons.Share,
                     description = shareDescription,
                     onClick = {
-                        coroutineScope.launch {
-                            val shareInfo = selectedFiles.toShareInfo()
-                            shareManagerUpdated.startChooserActivity(
-                                uris = shareInfo.uris,
-                                mimeType = shareInfo.mimeType,
-                                chooserTitle = shareDescription,
-                                listenerAction = ACTION_SHARE,
-                            )
+                        if (!selectedFilesUpdating) {
+                            coroutineScope.launch {
+                                val shareInfo = selectedFiles.toShareInfo()
+                                shareManagerUpdated.startChooserActivity(
+                                    uris = shareInfo.uris,
+                                    mimeType = shareInfo.mimeType,
+                                    chooserTitle = shareDescription,
+                                    listenerAction = ACTION_SHARE,
+                                )
+                            }
                         }
                     },
                 )
