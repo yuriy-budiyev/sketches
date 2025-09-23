@@ -45,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -177,9 +178,19 @@ fun BucketsScreen(
                     text = stringResource(id = R.string.no_buckets_found),
                     modifier = Modifier.matchParentSize(),
                 )
+                SideEffect {
+                    if (selectedBuckets.isNotEmpty()) {
+                        selectedBuckets.clear()
+                    }
+                }
             }
             is BucketsScreenUiState.Loading -> {
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
+                SideEffect {
+                    if (selectedBuckets.isNotEmpty()) {
+                        selectedBuckets.clear()
+                    }
+                }
             }
             is BucketsScreenUiState.Buckets -> {
                 BucketsScreenLayout(
@@ -192,8 +203,13 @@ fun BucketsScreen(
             is BucketsScreenUiState.Error -> {
                 SketchesErrorMessage(
                     thrown = uiState.thrown,
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier.matchParentSize(),
                 )
+                SideEffect {
+                    if (selectedBuckets.isNotEmpty()) {
+                        selectedBuckets.clear()
+                    }
+                }
             }
         }
         SketchesTopAppBar(

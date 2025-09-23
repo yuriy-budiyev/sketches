@@ -43,6 +43,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -158,9 +159,19 @@ fun BucketScreen(
                     text = stringResource(id = R.string.no_images_found),
                     modifier = Modifier.matchParentSize(),
                 )
+                SideEffect {
+                    if (selectedFiles.isNotEmpty()) {
+                        selectedFiles.clear()
+                    }
+                }
             }
             is BucketScreenUiState.Loading -> {
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
+                SideEffect {
+                    if (selectedFiles.isNotEmpty()) {
+                        selectedFiles.clear()
+                    }
+                }
             }
             is BucketScreenUiState.Bucket -> {
                 BucketScreenLayout(
@@ -175,6 +186,11 @@ fun BucketScreen(
                     thrown = uiState.thrown,
                     modifier = Modifier.matchParentSize(),
                 )
+                SideEffect {
+                    if (selectedFiles.isNotEmpty()) {
+                        selectedFiles.clear()
+                    }
+                }
             }
         }
         SketchesTopAppBar(

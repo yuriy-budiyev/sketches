@@ -38,6 +38,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -149,9 +150,19 @@ fun ImagesScreen(
                     text = stringResource(id = R.string.no_images_found),
                     modifier = Modifier.matchParentSize(),
                 )
+                SideEffect {
+                    if (selectedFiles.isNotEmpty()) {
+                        selectedFiles.clear()
+                    }
+                }
             }
             is ImagesScreenUiState.Loading -> {
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
+                SideEffect {
+                    if (selectedFiles.isNotEmpty()) {
+                        selectedFiles.clear()
+                    }
+                }
             }
             is ImagesScreenUiState.Images -> {
                 SketchesMediaGrid(
@@ -166,8 +177,13 @@ fun ImagesScreen(
             is ImagesScreenUiState.Error -> {
                 SketchesErrorMessage(
                     thrown = uiState.thrown,
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier.matchParentSize(),
                 )
+                SideEffect {
+                    if (selectedFiles.isNotEmpty()) {
+                        selectedFiles.clear()
+                    }
+                }
             }
         }
         SketchesTopAppBar(
