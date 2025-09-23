@@ -51,6 +51,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -101,7 +102,7 @@ fun BucketsRoute(
     BucketsScreen(
         uiState = uiState,
         onBucketClick = onBucketClick,
-        onDeleteBuckets = { buckets ->
+        onSelectionChanged = { buckets ->
             coroutineScope.launch {
                 viewModel.updateSelectedFiles(buckets)
             }
@@ -118,15 +119,20 @@ fun BucketsRoute(
 fun BucketsScreen(
     uiState: BucketsScreenUiState,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
-    onDeleteBuckets: (buckets: Collection<MediaStoreBucket>) -> Unit,
+    onSelectionChanged: (buckets: Collection<MediaStoreBucket>) -> Unit,
     onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val contextUpdated by rememberUpdatedState(LocalContext.current)
     val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
-    val onDeleteBucketsUpdated by rememberUpdatedState(onDeleteBuckets)
+    val onSelectionChangedUpdated by rememberUpdatedState(onSelectionChanged)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     val selectedBuckets = rememberSaveable { SnapshotStateSet<MediaStoreBucket>() }
+    LaunchedEffect(selectedBuckets) {
+        snapshotFlow { selectedBuckets.toSet() }.collect { buckets ->
+            onSelectionChangedUpdated(buckets)
+        }
+    }
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
