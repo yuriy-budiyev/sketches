@@ -111,7 +111,6 @@ fun BucketsRoute(
             coroutineScope.launch {
                 viewModel.updateSelectedFiles(buckets)
             }
-            true
         },
         onDeleteMedia = { files ->
             coroutineScope.launch {
@@ -125,7 +124,7 @@ fun BucketsRoute(
 fun BucketsScreen(
     uiState: BucketsScreenUiState,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
-    onSelectionChanged: (buckets: Collection<MediaStoreBucket>) -> Boolean,
+    onSelectionChanged: (buckets: Collection<MediaStoreBucket>) -> Unit,
     onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -134,18 +133,14 @@ fun BucketsScreen(
     val onSelectionChangedUpdated by rememberUpdatedState(onSelectionChanged)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     val selectedBuckets = rememberSaveable { SnapshotStateSet<MediaStoreBucket>() }
-    val selectedFilesUpdated by rememberUpdatedState(
-        (uiState as? BucketsScreenUiState.Buckets)?.selectedFiles ?: emptyList()
-    )
-    var selectedFilesUpdating by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        snapshotFlow { selectedBuckets.toSet() }.collect { buckets ->
-            selectedFilesUpdating = onSelectionChangedUpdated(buckets)
-        }
+    var selectedFiles by remember { mutableStateOf<List<MediaStoreFile>>(emptyList()) }
+    LaunchedEffect(uiState) {
+        selectedFiles = (uiState as? BucketsScreenUiState.Buckets)?.selectedFiles ?: emptyList()
     }
     LaunchedEffect(Unit) {
-        snapshotFlow { selectedFilesUpdated }.collect {
-            selectedFilesUpdating = false
+        snapshotFlow { selectedBuckets.toSet() }.collect { buckets ->
+            selectedFiles = emptyList()
+            onSelectionChangedUpdated(buckets)
         }
     }
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
@@ -228,23 +223,20 @@ fun BucketsScreen(
             backgroundColor = MaterialTheme.colorScheme.background
                 .copy(alpha = SketchesColors.UiAlphaLowTransparency),
         ) {
-            val selectedFiles = selectedFilesUpdated
             if (selectedFiles.isNotEmpty()) {
                 SketchesAppBarActionButton(
                     icon = SketchesIcons.Delete,
                     description = stringResource(id = R.string.delete_selected),
                     onClick = {
-                        if (!selectedFilesUpdating) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                coroutineScope.launch {
-                                    deleteRequestLauncher.launchDeleteMediaRequest(
-                                        contextUpdated,
-                                        selectedFiles.map { file -> file.uri.toUri() }
-                                    )
-                                }
-                            } else {
-                                deleteDialogVisible = true
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            coroutineScope.launch {
+                                deleteRequestLauncher.launchDeleteMediaRequest(
+                                    contextUpdated,
+                                    selectedFiles.map { file -> file.uri.toUri() }
+                                )
                             }
+                        } else {
+                            deleteDialogVisible = true
                         }
                     },
                 )
@@ -253,16 +245,14 @@ fun BucketsScreen(
                     icon = SketchesIcons.Share,
                     description = shareDescription,
                     onClick = {
-                        if (!selectedFilesUpdating) {
-                            coroutineScope.launch {
-                                val shareInfo = selectedFiles.toShareInfo()
-                                shareManagerUpdated.startChooserActivity(
-                                    uris = shareInfo.uris,
-                                    mimeType = shareInfo.mimeType,
-                                    chooserTitle = shareDescription,
-                                    listenerAction = ACTION_SHARE,
-                                )
-                            }
+                        coroutineScope.launch {
+                            val shareInfo = selectedFiles.toShareInfo()
+                            shareManagerUpdated.startChooserActivity(
+                                uris = shareInfo.uris,
+                                mimeType = shareInfo.mimeType,
+                                chooserTitle = shareDescription,
+                                listenerAction = ACTION_SHARE,
+                            )
                         }
                     },
                 )
@@ -272,7 +262,7 @@ fun BucketsScreen(
             SketchesDeleteConfirmationDialog(
                 onDelete = {
                     deleteDialogVisible = false
-                    onDeleteMediaUpdated(selectedFilesUpdated)
+                    onDeleteMediaUpdated(selectedFiles)
                     coroutineScope.launch {
                         selectedBuckets.clear()
                     }
