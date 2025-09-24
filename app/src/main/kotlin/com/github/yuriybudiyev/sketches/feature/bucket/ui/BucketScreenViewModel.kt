@@ -81,6 +81,7 @@ class BucketScreenViewModel @Inject constructor(
                     uiStateInternal.value = BucketScreenUiState.Empty
                 }
             } catch (_: CancellationException) {
+                // Do nothing
             } catch (e: Exception) {
                 if (!silent) {
                     uiStateInternal.value = BucketScreenUiState.Error(e)
@@ -97,6 +98,7 @@ class BucketScreenViewModel @Inject constructor(
                     deleteMediaFiles(files)
                 }
             } catch (_: CancellationException) {
+                // Do nothing
             } catch (e: Exception) {
                 uiStateInternal.value = BucketScreenUiState.Error(e)
             }

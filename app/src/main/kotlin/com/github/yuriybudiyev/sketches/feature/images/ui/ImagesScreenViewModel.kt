@@ -73,6 +73,7 @@ class ImagesScreenViewModel @Inject constructor(
                     uiStateInternal.value = ImagesScreenUiState.Empty
                 }
             } catch (_: CancellationException) {
+                // Do nothing
             } catch (e: Exception) {
                 if (!silent) {
                     uiStateInternal.value = ImagesScreenUiState.Error(e)
@@ -89,6 +90,7 @@ class ImagesScreenViewModel @Inject constructor(
                     deleteMediaFiles(files)
                 }
             } catch (_: CancellationException) {
+                // Do nothing
             } catch (e: Exception) {
                 uiStateInternal.value = ImagesScreenUiState.Error(e)
             }

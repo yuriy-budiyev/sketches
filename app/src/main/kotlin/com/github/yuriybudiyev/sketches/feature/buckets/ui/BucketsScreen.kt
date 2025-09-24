@@ -50,7 +50,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
@@ -69,8 +71,8 @@ fun BucketsRoute(
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
     viewModel: BucketsScreenViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val coroutineScope = rememberCoroutineScope()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(viewModel) {
         viewModel.updateBuckets()
     }
@@ -82,6 +84,16 @@ fun BucketsRoute(
     BucketsScreen(
         uiState = uiState,
         onBucketClick = onBucketClick,
+        onShareBuckets = { buckets ->
+            coroutineScope.launch {
+                viewModel.startSharingBuckets(buckets)
+            }
+        },
+        onDeleteBuckets = { buckets ->
+            coroutineScope.launch {
+                viewModel.startDeletingBuckets(buckets)
+            }
+        },
     )
 }
 
@@ -89,7 +101,31 @@ fun BucketsRoute(
 fun BucketsScreen(
     uiState: BucketsScreenUiState,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
+    onShareBuckets: (buckets: Collection<MediaStoreBucket>) -> Unit,
+    onDeleteBuckets: (buckets: Collection<MediaStoreBucket>) -> Unit,
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(
+        uiState,
+        lifecycleOwner,
+    ) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            if (uiState is BucketsScreenUiState.Buckets) {
+                val action = uiState.action.consume()
+                when (action) {
+                    is BucketsScreenUiState.Buckets.Action.Share -> {
+                        // Show sharing UI
+                    }
+                    is BucketsScreenUiState.Buckets.Action.Delete -> {
+                        // Show deletion UI
+                    }
+                    else -> {
+                        // Do nothing
+                    }
+                }
+            }
+        }
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         when (uiState) {
             is BucketsScreenUiState.Empty -> {

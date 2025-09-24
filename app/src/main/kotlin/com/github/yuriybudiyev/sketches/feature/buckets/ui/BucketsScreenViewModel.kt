@@ -26,7 +26,11 @@ package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.github.yuriybudiyev.sketches.core.consumable.Consumable
 import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.domain.GetBucketsContentUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaBucketsUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,6 +49,7 @@ class BucketsScreenViewModel @Inject constructor(
     context: Context,
     private val dispatchers: SketchesCoroutineDispatchers,
     private val getMediaBuckets: GetMediaBucketsUseCase,
+    private val getBucketsContent: GetBucketsContentUseCase,
 ): MediaObservingViewModel(
     context,
     dispatchers,
@@ -57,15 +62,26 @@ class BucketsScreenViewModel @Inject constructor(
         get() = uiStateInternal
 
     fun updateBuckets(silent: Boolean = uiState.value is BucketsScreenUiState.Buckets) {
-        updateBucketsJob?.cancel()
-        updateBucketsJob = viewModelScope.launch {
+        updateJob?.cancel()
+        updateJob = viewModelScope.launch {
             if (!silent) {
                 uiStateInternal.value = BucketsScreenUiState.Loading
             }
             try {
                 val buckets = withContext(dispatchers.io) { getMediaBuckets() }
                 if (buckets.isNotEmpty()) {
-                    uiStateInternal.value = BucketsScreenUiState.Buckets(buckets)
+                    val oldValue = uiStateInternal.value
+                    if (oldValue is BucketsScreenUiState.Buckets) {
+                        uiStateInternal.value = BucketsScreenUiState.Buckets(
+                            buckets = buckets,
+                            action = oldValue.action,
+                        )
+                    } else {
+                        uiStateInternal.value = BucketsScreenUiState.Buckets(
+                            buckets = buckets,
+                            action = Consumable.consumed(),
+                        )
+                    }
                 } else {
                     uiStateInternal.value = BucketsScreenUiState.Empty
                 }
@@ -79,9 +95,43 @@ class BucketsScreenViewModel @Inject constructor(
         }
     }
 
+    private inline fun startBucketsAction(
+        buckets: Collection<MediaStoreBucket>,
+        crossinline action: (files: List<MediaStoreFile>) -> BucketsScreenUiState.Buckets.Action,
+    ) {
+        actionJob?.cancel()
+        actionJob = viewModelScope.launch {
+            try {
+                val files = withContext(dispatchers.io) { getBucketsContent(buckets) }
+                if (files.isNotEmpty()) {
+                    val oldState = uiStateInternal.value
+                    if (oldState is BucketsScreenUiState.Buckets) {
+                        uiStateInternal.value = BucketsScreenUiState.Buckets(
+                            buckets = oldState.buckets,
+                            action = Consumable.from(action(files)),
+                        )
+                    }
+                }
+            } catch (_: CancellationException) {
+                // Do nothing
+            } catch (_: Exception) {
+                // Do nothing
+            }
+        }
+    }
+
+    fun startSharingBuckets(buckets: Collection<MediaStoreBucket>) {
+        startBucketsAction(buckets) { files -> BucketsScreenUiState.Buckets.Action.Share(files) }
+    }
+
+    fun startDeletingBuckets(buckets: Collection<MediaStoreBucket>) {
+        startBucketsAction(buckets) { files -> BucketsScreenUiState.Buckets.Action.Delete(files) }
+    }
+
     override fun onMediaChanged() {
         updateBuckets()
     }
 
-    private var updateBucketsJob: Job? = null
+    private var updateJob: Job? = null
+    private var actionJob: Job? = null
 }

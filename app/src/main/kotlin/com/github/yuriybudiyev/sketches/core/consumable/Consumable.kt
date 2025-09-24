@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Yuriy Budiyev
+ * Copyright (c) 2025 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,30 +22,34 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.feature.buckets.ui
+package com.github.yuriybudiyev.sketches.core.consumable
 
-import com.github.yuriybudiyev.sketches.core.consumable.Consumable
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+class Consumable<T> private constructor(value: T) {
 
-sealed interface BucketsScreenUiState {
+    val isConsumed: Boolean
+        get() = valueInternal === Consumed
 
-    data object Empty: BucketsScreenUiState
-
-    data object Loading: BucketsScreenUiState
-
-    data class Buckets(
-        val buckets: List<MediaStoreBucket>,
-        val action: Consumable<Action>,
-    ): BucketsScreenUiState {
-
-        sealed interface Action {
-
-            data class Share(val files: List<MediaStoreFile>): Action
-
-            data class Delete(val files: List<MediaStoreFile>): Action
+    @Suppress("UNCHECKED_CAST")
+    fun consume(): T? {
+        if (valueInternal === Consumed) {
+            return null
         }
+        val value = valueInternal
+        valueInternal = Consumed
+        return value as T?
     }
 
-    data class Error(val thrown: Throwable): BucketsScreenUiState
+    private var valueInternal: Any? = value
+
+    private object Consumed
+
+    companion object {
+
+        fun <T> from(value: T): Consumable<T> =
+            Consumable(value)
+
+        @Suppress("UNCHECKED_CAST")
+        fun <T> consumed(): Consumable<T> =
+            Consumable(Consumed) as Consumable<T>
+    }
 }
