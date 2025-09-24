@@ -24,6 +24,13 @@
 
 package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
+import android.app.Activity
+import android.os.Build
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.component1
+import androidx.activity.result.component2
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -35,17 +42,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -55,15 +69,22 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
+import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
+import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
+import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
+import kotlinx.coroutines.launch
 
 @Composable
 fun BucketsRoute(
@@ -100,6 +121,44 @@ fun BucketsScreen(
     onDeleteBuckets: (buckets: Collection<MediaStoreBucket>) -> Unit,
     onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val contextUpdated by rememberUpdatedState(LocalContext.current)
+    val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
+    val onShareBucketsUpdated by rememberUpdatedState(onShareBuckets)
+    val onDeleteBucketsUpdated by rememberUpdatedState(onDeleteBuckets)
+    val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
+    val selectedBuckets = rememberSaveable { SnapshotStateSet<MediaStoreBucket>() }
+    val deleteDialogFiles = rememberSaveable { SnapshotStateList<MediaStoreFile>() }
+    val deleteRequestLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult(),
+        onResult = { (resultCode, _) ->
+            if (resultCode == Activity.RESULT_OK) {
+                coroutineScope.launch {
+                    selectedBuckets.clear()
+                }
+            }
+        },
+    )
+    DisposableEffect(Unit) {
+        shareManagerUpdated.registerOnSharedListener(ACTION_SHARE) {
+            coroutineScope.launch {
+                selectedBuckets.clear()
+            }
+        }
+        onDispose {
+            shareManagerUpdated.unregisterOnSharedListener(ACTION_SHARE)
+        }
+    }
+    LaunchedEffect(Unit) {
+        if (selectedBuckets.isEmpty()) {
+            deleteDialogFiles.clear()
+        }
+    }
+    BackHandler(selectedBuckets.isNotEmpty()) {
+        coroutineScope.launch {
+            selectedBuckets.clear()
+        }
+    }
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(
         uiState,
@@ -110,10 +169,26 @@ fun BucketsScreen(
                 val action = uiState.action.consume()
                 when (action) {
                     is BucketsScreenUiState.Buckets.Action.Share -> {
-                        // Show sharing UI
+                        val shareInfo = action.files.toShareInfo()
+                        shareManagerUpdated.startChooserActivity(
+                            uris = shareInfo.uris,
+                            mimeType = shareInfo.mimeType,
+                            chooserTitle = contextUpdated.getString(R.string.share_selected),
+                            listenerAction = ACTION_SHARE,
+                        )
                     }
                     is BucketsScreenUiState.Buckets.Action.Delete -> {
-                        // Show deletion UI
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            deleteRequestLauncher.launchDeleteMediaRequest(
+                                contextUpdated,
+                                action.files.map { file -> file.uri.toUri() }
+                            )
+                        } else {
+                            if (deleteDialogFiles.isNotEmpty()) {
+                                deleteDialogFiles.clear()
+                            }
+                            deleteDialogFiles.addAll(action.files)
+                        }
                     }
                     else -> {
                         // Do nothing
@@ -154,7 +229,41 @@ fun BucketsScreen(
             text = stringResource(id = BucketsRoute.titleRes),
             backgroundColor = MaterialTheme.colorScheme.background
                 .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-        )
+        ) {
+            if (selectedBuckets.isNotEmpty()) {
+                SketchesAppBarActionButton(
+                    icon = SketchesIcons.Delete,
+                    description = stringResource(id = R.string.delete_selected),
+                    onClick = {
+                        onShareBucketsUpdated(selectedBuckets.toSet())
+                    },
+                )
+                val shareDescription = stringResource(id = R.string.share_selected)
+                SketchesAppBarActionButton(
+                    icon = SketchesIcons.Share,
+                    description = shareDescription,
+                    onClick = {
+                        onDeleteBucketsUpdated(selectedBuckets.toSet())
+                    },
+                )
+            }
+        }
+        if (deleteDialogFiles.isNotEmpty()) {
+            SketchesDeleteConfirmationDialog(
+                onDelete = {
+                    onDeleteMediaUpdated(deleteDialogFiles.toList())
+                    coroutineScope.launch {
+                        deleteDialogFiles.clear()
+                        selectedBuckets.clear()
+                    }
+                },
+                onDismiss = {
+                    coroutineScope.launch {
+                        deleteDialogFiles.clear()
+                    }
+                },
+            )
+        }
     }
 }
 
@@ -233,3 +342,5 @@ private fun BucketsScreenLayout(
         }
     }
 }
+
+private const val ACTION_SHARE = "com.github.yuriybudiyev.sketches.feature.buckets.ui.ACTION_SHARE"

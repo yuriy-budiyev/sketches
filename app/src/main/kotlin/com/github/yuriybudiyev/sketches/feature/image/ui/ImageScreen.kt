@@ -267,7 +267,7 @@ private fun ImageScreenLayout(
                     }
                 },
             )
-            val shareDescription = stringResource(R.string.share_image)
+            val shareDescription = stringResource(id = R.string.share_image)
             SketchesAppBarActionButton(
                 icon = SketchesIcons.Share,
                 description = shareDescription,
