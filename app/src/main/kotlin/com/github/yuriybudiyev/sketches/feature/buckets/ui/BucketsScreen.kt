@@ -37,7 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,6 +54,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
@@ -64,36 +64,31 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndica
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
-import kotlinx.coroutines.launch
 
 @Composable
 fun BucketsRoute(
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
     viewModel: BucketsScreenViewModel = hiltViewModel(),
 ) {
-    val coroutineScope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(viewModel) {
         viewModel.updateBuckets()
     }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        coroutineScope.launch {
-            viewModel.updateMediaAccess()
-        }
+        viewModel.updateMediaAccess()
     }
     BucketsScreen(
         uiState = uiState,
         onBucketClick = onBucketClick,
         onShareBuckets = { buckets ->
-            coroutineScope.launch {
-                viewModel.startSharingBuckets(buckets)
-            }
+            viewModel.startSharingBuckets(buckets)
         },
         onDeleteBuckets = { buckets ->
-            coroutineScope.launch {
-                viewModel.startDeletingBuckets(buckets)
-            }
+            viewModel.startDeletingBuckets(buckets)
         },
+        onDeleteMedia = { files ->
+            viewModel.deleteMedia(files)
+        }
     )
 }
 
@@ -103,6 +98,7 @@ fun BucketsScreen(
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
     onShareBuckets: (buckets: Collection<MediaStoreBucket>) -> Unit,
     onDeleteBuckets: (buckets: Collection<MediaStoreBucket>) -> Unit,
+    onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(

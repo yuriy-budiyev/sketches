@@ -85,7 +85,6 @@ fun BucketRoute(
     viewModel: BucketScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(
         bucketId,
         viewModel,
@@ -93,18 +92,14 @@ fun BucketRoute(
         viewModel.updateMedia(bucketId)
     }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        coroutineScope.launch {
-            viewModel.updateMediaAccess()
-        }
+        viewModel.updateMediaAccess()
     }
     BucketScreen(
         name = bucketName,
         uiState = uiState,
         onImageClick = onImageClick,
         onDeleteMedia = { files ->
-            coroutineScope.launch {
-                viewModel.deleteMedia(files)
-            }
+            viewModel.deleteMedia(files)
         }
     )
 }

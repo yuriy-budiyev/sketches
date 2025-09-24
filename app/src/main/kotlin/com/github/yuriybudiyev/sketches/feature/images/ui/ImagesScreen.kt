@@ -79,23 +79,18 @@ fun ImagesRoute(
     viewModel: ImagesScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(viewModel) {
         viewModel.updateMedia()
     }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        coroutineScope.launch {
-            viewModel.updateMediaAccess()
-        }
+        viewModel.updateMediaAccess()
     }
     ImagesScreen(
         uiState = uiState,
         onRequestUserSelectedMedia = onRequestUserSelectedMedia,
         onImageClick = onImageClick,
         onDeleteMedia = { files ->
-            coroutineScope.launch {
-                viewModel.deleteMedia(files)
-            }
+            viewModel.deleteMedia(files)
         }
     )
 }
