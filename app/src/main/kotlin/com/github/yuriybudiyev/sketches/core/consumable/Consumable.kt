@@ -33,16 +33,17 @@ class Consumable<T> private constructor(value: T) {
     fun consume(): T? {
         var value = valueInternal
         if (value === Consumed) {
-            return null
-        }
-        synchronized(consumeLock) {
-            value = valueInternal
-            if (value === Consumed) {
-                return null
+            value = null
+        } else {
+            synchronized(consumeLock) {
+                value = valueInternal
+                valueInternal = Consumed
+                if (value === Consumed) {
+                    value = null
+                }
             }
-            valueInternal = Consumed
-            return value as T?
         }
+        return value as T?
     }
 
     @Volatile
