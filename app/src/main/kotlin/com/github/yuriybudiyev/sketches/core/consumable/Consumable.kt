@@ -31,7 +31,7 @@ class Consumable<T> private constructor(value: T) {
 
     @Suppress("UNCHECKED_CAST")
     fun consume(): T? {
-        var value = valueInternal
+        var value: Any? = valueInternal
         if (value === Consumed) {
             value = null
         } else {
