@@ -31,8 +31,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.component1
 import androidx.activity.result.component2
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -44,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -204,13 +206,30 @@ fun BucketsScreen(
                     text = stringResource(id = R.string.no_buckets_found),
                     modifier = Modifier.matchParentSize(),
                 )
+                SideEffect {
+                    if (selectedBuckets.isNotEmpty()) {
+                        selectedBuckets.clear()
+                    }
+                    if (deleteDialogFiles.isNotEmpty()) {
+                        deleteDialogFiles.clear()
+                    }
+                }
             }
             is BucketsScreenUiState.Loading -> {
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
+                SideEffect {
+                    if (selectedBuckets.isNotEmpty()) {
+                        selectedBuckets.clear()
+                    }
+                    if (deleteDialogFiles.isNotEmpty()) {
+                        deleteDialogFiles.clear()
+                    }
+                }
             }
             is BucketsScreenUiState.Buckets -> {
                 BucketsScreenLayout(
                     buckets = uiState.buckets,
+                    selectedBuckets = selectedBuckets,
                     onBucketClick = onBucketClick,
                     modifier = Modifier.matchParentSize(),
                 )
@@ -220,6 +239,14 @@ fun BucketsScreen(
                     thrown = uiState.thrown,
                     modifier = Modifier.matchParentSize()
                 )
+                SideEffect {
+                    if (selectedBuckets.isNotEmpty()) {
+                        selectedBuckets.clear()
+                    }
+                    if (deleteDialogFiles.isNotEmpty()) {
+                        deleteDialogFiles.clear()
+                    }
+                }
             }
         }
         SketchesTopAppBar(
@@ -235,7 +262,7 @@ fun BucketsScreen(
                     icon = SketchesIcons.Delete,
                     description = stringResource(id = R.string.delete_selected),
                     onClick = {
-                        onShareBucketsUpdated(selectedBuckets.toSet())
+                        onDeleteBucketsUpdated(selectedBuckets.toSet())
                     },
                 )
                 val shareDescription = stringResource(id = R.string.share_selected)
@@ -243,7 +270,7 @@ fun BucketsScreen(
                     icon = SketchesIcons.Share,
                     description = shareDescription,
                     onClick = {
-                        onDeleteBucketsUpdated(selectedBuckets.toSet())
+                        onShareBucketsUpdated(selectedBuckets.toSet())
                     },
                 )
             }
@@ -270,10 +297,12 @@ fun BucketsScreen(
 @Composable
 private fun BucketsScreenLayout(
     buckets: List<MediaStoreBucket>,
+    selectedBuckets: SnapshotStateSet<MediaStoreBucket>,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val bucketsUpdated by rememberUpdatedState(buckets)
+    val selectedBucketsUpdated by rememberUpdatedState(selectedBuckets)
     val onBucketClickUpdated by rememberUpdatedState(onBucketClick)
     SketchesLazyGrid(
         modifier = modifier,
@@ -285,33 +314,74 @@ private fun BucketsScreenLayout(
             key = { index -> bucketsUpdated[index].id },
         ) { index ->
             val bucket = bucketsUpdated[index]
+            val bucketSelectedOnComposition = bucket in selectedBucketsUpdated
             Column(
                 modifier = Modifier
-                    .clip(shape = MaterialTheme.shapes.extraSmall)
-                    .clickable {
-                        onBucketClickUpdated(
-                            index,
-                            bucket,
-                        )
-                    },
+                    .combinedClickable(
+                        onLongClick = {
+                            if (selectedBucketsUpdated.isEmpty()) {
+                                selectedBucketsUpdated.add(bucket)
+                            } else {
+                                if (selectedBucketsUpdated.contains(bucket)) {
+                                    selectedBucketsUpdated.clear()
+                                } else {
+                                    selectedBucketsUpdated.addAll(bucketsUpdated)
+                                }
+                            }
+                        },
+                        onClick = {
+                            if (selectedBucketsUpdated.isNotEmpty()) {
+                                if (selectedBucketsUpdated.contains(bucket)) {
+                                    selectedBucketsUpdated.remove(bucket)
+                                } else {
+                                    selectedBucketsUpdated.add(bucket)
+                                }
+                            } else {
+                                onBucketClickUpdated(
+                                    index,
+                                    bucket,
+                                )
+                            }
+                        },
+                    )
+                    .clip(shape = MaterialTheme.shapes.extraSmall),
             ) {
-                SketchesAsyncImage(
-                    uri = bucket.coverUri,
-                    contentDescription = stringResource(id = R.string.bucket_cover),
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(ratio = 1.0F)
                         .border(
                             width = SketchesDimens.MediaItemBorderThickness,
-                            color = MaterialTheme.colorScheme.onBackground
-                                .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                            color = if (bucketSelectedOnComposition) {
+                                MaterialTheme.colorScheme.onBackground
+                                    .copy(alpha = SketchesColors.UiAlphaLowTransparency)
+                            } else {
+                                MaterialTheme.colorScheme.onBackground
+                                    .copy(alpha = SketchesColors.UiAlphaHighTransparency)
+                            },
                             shape = MaterialTheme.shapes.extraSmall,
                         )
-                        .clip(shape = MaterialTheme.shapes.extraSmall),
-                    contentScale = ContentScale.Crop,
-                    enableLoadingIndicator = true,
-                    enableErrorIndicator = true,
-                )
+                        .clip(shape = MaterialTheme.shapes.extraSmall)
+                ) {
+                    SketchesAsyncImage(
+                        uri = bucket.coverUri,
+                        contentDescription = stringResource(id = R.string.bucket_cover),
+                        modifier = Modifier.matchParentSize(),
+                        contentScale = ContentScale.Crop,
+                        enableLoadingIndicator = true,
+                        enableErrorIndicator = true,
+                    )
+                    if (bucketSelectedOnComposition) {
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .background(
+                                    color = MaterialTheme.colorScheme.background
+                                        .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                                ),
+                        )
+                    }
+                }
                 Text(
                     text = bucket.name,
                     modifier = Modifier.padding(
