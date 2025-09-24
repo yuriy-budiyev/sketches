@@ -31,15 +31,24 @@ class Consumable<T> private constructor(value: T) {
 
     @Suppress("UNCHECKED_CAST")
     fun consume(): T? {
-        if (valueInternal === Consumed) {
+        var value = valueInternal
+        if (value === Consumed) {
             return null
         }
-        val value = valueInternal
-        valueInternal = Consumed
-        return value as T?
+        synchronized(consumeLock) {
+            value = valueInternal
+            if (value === Consumed) {
+                return null
+            }
+            valueInternal = Consumed
+            return value as T?
+        }
     }
 
+    @Volatile
     private var valueInternal: Any? = value
+
+    private val consumeLock: Any = Any()
 
     private object Consumed
 
