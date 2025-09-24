@@ -37,9 +37,10 @@ class Consumable<T> private constructor(value: T) {
         } else {
             synchronized(consumeLock) {
                 value = valueInternal
-                valueInternal = Consumed
                 if (value === Consumed) {
                     value = null
+                } else {
+                    valueInternal = Consumed
                 }
             }
         }
