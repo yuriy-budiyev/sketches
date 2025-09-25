@@ -183,7 +183,7 @@ fun BucketsScreen(
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             deleteRequestLauncher.launchDeleteMediaRequest(
                                 contextUpdated,
-                                action.files.map { file -> file.uri.toUri() }
+                                action.files.map { file -> file.uri.toUri() },
                             )
                         } else {
                             if (deleteDialogFiles.isNotEmpty()) {

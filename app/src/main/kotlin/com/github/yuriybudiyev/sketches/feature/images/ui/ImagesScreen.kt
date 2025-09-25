@@ -207,7 +207,7 @@ fun ImagesScreen(
                             coroutineScope.launch {
                                 deleteRequestLauncher.launchDeleteMediaRequest(
                                     contextUpdated,
-                                    selectedFiles.map { it.uri.toUri() }
+                                    selectedFiles.map { file -> file.uri.toUri() },
                                 )
                             }
                         } else {
