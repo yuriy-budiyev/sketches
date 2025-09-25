@@ -50,7 +50,9 @@ class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
             try {
                 r.get()
             } catch (_: CancellationException) {
+                // Do nothing
             } catch (_: InterruptedException) {
+                // Do nothing
             } catch (e: ExecutionException) {
                 throw RuntimeException(e.cause)
             }
@@ -68,7 +70,7 @@ class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
         override fun newThread(r: Runnable): Thread =
             ImageLoaderThread(
                 r,
-                "image-loader-${counter.getAndIncrement()}"
+                "image-loader-${counter.getAndIncrement()}",
             )
 
         private val counter: AtomicLong = AtomicLong(1L)
@@ -79,7 +81,7 @@ class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
         name: String,
     ): Thread(
         target,
-        name
+        name,
     ) {
 
         override fun run() {
