@@ -53,7 +53,7 @@ enum class MediaType(
             MediaStore.Video.Media.EXTERNAL_CONTENT_URI
         },
         mimeType = "video/*",
-    )
+    ),
 }
 
 @RequiresApi(Build.VERSION_CODES.R)
