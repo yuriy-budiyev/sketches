@@ -35,7 +35,9 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -45,6 +47,7 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 @Composable
 fun SketchesLazyGrid(
     modifier: Modifier = Modifier,
+    state: LazyGridState = rememberLazyGridState(),
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
     content: LazyGridScope.() -> Unit,
@@ -84,6 +87,7 @@ fun SketchesLazyGrid(
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = SketchesDimens.LazyGridItemSize),
         modifier = modifier,
+        state = state,
         contentPadding = PaddingValues(
             start = startPadding,
             top = topPadding,

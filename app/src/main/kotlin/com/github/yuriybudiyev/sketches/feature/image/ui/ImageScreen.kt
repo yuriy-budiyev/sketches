@@ -78,6 +78,8 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.navigation.LocalNavController
+import com.github.yuriybudiyev.sketches.core.navigation.setNavResult
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
@@ -95,6 +97,8 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.ui.utils.animateScrollToItemCentered
 import kotlinx.coroutines.launch
+
+const val NAV_IMAGE_SCREEN_CURRENT_INDEX = "current_index"
 
 @Composable
 fun ImageRoute(
@@ -120,6 +124,7 @@ fun ImageRoute(
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.updateMediaAccess()
     }
+    val navControllerUpdated by rememberUpdatedState(LocalNavController.current)
     ImageScreen(
         uiState = uiState,
         onChange = { index, file ->
@@ -127,6 +132,10 @@ fun ImageRoute(
                 index,
                 file.id,
                 bucketIdUpdated,
+            )
+            navControllerUpdated.setNavResult(
+                key = NAV_IMAGE_SCREEN_CURRENT_INDEX,
+                value = index,
             )
         },
         onDelete = { _, file ->

@@ -30,6 +30,8 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -56,6 +58,7 @@ fun SketchesMediaGrid(
     selectedFiles: SnapshotStateSet<MediaStoreFile>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
+    state: LazyGridState = rememberLazyGridState(),
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
@@ -64,6 +67,7 @@ fun SketchesMediaGrid(
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
     SketchesLazyGrid(
         modifier = modifier,
+        state = state,
         overlayTop = overlayTop,
         overlayBottom = overlayBottom,
     ) {
