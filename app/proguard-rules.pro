@@ -19,17 +19,3 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
-
-# Coroutines
--keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
--keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
--keepclassmembers class kotlinx.coroutines.** {
-    volatile <fields>;
-}
--keepclassmembers class kotlin.coroutines.SafeContinuation {
-    volatile <fields>;
-}
--dontwarn java.lang.ClassValue
-
-#Okio
--dontwarn org.codehaus.mojo.animal_sniffer.*
