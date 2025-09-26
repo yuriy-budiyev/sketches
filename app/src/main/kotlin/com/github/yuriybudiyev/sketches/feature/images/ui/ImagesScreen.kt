@@ -155,9 +155,7 @@ fun ImagesScreen(
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             val index = navController.getNavResult<Int>(NAV_IMAGE_SCREEN_CURRENT_INDEX)
             if (index != null) {
-                if (mediaGridState.layoutInfo.visibleItemsInfo.none { info -> info.index == index }) {
-                    mediaGridState.scrollToItemClosestEdge(index)
-                }
+                mediaGridState.scrollToItemClosestEdge(index)
             }
         }
     }
