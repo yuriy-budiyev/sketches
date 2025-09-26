@@ -80,7 +80,7 @@ suspend fun LazyGridState.scrollToItemClosestEdge(
         Orientation.Vertical -> layoutInfo.viewportSize.height
         Orientation.Horizontal -> layoutInfo.viewportSize.width
     }
-    val paddedViewportSize = orientationAwareViewportSize
+    val viewportSizeWithAppliedPaddings = orientationAwareViewportSize
         .minus(layoutInfo.beforeContentPadding)
         .minus(layoutInfo.afterContentPadding)
     if (onlyIfItemAtIndexIsNotVisible && itemAtIndex != null) {
@@ -94,7 +94,7 @@ suspend fun LazyGridState.scrollToItemClosestEdge(
         }
         if (
             orientationAwareItemOffset >= 0
-            && orientationAwareItemOffset + orientationAwareItemSize <= paddedViewportSize
+            && orientationAwareItemOffset + orientationAwareItemSize <= viewportSizeWithAppliedPaddings
         ) {
             return
         }
@@ -111,8 +111,7 @@ suspend fun LazyGridState.scrollToItemClosestEdge(
     val lastItem = layoutInfo.visibleItemsInfo.lastOrNull()
     if (firstItem != null && lastItem != null && firstItem !== lastItem) {
         if (index > firstItem.index + (lastItem.index - firstItem.index) / 2) {
-
-            offset = paddedViewportSize
+            offset = viewportSizeWithAppliedPaddings
                 .minus(orientationAwareItemSize)
                 .unaryMinus()
         }
