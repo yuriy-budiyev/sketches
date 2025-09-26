@@ -35,12 +35,13 @@ import androidx.compose.ui.unit.IntSize
 suspend fun LazyListState.scrollToItemCentered(
     index: Int,
     animate: Boolean = false,
-    itemSize: suspend (layoutInfo: LazyListLayoutInfo, index: Int) -> Int = { layoutInfo, index ->
-        val visibleItemsInfo = layoutInfo.visibleItemsInfo
-        visibleItemsInfo.find { it.index == index }?.size
-            ?: visibleItemsInfo.firstOrNull()?.size
-            ?: 0
-    },
+    itemSize: suspend (layoutInfo: LazyListLayoutInfo, index: Int) -> Int =
+        { layoutInfo, index ->
+            val visibleItemsInfo = layoutInfo.visibleItemsInfo
+            visibleItemsInfo.find { it.index == index }?.size
+                ?: visibleItemsInfo.firstOrNull()?.size
+                ?: 0
+        },
 ) {
     val orientationAwareViewportSize = when (layoutInfo.orientation) {
         Orientation.Vertical -> layoutInfo.viewportSize.height
