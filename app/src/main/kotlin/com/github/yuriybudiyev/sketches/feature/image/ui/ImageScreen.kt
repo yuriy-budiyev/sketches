@@ -168,7 +168,7 @@ fun ImageScreen(
             is ImageScreenUiState.Error -> {
                 SketchesErrorMessage(
                     thrown = uiState.thrown,
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier.matchParentSize(),
                 )
             }
         }
