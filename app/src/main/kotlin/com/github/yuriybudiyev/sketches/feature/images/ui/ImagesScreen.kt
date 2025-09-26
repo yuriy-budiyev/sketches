@@ -74,6 +74,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndica
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
+import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemCentered
 import com.github.yuriybudiyev.sketches.feature.image.ui.NAV_IMAGE_SCREEN_CURRENT_INDEX
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesRoute
 import kotlinx.coroutines.launch
@@ -154,7 +155,9 @@ fun ImagesScreen(
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             val index = navController.getNavResult<Int>(NAV_IMAGE_SCREEN_CURRENT_INDEX)
             if (index != null) {
-                mediaGridState.scrollToItem(index)
+                if (mediaGridState.layoutInfo.visibleItemsInfo.none { info -> info.index == index }) {
+                    mediaGridState.scrollToItemCentered(index)
+                }
             }
         }
     }

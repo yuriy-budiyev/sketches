@@ -25,19 +25,73 @@
 package com.github.yuriybudiyev.sketches.core.ui.utils
 
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.lazy.LazyListLayoutInfo
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.LazyGridLayoutInfo
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.ui.unit.IntSize
 
-suspend fun LazyListState.animateScrollToItemCentered(
+suspend inline fun LazyListState.scrollToItemCentered(
     index: Int,
-    sizePx: Int,
+    animate: Boolean = false,
+    itemSize: (layoutInfo: LazyListLayoutInfo) -> Int = { layoutInfo ->
+        layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: 0
+    },
 ) {
-    with(layoutInfo) {
+    val orientationAwareViewportSize = when (layoutInfo.orientation) {
+        Orientation.Vertical -> layoutInfo.viewportSize.height
+        Orientation.Horizontal -> layoutInfo.viewportSize.width
+    }
+    val offset = orientationAwareViewportSize
+        .minus(layoutInfo.beforeContentPadding)
+        .minus(layoutInfo.afterContentPadding)
+        .minus(itemSize(layoutInfo))
+        .div(2)
+        .unaryMinus()
+    if (animate) {
         animateScrollToItem(
-            index,
-            beforeContentPadding + sizePx / 2 - when (orientation) {
-                Orientation.Vertical -> viewportSize.height
-                Orientation.Horizontal -> viewportSize.width
-            } / 2
+            index = index,
+            scrollOffset = offset,
+        )
+    } else {
+        scrollToItem(
+            index = index,
+            scrollOffset = offset,
+        )
+    }
+}
+
+suspend inline fun LazyGridState.scrollToItemCentered(
+    index: Int,
+    animate: Boolean = false,
+    itemSize: (layoutInfo: LazyGridLayoutInfo) -> IntSize = { layoutInfo ->
+        layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: IntSize.Zero
+    },
+) {
+    val orientationAwareViewportSize = when (layoutInfo.orientation) {
+        Orientation.Vertical -> layoutInfo.viewportSize.height
+        Orientation.Horizontal -> layoutInfo.viewportSize.width
+    }
+    val itemSize = itemSize(layoutInfo)
+    val orientationAwareItemSize = when (layoutInfo.orientation) {
+        Orientation.Vertical -> itemSize.height
+        Orientation.Horizontal -> itemSize.width
+    }
+    val offset = orientationAwareViewportSize
+        .minus(layoutInfo.beforeContentPadding)
+        .minus(layoutInfo.afterContentPadding)
+        .minus(orientationAwareItemSize)
+        .div(2)
+        .unaryMinus()
+    if (animate) {
+        animateScrollToItem(
+            index = index,
+            scrollOffset = offset,
+        )
+    } else {
+        scrollToItem(
+            index = index,
+            scrollOffset = offset,
         )
     }
 }

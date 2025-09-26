@@ -30,7 +30,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -69,7 +68,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -95,7 +93,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaPl
 import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
-import com.github.yuriybudiyev.sketches.core.ui.utils.animateScrollToItemCentered
+import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemCentered
 import kotlinx.coroutines.launch
 
 const val NAV_IMAGE_SCREEN_CURRENT_INDEX = "current_index"
@@ -202,7 +200,6 @@ private fun ImageScreenLayout(
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState(currentIndex) { filesUpdated.size }
     val barState = rememberLazyListState(currentIndex)
-    val barItemSize = with(LocalDensity.current) { SketchesDimens.MediaBarItemSize.roundToPx() }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { },
@@ -223,9 +220,9 @@ private fun ImageScreenLayout(
                 filesUpdated[page],
             )
             coroutineScope.launch {
-                barState.animateScrollToItemCentered(
-                    page,
-                    barItemSize,
+                barState.scrollToItemCentered(
+                    index = page,
+                    animate = true,
                 )
             }
         }
@@ -447,7 +444,6 @@ private fun MediaBar(
             alignment = Alignment.CenterHorizontally,
         ),
         verticalAlignment = Alignment.CenterVertically,
-        flingBehavior = rememberSnapFlingBehavior(state),
     ) {
         items(
             count = itemsUpdated.size,
