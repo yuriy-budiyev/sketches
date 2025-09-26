@@ -25,20 +25,18 @@
 package com.github.yuriybudiyev.sketches.core.ui.utils
 
 import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.lazy.LazyListLayoutInfo
+import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridItemInfo
-import androidx.compose.foundation.lazy.grid.LazyGridLayoutInfo
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.ui.unit.IntSize
 
 suspend fun LazyListState.scrollToItemCentered(
     index: Int,
     animate: Boolean = false,
-    itemSize: suspend (layoutInfo: LazyListLayoutInfo, index: Int) -> Int =
-        { layoutInfo, index ->
-            val visibleItemsInfo = layoutInfo.visibleItemsInfo
-            visibleItemsInfo.find { it.index == index }?.size
+    itemSize: suspend (visibleItemsInfo: List<LazyListItemInfo>, index: Int) -> Int =
+        { visibleItemsInfo, index ->
+            visibleItemsInfo.find { item -> item.index == index }?.size
                 ?: visibleItemsInfo.firstOrNull()?.size
                 ?: 0
         },
@@ -52,7 +50,7 @@ suspend fun LazyListState.scrollToItemCentered(
         .minus(layoutInfo.afterContentPadding)
         .minus(
             itemSize(
-                layoutInfo,
+                layoutInfo.visibleItemsInfo,
                 index,
             )
         )
@@ -75,10 +73,7 @@ suspend fun LazyGridState.scrollToItemClosestEdge(
     index: Int,
     animate: Boolean = false,
     onlyIfItemAtIndexIsNotVisible: Boolean = true,
-    itemSize: suspend (layoutInfo: LazyGridLayoutInfo, itemInfo: LazyGridItemInfo?) -> IntSize =
-        { layoutInfo, itemInfo ->
-            itemInfo?.size ?: IntSize.Zero
-        },
+    itemSize: suspend (item: LazyGridItemInfo?) -> IntSize = { item -> item?.size ?: IntSize.Zero },
 ) {
     val firstItem = layoutInfo.visibleItemsInfo.firstOrNull()
     val itemAtIndex = layoutInfo.visibleItemsInfo.find { info -> info.index == index }
@@ -105,10 +100,7 @@ suspend fun LazyGridState.scrollToItemClosestEdge(
             return
         }
     }
-    val itemSize = itemSize(
-        layoutInfo,
-        itemAtIndex ?: firstItem,
-    )
+    val itemSize = itemSize(itemAtIndex ?: firstItem)
     val orientationAwareItemSize = when (layoutInfo.orientation) {
         Orientation.Vertical -> itemSize.height
         Orientation.Horizontal -> itemSize.width
