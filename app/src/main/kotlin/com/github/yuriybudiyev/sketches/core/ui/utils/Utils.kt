@@ -61,7 +61,7 @@ suspend inline fun LazyListState.scrollToItemCentered(
     }
 }
 
-suspend inline fun LazyGridState.scrollToItemCentered(
+suspend inline fun LazyGridState.scrollToItemClosestEdge(
     index: Int,
     animate: Boolean = false,
     itemSize: (layoutInfo: LazyGridLayoutInfo) -> IntSize = { layoutInfo ->
@@ -77,12 +77,15 @@ suspend inline fun LazyGridState.scrollToItemCentered(
         Orientation.Vertical -> itemSize.height
         Orientation.Horizontal -> itemSize.width
     }
-    val offset = orientationAwareViewportSize
-        .minus(layoutInfo.beforeContentPadding)
-        .minus(layoutInfo.afterContentPadding)
-        .minus(orientationAwareItemSize)
-        .div(2)
-        .unaryMinus()
+    var offset = 0
+    val lastItem = layoutInfo.visibleItemsInfo.lastOrNull()
+    if (lastItem != null && index > lastItem.index) {
+        offset = orientationAwareViewportSize
+            .minus(layoutInfo.beforeContentPadding)
+            .minus(layoutInfo.afterContentPadding)
+            .minus(orientationAwareItemSize)
+            .unaryMinus()
+    }
     if (animate) {
         animateScrollToItem(
             index = index,

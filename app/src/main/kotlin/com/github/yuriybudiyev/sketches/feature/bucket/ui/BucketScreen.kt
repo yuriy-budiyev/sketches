@@ -81,7 +81,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndica
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
-import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemCentered
+import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemClosestEdge
 import com.github.yuriybudiyev.sketches.feature.image.ui.NAV_IMAGE_SCREEN_CURRENT_INDEX
 import kotlinx.coroutines.launch
 
@@ -166,7 +166,7 @@ fun BucketScreen(
             val index = navController.getNavResult<Int>(NAV_IMAGE_SCREEN_CURRENT_INDEX)
             if (index != null) {
                 if (mediaGridState.layoutInfo.visibleItemsInfo.none { info -> info.index == index }) {
-                    mediaGridState.scrollToItemCentered(index)
+                    mediaGridState.scrollToItemClosestEdge(index)
                 }
             }
         }
