@@ -199,7 +199,11 @@ fun BucketsScreen(
             }
         }
     }
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background),
+    ) {
         when (uiState) {
             is BucketsScreenUiState.Empty -> {
                 SketchesCenteredMessage(

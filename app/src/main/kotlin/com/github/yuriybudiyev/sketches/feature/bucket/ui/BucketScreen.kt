@@ -169,7 +169,11 @@ fun BucketScreen(
             }
         }
     }
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background),
+    ) {
         when (uiState) {
             is BucketScreenUiState.Empty -> {
                 SketchesCenteredMessage(
