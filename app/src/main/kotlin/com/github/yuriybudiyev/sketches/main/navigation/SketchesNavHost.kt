@@ -57,7 +57,7 @@ fun SketchesNavHost(
                 onImageClick = { index, image ->
                     navController.navigateToImageScreen(
                         imageIndex = index,
-                        imageId = image.id
+                        imageId = image.id,
                     )
                 },
                 onRequestUserSelectedMedia = onRequestUserSelectedMedia,
