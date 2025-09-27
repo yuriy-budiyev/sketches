@@ -114,9 +114,9 @@ fun ImageRoute(
         viewModel,
     ) {
         viewModel.updateMedia(
-            fileIndex,
-            fileId,
-            bucketId,
+            fileIndex = fileIndex,
+            fileId = fileId,
+            bucketId = bucketId,
         )
     }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
@@ -127,9 +127,9 @@ fun ImageRoute(
         uiState = uiState,
         onChange = { index, file ->
             viewModel.setCurrentMediaData(
-                index,
-                file.id,
-                bucketIdUpdated,
+                fileIndex = index,
+                fileId = file.id,
+                bucketId = bucketIdUpdated,
             )
             navControllerUpdated.setNavResult(
                 key = NAV_IMAGE_SCREEN_CURRENT_INDEX,
