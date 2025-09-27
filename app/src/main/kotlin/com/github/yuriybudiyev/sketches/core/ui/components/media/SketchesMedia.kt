@@ -25,6 +25,9 @@
 package com.github.yuriybudiyev.sketches.core.ui.components.media
 
 import android.view.TextureView
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -40,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +51,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.yuriybudiyev.sketches.R
@@ -59,7 +64,9 @@ import kotlin.math.roundToLong
 @Composable
 fun SketchesMediaPlayer(
     state: SketchesMediaState,
+    controllerVisible: Boolean,
     modifier: Modifier = Modifier,
+    controllerBottomPadding: Dp = 0.dp,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     controlsBackgroundColor: Color = backgroundColor
         .copy(alpha = SketchesColors.UiAlphaHighTransparency),
@@ -67,6 +74,7 @@ fun SketchesMediaPlayer(
     enableImagePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
+    val controllerVisibleUpdated by rememberUpdatedState(controllerVisible)
     Box(modifier = modifier) {
         SketchesMediaDisplay(
             state = state,
@@ -76,18 +84,30 @@ fun SketchesMediaPlayer(
             enableImagePlaceholder = enableImagePlaceholder,
             enableErrorIndicator = enableErrorIndicator
         )
-        SketchesMediaController(
-            state = state,
-            modifier = Modifier
-                .background(
-                    color = controlsBackgroundColor,
-                    shape = RectangleShape
-                )
-                .height(height = 64.dp)
-                .padding(horizontal = 4.dp)
-                .align(alignment = Alignment.BottomCenter),
-            color = controlsColor
-        )
+        AnimatedVisibility(
+            visible = controllerVisibleUpdated,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            SketchesMediaController(
+                state = state,
+                modifier = Modifier
+                    .padding(
+                        start = 0.dp,
+                        top = 0.dp,
+                        end = 0.dp,
+                        bottom = controllerBottomPadding,
+                    )
+                    .height(height = 64.dp)
+                    .background(
+                        color = controlsBackgroundColor,
+                        shape = RectangleShape
+                    )
+                    .padding(horizontal = 4.dp)
+                    .align(alignment = Alignment.BottomCenter),
+                color = controlsColor
+            )
+        }
     }
 }
 

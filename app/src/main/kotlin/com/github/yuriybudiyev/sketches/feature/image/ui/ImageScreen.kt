@@ -27,18 +27,27 @@ package com.github.yuriybudiyev.sketches.feature.image.ui
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -67,7 +76,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -77,6 +88,7 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavController
 import com.github.yuriybudiyev.sketches.core.navigation.setNavResult
+import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
@@ -199,6 +211,7 @@ private fun ImageScreenLayout(
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState(currentIndex) { filesUpdated.size }
     val barState = rememberLazyListState(currentIndex)
+    val systemBarsControllerUpdated by rememberUpdatedState(LocalSystemBarsController.current)
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { },
@@ -227,14 +240,36 @@ private fun ImageScreenLayout(
         }
     }
     Box(modifier = modifier) {
-        Column(modifier = Modifier.matchParentSize()) {
-            MediaPager(
-                state = pagerState,
-                items = filesUpdated,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1.0F),
-            )
+        MediaPager(
+            state = pagerState,
+            items = filesUpdated,
+            controllerVisible = systemBarsControllerUpdated.isSystemBarsVisible,
+            modifier = Modifier
+                .matchParentSize()
+                .clickable(
+                    interactionSource = null,
+                    indication = null,
+                ) {
+                    coroutineScope.launch {
+                        if (systemBarsControllerUpdated.isSystemBarsVisible) {
+                            systemBarsControllerUpdated.hideSystemBars()
+                        } else {
+                            systemBarsControllerUpdated.showSystemBars()
+                        }
+                    }
+                },
+        )
+        val layoutDirection = LocalLayoutDirection.current
+        val navBarsInsets = WindowInsets.navigationBars.asPaddingValues()
+        val startPadding = navBarsInsets.calculateStartPadding(layoutDirection)
+        val endPadding = navBarsInsets.calculateEndPadding(layoutDirection)
+        val bottomPadding = navBarsInsets.calculateBottomPadding()
+        AnimatedVisibility(
+            visible = systemBarsControllerUpdated.isSystemBarsVisible,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier.align(Alignment.BottomStart),
+        ) {
             MediaBar(
                 currentIndex = currentIndex,
                 state = barState,
@@ -245,48 +280,118 @@ private fun ImageScreenLayout(
                     }
                 },
                 modifier = Modifier
+                    .padding(bottom = bottomPadding)
+                    .background(
+                        color = MaterialTheme.colorScheme.background
+                            .copy(alpha = SketchesColors.UiAlphaHighTransparency)
+                    )
                     .height(SketchesDimens.BottomBarHeight)
                     .fillMaxWidth(),
             )
         }
-        SketchesTopAppBar(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .fillMaxWidth(),
-            backgroundColor = MaterialTheme.colorScheme.background
-                .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+        AnimatedVisibility(
+            visible = systemBarsControllerUpdated.isSystemBarsVisible,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier.align(Alignment.TopStart),
         ) {
-            SketchesAppBarActionButton(
-                icon = SketchesIcons.Delete,
-                description = stringResource(id = R.string.delete_image),
-                onClick = {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // windowInsets?
+            SketchesTopAppBar(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                /*.padding(
+                    start = startPadding,
+                    end = endPadding,
+                )*/
+                backgroundColor = MaterialTheme.colorScheme.background
+                    .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+            ) {
+                SketchesAppBarActionButton(
+                    icon = SketchesIcons.Delete,
+                    description = stringResource(id = R.string.delete_image),
+                    onClick = {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            coroutineScope.launch {
+                                deleteRequestLauncher.launchDeleteMediaRequest(
+                                    contextUpdated,
+                                    listOf(filesUpdated[currentIndex].uri.toUri()),
+                                )
+                            }
+                        } else {
+                            deleteDialogVisible = true
+                        }
+                    },
+                )
+                val shareDescription = stringResource(id = R.string.share_image)
+                SketchesAppBarActionButton(
+                    icon = SketchesIcons.Share,
+                    description = shareDescription,
+                    onClick = {
                         coroutineScope.launch {
-                            deleteRequestLauncher.launchDeleteMediaRequest(
-                                contextUpdated,
-                                listOf(filesUpdated[currentIndex].uri.toUri()),
+                            val file = filesUpdated[currentIndex]
+                            shareManagerUpdated.startChooserActivity(
+                                file.uri.toUri(),
+                                file.mimeType,
+                                shareDescription,
                             )
                         }
-                    } else {
-                        deleteDialogVisible = true
-                    }
-                },
-            )
-            val shareDescription = stringResource(id = R.string.share_image)
-            SketchesAppBarActionButton(
-                icon = SketchesIcons.Share,
-                description = shareDescription,
-                onClick = {
-                    coroutineScope.launch {
-                        val file = filesUpdated[currentIndex]
-                        shareManagerUpdated.startChooserActivity(
-                            file.uri.toUri(),
-                            file.mimeType,
-                            shareDescription,
+                    },
+                )
+            }
+        }
+        if (startPadding > 0.dp) {
+            AnimatedVisibility(
+                visible = systemBarsControllerUpdated.isSystemBarsVisible,
+                enter = fadeIn(),
+                exit = fadeOut(),
+                modifier = Modifier.align(Alignment.TopStart),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .width(startPadding)
+                        .fillMaxHeight()
+                        .background(
+                            color = MaterialTheme.colorScheme.background
+                                .copy(alpha = SketchesColors.UiAlphaHighTransparency)
                         )
-                    }
-                },
-            )
+                )
+            }
+        }
+        if (endPadding > 0.dp) {
+            AnimatedVisibility(
+                visible = systemBarsControllerUpdated.isSystemBarsVisible,
+                enter = fadeIn(),
+                exit = fadeOut(),
+                modifier = Modifier.align(Alignment.TopEnd),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .width(endPadding)
+                        .fillMaxHeight()
+                        .background(
+                            color = MaterialTheme.colorScheme.background
+                                .copy(alpha = SketchesColors.UiAlphaHighTransparency)
+                        )
+                )
+            }
+        }
+        if (bottomPadding > 0.dp) {
+            AnimatedVisibility(
+                visible = systemBarsControllerUpdated.isSystemBarsVisible,
+                enter = fadeIn(),
+                exit = fadeOut(),
+                modifier = Modifier.align(Alignment.BottomStart),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .height(bottomPadding)
+                        .fillMaxWidth()
+                        .background(
+                            color = MaterialTheme.colorScheme.background
+                                .copy(alpha = SketchesColors.UiAlphaHighTransparency)
+                        )
+                )
+            }
         }
         if (deleteDialogVisible) {
             SketchesDeleteConfirmationDialog(
@@ -309,9 +414,11 @@ private fun ImageScreenLayout(
 private fun MediaPager(
     state: PagerState,
     items: List<MediaStoreFile>,
+    controllerVisible: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val filesUpdated by rememberUpdatedState(items)
+    val controllerVisibleUpdated by rememberUpdatedState(controllerVisible)
     HorizontalPager(
         state = state,
         key = { page -> filesUpdated[page].id },
@@ -323,6 +430,7 @@ private fun MediaPager(
             number = page,
             fileUri = file.uri,
             fileType = file.mediaType,
+            controllerVisible = controllerVisibleUpdated,
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -335,6 +443,7 @@ private fun MediaPage(
     number: Int,
     fileUri: String,
     fileType: MediaType,
+    controllerVisible: Boolean,
     modifier: Modifier = Modifier,
 ) {
     when (fileType) {
@@ -349,6 +458,7 @@ private fun MediaPage(
                 state = state,
                 number = number,
                 fileUri = fileUri,
+                controllerVisible = controllerVisible,
                 modifier = modifier,
             )
         }
@@ -377,6 +487,7 @@ private fun VideoPage(
     state: PagerState,
     number: Int,
     fileUri: String,
+    controllerVisible: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val numberUpdated by rememberUpdatedState(number)
@@ -417,7 +528,9 @@ private fun VideoPage(
     }
     SketchesMediaPlayer(
         state = mediaState,
+        controllerVisible = controllerVisible,
         modifier = modifier,
+        controllerBottomPadding = SketchesDimens.BottomBarHeight,
         enableImagePlaceholder = false,
         enableErrorIndicator = true
     )

@@ -39,9 +39,17 @@ import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
+import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
+import com.github.yuriybudiyev.sketches.core.platform.bars.SystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.ShareManager
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
@@ -50,7 +58,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MainActivity: ComponentActivity(), ShareManager {
+class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +71,16 @@ class MainActivity: ComponentActivity(), ShareManager {
             window,
             window.decorView,
         )
+        insetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { view, windowInsets ->
+            isSystemBarsVisible = windowInsets.isVisible(WindowInsetsCompat.Type.navigationBars())
+                || windowInsets.isVisible(WindowInsetsCompat.Type.statusBars())
+            ViewCompat.onApplyWindowInsets(
+                view,
+                windowInsets,
+            )
+        }
         val darkTheme = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
             Configuration.UI_MODE_NIGHT_YES
         insetsController.isAppearanceLightStatusBars = !darkTheme
@@ -92,7 +110,10 @@ class MainActivity: ComponentActivity(), ShareManager {
             window.desiredHdrHeadroom = 1.5f
         }
         setContent {
-            CompositionLocalProvider(LocalShareManager provides this) {
+            CompositionLocalProvider(
+                LocalSystemBarsController provides this,
+                LocalShareManager provides this,
+            ) {
                 SketchesTheme {
                     SketchesApp()
                 }
@@ -109,6 +130,27 @@ class MainActivity: ComponentActivity(), ShareManager {
     override fun onDestroy() {
         unregisterReceiver(shareReceiver)
         super.onDestroy()
+    }
+
+    override var isSystemBarsVisible: Boolean by mutableStateOf(true)
+        private set
+
+    override fun showSystemBars() {
+        val insetsController = WindowCompat
+            .getInsetsController(
+                window,
+                window.decorView,
+            )
+        insetsController.show(WindowInsetsCompat.Type.systemBars())
+    }
+
+    override fun hideSystemBars() {
+        WindowCompat
+            .getInsetsController(
+                window,
+                window.decorView,
+            )
+            .hide(WindowInsetsCompat.Type.systemBars())
     }
 
     override fun startChooserActivity(

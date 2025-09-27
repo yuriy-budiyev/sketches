@@ -62,7 +62,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavController
-import com.github.yuriybudiyev.sketches.core.navigation.getNavResult
+import com.github.yuriybudiyev.sketches.core.navigation.collectNavResult
+import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
@@ -154,9 +155,21 @@ fun ImagesScreen(
         lifecycleOwner,
     ) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            val index = navController.getNavResult<Int>(NAV_IMAGE_SCREEN_CURRENT_INDEX)
-            if (index != null) {
-                mediaGridState.scrollToItemClosestEdge(index)
+            navController.collectNavResult<Int>(NAV_IMAGE_SCREEN_CURRENT_INDEX) { index ->
+                if (index != null) {
+                    mediaGridState.scrollToItemClosestEdge(index)
+                }
+            }
+        }
+    }
+    val systemBarsController = LocalSystemBarsController.current
+    LaunchedEffect(
+        systemBarsController,
+        lifecycleOwner,
+    ) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            if (!systemBarsController.isSystemBarsVisible) {
+                systemBarsController.showSystemBars()
             }
         }
     }

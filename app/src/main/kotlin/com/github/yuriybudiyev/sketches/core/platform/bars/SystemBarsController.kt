@@ -22,35 +22,19 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.navigation
+package com.github.yuriybudiyev.sketches.core.platform.bars
 
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.map
 
-suspend fun <T> NavController.collectNavResult(
-    key: String,
-    collector: FlowCollector<T?>,
-) {
-    currentBackStackEntryFlow
-        .map { entry -> entry.savedStateHandle.remove<T>(key) }
-        .collect(collector)
+interface SystemBarsController {
+
+    val isSystemBarsVisible: Boolean
+
+    fun showSystemBars()
+
+    fun hideSystemBars()
 }
 
-fun <T> NavController.setNavResult(
-    key: String,
-    value: T?,
-) {
-    previousBackStackEntry
-        ?.savedStateHandle
-        ?.set(
-            key = key,
-            value = value,
-        )
-}
-
-val LocalNavController: ProvidableCompositionLocal<NavHostController> =
-    staticCompositionLocalOf { error("CompositionLocal LocalNavController not present") }
+val LocalSystemBarsController: ProvidableCompositionLocal<SystemBarsController> =
+    staticCompositionLocalOf { error("CompositionLocal LocalSystemBarsController not present") }
