@@ -66,15 +66,20 @@ fun SketchesMediaPlayer(
     state: SketchesMediaState,
     controllerVisible: Boolean,
     modifier: Modifier = Modifier,
+    controllerStartPadding: Dp = 0.dp,
+    controllerEndPadding: Dp = 0.dp,
     controllerBottomPadding: Dp = 0.dp,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     controlsBackgroundColor: Color = backgroundColor
-        .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+        .copy(alpha = SketchesColors.UiAlphaLowTransparency),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
     enableImagePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
     val controllerVisibleUpdated by rememberUpdatedState(controllerVisible)
+    val controllerStartPaddingUpdated by rememberUpdatedState(controllerStartPadding)
+    val controllerEndPaddingUpdated by rememberUpdatedState(controllerEndPadding)
+    val controllerBottomPaddingUpdated by rememberUpdatedState(controllerBottomPadding)
     Box(modifier = modifier) {
         SketchesMediaDisplay(
             state = state,
@@ -88,15 +93,16 @@ fun SketchesMediaPlayer(
             visible = controllerVisibleUpdated,
             enter = fadeIn(),
             exit = fadeOut(),
+            modifier = Modifier.align(alignment = Alignment.BottomStart)
         ) {
             SketchesMediaController(
                 state = state,
                 modifier = Modifier
                     .padding(
-                        start = 0.dp,
+                        start = controllerStartPaddingUpdated,
                         top = 0.dp,
-                        end = 0.dp,
-                        bottom = controllerBottomPadding,
+                        end = controllerEndPaddingUpdated,
+                        bottom = controllerBottomPaddingUpdated,
                     )
                     .height(height = 64.dp)
                     .background(
@@ -104,8 +110,13 @@ fun SketchesMediaPlayer(
                         shape = RectangleShape
                     )
                     .padding(horizontal = 4.dp)
-                    .align(alignment = Alignment.BottomCenter),
-                color = controlsColor
+                    .clickable(
+                        interactionSource = null,
+                        indication = null,
+                    ) {
+                        // Do nothing
+                    },
+                color = controlsColor,
             )
         }
     }

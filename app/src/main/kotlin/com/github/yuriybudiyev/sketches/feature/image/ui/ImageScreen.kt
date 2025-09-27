@@ -40,14 +40,12 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -78,6 +76,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -240,12 +239,25 @@ private fun ImageScreenLayout(
         }
     }
     Box(modifier = modifier) {
+        val layoutDirection = LocalLayoutDirection.current
+        // consider other insets
+        val navBarsInsets = WindowInsets.navigationBars.asPaddingValues()
+        val startPadding = navBarsInsets.calculateStartPadding(layoutDirection)
+        val endPadding = navBarsInsets.calculateEndPadding(layoutDirection)
+        val bottomPadding = navBarsInsets.calculateBottomPadding()
         MediaPager(
             state = pagerState,
             items = filesUpdated,
             controllerVisible = systemBarsControllerUpdated.isSystemBarsVisible,
+            controllerStartPadding = 0.dp,
+            controllerEndPadding = 0.dp,
+            controllerBottomPadding = bottomPadding + SketchesDimens.BottomBarHeight,
             modifier = Modifier
                 .matchParentSize()
+                .padding(
+                    start = startPadding,
+                    end = endPadding,
+                )
                 .clickable(
                     interactionSource = null,
                     indication = null,
@@ -259,11 +271,6 @@ private fun ImageScreenLayout(
                     }
                 },
         )
-        val layoutDirection = LocalLayoutDirection.current
-        val navBarsInsets = WindowInsets.navigationBars.asPaddingValues()
-        val startPadding = navBarsInsets.calculateStartPadding(layoutDirection)
-        val endPadding = navBarsInsets.calculateEndPadding(layoutDirection)
-        val bottomPadding = navBarsInsets.calculateBottomPadding()
         AnimatedVisibility(
             visible = systemBarsControllerUpdated.isSystemBarsVisible,
             enter = fadeIn(),
@@ -280,10 +287,14 @@ private fun ImageScreenLayout(
                     }
                 },
                 modifier = Modifier
-                    .padding(bottom = bottomPadding)
+                    .padding(
+                        start = startPadding,
+                        end = endPadding,
+                        bottom = bottomPadding,
+                    )
                     .background(
                         color = MaterialTheme.colorScheme.background
-                            .copy(alpha = SketchesColors.UiAlphaHighTransparency)
+                            .copy(alpha = SketchesColors.UiAlphaLowTransparency)
                     )
                     .height(SketchesDimens.BottomBarHeight)
                     .fillMaxWidth(),
@@ -299,12 +310,8 @@ private fun ImageScreenLayout(
             SketchesTopAppBar(
                 modifier = Modifier
                     .fillMaxWidth(),
-                /*.padding(
-                    start = startPadding,
-                    end = endPadding,
-                )*/
                 backgroundColor = MaterialTheme.colorScheme.background
-                    .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                    .copy(alpha = SketchesColors.UiAlphaLowTransparency),
             ) {
                 SketchesAppBarActionButton(
                     icon = SketchesIcons.Delete,
@@ -339,42 +346,6 @@ private fun ImageScreenLayout(
                 )
             }
         }
-        if (startPadding > 0.dp) {
-            AnimatedVisibility(
-                visible = systemBarsControllerUpdated.isSystemBarsVisible,
-                enter = fadeIn(),
-                exit = fadeOut(),
-                modifier = Modifier.align(Alignment.TopStart),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .width(startPadding)
-                        .fillMaxHeight()
-                        .background(
-                            color = MaterialTheme.colorScheme.background
-                                .copy(alpha = SketchesColors.UiAlphaHighTransparency)
-                        )
-                )
-            }
-        }
-        if (endPadding > 0.dp) {
-            AnimatedVisibility(
-                visible = systemBarsControllerUpdated.isSystemBarsVisible,
-                enter = fadeIn(),
-                exit = fadeOut(),
-                modifier = Modifier.align(Alignment.TopEnd),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .width(endPadding)
-                        .fillMaxHeight()
-                        .background(
-                            color = MaterialTheme.colorScheme.background
-                                .copy(alpha = SketchesColors.UiAlphaHighTransparency)
-                        )
-                )
-            }
-        }
         if (bottomPadding > 0.dp) {
             AnimatedVisibility(
                 visible = systemBarsControllerUpdated.isSystemBarsVisible,
@@ -388,7 +359,7 @@ private fun ImageScreenLayout(
                         .fillMaxWidth()
                         .background(
                             color = MaterialTheme.colorScheme.background
-                                .copy(alpha = SketchesColors.UiAlphaHighTransparency)
+                                .copy(alpha = SketchesColors.UiAlphaLowTransparency)
                         )
                 )
             }
@@ -415,10 +386,16 @@ private fun MediaPager(
     state: PagerState,
     items: List<MediaStoreFile>,
     controllerVisible: Boolean,
+    controllerStartPadding: Dp,
+    controllerEndPadding: Dp,
+    controllerBottomPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
     val filesUpdated by rememberUpdatedState(items)
     val controllerVisibleUpdated by rememberUpdatedState(controllerVisible)
+    val controllerStartPaddingUpdated by rememberUpdatedState(controllerStartPadding)
+    val controllerEndPaddingUpdated by rememberUpdatedState(controllerEndPadding)
+    val controllerBottomPaddingUpdated by rememberUpdatedState(controllerBottomPadding)
     HorizontalPager(
         state = state,
         key = { page -> filesUpdated[page].id },
@@ -431,6 +408,9 @@ private fun MediaPager(
             fileUri = file.uri,
             fileType = file.mediaType,
             controllerVisible = controllerVisibleUpdated,
+            controllerStartPadding = controllerStartPaddingUpdated,
+            controllerEndPadding = controllerEndPaddingUpdated,
+            controllerBottomPadding = controllerBottomPaddingUpdated,
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -444,6 +424,9 @@ private fun MediaPage(
     fileUri: String,
     fileType: MediaType,
     controllerVisible: Boolean,
+    controllerStartPadding: Dp,
+    controllerEndPadding: Dp,
+    controllerBottomPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
     when (fileType) {
@@ -459,6 +442,9 @@ private fun MediaPage(
                 number = number,
                 fileUri = fileUri,
                 controllerVisible = controllerVisible,
+                controllerStartPadding = controllerStartPadding,
+                controllerEndPadding = controllerEndPadding,
+                controllerBottomPadding = controllerBottomPadding,
                 modifier = modifier,
             )
         }
@@ -488,6 +474,9 @@ private fun VideoPage(
     number: Int,
     fileUri: String,
     controllerVisible: Boolean,
+    controllerStartPadding: Dp,
+    controllerEndPadding: Dp,
+    controllerBottomPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
     val numberUpdated by rememberUpdatedState(number)
@@ -529,8 +518,10 @@ private fun VideoPage(
     SketchesMediaPlayer(
         state = mediaState,
         controllerVisible = controllerVisible,
+        controllerStartPadding = controllerStartPadding,
+        controllerEndPadding = controllerEndPadding,
+        controllerBottomPadding = controllerBottomPadding,
         modifier = modifier,
-        controllerBottomPadding = SketchesDimens.BottomBarHeight,
         enableImagePlaceholder = false,
         enableErrorIndicator = true
     )
