@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.platform.share
 
 import android.net.Uri
+import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
 
 interface ShareManager {
@@ -51,6 +52,5 @@ interface ShareManager {
     fun unregisterOnSharedListener(listenerAction: String)
 }
 
-val LocalShareManager = staticCompositionLocalOf<ShareManager> {
-    error("CompositionLocal LocalShareManager not present")
-}
+val LocalShareManager: ProvidableCompositionLocal<ShareManager> =
+    staticCompositionLocalOf { error("CompositionLocal LocalShareManager not present") }

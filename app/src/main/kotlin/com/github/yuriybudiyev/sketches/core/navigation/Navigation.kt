@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.navigation
 
+import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -43,6 +44,5 @@ fun <T> NavController.setNavResult(
         )
 }
 
-val LocalNavController = staticCompositionLocalOf<NavHostController> {
-    error("CompositionLocal LocalNavController not present")
-}
+val LocalNavController: ProvidableCompositionLocal<NavHostController> =
+    staticCompositionLocalOf { error("CompositionLocal LocalNavController not present") }
