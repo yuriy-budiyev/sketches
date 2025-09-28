@@ -50,7 +50,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.union
-import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -247,7 +246,6 @@ private fun ImageScreenLayout(
         val layoutDirection = LocalLayoutDirection.current
         val contentInsets = WindowInsets.navigationBars
             .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
-            .union(WindowInsets.waterfall.only(WindowInsetsSides.Horizontal))
             .asPaddingValues()
         val startPadding = contentInsets.calculateStartPadding(layoutDirection)
         val endPadding = contentInsets.calculateEndPadding(layoutDirection)
