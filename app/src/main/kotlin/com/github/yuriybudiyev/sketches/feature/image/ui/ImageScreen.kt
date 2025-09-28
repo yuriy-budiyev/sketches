@@ -320,7 +320,6 @@ private fun ImageScreenLayout(
             exit = fadeOut(),
             modifier = Modifier.align(Alignment.TopStart),
         ) {
-            // windowInsets?
             SketchesTopAppBar(
                 modifier = Modifier
                     .fillMaxWidth(),
