@@ -51,6 +51,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -253,10 +254,10 @@ private fun ImageScreenLayout(
                 .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
         }
         val contentPaddings = contentInsets.asPaddingValues()
-        val startContentPadding = contentPaddings.calculateStartPadding(layoutDirection)
-        val endContentPadding = contentPaddings.calculateEndPadding(layoutDirection)
-        val bottomContentPadding = contentPaddings.calculateBottomPadding()
-        val controllerPaddings = WindowInsets.displayCutout
+        val contentPaddingStart = contentPaddings.calculateStartPadding(layoutDirection)
+        val contentPaddingEnd = contentPaddings.calculateEndPadding(layoutDirection)
+        val contentPaddingBottom = contentPaddings.calculateBottomPadding()
+        val controllerPaddings = WindowInsets.waterfall
             .only(WindowInsetsSides.Horizontal)
             .asPaddingValues()
         MediaPager(
@@ -265,12 +266,12 @@ private fun ImageScreenLayout(
             controllerVisible = systemBarsControllerUpdated.isSystemBarsVisible,
             controllerStartPadding = controllerPaddings.calculateStartPadding(layoutDirection),
             controllerEndPadding = controllerPaddings.calculateEndPadding(layoutDirection),
-            controllerBottomPadding = bottomContentPadding + SketchesDimens.BottomBarHeight,
+            controllerBottomPadding = contentPaddingBottom + SketchesDimens.BottomBarHeight,
             modifier = Modifier
                 .matchParentSize()
                 .padding(
-                    start = startContentPadding,
-                    end = endContentPadding,
+                    start = contentPaddingStart,
+                    end = contentPaddingEnd,
                 )
                 .clickable(
                     interactionSource = null,
@@ -302,9 +303,9 @@ private fun ImageScreenLayout(
                 },
                 modifier = Modifier
                     .padding(
-                        start = startContentPadding,
-                        end = endContentPadding,
-                        bottom = bottomContentPadding,
+                        start = contentPaddingStart,
+                        end = contentPaddingEnd,
+                        bottom = contentPaddingBottom,
                     )
                     .background(
                         color = MaterialTheme.colorScheme.background
@@ -359,7 +360,7 @@ private fun ImageScreenLayout(
                 )
             }
         }
-        if (bottomContentPadding > 0.dp) {
+        if (contentPaddingBottom > 0.dp) {
             AnimatedVisibility(
                 visible = systemBarsControllerUpdated.isSystemBarsVisible,
                 enter = fadeIn(),
@@ -368,7 +369,7 @@ private fun ImageScreenLayout(
             ) {
                 Box(
                     modifier = Modifier
-                        .height(bottomContentPadding)
+                        .height(contentPaddingBottom)
                         .fillMaxWidth()
                         .background(
                             color = MaterialTheme.colorScheme.background
