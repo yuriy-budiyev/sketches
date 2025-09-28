@@ -98,18 +98,16 @@ fun SketchesMediaPlayer(
             SketchesMediaController(
                 state = state,
                 modifier = Modifier
-                    .padding(
-                        start = controllerStartPaddingUpdated,
-                        top = 0.dp,
-                        end = controllerEndPaddingUpdated,
-                        bottom = controllerBottomPaddingUpdated,
-                    )
+                    .padding(bottom = controllerBottomPaddingUpdated)
                     .height(height = 64.dp)
                     .background(
                         color = controlsBackgroundColor,
                         shape = RectangleShape
                     )
-                    .padding(horizontal = 4.dp)
+                    .padding(
+                        start = controllerStartPaddingUpdated + 4.dp,
+                        end = controllerEndPaddingUpdated + 4.dp
+                    )
                     .clickable(
                         interactionSource = null,
                         indication = null,

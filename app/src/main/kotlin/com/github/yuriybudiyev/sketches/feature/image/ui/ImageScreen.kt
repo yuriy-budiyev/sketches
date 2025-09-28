@@ -253,21 +253,24 @@ private fun ImageScreenLayout(
                 .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
         }
         val contentPaddings = contentInsets.asPaddingValues()
-        val startPadding = contentPaddings.calculateStartPadding(layoutDirection)
-        val endPadding = contentPaddings.calculateEndPadding(layoutDirection)
-        val bottomPadding = contentPaddings.calculateBottomPadding()
+        val startContentPadding = contentPaddings.calculateStartPadding(layoutDirection)
+        val endContentPadding = contentPaddings.calculateEndPadding(layoutDirection)
+        val bottomContentPadding = contentPaddings.calculateBottomPadding()
+        val controllerPaddings = WindowInsets.displayCutout
+            .only(WindowInsetsSides.Horizontal)
+            .asPaddingValues()
         MediaPager(
             state = pagerState,
             items = filesUpdated,
             controllerVisible = systemBarsControllerUpdated.isSystemBarsVisible,
-            controllerStartPadding = 0.dp,
-            controllerEndPadding = 0.dp,
-            controllerBottomPadding = bottomPadding + SketchesDimens.BottomBarHeight,
+            controllerStartPadding = controllerPaddings.calculateStartPadding(layoutDirection),
+            controllerEndPadding = controllerPaddings.calculateEndPadding(layoutDirection),
+            controllerBottomPadding = bottomContentPadding + SketchesDimens.BottomBarHeight,
             modifier = Modifier
                 .matchParentSize()
                 .padding(
-                    start = startPadding,
-                    end = endPadding,
+                    start = startContentPadding,
+                    end = endContentPadding,
                 )
                 .clickable(
                     interactionSource = null,
@@ -299,9 +302,9 @@ private fun ImageScreenLayout(
                 },
                 modifier = Modifier
                     .padding(
-                        start = startPadding,
-                        end = endPadding,
-                        bottom = bottomPadding,
+                        start = startContentPadding,
+                        end = endContentPadding,
+                        bottom = bottomContentPadding,
                     )
                     .background(
                         color = MaterialTheme.colorScheme.background
@@ -357,7 +360,7 @@ private fun ImageScreenLayout(
                 )
             }
         }
-        if (bottomPadding > 0.dp) {
+        if (bottomContentPadding > 0.dp) {
             AnimatedVisibility(
                 visible = systemBarsControllerUpdated.isSystemBarsVisible,
                 enter = fadeIn(),
@@ -366,7 +369,7 @@ private fun ImageScreenLayout(
             ) {
                 Box(
                     modifier = Modifier
-                        .height(bottomPadding)
+                        .height(bottomContentPadding)
                         .fillMaxWidth()
                         .background(
                             color = MaterialTheme.colorScheme.background
