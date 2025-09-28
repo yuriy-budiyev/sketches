@@ -27,11 +27,15 @@ package com.github.yuriybudiyev.sketches.core.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -51,14 +55,15 @@ fun SketchesLazyGrid(
     overlayBottom: Boolean = false,
     content: LazyGridScope.() -> Unit,
 ) {
-    val systemBarInsets = WindowInsets.systemBars.asPaddingValues()
-    val cutoutInsets = WindowInsets.displayCutout.asPaddingValues()
     val layoutDirection = LocalLayoutDirection.current
-    val startPadding = systemBarInsets
+    val contentPaddings = WindowInsets.systemBars
+        .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
+        .union(WindowInsets.waterfall.only(WindowInsetsSides.Horizontal))
+        .asPaddingValues()
+    val contentPaddingStart = contentPaddings
         .calculateStartPadding(layoutDirection)
-        .coerceAtLeast(cutoutInsets.calculateStartPadding(layoutDirection))
         .coerceAtLeast(SketchesDimens.LazyGridItemSpacing)
-    val topPadding = systemBarInsets
+    val contentPaddingTop = contentPaddings
         .calculateTopPadding()
         .plus(
             if (overlayTop) {
@@ -67,11 +72,10 @@ fun SketchesLazyGrid(
                 SketchesDimens.LazyGridItemSpacing
             }
         )
-    val endPadding = systemBarInsets
+    val contentPaddingEnd = contentPaddings
         .calculateEndPadding(layoutDirection)
-        .coerceAtLeast(cutoutInsets.calculateEndPadding(layoutDirection))
         .coerceAtLeast(SketchesDimens.LazyGridItemSpacing)
-    val bottomPadding = systemBarInsets
+    val contentPaddingBottom = contentPaddings
         .calculateBottomPadding()
         .plus(
             if (overlayBottom) {
@@ -85,10 +89,10 @@ fun SketchesLazyGrid(
         modifier = modifier,
         state = state,
         contentPadding = PaddingValues(
-            start = startPadding,
-            top = topPadding,
-            end = endPadding,
-            bottom = bottomPadding,
+            start = contentPaddingStart,
+            top = contentPaddingTop,
+            end = contentPaddingEnd,
+            bottom = contentPaddingBottom,
         ),
         horizontalArrangement = Arrangement.spacedBy(space = SketchesDimens.LazyGridItemSpacing),
         verticalArrangement = Arrangement.spacedBy(space = SketchesDimens.LazyGridItemSpacing),

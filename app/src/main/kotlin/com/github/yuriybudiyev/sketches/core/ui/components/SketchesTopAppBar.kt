@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.waterfall
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -68,6 +69,7 @@ fun SketchesTopAppBar(
         ),
         windowInsets = WindowInsets.systemBars
             .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
+            .union(WindowInsets.waterfall.only(WindowInsetsSides.Horizontal))
             .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
     )
 }
