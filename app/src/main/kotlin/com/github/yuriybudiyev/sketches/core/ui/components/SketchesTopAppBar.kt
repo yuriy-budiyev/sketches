@@ -27,8 +27,10 @@ package com.github.yuriybudiyev.sketches.core.ui.components
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.union
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -65,6 +67,7 @@ fun SketchesTopAppBar(
             actionIconContentColor = contentColor
         ),
         windowInsets = WindowInsets.systemBars
+            .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
             .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
     )
 }

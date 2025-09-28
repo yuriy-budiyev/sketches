@@ -37,15 +37,20 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -240,11 +245,13 @@ private fun ImageScreenLayout(
     }
     Box(modifier = modifier) {
         val layoutDirection = LocalLayoutDirection.current
-        // consider other insets
-        val navBarsInsets = WindowInsets.navigationBars.asPaddingValues()
-        val startPadding = navBarsInsets.calculateStartPadding(layoutDirection)
-        val endPadding = navBarsInsets.calculateEndPadding(layoutDirection)
-        val bottomPadding = navBarsInsets.calculateBottomPadding()
+        val contentInsets = WindowInsets.navigationBars
+            .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
+            .union(WindowInsets.waterfall.only(WindowInsetsSides.Horizontal))
+            .asPaddingValues()
+        val startPadding = contentInsets.calculateStartPadding(layoutDirection)
+        val endPadding = contentInsets.calculateEndPadding(layoutDirection)
+        val bottomPadding = contentInsets.calculateBottomPadding()
         MediaPager(
             state = pagerState,
             items = filesUpdated,
