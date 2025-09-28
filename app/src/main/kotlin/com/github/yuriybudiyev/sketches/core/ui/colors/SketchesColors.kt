@@ -47,8 +47,8 @@ object SketchesColors {
         val OnBackground = Color(0xFFFFFFFF)
         val Surface = Color(0xFF000000)
         val OnSurface = Color(0xFFFFFFFF)
-        val OnSurfaceVariant = Color(0xFFD7D7D7)
-        val SurfaceContainerHigh = Color(0xFF171717)
+        val OnSurfaceVariant = Color(0xFFDFDFDF)
+        val SurfaceContainerHigh = Color(0xFF272727)
     }
 
     const val UiAlphaLowTransparency = 0.75F
