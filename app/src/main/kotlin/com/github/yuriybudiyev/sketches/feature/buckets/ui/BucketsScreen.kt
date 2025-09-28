@@ -207,7 +207,7 @@ fun BucketsScreen(
         when (uiState) {
             is BucketsScreenUiState.Empty -> {
                 SketchesCenteredMessage(
-                    text = stringResource(id = R.string.no_buckets_found),
+                    text = stringResource(R.string.no_buckets_found),
                     modifier = Modifier.matchParentSize(),
                 )
                 SideEffect {
@@ -257,19 +257,26 @@ fun BucketsScreen(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
-            text = stringResource(id = BucketsRoute.titleRes),
+            text = if (selectedBuckets.isNotEmpty()) {
+                stringResource(
+                    R.string.selected_count,
+                    selectedBuckets.size,
+                )
+            } else {
+                stringResource(BucketsRoute.titleRes)
+            },
             backgroundColor = MaterialTheme.colorScheme.background
                 .copy(alpha = SketchesColors.UiAlphaLowTransparency),
         ) {
             if (selectedBuckets.isNotEmpty()) {
                 SketchesAppBarActionButton(
                     icon = SketchesIcons.Delete,
-                    description = stringResource(id = R.string.delete_selected),
+                    description = stringResource(R.string.delete_selected),
                     onClick = {
                         onDeleteBucketsUpdated(selectedBuckets.toSet())
                     },
                 )
-                val shareDescription = stringResource(id = R.string.share_selected)
+                val shareDescription = stringResource(R.string.share_selected)
                 SketchesAppBarActionButton(
                     icon = SketchesIcons.Share,
                     description = shareDescription,
@@ -369,7 +376,7 @@ private fun BucketsScreenLayout(
                 ) {
                     SketchesAsyncImage(
                         uri = bucket.coverUri,
-                        contentDescription = stringResource(id = R.string.bucket_cover),
+                        contentDescription = stringResource(R.string.bucket_cover),
                         modifier = Modifier.matchParentSize(),
                         contentScale = ContentScale.Crop,
                         enableLoadingIndicator = true,

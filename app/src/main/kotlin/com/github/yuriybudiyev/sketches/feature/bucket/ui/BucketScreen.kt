@@ -190,7 +190,7 @@ fun BucketScreen(
         when (uiState) {
             is BucketScreenUiState.Empty -> {
                 SketchesCenteredMessage(
-                    text = stringResource(id = R.string.no_images_found),
+                    text = stringResource(R.string.no_images_found),
                     modifier = Modifier.matchParentSize(),
                 )
                 SideEffect {
@@ -232,14 +232,21 @@ fun BucketScreen(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .fillMaxWidth(),
-            text = name,
+            text = if (selectedFiles.isNotEmpty()) {
+                stringResource(
+                    R.string.selected_count,
+                    selectedFiles.size,
+                )
+            } else {
+                name
+            },
             backgroundColor = MaterialTheme.colorScheme.background
                 .copy(alpha = SketchesColors.UiAlphaLowTransparency),
         ) {
             if (selectedFiles.isNotEmpty()) {
                 SketchesAppBarActionButton(
                     icon = SketchesIcons.Delete,
-                    description = stringResource(id = R.string.delete_selected),
+                    description = stringResource(R.string.delete_selected),
                     onClick = {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             coroutineScope.launch {
@@ -253,7 +260,7 @@ fun BucketScreen(
                         }
                     },
                 )
-                val shareDescription = stringResource(id = R.string.share_selected)
+                val shareDescription = stringResource(R.string.share_selected)
                 SketchesAppBarActionButton(
                     icon = SketchesIcons.Share,
                     description = shareDescription,

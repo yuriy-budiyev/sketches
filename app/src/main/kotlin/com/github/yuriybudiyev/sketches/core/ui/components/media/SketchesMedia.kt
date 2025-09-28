@@ -166,7 +166,7 @@ fun SketchesMediaDisplay(
                 if (enableErrorIndicator) {
                     Icon(
                         imageVector = SketchesIcons.ImageError,
-                        contentDescription = stringResource(id = R.string.image_error),
+                        contentDescription = stringResource(R.string.image_error),
                         modifier = Modifier
                             .size(48.dp)
                             .align(Alignment.Center),
@@ -177,7 +177,7 @@ fun SketchesMediaDisplay(
                 if (enableImagePlaceholder) {
                     Icon(
                         imageVector = SketchesIcons.ImageLoading,
-                        contentDescription = stringResource(id = R.string.image),
+                        contentDescription = stringResource(R.string.image),
                         modifier = Modifier
                             .size(48.dp)
                             .align(Alignment.Center),

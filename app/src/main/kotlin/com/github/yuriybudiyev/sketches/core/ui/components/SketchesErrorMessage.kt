@@ -59,7 +59,7 @@ fun SketchesErrorMessage(
             verticalArrangement = Arrangement.Center,
         ) {
             SketchesMessage(
-                text = stringResource(id = R.string.unexpected_error),
+                text = stringResource(R.string.unexpected_error),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
@@ -87,9 +87,9 @@ fun SketchesErrorMessage(
         val message = thrown.message
         SketchesCenteredMessage(
             text = if (message.isNullOrEmpty()) {
-                stringResource(id = R.string.unexpected_error)
+                stringResource(R.string.unexpected_error)
             } else {
-                stringResource(id = R.string.unexpected_error) + "\n${thrown.message}"
+                stringResource(R.string.unexpected_error) + "\n${thrown.message}"
             },
             modifier = modifier,
         )

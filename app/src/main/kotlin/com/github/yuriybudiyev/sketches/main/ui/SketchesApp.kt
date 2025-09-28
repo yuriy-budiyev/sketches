@@ -132,7 +132,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                                             } else {
                                                 route.unselectedIcon
                                             },
-                                            contentDescription = stringResource(id = route.titleRes)
+                                            contentDescription = stringResource(route.titleRes)
                                         )
                                     },
                                 )
@@ -153,16 +153,16 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                 ) {
                     SketchesMessage(
                         text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            stringResource(id = R.string.no_images_permission)
+                            stringResource(R.string.no_images_permission)
                         } else {
-                            stringResource(id = R.string.no_storage_permission)
+                            stringResource(R.string.no_storage_permission)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    SketchesOutlinedButton(text = stringResource(id = R.string.open_settings)) {
+                    SketchesOutlinedButton(text = stringResource(R.string.open_settings)) {
                         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                         intent.data = Uri.fromParts(
                             "package",

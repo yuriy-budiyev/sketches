@@ -61,7 +61,7 @@ fun SketchesAsyncImage(
             {
                 StateIcon(
                     icon = SketchesIcons.ImageLoading,
-                    description = stringResource(id = R.string.image_loading),
+                    description = stringResource(R.string.image_loading),
                     modifier = Modifier.fillMaxSize(),
                 )
             }
@@ -72,7 +72,7 @@ fun SketchesAsyncImage(
             {
                 StateIcon(
                     icon = SketchesIcons.ImageError,
-                    description = stringResource(id = R.string.image_error),
+                    description = stringResource(R.string.image_error),
                     modifier = Modifier.fillMaxSize(),
                 )
             }

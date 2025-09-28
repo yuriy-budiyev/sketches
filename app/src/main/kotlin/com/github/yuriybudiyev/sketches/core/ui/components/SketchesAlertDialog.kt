@@ -85,10 +85,10 @@ fun SketchesDeleteConfirmationDialog(
     modifier: Modifier = Modifier,
 ) {
     SketchesAlertDialog(
-        titleText = stringResource(id = R.string.delete_image_dialog_title),
-        contentText = stringResource(id = R.string.delete_image_dialog_content),
-        positiveButtonText = stringResource(id = R.string.delete_image_dialog_positive),
-        negativeButtonText = stringResource(id = R.string.delete_image_dialog_negative),
+        titleText = stringResource(R.string.delete_image_dialog_title),
+        contentText = stringResource(R.string.delete_image_dialog_content),
+        positiveButtonText = stringResource(R.string.delete_image_dialog_positive),
+        negativeButtonText = stringResource(R.string.delete_image_dialog_negative),
         onPositiveResult = onDelete,
         onNegativeResult = onDismiss,
         modifier = modifier,

@@ -164,7 +164,7 @@ fun SketchesMediaGrid(
                     ) {
                         Icon(
                             imageVector = SketchesIcons.Video,
-                            contentDescription = stringResource(id = R.string.video),
+                            contentDescription = stringResource(R.string.video),
                             tint = MaterialTheme.colorScheme.onBackground,
                         )
                     }

@@ -52,7 +52,7 @@ fun SketchesLoadingIndicator(modifier: Modifier = Modifier) {
             color = MaterialTheme.colorScheme.primary
         )
         SketchesMessage(
-            text = stringResource(id = R.string.loading_message),
+            text = stringResource(R.string.loading_message),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)

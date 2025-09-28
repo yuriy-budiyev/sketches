@@ -166,7 +166,7 @@ fun ImageScreen(
         when (uiState) {
             is ImageScreenUiState.Empty -> {
                 SketchesCenteredMessage(
-                    text = stringResource(id = R.string.no_images_found),
+                    text = stringResource(R.string.no_images_found),
                     modifier = Modifier.matchParentSize(),
                 )
             }
@@ -315,7 +315,7 @@ private fun ImageScreenLayout(
             ) {
                 SketchesAppBarActionButton(
                     icon = SketchesIcons.Delete,
-                    description = stringResource(id = R.string.delete_image),
+                    description = stringResource(R.string.delete_image),
                     onClick = {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             coroutineScope.launch {
@@ -329,7 +329,7 @@ private fun ImageScreenLayout(
                         }
                     },
                 )
-                val shareDescription = stringResource(id = R.string.share_image)
+                val shareDescription = stringResource(R.string.share_image)
                 SketchesAppBarActionButton(
                     icon = SketchesIcons.Share,
                     description = shareDescription,
@@ -459,7 +459,7 @@ private fun ImagePage(
 ) {
     SketchesAsyncImage(
         uri = fileUri,
-        contentDescription = stringResource(id = R.string.image),
+        contentDescription = stringResource(R.string.image),
         modifier = modifier,
         contentScale = ContentScale.Fit,
         filterQuality = FilterQuality.High,
@@ -603,7 +603,7 @@ private fun MediaBar(
                     ) {
                         Icon(
                             imageVector = SketchesIcons.Video,
-                            contentDescription = stringResource(id = R.string.video),
+                            contentDescription = stringResource(R.string.video),
                             tint = MaterialTheme.colorScheme.onBackground,
                         )
                     }
