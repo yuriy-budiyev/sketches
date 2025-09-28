@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
+import android.content.res.Configuration
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -77,6 +78,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
@@ -244,12 +246,16 @@ private fun ImageScreenLayout(
     }
     Box(modifier = modifier) {
         val layoutDirection = LocalLayoutDirection.current
-        val contentInsets = WindowInsets.navigationBars
-            .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
-            .asPaddingValues()
-        val startPadding = contentInsets.calculateStartPadding(layoutDirection)
-        val endPadding = contentInsets.calculateEndPadding(layoutDirection)
-        val bottomPadding = contentInsets.calculateBottomPadding()
+        var contentInsets = WindowInsets.navigationBars
+            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+        if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            contentInsets = contentInsets
+                .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
+        }
+        val contentPaddings = contentInsets.asPaddingValues()
+        val startPadding = contentPaddings.calculateStartPadding(layoutDirection)
+        val endPadding = contentPaddings.calculateEndPadding(layoutDirection)
+        val bottomPadding = contentPaddings.calculateBottomPadding()
         MediaPager(
             state = pagerState,
             items = filesUpdated,
