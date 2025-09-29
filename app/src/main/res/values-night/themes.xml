@@ -2,10 +2,10 @@
 <resources>
 
     <style name="Theme.Sketches.Base" parent="android:Theme.Material.NoActionBar">
-        <item name="android:background">#FF0F0F0F</item>
-        <item name="android:windowBackground">#FF0F0F0F</item>
-        <item name="android:statusBarColor">#FF0F0F0F</item>
-        <item name="android:navigationBarColor">#FF0F0F0F</item>
+        <item name="android:background">#FF000000</item>
+        <item name="android:windowBackground">#FF000000</item>
+        <item name="android:statusBarColor">#FF000000</item>
+        <item name="android:navigationBarColor">#FF000000</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:dialogTheme">@style/Theme.Sketches.Dialog</item>
     </style>
