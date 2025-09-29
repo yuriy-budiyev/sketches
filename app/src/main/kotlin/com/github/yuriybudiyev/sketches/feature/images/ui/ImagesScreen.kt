@@ -88,9 +88,6 @@ fun ImagesRoute(
     viewModel: ImagesScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(viewModel) {
-        viewModel.updateMedia()
-    }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.updateMediaAccess()
     }
@@ -106,7 +103,7 @@ fun ImagesRoute(
 
 @Composable
 fun ImagesScreen(
-    uiState: ImagesScreenUiState,
+    uiState: ImagesScreenViewModel.UiState,
     onRequestUserSelectedMedia: (() -> Unit)?,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
     onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
@@ -179,7 +176,7 @@ fun ImagesScreen(
             .background(color = MaterialTheme.colorScheme.background),
     ) {
         when (uiState) {
-            is ImagesScreenUiState.Empty -> {
+            is ImagesScreenViewModel.UiState.Empty -> {
                 SketchesCenteredMessage(
                     text = stringResource(R.string.no_images_found),
                     modifier = Modifier.matchParentSize(),
@@ -190,7 +187,7 @@ fun ImagesScreen(
                     }
                 }
             }
-            is ImagesScreenUiState.Loading -> {
+            is ImagesScreenViewModel.UiState.Loading -> {
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
                 SideEffect {
                     if (selectedFiles.isNotEmpty()) {
@@ -198,7 +195,7 @@ fun ImagesScreen(
                     }
                 }
             }
-            is ImagesScreenUiState.Images -> {
+            is ImagesScreenViewModel.UiState.Images -> {
                 SketchesMediaGrid(
                     files = uiState.files,
                     selectedFiles = selectedFiles,
@@ -209,7 +206,7 @@ fun ImagesScreen(
                     overlayBottom = true,
                 )
             }
-            is ImagesScreenUiState.Error -> {
+            is ImagesScreenViewModel.UiState.Error -> {
                 SketchesErrorMessage(
                     thrown = uiState.thrown,
                     modifier = Modifier.matchParentSize(),

@@ -35,8 +35,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -53,38 +57,45 @@ class ImagesScreenViewModel @Inject constructor(
     dispatchers,
 ) {
 
-    private val uiStateInternal: MutableStateFlow<ImagesScreenUiState> =
-        MutableStateFlow(ImagesScreenUiState.Loading)
-
-    val uiState: StateFlow<ImagesScreenUiState>
-        get() = uiStateInternal
-
-    fun updateMedia(silent: Boolean = uiState.value is ImagesScreenUiState.Images) {
-        updateJob?.cancel()
-        updateJob = viewModelScope.launch {
-            if (!silent) {
-                uiStateInternal.value = ImagesScreenUiState.Loading
-            }
-            try {
-                val files = withContext(dispatchers.io) { getMediaFiles() }
-                if (files.isNotEmpty()) {
-                    uiStateInternal.value = ImagesScreenUiState.Images(files)
-                } else {
-                    uiStateInternal.value = ImagesScreenUiState.Empty
-                }
-            } catch (_: CancellationException) {
-                // Do nothing
-            } catch (e: Exception) {
-                if (!silent) {
-                    uiStateInternal.value = ImagesScreenUiState.Error(e)
+    private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
+    val uiState: StateFlow<UiState> =
+        flow {
+            emit(updateMediaFiles())
+            uiAction.collect { action ->
+                when (action) {
+                    is UiAction.UpdateImages -> {
+                        emit(updateMediaFiles())
+                    }
+                    is UiAction.ShowError -> {
+                        emit(UiState.Error(action.thrown))
+                    }
                 }
             }
+        }.catch { e ->
+            emit(UiState.Error(e))
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = UiState.Loading
+        )
+
+    private suspend fun updateMediaFiles(): UiState {
+        try {
+            val files = withContext(dispatchers.io) { getMediaFiles() }
+            if (files.isNotEmpty()) {
+                return UiState.Images(files)
+            } else {
+                return UiState.Empty
+            }
+        } catch (e: Exception) {
+            return UiState.Error(e)
         }
     }
 
+    private var deleteMediaJob: Job? = null
     fun deleteMedia(files: Collection<MediaStoreFile>) {
-        deleteJob?.cancel()
-        deleteJob = viewModelScope.launch {
+        deleteMediaJob?.cancel()
+        deleteMediaJob = viewModelScope.launch {
             try {
                 withContext(dispatchers.io) {
                     deleteMediaFiles(files)
@@ -92,15 +103,38 @@ class ImagesScreenViewModel @Inject constructor(
             } catch (_: CancellationException) {
                 // Do nothing
             } catch (e: Exception) {
-                uiStateInternal.value = ImagesScreenUiState.Error(e)
+                uiAction.emit(UiAction.ShowError(e))
             }
         }
     }
 
+    private var onMediaChangedJob: Job? = null
     override fun onMediaChanged() {
-        updateMedia()
+        onMediaChangedJob?.cancel()
+        onMediaChangedJob = viewModelScope.launch {
+            try {
+                uiAction.emit(UiAction.UpdateImages)
+            } catch (_: CancellationException) {
+                // Do nothing
+            }
+        }
     }
 
-    private var updateJob: Job? = null
-    private var deleteJob: Job? = null
+    sealed interface UiAction {
+
+        data object UpdateImages: UiAction
+
+        data class ShowError(val thrown: Throwable): UiAction
+    }
+
+    sealed interface UiState {
+
+        data object Empty: UiState
+
+        data object Loading: UiState
+
+        data class Images(val files: List<MediaStoreFile>): UiState
+
+        data class Error(val thrown: Throwable): UiState
+    }
 }
