@@ -38,8 +38,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -57,82 +62,117 @@ class BucketsScreenViewModel @Inject constructor(
     dispatchers,
 ) {
 
-    private val uiStateInternal: MutableStateFlow<BucketsScreenUiState> =
-        MutableStateFlow(BucketsScreenUiState.Loading)
-
-    val uiState: StateFlow<BucketsScreenUiState>
-        get() = uiStateInternal
-
-    fun updateBuckets(silent: Boolean = uiState.value is BucketsScreenUiState.Buckets) {
-        updateJob?.cancel()
-        updateJob = viewModelScope.launch {
-            if (!silent) {
-                uiStateInternal.value = BucketsScreenUiState.Loading
+    private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
+    val uiState: StateFlow<UiState> =
+        flow<UiState> {
+            updateBuckets()
+            uiAction.collect { action ->
+                when (action) {
+                    is UiAction.UpdateBuckets -> {
+                        updateBuckets()
+                    }
+                    is UiAction.StartSharingBuckets -> {
+                        startBucketsAction(action.buckets) { files ->
+                            UiState.Buckets.Action.Share(files)
+                        }
+                    }
+                    is UiAction.StartDeletingBuckets -> {
+                        startBucketsAction(action.buckets) { files ->
+                            UiState.Buckets.Action.Delete(files)
+                        }
+                    }
+                    is UiAction.ShowError -> {
+                        emit(UiState.Error(action.thrown))
+                    }
+                }
             }
-            try {
-                val buckets = withContext(dispatchers.io) { getMediaBuckets() }
-                if (buckets.isNotEmpty()) {
-                    val oldValue = uiStateInternal.value
-                    if (oldValue is BucketsScreenUiState.Buckets) {
-                        uiStateInternal.value = BucketsScreenUiState.Buckets(
+        }.catch { e ->
+            emit(UiState.Error(e))
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = UiState.Loading,
+        )
+
+    private suspend fun FlowCollector<UiState>.updateBuckets() {
+        try {
+            val buckets = withContext(dispatchers.io) { getMediaBuckets() }
+            if (buckets.isNotEmpty()) {
+                val oldValue = uiState.value
+                if (oldValue is UiState.Buckets) {
+                    emit(
+                        UiState.Buckets(
                             buckets = buckets,
                             action = oldValue.action,
-                        )
-                    } else {
-                        uiStateInternal.value = BucketsScreenUiState.Buckets(
+                        ),
+                    )
+                } else {
+                    emit(
+                        UiState.Buckets(
                             buckets = buckets,
                             action = Consumable.consumed(),
-                        )
-                    }
-                } else {
-                    uiStateInternal.value = BucketsScreenUiState.Empty
+                        ),
+                    )
                 }
-            } catch (_: CancellationException) {
-                // Do nothing
-            } catch (e: Exception) {
-                if (!silent) {
-                    uiStateInternal.value = BucketsScreenUiState.Error(e)
-                }
+            } else {
+                emit(UiState.Empty)
+            }
+        } catch (e: Exception) {
+            if (uiState.value !is UiState.Buckets) {
+                emit(UiState.Error(e))
             }
         }
     }
 
-    private inline fun startBucketsAction(
+    private suspend inline fun FlowCollector<UiState>.startBucketsAction(
         buckets: Collection<MediaStoreBucket>,
-        crossinline action: (files: List<MediaStoreFile>) -> BucketsScreenUiState.Buckets.Action,
+        action: (files: List<MediaStoreFile>) -> UiState.Buckets.Action,
     ) {
-        actionJob?.cancel()
-        actionJob = viewModelScope.launch {
-            try {
-                val files = withContext(dispatchers.io) { getBucketsContent(buckets) }
-                if (files.isNotEmpty()) {
-                    val oldState = uiStateInternal.value
-                    if (oldState is BucketsScreenUiState.Buckets) {
-                        uiStateInternal.value = BucketsScreenUiState.Buckets(
+        try {
+            val files = withContext(dispatchers.io) { getBucketsContent(buckets) }
+            if (files.isNotEmpty()) {
+                val oldState = uiState.value
+                if (oldState is UiState.Buckets) {
+                    emit(
+                        UiState.Buckets(
                             buckets = oldState.buckets,
                             action = Consumable.from(action(files)),
-                        )
-                    }
+                        ),
+                    )
                 }
+            }
+        } catch (_: Exception) {
+        }
+    }
+
+    private var startSharingBucketsJob: Job? = null
+    fun startSharingBuckets(buckets: Collection<MediaStoreBucket>) {
+        startSharingBucketsJob?.cancel()
+        startSharingBucketsJob = viewModelScope.launch {
+            try {
+                uiAction.emit(UiAction.StartSharingBuckets(buckets))
             } catch (_: CancellationException) {
-                // Do nothing
-            } catch (_: Exception) {
                 // Do nothing
             }
         }
     }
 
-    fun startSharingBuckets(buckets: Collection<MediaStoreBucket>) {
-        startBucketsAction(buckets) { files -> BucketsScreenUiState.Buckets.Action.Share(files) }
-    }
-
+    private var startDeletingBucketsJob: Job? = null
     fun startDeletingBuckets(buckets: Collection<MediaStoreBucket>) {
-        startBucketsAction(buckets) { files -> BucketsScreenUiState.Buckets.Action.Delete(files) }
+        startDeletingBucketsJob?.cancel()
+        startDeletingBucketsJob = viewModelScope.launch {
+            try {
+                uiAction.emit(UiAction.StartDeletingBuckets(buckets))
+            } catch (_: CancellationException) {
+                // Do nothing
+            }
+        }
     }
 
+    private var deleteMediaJob: Job? = null
     fun deleteMedia(files: Collection<MediaStoreFile>) {
-        deleteJob?.cancel()
-        deleteJob = viewModelScope.launch {
+        deleteMediaJob?.cancel()
+        deleteMediaJob = viewModelScope.launch {
             try {
                 withContext(dispatchers.io) {
                     deleteMediaFiles(files)
@@ -140,16 +180,53 @@ class BucketsScreenViewModel @Inject constructor(
             } catch (_: CancellationException) {
                 // Do nothing
             } catch (e: Exception) {
-                uiStateInternal.value = BucketsScreenUiState.Error(e)
+                uiAction.emit(UiAction.ShowError(e))
             }
         }
     }
 
+    private var onMediaChangedJob: Job? = null
     override fun onMediaChanged() {
-        updateBuckets()
+        onMediaChangedJob?.cancel()
+        onMediaChangedJob = viewModelScope.launch {
+            try {
+                uiAction.emit(UiAction.UpdateBuckets)
+            } catch (_: CancellationException) {
+                // Do nothing
+            }
+        }
     }
 
-    private var updateJob: Job? = null
-    private var actionJob: Job? = null
-    private var deleteJob: Job? = null
+    sealed interface UiState {
+
+        data object Empty: UiState
+
+        data object Loading: UiState
+
+        data class Buckets(
+            val buckets: List<MediaStoreBucket>,
+            val action: Consumable<Action>,
+        ): UiState {
+
+            sealed interface Action {
+
+                data class Share(val files: List<MediaStoreFile>): Action
+
+                data class Delete(val files: List<MediaStoreFile>): Action
+            }
+        }
+
+        data class Error(val thrown: Throwable): UiState
+    }
+
+    private sealed interface UiAction {
+
+        data object UpdateBuckets: UiAction
+
+        data class StartSharingBuckets(val buckets: Collection<MediaStoreBucket>): UiAction
+
+        data class StartDeletingBuckets(val buckets: Collection<MediaStoreBucket>): UiAction
+
+        data class ShowError(val thrown: Throwable): UiAction
+    }
 }

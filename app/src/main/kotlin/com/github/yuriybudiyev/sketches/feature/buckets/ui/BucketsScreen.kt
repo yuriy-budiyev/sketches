@@ -94,9 +94,6 @@ fun BucketsRoute(
     viewModel: BucketsScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(viewModel) {
-        viewModel.updateBuckets()
-    }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.updateMediaAccess()
     }
@@ -117,7 +114,7 @@ fun BucketsRoute(
 
 @Composable
 fun BucketsScreen(
-    uiState: BucketsScreenUiState,
+    uiState: BucketsScreenViewModel.UiState,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
     onShareBuckets: (buckets: Collection<MediaStoreBucket>) -> Unit,
     onDeleteBuckets: (buckets: Collection<MediaStoreBucket>) -> Unit,
@@ -167,10 +164,10 @@ fun BucketsScreen(
         lifecycleOwner,
     ) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            if (uiState is BucketsScreenUiState.Buckets) {
+            if (uiState is BucketsScreenViewModel.UiState.Buckets) {
                 val action = uiState.action.consume()
                 when (action) {
-                    is BucketsScreenUiState.Buckets.Action.Share -> {
+                    is BucketsScreenViewModel.UiState.Buckets.Action.Share -> {
                         val shareInfo = action.files.toShareInfo()
                         shareManagerUpdated.startChooserActivity(
                             uris = shareInfo.uris,
@@ -179,7 +176,7 @@ fun BucketsScreen(
                             listenerAction = ACTION_SHARE,
                         )
                     }
-                    is BucketsScreenUiState.Buckets.Action.Delete -> {
+                    is BucketsScreenViewModel.UiState.Buckets.Action.Delete -> {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             deleteRequestLauncher.launchDeleteMediaRequest(
                                 contextUpdated,
@@ -205,7 +202,7 @@ fun BucketsScreen(
             .background(color = MaterialTheme.colorScheme.background),
     ) {
         when (uiState) {
-            is BucketsScreenUiState.Empty -> {
+            is BucketsScreenViewModel.UiState.Empty -> {
                 SketchesCenteredMessage(
                     text = stringResource(R.string.no_buckets_found),
                     modifier = Modifier.matchParentSize(),
@@ -219,7 +216,7 @@ fun BucketsScreen(
                     }
                 }
             }
-            is BucketsScreenUiState.Loading -> {
+            is BucketsScreenViewModel.UiState.Loading -> {
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
                 SideEffect {
                     if (selectedBuckets.isNotEmpty()) {
@@ -230,7 +227,7 @@ fun BucketsScreen(
                     }
                 }
             }
-            is BucketsScreenUiState.Buckets -> {
+            is BucketsScreenViewModel.UiState.Buckets -> {
                 BucketsScreenLayout(
                     buckets = uiState.buckets,
                     selectedBuckets = selectedBuckets,
@@ -238,7 +235,7 @@ fun BucketsScreen(
                     modifier = Modifier.matchParentSize(),
                 )
             }
-            is BucketsScreenUiState.Error -> {
+            is BucketsScreenViewModel.UiState.Error -> {
                 SketchesErrorMessage(
                     thrown = uiState.thrown,
                     modifier = Modifier.matchParentSize()

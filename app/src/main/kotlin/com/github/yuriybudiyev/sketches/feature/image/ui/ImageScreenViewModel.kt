@@ -39,6 +39,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -64,12 +65,12 @@ class ImageScreenViewModel @Inject constructor(
 
     private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
     val uiState: StateFlow<UiState> =
-        flow {
-            emit(updateMedia())
+        flow<UiState> {
+            updateMedia()
             uiAction.collect { action ->
                 when (action) {
-                    is UiAction.UpdateImages -> {
-                        emit(updateMedia())
+                    is UiAction.UpdateMedia -> {
+                        updateMedia()
                     }
                     is UiAction.ShowError -> {
                         emit(UiState.Error(action.thrown))
@@ -80,7 +81,7 @@ class ImageScreenViewModel @Inject constructor(
             emit(UiState.Error(e))
         }.stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L),
+            started = SharingStarted.Lazily,
             initialValue = UiState.Loading,
         )
 
@@ -97,24 +98,27 @@ class ImageScreenViewModel @Inject constructor(
         currentBucketId = bucketId
     }
 
-    private suspend fun updateMedia(
+    private suspend fun FlowCollector<UiState>.updateMedia(
         fileIndex: Int = currentFileIndex,
         fileId: Long = currentFileId,
         bucketId: Long = currentBucketId,
-    ): UiState {
+    ) {
         if (fileIndex == -1) {
-            return UiState.Empty
+            emit(UiState.Empty)
+            return
         }
         try {
             val files = withContext(dispatchers.io) { getMediaFiles(bucketId) }
             val filesSize = files.size
             if (filesSize > 0) {
                 if (fileIndex < filesSize && files[fileIndex].id == fileId) {
-                    return UiState.Image(
-                        fileIndex = fileIndex,
-                        fileId = fileId,
-                        bucketId = bucketId,
-                        files = files,
+                    emit(
+                        UiState.Image(
+                            fileIndex = fileIndex,
+                            fileId = fileId,
+                            bucketId = bucketId,
+                            files = files,
+                        ),
                     )
                 } else {
                     var backwardIndex = fileIndex - 1
@@ -136,21 +140,25 @@ class ImageScreenViewModel @Inject constructor(
                             forwardIndex++
                         }
                     }
-                    return UiState.Image(
-                        fileIndex = actualIndex.coerceIn(
-                            0,
-                            filesSize - 1
+                    emit(
+                        UiState.Image(
+                            fileIndex = actualIndex.coerceIn(
+                                0,
+                                filesSize - 1
+                            ),
+                            fileId = fileId,
+                            bucketId = bucketId,
+                            files = files,
                         ),
-                        fileId = fileId,
-                        bucketId = bucketId,
-                        files = files,
                     )
                 }
             } else {
-                return UiState.Empty
+                emit(UiState.Empty)
             }
         } catch (e: Exception) {
-            return UiState.Error(e)
+            if (uiState.value !is UiState.Image) {
+                emit(UiState.Error(e))
+            }
         }
     }
 
@@ -175,7 +183,7 @@ class ImageScreenViewModel @Inject constructor(
         onMediaChangedJob?.cancel()
         onMediaChangedJob = viewModelScope.launch {
             try {
-                uiAction.emit(UiAction.UpdateImages)
+                uiAction.emit(UiAction.UpdateMedia)
             } catch (_: CancellationException) {
                 // Do nothing
             }
@@ -209,7 +217,7 @@ class ImageScreenViewModel @Inject constructor(
 
     private sealed interface UiAction {
 
-        data object UpdateImages: UiAction
+        data object UpdateMedia: UiAction
 
         data class ShowError(val thrown: Throwable): UiAction
     }

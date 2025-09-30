@@ -35,6 +35,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -59,12 +60,12 @@ class ImagesScreenViewModel @Inject constructor(
 
     private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
     val uiState: StateFlow<UiState> =
-        flow {
-            emit(updateMedia())
+        flow<UiState> {
+            updateMedia()
             uiAction.collect { action ->
                 when (action) {
-                    is UiAction.UpdateImages -> {
-                        emit(updateMedia())
+                    is UiAction.UpdateMedia -> {
+                        updateMedia()
                     }
                     is UiAction.ShowError -> {
                         emit(UiState.Error(action.thrown))
@@ -75,20 +76,22 @@ class ImagesScreenViewModel @Inject constructor(
             emit(UiState.Error(e))
         }.stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L),
+            started = SharingStarted.Lazily,
             initialValue = UiState.Loading,
         )
 
-    private suspend fun updateMedia(): UiState {
+    private suspend fun FlowCollector<UiState>.updateMedia() {
         try {
             val files = withContext(dispatchers.io) { getMediaFiles() }
             if (files.isNotEmpty()) {
-                return UiState.Images(files)
+                emit(UiState.Images(files))
             } else {
-                return UiState.Empty
+                emit(UiState.Empty)
             }
         } catch (e: Exception) {
-            return UiState.Error(e)
+            if (uiState.value !is UiState.Images) {
+                emit(UiState.Error(e))
+            }
         }
     }
 
@@ -113,7 +116,7 @@ class ImagesScreenViewModel @Inject constructor(
         onMediaChangedJob?.cancel()
         onMediaChangedJob = viewModelScope.launch {
             try {
-                uiAction.emit(UiAction.UpdateImages)
+                uiAction.emit(UiAction.UpdateMedia)
             } catch (_: CancellationException) {
                 // Do nothing
             }
@@ -133,7 +136,7 @@ class ImagesScreenViewModel @Inject constructor(
 
     private sealed interface UiAction {
 
-        data object UpdateImages: UiAction
+        data object UpdateMedia: UiAction
 
         data class ShowError(val thrown: Throwable): UiAction
     }
