@@ -30,7 +30,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
 import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
 import com.github.yuriybudiyev.sketches.core.navigation.NavigationRoute
 import kotlinx.serialization.Serializable
@@ -56,12 +55,7 @@ fun NavGraphBuilder.registerImageScreen() {
         enterTransition = { fadeIn() },
         exitTransition = { fadeOut() },
     ) { backStackEntry ->
-        val route = backStackEntry.toRoute<ImageRoute>()
-        com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute(
-            fileIndex = route.imageIndex,
-            fileId = route.imageId,
-            bucketId = route.bucketId,
-        )
+        com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute()
     }
 }
 

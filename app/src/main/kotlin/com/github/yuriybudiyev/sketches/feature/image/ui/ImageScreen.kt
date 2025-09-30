@@ -116,26 +116,8 @@ import kotlinx.coroutines.launch
 const val NAV_IMAGE_SCREEN_CURRENT_INDEX = "current_index"
 
 @Composable
-fun ImageRoute(
-    fileIndex: Int,
-    fileId: Long,
-    bucketId: Long,
-    viewModel: ImageScreenViewModel = hiltViewModel(),
-) {
+fun ImageRoute(viewModel: ImageScreenViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val bucketIdUpdated by rememberUpdatedState(bucketId)
-    LaunchedEffect(
-        fileIndex,
-        fileId,
-        bucketId,
-        viewModel,
-    ) {
-        viewModel.updateMedia(
-            fileIndex = fileIndex,
-            fileId = fileId,
-            bucketId = bucketId,
-        )
-    }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.updateMediaAccess()
     }
@@ -146,7 +128,6 @@ fun ImageRoute(
             viewModel.setCurrentMediaData(
                 fileIndex = index,
                 fileId = file.id,
-                bucketId = bucketIdUpdated,
             )
             navControllerUpdated.setNavResult(
                 key = NAV_IMAGE_SCREEN_CURRENT_INDEX,
@@ -161,7 +142,7 @@ fun ImageRoute(
 
 @Composable
 fun ImageScreen(
-    uiState: ImageScreenUiState,
+    uiState: ImageScreenViewModel.UiState,
     onChange: (index: Int, file: MediaStoreFile) -> Unit,
     onDelete: (index: Int, file: MediaStoreFile) -> Unit,
 ) {
@@ -171,16 +152,16 @@ fun ImageScreen(
             .background(color = MaterialTheme.colorScheme.background),
     ) {
         when (uiState) {
-            is ImageScreenUiState.Empty -> {
+            is ImageScreenViewModel.UiState.Empty -> {
                 SketchesCenteredMessage(
                     text = stringResource(R.string.no_images_found),
                     modifier = Modifier.matchParentSize(),
                 )
             }
-            is ImageScreenUiState.Loading -> {
+            is ImageScreenViewModel.UiState.Loading -> {
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
             }
-            is ImageScreenUiState.Image -> {
+            is ImageScreenViewModel.UiState.Image -> {
                 ImageScreenLayout(
                     index = uiState.fileIndex,
                     files = uiState.files,
@@ -189,7 +170,7 @@ fun ImageScreen(
                     modifier = Modifier.matchParentSize(),
                 )
             }
-            is ImageScreenUiState.Error -> {
+            is ImageScreenViewModel.UiState.Error -> {
                 SketchesErrorMessage(
                     thrown = uiState.thrown,
                     modifier = Modifier.matchParentSize(),

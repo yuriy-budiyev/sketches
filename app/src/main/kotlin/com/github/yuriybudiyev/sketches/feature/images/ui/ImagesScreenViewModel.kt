@@ -60,11 +60,11 @@ class ImagesScreenViewModel @Inject constructor(
     private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
     val uiState: StateFlow<UiState> =
         flow {
-            emit(updateMediaFiles())
+            emit(updateMedia())
             uiAction.collect { action ->
                 when (action) {
                     is UiAction.UpdateImages -> {
-                        emit(updateMediaFiles())
+                        emit(updateMedia())
                     }
                     is UiAction.ShowError -> {
                         emit(UiState.Error(action.thrown))
@@ -79,7 +79,7 @@ class ImagesScreenViewModel @Inject constructor(
             initialValue = UiState.Loading,
         )
 
-    private suspend fun updateMediaFiles(): UiState {
+    private suspend fun updateMedia(): UiState {
         try {
             val files = withContext(dispatchers.io) { getMediaFiles() }
             if (files.isNotEmpty()) {
