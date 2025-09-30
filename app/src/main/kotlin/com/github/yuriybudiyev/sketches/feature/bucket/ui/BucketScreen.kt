@@ -88,23 +88,15 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun BucketRoute(
-    bucketId: Long,
-    bucketName: String?,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
     viewModel: BucketScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(
-        bucketId,
-        viewModel,
-    ) {
-        viewModel.updateMedia(bucketId)
-    }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.updateMediaAccess()
     }
     BucketScreen(
-        name = bucketName,
+        bucketName = viewModel.navRoute.bucketName,
         uiState = uiState,
         onImageClick = onImageClick,
         onDeleteMedia = { files ->
@@ -115,8 +107,8 @@ fun BucketRoute(
 
 @Composable
 fun BucketScreen(
-    name: String?,
-    uiState: BucketScreenUiState,
+    bucketName: String,
+    uiState: BucketScreenViewModel.UiState,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
     onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
 ) {
@@ -188,7 +180,7 @@ fun BucketScreen(
             .background(color = MaterialTheme.colorScheme.background),
     ) {
         when (uiState) {
-            is BucketScreenUiState.Empty -> {
+            is BucketScreenViewModel.UiState.Empty -> {
                 SketchesCenteredMessage(
                     text = stringResource(R.string.no_images_found),
                     modifier = Modifier.matchParentSize(),
@@ -199,7 +191,7 @@ fun BucketScreen(
                     }
                 }
             }
-            is BucketScreenUiState.Loading -> {
+            is BucketScreenViewModel.UiState.Loading -> {
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
                 SideEffect {
                     if (selectedFiles.isNotEmpty()) {
@@ -207,7 +199,7 @@ fun BucketScreen(
                     }
                 }
             }
-            is BucketScreenUiState.Bucket -> {
+            is BucketScreenViewModel.UiState.Bucket -> {
                 BucketScreenLayout(
                     files = uiState.files,
                     selectedFiles = selectedFiles,
@@ -216,7 +208,7 @@ fun BucketScreen(
                     modifier = Modifier.matchParentSize(),
                 )
             }
-            is BucketScreenUiState.Error -> {
+            is BucketScreenViewModel.UiState.Error -> {
                 SketchesErrorMessage(
                     thrown = uiState.thrown,
                     modifier = Modifier.matchParentSize(),
@@ -238,7 +230,7 @@ fun BucketScreen(
                     selectedFiles.size,
                 )
             } else {
-                name
+                bucketName
             },
             backgroundColor = MaterialTheme.colorScheme.background
                 .copy(alpha = SketchesColors.UiAlphaLowTransparency),

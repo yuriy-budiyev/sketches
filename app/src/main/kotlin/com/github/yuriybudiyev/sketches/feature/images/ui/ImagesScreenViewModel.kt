@@ -59,6 +59,7 @@ class ImagesScreenViewModel @Inject constructor(
 ) {
 
     private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
+
     val uiState: StateFlow<UiState> =
         flow<UiState> {
             updateMedia()
@@ -96,6 +97,7 @@ class ImagesScreenViewModel @Inject constructor(
     }
 
     private var deleteMediaJob: Job? = null
+
     fun deleteMedia(files: Collection<MediaStoreFile>) {
         deleteMediaJob?.cancel()
         deleteMediaJob = viewModelScope.launch {
@@ -112,6 +114,7 @@ class ImagesScreenViewModel @Inject constructor(
     }
 
     private var onMediaChangedJob: Job? = null
+
     override fun onMediaChanged() {
         onMediaChangedJob?.cancel()
         onMediaChangedJob = viewModelScope.launch {

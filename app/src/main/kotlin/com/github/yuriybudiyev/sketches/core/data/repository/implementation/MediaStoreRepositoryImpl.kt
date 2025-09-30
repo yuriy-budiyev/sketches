@@ -30,7 +30,6 @@ import android.provider.MediaStore
 import androidx.collection.MutableLongObjectMap
 import androidx.core.database.getStringOrNull
 import androidx.core.net.toUri
-import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
@@ -47,7 +46,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
 
     private fun collectFiles(
         mediaType: MediaType,
-        bucketId: Long,
+        bucketId: Long?,
     ): List<MediaStoreFile> {
         val contentUri = mediaType.contentUri
         val cursor = context.contentResolver.query(
@@ -58,12 +57,12 @@ class MediaStoreRepositoryImpl @Inject constructor(
                 MediaStore.MediaColumns.DATE_ADDED,
                 MediaStore.MediaColumns.MIME_TYPE,
             ),
-            if (bucketId != SketchesConstants.NoId) {
+            if (bucketId != null) {
                 "${MediaStore.MediaColumns.BUCKET_ID}=?"
             } else {
                 null
             },
-            if (bucketId != SketchesConstants.NoId) {
+            if (bucketId != null) {
                 arrayOf(bucketId.toString())
             } else {
                 null
@@ -98,7 +97,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getFiles(bucketId: Long): List<MediaStoreFile> {
+    override suspend fun getFiles(bucketId: Long?): List<MediaStoreFile> {
         val imageFiles = collectFiles(
             MediaType.Image,
             bucketId,

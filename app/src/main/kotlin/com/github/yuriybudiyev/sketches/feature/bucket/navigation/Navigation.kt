@@ -30,7 +30,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.navigation.NavigationRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
@@ -57,12 +56,7 @@ fun NavGraphBuilder.registerBucketScreen(
         enterTransition = { fadeIn() },
         exitTransition = { fadeOut() },
     ) { backStackEntry ->
-        val route = backStackEntry.toRoute<BucketRoute>()
-        BucketRoute(
-            bucketId = route.bucketId,
-            bucketName = route.bucketName,
-            onImageClick = onImageClick,
-        )
+        BucketRoute(onImageClick)
     }
 }
 

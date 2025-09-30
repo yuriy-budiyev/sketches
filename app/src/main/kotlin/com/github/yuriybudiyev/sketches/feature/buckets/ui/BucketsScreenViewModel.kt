@@ -63,6 +63,7 @@ class BucketsScreenViewModel @Inject constructor(
 ) {
 
     private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
+
     val uiState: StateFlow<UiState> =
         flow<UiState> {
             updateBuckets()
@@ -146,6 +147,7 @@ class BucketsScreenViewModel @Inject constructor(
     }
 
     private var startSharingBucketsJob: Job? = null
+
     fun startSharingBuckets(buckets: Collection<MediaStoreBucket>) {
         startSharingBucketsJob?.cancel()
         startSharingBucketsJob = viewModelScope.launch {
@@ -158,6 +160,7 @@ class BucketsScreenViewModel @Inject constructor(
     }
 
     private var startDeletingBucketsJob: Job? = null
+
     fun startDeletingBuckets(buckets: Collection<MediaStoreBucket>) {
         startDeletingBucketsJob?.cancel()
         startDeletingBucketsJob = viewModelScope.launch {
@@ -170,6 +173,7 @@ class BucketsScreenViewModel @Inject constructor(
     }
 
     private var deleteMediaJob: Job? = null
+
     fun deleteMedia(files: Collection<MediaStoreFile>) {
         deleteMediaJob?.cancel()
         deleteMediaJob = viewModelScope.launch {
@@ -186,6 +190,7 @@ class BucketsScreenViewModel @Inject constructor(
     }
 
     private var onMediaChangedJob: Job? = null
+
     override fun onMediaChanged() {
         onMediaChangedJob?.cancel()
         onMediaChangedJob = viewModelScope.launch {

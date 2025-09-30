@@ -125,7 +125,7 @@ fun ImageRoute(viewModel: ImageScreenViewModel = hiltViewModel()) {
     ImageScreen(
         uiState = uiState,
         onChange = { index, file ->
-            viewModel.setCurrentMediaData(
+            viewModel.setCurrentFileInfo(
                 fileIndex = index,
                 fileId = file.id,
             )
@@ -163,7 +163,7 @@ fun ImageScreen(
             }
             is ImageScreenViewModel.UiState.Image -> {
                 ImageScreenLayout(
-                    index = uiState.fileIndex,
+                    index = uiState.index,
                     files = uiState.files,
                     onChange = onChange,
                     onDelete = onDelete,

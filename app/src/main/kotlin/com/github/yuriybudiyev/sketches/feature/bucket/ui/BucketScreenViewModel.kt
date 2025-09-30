@@ -25,19 +25,26 @@
 package com.github.yuriybudiyev.sketches.feature.bucket.ui
 
 import android.content.Context
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
+import androidx.navigation.toRoute
 import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
+import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -46,6 +53,7 @@ import javax.inject.Inject
 class BucketScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
+    savedStateHandle: SavedStateHandle,
     private val dispatchers: SketchesCoroutineDispatchers,
     private val getMediaFiles: GetMediaFilesUseCase,
     private val deleteMediaFiles: DeleteMediaFilesUseCase,
@@ -54,45 +62,51 @@ class BucketScreenViewModel @Inject constructor(
     dispatchers,
 ) {
 
-    private val uiStateInternal: MutableStateFlow<BucketScreenUiState> =
-        MutableStateFlow(BucketScreenUiState.Loading)
+    val navRoute: BucketRoute = savedStateHandle.toRoute()
 
-    val uiState: StateFlow<BucketScreenUiState>
-        get() = uiStateInternal
+    private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
 
-    fun updateMedia(
-        bucketId: Long = currentBucketId,
-        silent: Boolean = uiState.value is BucketScreenUiState.Bucket,
-    ) {
-        currentBucketId = bucketId
-        updateJob?.cancel()
-        updateJob = viewModelScope.launch {
-            if (!silent) {
-                uiStateInternal.value = BucketScreenUiState.Loading
+    val uiState: StateFlow<UiState> =
+        flow<UiState> {
+            updateMedia()
+            uiAction.collect { action ->
+                when (action) {
+                    is UiAction.UpdateMedia -> {
+                        updateMedia()
+                    }
+                    is UiAction.ShowError -> {
+                        emit(UiState.Error(action.thrown))
+                    }
+                }
             }
-            try {
-                val files = withContext(dispatchers.io) { getMediaFiles(bucketId) }
-                if (files.isNotEmpty()) {
-                    uiStateInternal.value = BucketScreenUiState.Bucket(
-                        bucketId,
-                        files
-                    )
-                } else {
-                    uiStateInternal.value = BucketScreenUiState.Empty
-                }
-            } catch (_: CancellationException) {
-                // Do nothing
-            } catch (e: Exception) {
-                if (!silent) {
-                    uiStateInternal.value = BucketScreenUiState.Error(e)
-                }
+        }.catch { e ->
+            emit(UiState.Error(e))
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = UiState.Loading,
+        )
+
+    private suspend fun FlowCollector<UiState>.updateMedia() {
+        try {
+            val files = withContext(dispatchers.io) { getMediaFiles(navRoute.bucketId) }
+            if (files.isNotEmpty()) {
+                emit(UiState.Bucket(files))
+            } else {
+                emit(UiState.Empty)
+            }
+        } catch (e: Exception) {
+            if (uiState.value !is UiState.Bucket) {
+                emit(UiState.Error(e))
             }
         }
     }
 
+    private var deleteMediaJob: Job? = null
+
     fun deleteMedia(files: Collection<MediaStoreFile>) {
-        deleteJob?.cancel()
-        deleteJob = viewModelScope.launch {
+        deleteMediaJob?.cancel()
+        deleteMediaJob = viewModelScope.launch {
             try {
                 withContext(dispatchers.io) {
                     deleteMediaFiles(files)
@@ -100,16 +114,39 @@ class BucketScreenViewModel @Inject constructor(
             } catch (_: CancellationException) {
                 // Do nothing
             } catch (e: Exception) {
-                uiStateInternal.value = BucketScreenUiState.Error(e)
+                uiAction.emit(UiAction.ShowError(e))
             }
         }
     }
 
+    private var onMediaChangedJob: Job? = null
+
     override fun onMediaChanged() {
-        updateMedia()
+        onMediaChangedJob?.cancel()
+        onMediaChangedJob = viewModelScope.launch {
+            try {
+                uiAction.emit(UiAction.UpdateMedia)
+            } catch (_: CancellationException) {
+                // Do nothing
+            }
+        }
     }
 
-    private var updateJob: Job? = null
-    private var deleteJob: Job? = null
-    private var currentBucketId: Long = SketchesConstants.NoId
+    sealed interface UiState {
+
+        data object Empty: UiState
+
+        data object Loading: UiState
+
+        data class Bucket(val files: List<MediaStoreFile>): UiState
+
+        data class Error(val thrown: Throwable): UiState
+    }
+
+    private sealed interface UiAction {
+
+        data object UpdateMedia: UiAction
+
+        data class ShowError(val thrown: Throwable): UiAction
+    }
 }

@@ -24,13 +24,12 @@
 
 package com.github.yuriybudiyev.sketches.core.data.repository
 
-import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
 interface MediaStoreRepository {
 
-    suspend fun getFiles(bucketId: Long = SketchesConstants.NoId): List<MediaStoreFile>
+    suspend fun getFiles(bucketId: Long? = null): List<MediaStoreFile>
 
     suspend fun deleteFiles(files: Collection<MediaStoreFile>): Boolean
 

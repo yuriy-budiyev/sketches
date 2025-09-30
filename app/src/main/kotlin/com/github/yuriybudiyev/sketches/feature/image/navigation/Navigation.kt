@@ -30,14 +30,13 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
 import com.github.yuriybudiyev.sketches.core.navigation.NavigationRoute
 import kotlinx.serialization.Serializable
 
 fun NavController.navigateToImageScreen(
     imageIndex: Int,
     imageId: Long,
-    bucketId: Long = SketchesConstants.NoId,
+    bucketId: Long? = null,
     navOptions: NavOptions? = null,
 ) {
     navigate(
@@ -63,5 +62,5 @@ fun NavGraphBuilder.registerImageScreen() {
 data class ImageRoute(
     val imageIndex: Int,
     val imageId: Long,
-    val bucketId: Long,
+    val bucketId: Long?,
 ): NavigationRoute

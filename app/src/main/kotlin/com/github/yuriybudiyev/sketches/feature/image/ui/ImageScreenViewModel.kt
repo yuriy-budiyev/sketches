@@ -28,7 +28,6 @@ import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.github.yuriybudiyev.sketches.core.constants.SketchesConstants
 import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
@@ -64,6 +63,7 @@ class ImageScreenViewModel @Inject constructor(
 ) {
 
     private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
+
     val uiState: StateFlow<UiState> =
         flow<UiState> {
             updateMedia()
@@ -85,23 +85,10 @@ class ImageScreenViewModel @Inject constructor(
             initialValue = UiState.Loading,
         )
 
-    private var currentFileIndex: Int = -1
-    private var currentFileId: Long = SketchesConstants.NoId
-    private var currentBucketId: Long = SketchesConstants.NoId
-    fun setCurrentMediaData(
-        fileIndex: Int = currentFileIndex,
-        fileId: Long = currentFileId,
-        bucketId: Long = currentBucketId,
-    ) {
-        currentFileIndex = fileIndex
-        currentFileId = fileId
-        currentBucketId = bucketId
-    }
-
     private suspend fun FlowCollector<UiState>.updateMedia(
         fileIndex: Int = currentFileIndex,
-        fileId: Long = currentFileId,
-        bucketId: Long = currentBucketId,
+        fileId: Long? = currentFileId,
+        bucketId: Long? = currentBucketId,
     ) {
         if (fileIndex == -1) {
             emit(UiState.Empty)
@@ -114,9 +101,7 @@ class ImageScreenViewModel @Inject constructor(
                 if (fileIndex < filesSize && files[fileIndex].id == fileId) {
                     emit(
                         UiState.Image(
-                            fileIndex = fileIndex,
-                            fileId = fileId,
-                            bucketId = bucketId,
+                            index = fileIndex,
                             files = files,
                         ),
                     )
@@ -142,12 +127,10 @@ class ImageScreenViewModel @Inject constructor(
                     }
                     emit(
                         UiState.Image(
-                            fileIndex = actualIndex.coerceIn(
+                            index = actualIndex.coerceIn(
                                 0,
-                                filesSize - 1
+                                filesSize - 1,
                             ),
-                            fileId = fileId,
-                            bucketId = bucketId,
                             files = files,
                         ),
                     )
@@ -163,6 +146,7 @@ class ImageScreenViewModel @Inject constructor(
     }
 
     private var deleteMediaJob: Job? = null
+
     fun deleteMedia(files: Collection<MediaStoreFile>) {
         deleteMediaJob?.cancel()
         deleteMediaJob = viewModelScope.launch {
@@ -179,6 +163,7 @@ class ImageScreenViewModel @Inject constructor(
     }
 
     private var onMediaChangedJob: Job? = null
+
     override fun onMediaChanged() {
         onMediaChangedJob?.cancel()
         onMediaChangedJob = viewModelScope.launch {
@@ -190,13 +175,23 @@ class ImageScreenViewModel @Inject constructor(
         }
     }
 
+    fun setCurrentFileInfo(
+        fileIndex: Int,
+        fileId: Long,
+    ) {
+        currentFileIndex = fileIndex
+        currentFileId = fileId
+    }
+
+    private var currentFileIndex: Int
+    private var currentFileId: Long
+    private var currentBucketId: Long?
+
     init {
         val route = savedStateHandle.toRoute<ImageRoute>()
-        setCurrentMediaData(
-            fileIndex = route.imageIndex,
-            fileId = route.imageId,
-            bucketId = route.bucketId,
-        )
+        currentFileIndex = route.imageIndex
+        currentFileId = route.imageId
+        currentBucketId = route.bucketId
     }
 
     sealed interface UiState {
@@ -206,9 +201,7 @@ class ImageScreenViewModel @Inject constructor(
         data object Loading: UiState
 
         data class Image(
-            val fileIndex: Int,
-            val fileId: Long,
-            val bucketId: Long,
+            val index: Int,
             val files: List<MediaStoreFile>,
         ): UiState
 
