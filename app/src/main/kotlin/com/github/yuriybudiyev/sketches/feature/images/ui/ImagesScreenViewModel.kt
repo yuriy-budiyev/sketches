@@ -120,13 +120,6 @@ class ImagesScreenViewModel @Inject constructor(
         }
     }
 
-    sealed interface UiAction {
-
-        data object UpdateImages: UiAction
-
-        data class ShowError(val thrown: Throwable): UiAction
-    }
-
     sealed interface UiState {
 
         data object Empty: UiState
@@ -136,5 +129,12 @@ class ImagesScreenViewModel @Inject constructor(
         data class Images(val files: List<MediaStoreFile>): UiState
 
         data class Error(val thrown: Throwable): UiState
+    }
+
+    private sealed interface UiAction {
+
+        data object UpdateImages: UiAction
+
+        data class ShowError(val thrown: Throwable): UiAction
     }
 }
