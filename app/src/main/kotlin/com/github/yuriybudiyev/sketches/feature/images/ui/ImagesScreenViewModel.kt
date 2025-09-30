@@ -76,7 +76,7 @@ class ImagesScreenViewModel @Inject constructor(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = UiState.Loading
+            initialValue = UiState.Loading,
         )
 
     private suspend fun updateMediaFiles(): UiState {
