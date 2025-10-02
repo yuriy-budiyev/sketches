@@ -55,7 +55,7 @@ import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 @Composable
 fun SketchesMediaGrid(
     files: List<MediaStoreFile>,
-    selectedFiles: SnapshotStateSet<MediaStoreFile>,
+    selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
     state: LazyGridState = rememberLazyGridState(),
@@ -77,7 +77,7 @@ fun SketchesMediaGrid(
             contentType = { index -> filesUpdated[index].mediaType },
         ) { index ->
             val file = filesUpdated[index]
-            val fileSelectedOnComposition = selectedFilesUpdated.contains(file)
+            val fileSelectedOnComposition = selectedFilesUpdated.contains(file.id)
             Box(
                 modifier = Modifier
                     .aspectRatio(ratio = 1.0F)
@@ -96,21 +96,21 @@ fun SketchesMediaGrid(
                     .combinedClickable(
                         onLongClick = {
                             if (selectedFilesUpdated.isEmpty()) {
-                                selectedFilesUpdated.add(file)
+                                selectedFilesUpdated.add(file.id)
                             } else {
-                                if (selectedFilesUpdated.contains(file)) {
+                                if (selectedFilesUpdated.contains(file.id)) {
                                     selectedFilesUpdated.clear()
                                 } else {
-                                    selectedFilesUpdated.addAll(filesUpdated)
+                                    selectedFilesUpdated.addAll(filesUpdated.map { file -> file.id })
                                 }
                             }
                         },
                         onClick = {
                             if (selectedFilesUpdated.isNotEmpty()) {
-                                if (selectedFilesUpdated.contains(file)) {
-                                    selectedFilesUpdated.remove(file)
+                                if (selectedFilesUpdated.contains(file.id)) {
+                                    selectedFilesUpdated.remove(file.id)
                                 } else {
-                                    selectedFilesUpdated.add(file)
+                                    selectedFilesUpdated.add(file.id)
                                 }
                             } else {
                                 onItemClickUpdated(

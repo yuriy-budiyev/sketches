@@ -48,6 +48,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -67,6 +68,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.utils.filterByIds
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavController
 import com.github.yuriybudiyev.sketches.core.navigation.collectNavResult
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
@@ -116,7 +118,8 @@ fun BucketScreen(
     val contextUpdated by rememberUpdatedState(LocalContext.current)
     val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
-    val selectedFiles = rememberSaveable { SnapshotStateSet<MediaStoreFile>() }
+    var allFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptyList()) }
+    val selectedFiles = rememberSaveable { SnapshotStateSet<Long>() }
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -189,6 +192,9 @@ fun BucketScreen(
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }
+                    if (allFiles.isNotEmpty()) {
+                        allFiles = emptyList()
+                    }
                 }
             }
             is BucketScreenViewModel.UiState.Loading -> {
@@ -197,11 +203,16 @@ fun BucketScreen(
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }
+                    if (allFiles.isNotEmpty()) {
+                        allFiles = emptyList()
+                    }
                 }
             }
             is BucketScreenViewModel.UiState.Bucket -> {
+                val files = uiState.files
+                allFiles = files
                 BucketScreenLayout(
-                    files = uiState.files,
+                    files = files,
                     selectedFiles = selectedFiles,
                     state = mediaGridState,
                     onItemClick = onImageClick,
@@ -216,6 +227,9 @@ fun BucketScreen(
                 SideEffect {
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
+                    }
+                    if (allFiles.isNotEmpty()) {
+                        allFiles = emptyList()
                     }
                 }
             }
@@ -244,7 +258,9 @@ fun BucketScreen(
                             coroutineScope.launch {
                                 deleteRequestLauncher.launchDeleteMediaRequest(
                                     contextUpdated,
-                                    selectedFiles.map { file -> file.uri.toUri() },
+                                    allFiles
+                                        .filterByIds(selectedFiles.toSet())
+                                        .map { file -> file.uri.toUri() },
                                 )
                             }
                         } else {
@@ -258,7 +274,9 @@ fun BucketScreen(
                     description = shareDescription,
                     onClick = {
                         coroutineScope.launch {
-                            val shareInfo = selectedFiles.toShareInfo()
+                            val shareInfo = allFiles
+                                .filterByIds(selectedFiles.toSet())
+                                .toShareInfo()
                             shareManagerUpdated.startChooserActivity(
                                 uris = shareInfo.uris,
                                 mimeType = shareInfo.mimeType,
@@ -274,7 +292,7 @@ fun BucketScreen(
             SketchesDeleteConfirmationDialog(
                 onDelete = {
                     deleteDialogVisible = false
-                    onDeleteMediaUpdated(selectedFiles.toSet())
+                    onDeleteMediaUpdated(allFiles.filterByIds(selectedFiles.toSet()))
                     coroutineScope.launch {
                         selectedFiles.clear()
                     }
@@ -290,7 +308,7 @@ fun BucketScreen(
 @Composable
 private fun BucketScreenLayout(
     files: List<MediaStoreFile>,
-    selectedFiles: SnapshotStateSet<MediaStoreFile>,
+    selectedFiles: SnapshotStateSet<Long>,
     state: LazyGridState,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
