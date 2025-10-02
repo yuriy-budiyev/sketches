@@ -47,9 +47,12 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
@@ -71,6 +74,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.utils.filterByIds
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
@@ -126,7 +130,8 @@ fun BucketsScreen(
     val onShareBucketsUpdated by rememberUpdatedState(onShareBuckets)
     val onDeleteBucketsUpdated by rememberUpdatedState(onDeleteBuckets)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
-    val selectedBuckets = rememberSaveable { SnapshotStateSet<MediaStoreBucket>() }
+    var allBuckets by remember { mutableStateOf<List<MediaStoreBucket>>(emptyList()) }
+    val selectedBuckets = rememberSaveable { SnapshotStateSet<Long>() }
     val deleteDialogFiles = rememberSaveable { SnapshotStateList<MediaStoreFile>() }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -214,6 +219,9 @@ fun BucketsScreen(
                     if (deleteDialogFiles.isNotEmpty()) {
                         deleteDialogFiles.clear()
                     }
+                    if (allBuckets.isNotEmpty()) {
+                        allBuckets = emptyList()
+                    }
                 }
             }
             is BucketsScreenViewModel.UiState.Loading -> {
@@ -225,11 +233,16 @@ fun BucketsScreen(
                     if (deleteDialogFiles.isNotEmpty()) {
                         deleteDialogFiles.clear()
                     }
+                    if (allBuckets.isNotEmpty()) {
+                        allBuckets = emptyList()
+                    }
                 }
             }
             is BucketsScreenViewModel.UiState.Buckets -> {
+                val buckets = uiState.buckets
+                allBuckets = buckets
                 BucketsScreenLayout(
-                    buckets = uiState.buckets,
+                    buckets = buckets,
                     selectedBuckets = selectedBuckets,
                     onBucketClick = onBucketClick,
                     modifier = Modifier.matchParentSize(),
@@ -246,6 +259,9 @@ fun BucketsScreen(
                     }
                     if (deleteDialogFiles.isNotEmpty()) {
                         deleteDialogFiles.clear()
+                    }
+                    if (allBuckets.isNotEmpty()) {
+                        allBuckets = emptyList()
                     }
                 }
             }
@@ -270,7 +286,7 @@ fun BucketsScreen(
                     icon = SketchesIcons.Delete,
                     description = stringResource(R.string.delete_selected),
                     onClick = {
-                        onDeleteBucketsUpdated(selectedBuckets.toSet())
+                        onDeleteBucketsUpdated(allBuckets.filterByIds(selectedBuckets.toSet()))
                     },
                 )
                 val shareDescription = stringResource(R.string.share_selected)
@@ -278,7 +294,7 @@ fun BucketsScreen(
                     icon = SketchesIcons.Share,
                     description = shareDescription,
                     onClick = {
-                        onShareBucketsUpdated(selectedBuckets.toSet())
+                        onShareBucketsUpdated(allBuckets.filterByIds(selectedBuckets.toSet()))
                     },
                 )
             }
@@ -305,7 +321,7 @@ fun BucketsScreen(
 @Composable
 private fun BucketsScreenLayout(
     buckets: List<MediaStoreBucket>,
-    selectedBuckets: SnapshotStateSet<MediaStoreBucket>,
+    selectedBuckets: SnapshotStateSet<Long>,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -322,27 +338,27 @@ private fun BucketsScreenLayout(
             key = { index -> bucketsUpdated[index].id },
         ) { index ->
             val bucket = bucketsUpdated[index]
-            val bucketSelectedOnComposition = bucket in selectedBucketsUpdated
+            val bucketSelectedOnComposition = selectedBucketsUpdated.contains(bucket.id)
             Column(
                 modifier = Modifier
                     .combinedClickable(
                         onLongClick = {
                             if (selectedBucketsUpdated.isEmpty()) {
-                                selectedBucketsUpdated.add(bucket)
+                                selectedBucketsUpdated.add(bucket.id)
                             } else {
-                                if (selectedBucketsUpdated.contains(bucket)) {
+                                if (selectedBucketsUpdated.contains(bucket.id)) {
                                     selectedBucketsUpdated.clear()
                                 } else {
-                                    selectedBucketsUpdated.addAll(bucketsUpdated)
+                                    selectedBucketsUpdated.addAll(bucketsUpdated.map { bucket -> bucket.id })
                                 }
                             }
                         },
                         onClick = {
                             if (selectedBucketsUpdated.isNotEmpty()) {
-                                if (selectedBucketsUpdated.contains(bucket)) {
-                                    selectedBucketsUpdated.remove(bucket)
+                                if (selectedBucketsUpdated.contains(bucket.id)) {
+                                    selectedBucketsUpdated.remove(bucket.id)
                                 } else {
-                                    selectedBucketsUpdated.add(bucket)
+                                    selectedBucketsUpdated.add(bucket.id)
                                 }
                             } else {
                                 onBucketClickUpdated(
