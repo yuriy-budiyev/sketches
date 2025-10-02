@@ -42,6 +42,7 @@ object CollectionsCompat {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             HashSet.newHashSet(numElements)
         } else {
+            require(numElements >= 0) { "Negative number of elements: $numElements" }
             HashSet(
                 calculateHashMapCapacity(numElements),
                 DEFAULT_LOAD_FACTOR,
@@ -61,6 +62,7 @@ object CollectionsCompat {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             LinkedHashSet.newLinkedHashSet(numElements)
         } else {
+            require(numElements >= 0) { "Negative number of elements: $numElements" }
             LinkedHashSet(
                 calculateHashMapCapacity(numElements),
                 DEFAULT_LOAD_FACTOR,
@@ -81,6 +83,7 @@ object CollectionsCompat {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             HashMap.newHashMap(numMappings)
         } else {
+            require(numMappings >= 0) { "Negative number of mappings: $numMappings" }
             HashMap(
                 calculateHashMapCapacity(numMappings),
                 DEFAULT_LOAD_FACTOR,
@@ -101,6 +104,7 @@ object CollectionsCompat {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             LinkedHashMap.newLinkedHashMap(numMappings)
         } else {
+            require(numMappings >= 0) { "Negative number of mappings: $numMappings" }
             LinkedHashMap(
                 calculateHashMapCapacity(numMappings),
                 DEFAULT_LOAD_FACTOR,
