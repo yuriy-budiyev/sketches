@@ -76,14 +76,14 @@ class SketchesAppState @RememberInComposition constructor(val navController: Nav
 
     @OptIn(InternalSerializationApi::class)
     fun registerTopLevelNavigationRoute(route: TopLevelNavigationRoute) {
-        if (
-            topLevelRoutesMapInternal.put(
-                route::class.serializer().descriptor.serialName,
-                route,
-            ) == null
-        ) {
-            topLevelRoutesListInternal.add(route)
+        val oldRoute = topLevelRoutesMapInternal.put(
+            route::class.serializer().descriptor.serialName,
+            route,
+        )
+        if (oldRoute != null) {
+            topLevelRoutesListInternal.remove(oldRoute)
         }
+        topLevelRoutesListInternal.add(route)
     }
 
     private val topLevelRoutesMapInternal: SnapshotStateMap<String, TopLevelNavigationRoute> =
