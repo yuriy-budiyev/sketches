@@ -83,7 +83,7 @@ object CollectionsCompat {
         } else {
             HashMap(
                 calculateHashMapCapacity(numMappings),
-                DEFAULT_LOAD_FACTOR
+                DEFAULT_LOAD_FACTOR,
             )
         }
 
@@ -103,7 +103,7 @@ object CollectionsCompat {
         } else {
             LinkedHashMap(
                 calculateHashMapCapacity(numMappings),
-                DEFAULT_LOAD_FACTOR
+                DEFAULT_LOAD_FACTOR,
             )
         }
 
