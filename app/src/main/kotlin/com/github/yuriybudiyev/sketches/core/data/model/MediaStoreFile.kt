@@ -24,11 +24,10 @@
 
 package com.github.yuriybudiyev.sketches.core.data.model
 
+import android.os.Parcel
 import android.os.Parcelable
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
 data class MediaStoreFile(
     val id: Long,
     val bucketId: Long,
@@ -36,4 +35,36 @@ data class MediaStoreFile(
     val mediaType: MediaType,
     val mimeType: String,
     val uri: String,
-): Parcelable
+): Parcelable {
+
+    override fun describeContents(): Int =
+        0
+
+    override fun writeToParcel(
+        parcel: Parcel,
+        flags: Int,
+    ) {
+        parcel.writeLong(id)
+        parcel.writeLong(bucketId)
+        parcel.writeLong(dateAdded)
+        parcel.writeInt(mediaType.ordinal)
+        parcel.writeString(mimeType)
+        parcel.writeString(uri)
+    }
+
+    companion object CREATOR: Parcelable.Creator<MediaStoreFile?> {
+
+        override fun createFromParcel(parcel: Parcel): MediaStoreFile? =
+            MediaStoreFile(
+                id = parcel.readLong(),
+                bucketId = parcel.readLong(),
+                dateAdded = parcel.readLong(),
+                mediaType = MediaType.entries[parcel.readInt()],
+                mimeType = parcel.readString()!!,
+                uri = parcel.readString()!!,
+            )
+
+        override fun newArray(size: Int): Array<MediaStoreFile?> =
+            arrayOfNulls(size)
+    }
+}
