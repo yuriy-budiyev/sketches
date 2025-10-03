@@ -73,7 +73,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.utils.filterByIds
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
@@ -110,8 +109,8 @@ fun BucketsRoute(
         onDeleteBuckets = { buckets ->
             viewModel.startDeletingBuckets(buckets)
         },
-        onDeleteMedia = { files ->
-            viewModel.deleteMedia(files)
+        onDeleteMedia = { uris ->
+            viewModel.deleteMedia(uris)
         }
     )
 }
@@ -122,7 +121,7 @@ fun BucketsScreen(
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
     onShareBuckets: (buckets: Collection<MediaStoreBucket>) -> Unit,
     onDeleteBuckets: (buckets: Collection<MediaStoreBucket>) -> Unit,
-    onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
+    onDeleteMedia: (uris: Collection<String>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val contextUpdated by rememberUpdatedState(LocalContext.current)
@@ -132,7 +131,7 @@ fun BucketsScreen(
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     var allBuckets by remember { mutableStateOf<List<MediaStoreBucket>>(emptyList()) }
     val selectedBuckets = rememberSaveable { SnapshotStateSet<Long>() }
-    val deleteDialogFiles = rememberSaveable { SnapshotStateList<MediaStoreFile>() }
+    val deleteDialogUris = rememberSaveable { SnapshotStateList<String>() }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->
@@ -155,7 +154,7 @@ fun BucketsScreen(
     }
     LaunchedEffect(Unit) {
         if (selectedBuckets.isEmpty()) {
-            deleteDialogFiles.clear()
+            deleteDialogUris.clear()
         }
     }
     BackHandler(selectedBuckets.isNotEmpty()) {
@@ -188,10 +187,10 @@ fun BucketsScreen(
                                 action.files.map { file -> file.uri.toUri() },
                             )
                         } else {
-                            if (deleteDialogFiles.isNotEmpty()) {
-                                deleteDialogFiles.clear()
+                            if (deleteDialogUris.isNotEmpty()) {
+                                deleteDialogUris.clear()
                             }
-                            deleteDialogFiles.addAll(action.files)
+                            deleteDialogUris.addAll(action.files.map { file -> file.uri })
                         }
                     }
                     else -> {
@@ -216,8 +215,8 @@ fun BucketsScreen(
                     if (selectedBuckets.isNotEmpty()) {
                         selectedBuckets.clear()
                     }
-                    if (deleteDialogFiles.isNotEmpty()) {
-                        deleteDialogFiles.clear()
+                    if (deleteDialogUris.isNotEmpty()) {
+                        deleteDialogUris.clear()
                     }
                     if (allBuckets.isNotEmpty()) {
                         allBuckets = emptyList()
@@ -230,8 +229,8 @@ fun BucketsScreen(
                     if (selectedBuckets.isNotEmpty()) {
                         selectedBuckets.clear()
                     }
-                    if (deleteDialogFiles.isNotEmpty()) {
-                        deleteDialogFiles.clear()
+                    if (deleteDialogUris.isNotEmpty()) {
+                        deleteDialogUris.clear()
                     }
                     if (allBuckets.isNotEmpty()) {
                         allBuckets = emptyList()
@@ -257,8 +256,8 @@ fun BucketsScreen(
                     if (selectedBuckets.isNotEmpty()) {
                         selectedBuckets.clear()
                     }
-                    if (deleteDialogFiles.isNotEmpty()) {
-                        deleteDialogFiles.clear()
+                    if (deleteDialogUris.isNotEmpty()) {
+                        deleteDialogUris.clear()
                     }
                     if (allBuckets.isNotEmpty()) {
                         allBuckets = emptyList()
@@ -299,18 +298,18 @@ fun BucketsScreen(
                 )
             }
         }
-        if (deleteDialogFiles.isNotEmpty()) {
+        if (deleteDialogUris.isNotEmpty()) {
             SketchesDeleteConfirmationDialog(
                 onDelete = {
-                    onDeleteMediaUpdated(deleteDialogFiles.toList())
+                    onDeleteMediaUpdated(deleteDialogUris.toList())
                     coroutineScope.launch {
-                        deleteDialogFiles.clear()
+                        deleteDialogUris.clear()
                         selectedBuckets.clear()
                     }
                 },
                 onDismiss = {
                     coroutineScope.launch {
-                        deleteDialogFiles.clear()
+                        deleteDialogUris.clear()
                     }
                 },
             )

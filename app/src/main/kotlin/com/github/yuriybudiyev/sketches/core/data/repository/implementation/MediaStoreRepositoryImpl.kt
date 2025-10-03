@@ -117,12 +117,12 @@ class MediaStoreRepositoryImpl @Inject constructor(
         return files
     }
 
-    override suspend fun deleteFiles(files: Collection<MediaStoreFile>): Boolean {
+    override suspend fun deleteContent(uris: Collection<String>): Boolean {
         val contentResolver = context.contentResolver
         var count = 0
-        for (file in files) {
+        for (uri in uris) {
             count += contentResolver.delete(
-                file.uri.toUri(),
+                uri.toUri(),
                 null,
                 null,
             )

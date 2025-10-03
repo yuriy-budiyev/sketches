@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Yuriy Budiyev
+ * Copyright (c) 2025 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,12 +22,15 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.model
+package com.github.yuriybudiyev.sketches.core.domain
 
-data class MediaStoreBucket(
-    val id: Long,
-    val name: String,
-    val size: Int,
-    val coverUri: String,
-    val coverDateAdded: Long,
-)
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import dagger.Reusable
+import javax.inject.Inject
+
+@Reusable
+class DeleteContentUseCase @Inject constructor(private val repository: MediaStoreRepository) {
+
+    suspend operator fun invoke(uris: Collection<String>): Boolean =
+        repository.deleteContent(uris)
+}

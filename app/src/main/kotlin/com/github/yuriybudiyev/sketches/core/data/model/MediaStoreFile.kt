@@ -24,11 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.core.data.model
 
-import android.os.Parcelable
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
 data class MediaStoreFile(
     val id: Long,
     val bucketId: Long,
@@ -36,4 +33,4 @@ data class MediaStoreFile(
     val mediaType: MediaType,
     val mimeType: String,
     val uri: String,
-): Parcelable
+)

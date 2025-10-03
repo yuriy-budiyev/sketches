@@ -33,5 +33,5 @@ import javax.inject.Inject
 class DeleteMediaFilesUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
     suspend operator fun invoke(files: Collection<MediaStoreFile>): Boolean =
-        repository.deleteFiles(files)
+        repository.deleteContent(files.map { file -> file.uri })
 }

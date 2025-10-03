@@ -30,7 +30,7 @@ import com.github.yuriybudiyev.sketches.core.consumable.Consumable
 import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
+import com.github.yuriybudiyev.sketches.core.domain.DeleteContentUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBucketsContentUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaBucketsUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
@@ -56,7 +56,7 @@ class BucketsScreenViewModel @Inject constructor(
     private val dispatchers: SketchesCoroutineDispatchers,
     private val getMediaBuckets: GetMediaBucketsUseCase,
     private val getBucketsContent: GetBucketsContentUseCase,
-    private val deleteMediaFiles: DeleteMediaFilesUseCase,
+    private val deleteContent: DeleteContentUseCase,
 ): MediaObservingViewModel(
     context,
     dispatchers,
@@ -174,12 +174,12 @@ class BucketsScreenViewModel @Inject constructor(
 
     private var deleteMediaJob: Job? = null
 
-    fun deleteMedia(files: Collection<MediaStoreFile>) {
+    fun deleteMedia(uris: Collection<String>) {
         deleteMediaJob?.cancel()
         deleteMediaJob = viewModelScope.launch {
             try {
                 withContext(dispatchers.io) {
-                    deleteMediaFiles(files)
+                    deleteContent(uris)
                 }
             } catch (_: CancellationException) {
                 // Do nothing
