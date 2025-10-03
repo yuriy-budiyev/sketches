@@ -111,7 +111,7 @@ object CollectionsCompat {
             )
         }
 
-    fun calculateHashMapCapacity(numMappings: Int): Int =
+    private fun calculateHashMapCapacity(numMappings: Int): Int =
         ceil(numMappings.toDouble() / DEFAULT_LOAD_FACTOR.toDouble()).toInt()
 
     private const val DEFAULT_LOAD_FACTOR = 0.75F
