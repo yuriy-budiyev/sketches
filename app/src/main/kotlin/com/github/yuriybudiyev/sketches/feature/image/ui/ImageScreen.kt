@@ -226,6 +226,16 @@ private fun ImageScreenLayout(
             }
         }
     }
+    LaunchedEffect(Unit) {
+        snapshotFlow { systemBarsControllerUpdated.isSystemBarsVisible }.collect { visible ->
+            if (visible) {
+                barState.scrollToItemCentered(
+                    index = pagerState.currentPage,
+                    animate = false,
+                )
+            }
+        }
+    }
     Box(modifier = modifier) {
         val layoutDirection = LocalLayoutDirection.current
         var contentInsets = WindowInsets.navigationBars

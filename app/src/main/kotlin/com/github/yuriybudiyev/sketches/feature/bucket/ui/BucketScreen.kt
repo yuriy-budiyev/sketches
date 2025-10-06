@@ -161,7 +161,10 @@ fun BucketScreen(
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             navController.collectNavResult<Int>(NAV_IMAGE_SCREEN_CURRENT_INDEX) { index ->
                 if (index != null) {
-                    mediaGridState.scrollToItemClosestEdge(index)
+                    mediaGridState.scrollToItemClosestEdge(
+                        index = index,
+                        animate = false,
+                    )
                 }
             }
         }
