@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.platform.collections
 
 import android.os.Build
+import java.util.WeakHashMap
 import kotlin.math.ceil
 
 object CollectionsCompat {
@@ -106,6 +107,27 @@ object CollectionsCompat {
         } else {
             require(numMappings >= 0) { "Negative number of mappings: $numMappings" }
             LinkedHashMap(
+                calculateHashMapCapacity(numMappings),
+                DEFAULT_LOAD_FACTOR,
+            )
+        }
+
+    /**
+     * Creates a new, empty WeakHashMap suitable for the expected number of mappings.
+     * The returned map uses the default load factor of 0.75, and its initial capacity is
+     * generally large enough so that the expected number of mappings can be added
+     * without resizing the map.
+     *
+     * @param numMappings the expected number of mappings
+     * @param K           the type of keys maintained by the new map
+     * @param V           the type of mapped values
+     */
+    fun <K, V> newWeakHashMap(numMappings: Int): WeakHashMap<K, V> =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+            WeakHashMap.newWeakHashMap(numMappings)
+        } else {
+            require(numMappings >= 0) { "Negative number of mappings: $numMappings" }
+            WeakHashMap(
                 calculateHashMapCapacity(numMappings),
                 DEFAULT_LOAD_FACTOR,
             )

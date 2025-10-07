@@ -56,6 +56,9 @@ class MediaStoreRepositoryImpl @Inject constructor(
                 MediaStore.MediaColumns.BUCKET_ID,
                 MediaStore.MediaColumns.DATE_ADDED,
                 MediaStore.MediaColumns.MIME_TYPE,
+                MediaStore.MediaColumns.WIDTH,
+                MediaStore.MediaColumns.HEIGHT,
+                MediaStore.MediaColumns.ORIENTATION,
             ),
             if (bucketId != null) {
                 "${MediaStore.MediaColumns.BUCKET_ID}=?"
@@ -75,6 +78,9 @@ class MediaStoreRepositoryImpl @Inject constructor(
             val bucketIdColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_ID)
             val dateAddedColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_ADDED)
             val mimeTypeColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE)
+            val widthColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns.WIDTH)
+            val heightColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns.HEIGHT)
+            val orientationColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns.ORIENTATION)
             while (c.moveToNext()) {
                 val id = c.getLong(idColumn)
                 files.add(
@@ -84,6 +90,9 @@ class MediaStoreRepositoryImpl @Inject constructor(
                         dateAdded = c.getLong(dateAddedColumn) * 1000L,
                         mediaType = mediaType,
                         mimeType = c.getStringOrNull(mimeTypeColumn) ?: mediaType.mimeType,
+                        width = c.getInt(widthColumn),
+                        height = c.getInt(heightColumn),
+                        rotation = c.getInt(orientationColumn),
                         uri = ContentUris
                             .withAppendedId(
                                 contentUri,
