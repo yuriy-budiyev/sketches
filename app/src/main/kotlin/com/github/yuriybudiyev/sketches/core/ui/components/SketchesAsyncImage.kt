@@ -135,14 +135,15 @@ fun SketchesZoomableAsyncImage(
     LaunchedEffect(Unit) {
         snapshotFlow { outerSize to innerSize }.collect { (outerSize, innerSize) ->
             if (outerSize != Size.Zero && innerSize != Size.Zero) {
-                val widthScale = innerSize.width / outerSize.width
-                val heightScale = innerSize.height / outerSize.height
                 val fitScale = min(
-                    widthScale,
-                    heightScale
+                    innerSize.width / outerSize.width,
+                    innerSize.height / outerSize.height,
                 )
                 minScale = fitScale
-                maxScale = (fitScale * maxZoom).coerceAtLeast(1F)
+                maxScale = min(
+                    fitScale * maxZoom,
+                    1F,
+                )
                 scale.updateBounds(
                     lowerBound = minScale,
                     upperBound = maxScale,
