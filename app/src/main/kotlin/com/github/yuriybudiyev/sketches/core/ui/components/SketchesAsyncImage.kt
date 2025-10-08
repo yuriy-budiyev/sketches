@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,6 +35,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,7 +49,6 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.ScaleFactor
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -62,7 +63,7 @@ import coil3.compose.rememberAsyncImagePainter
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
-import kotlin.math.max
+import kotlin.math.min
 
 @Composable
 fun SketchesAsyncImage(
@@ -110,10 +111,6 @@ fun SketchesZoomableAsyncImage(
     uri: String,
     contentDescription: String,
     modifier: Modifier = Modifier,
-    contentScale: ContentScale = ContentScale.Fit,
-    filterQuality: FilterQuality = FilterQuality.High,
-    enableLoadingIndicator: Boolean = true,
-    enableErrorIndicator: Boolean = true,
 ) {
     var painterState by remember {
         mutableStateOf<AsyncImagePainter.State>(AsyncImagePainter.State.Empty)
@@ -124,31 +121,33 @@ fun SketchesZoomableAsyncImage(
             painterState = state
         },
         contentScale = ContentScale.None,
-        filterQuality = filterQuality,
+        filterQuality = FilterQuality.High
     )
+    val minZoom = 1F
+    val maxZoom = 5F
     var outerSize by remember { mutableStateOf(Size.Zero) }
     var innerSize by remember { mutableStateOf(Size.Zero) }
-    var minScaleFactor by remember { mutableStateOf(ScaleFactor.Unspecified) }
-    var maxScaleFactor by remember { mutableStateOf(ScaleFactor.Unspecified) }
-    var currentScaleFactor by remember { mutableStateOf(ScaleFactor.Unspecified) }
-    LaunchedEffect(contentScale) {
+    var minScale by remember { mutableFloatStateOf(minZoom) }
+    var maxScale by remember { mutableFloatStateOf(maxZoom) }
+    val scale = remember { Animatable(minZoom) }
+    val offsetX = remember { Animatable(0F) }
+    val offsetY = remember { Animatable(0F) }
+    LaunchedEffect(Unit) {
         snapshotFlow { outerSize to innerSize }.collect { (outerSize, innerSize) ->
             if (outerSize != Size.Zero && innerSize != Size.Zero) {
-                minScaleFactor = contentScale.computeScaleFactor(
-                    srcSize = innerSize,
-                    dstSize = outerSize,
+                val widthScale = innerSize.width / outerSize.width
+                val heightScale = innerSize.height / outerSize.height
+                val fitScale = min(
+                    widthScale,
+                    heightScale
                 )
-                maxScaleFactor = ScaleFactor(
-                    max(
-                        minScaleFactor.scaleX * 5F,
-                        1F,
-                    ),
-                    max(
-                        minScaleFactor.scaleY * 5F,
-                        1F,
-                    ),
+                minScale = fitScale
+                maxScale = (fitScale * maxZoom).coerceAtLeast(1F)
+                scale.updateBounds(
+                    lowerBound = minScale,
+                    upperBound = maxScale,
                 )
-                currentScaleFactor = minScaleFactor.copy()
+                scale.snapTo(fitScale)
             }
         }
     }
@@ -170,8 +169,8 @@ fun SketchesZoomableAsyncImage(
                     unbounded = true,
                 )
                 .graphicsLayer {
-                    scaleX = currentScaleFactor.scaleX
-                    scaleY = currentScaleFactor.scaleY
+                    scaleX = scale.value
+                    scaleY = scale.value
                 }
                 .paint(
                     painter,
