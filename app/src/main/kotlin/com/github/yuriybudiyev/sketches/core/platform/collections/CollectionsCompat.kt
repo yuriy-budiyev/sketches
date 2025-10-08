@@ -37,7 +37,7 @@ object CollectionsCompat {
      * without resizing the set.
      *
      * @param numElements the expected number of elements
-     * @param E            the type of elements maintained by the new set
+     * @param E           the type of elements maintained by the new set
      */
     fun <E> newHashSet(numElements: Int): HashSet<E> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
@@ -57,7 +57,7 @@ object CollectionsCompat {
      * without resizing the set.
      *
      * @param numElements the expected number of elements
-     * @param E            the type of elements maintained by the new set
+     * @param E           the type of elements maintained by the new set
      */
     fun <E> newLinkedHashSet(numElements: Int): LinkedHashSet<E> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
@@ -77,8 +77,8 @@ object CollectionsCompat {
      * without resizing the map.
      *
      * @param numMappings the expected number of mappings
-     * @param K            the type of keys maintained by the new map
-     * @param V            the type of mapped values
+     * @param K           the type of keys maintained by the new map
+     * @param V           the type of mapped values
      */
     fun <K, V> newHashMap(numMappings: Int): HashMap<K, V> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
@@ -98,8 +98,8 @@ object CollectionsCompat {
      * number of mappings can be added without resizing the map.
      *
      * @param numMappings the expected number of mappings
-     * @param K            the type of keys maintained by the new map
-     * @param V            the type of mapped values
+     * @param K           the type of keys maintained by the new map
+     * @param V           the type of mapped values
      */
     fun <K, V> newLinkedHashMap(numMappings: Int): LinkedHashMap<K, V> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
@@ -119,8 +119,8 @@ object CollectionsCompat {
      * without resizing the map.
      *
      * @param numMappings the expected number of mappings
-     * @param K            the type of keys maintained by the new map
-     * @param V            the type of mapped values
+     * @param K           the type of keys maintained by the new map
+     * @param V           the type of mapped values
      */
     fun <K, V> newWeakHashMap(numMappings: Int): WeakHashMap<K, V> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
