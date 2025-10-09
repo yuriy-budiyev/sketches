@@ -26,7 +26,12 @@ package com.github.yuriybudiyev.sketches.core.ui.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculateCentroidSize
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateRotation
+import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -45,12 +50,15 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
@@ -60,6 +68,8 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
+import androidx.compose.ui.util.fastAny
+import androidx.compose.ui.util.fastForEach
 import coil3.compose.AsyncImagePainter
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.rememberAsyncImagePainter
@@ -68,6 +78,8 @@ import com.github.yuriybudiyev.sketches.core.platform.log.log
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import kotlinx.coroutines.launch
+import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
@@ -130,16 +142,16 @@ fun SketchesZoomableAsyncImage(
         contentScale = ContentScale.None,
         filterQuality = FilterQuality.High
     )
-    val minZoom = 1F
-    val maxZoom = 5F
+    val minZoom = 1f
+    val maxZoom = 5f
     val coroutineScope = rememberCoroutineScope()
     var containerSize by remember { mutableStateOf(Size.Zero) }
     var contentSize by remember { mutableStateOf(Size.Zero) }
     var minScale by remember { mutableFloatStateOf(minZoom) }
     var maxScale by remember { mutableFloatStateOf(maxZoom) }
-    val scale = remember { Animatable(0F) }
-    val offsetX = remember { Animatable(0F) }
-    val offsetY = remember { Animatable(0F) }
+    val scale = remember { Animatable(0f) }
+    val offsetX = remember { Animatable(0f) }
+    val offsetY = remember { Animatable(0f) }
     LaunchedEffect(Unit) {
         snapshotFlow { containerSize to contentSize }.collect { (outerSize, innerSize) ->
             if (outerSize != Size.Zero && innerSize != Size.Zero) {
@@ -151,7 +163,7 @@ fun SketchesZoomableAsyncImage(
                 minScale = fitScale
                 maxScale = max(
                     fitScale * maxZoom,
-                    1F,
+                    1f,
                 )
                 log("min: $minScale max: $maxScale")
                 scale.updateBounds(
@@ -162,35 +174,6 @@ fun SketchesZoomableAsyncImage(
             }
         }
     }
-    // From YT Lesson
-
-    fun getMaxOffset(
-        size: Float,
-        scale: Float,
-    ): Float {
-        val scaledSize = size * scale
-        return max(
-            (scaledSize - size) / 2F,
-            0F,
-        )
-    }
-
-    fun clampOffset(
-        size: Float,
-        offset: Float,
-        scale: Float,
-    ): Float {
-        val maxOffset = getMaxOffset(
-            size = size,
-            scale = scale
-        )
-        return offset.coerceIn(
-            minimumValue = -maxOffset,
-            maximumValue = maxOffset,
-        )
-    }
-
-    // End YT Lesson
     Box(
         modifier = modifier
             .semantics(mergeDescendants = true) {
@@ -201,54 +184,41 @@ fun SketchesZoomableAsyncImage(
                 containerSize = size.toSize()
             }
             .pointerInput(Unit) {
-                detectTransformGestures { _, pan, zoom, _ ->
+                detectTransformGestures { pan, zoom ->
                     coroutineScope.launch {
                         val newScale = (scale.value * zoom).coerceIn(
                             minimumValue = minScale,
                             maximumValue = maxScale,
                         )
-                        val newOffsetX = offsetX.value + pan.x
-                        val newOffsetY = offsetY.value + pan.y
                         val scaledContentWidth = contentSize.width * newScale
-                        val containerWidthDiff = containerSize.width - scaledContentWidth
                         val scaledContentHeight = contentSize.height * newScale
+                        val containerWidthDiff = containerSize.width - scaledContentWidth
                         val containerHeightDiff = containerSize.height - scaledContentHeight
-                        log("-----")
-                        log("container: $containerSize")
-                        log("content: $contentSize")
-                        log("scaled width diff: $containerWidthDiff")
-                        log("scaled height diff: $containerHeightDiff")
-                        log("scale: ${scale.value} -> $newScale")
-                        log("offsetX: ${offsetX.value} -> $newOffsetX")
-                        log("offsetY: ${offsetY.value} -> $newOffsetY")
-                        log("-----")
-
+                        var newOffsetX = offsetX.value + pan.x
+                        var newOffsetY = offsetY.value + pan.y
+                        if (containerWidthDiff >= 0f) {
+                            newOffsetX = 0f
+                        }
+                        if (containerHeightDiff >= 0f) {
+                            newOffsetY = 0f
+                        }
                         scale.snapTo(newScale)
                         offsetX.snapTo(
                             newOffsetX.coerceIn(
-                                -containerWidthDiff.absoluteValue / 2F,
-                                containerWidthDiff.absoluteValue / 2F
+                                -containerWidthDiff.absoluteValue / 2f,
+                                containerWidthDiff.absoluteValue / 2f,
                             )
                         )
                         offsetY.snapTo(
                             newOffsetY.coerceIn(
-                                -containerHeightDiff.absoluteValue / 2F,
-                                containerHeightDiff.absoluteValue / 2F
+                                -containerHeightDiff.absoluteValue / 2f,
+                                containerHeightDiff.absoluteValue / 2f,
                             )
                         )
                     }
                 }
             },
         contentAlignment = Alignment.Center,
-        /*.pointerInput(Unit) {
-            detectTapGestures(
-                onDoubleTap = { offset ->
-                    coroutineScope.launch {
-
-                    }
-                }
-            )
-        }*/
     ) {
         Box(
             modifier = Modifier
@@ -295,5 +265,61 @@ private fun StateIcon(
             modifier = Modifier.size(SketchesDimens.AsyncImageStateIconSize),
             tint = MaterialTheme.colorScheme.onBackground
         )
+    }
+}
+
+private suspend fun PointerInputScope.detectTransformGestures(
+    onGesture: (pan: Offset, zoom: Float) -> Unit,
+) {
+    awaitEachGesture {
+        var rotation = 0f
+        var zoom = 1f
+        var pan = Offset.Zero
+        var pastTouchSlop = false
+        val touchSlop = viewConfiguration.touchSlop
+
+        awaitFirstDown(requireUnconsumed = false)
+        do {
+            val event = awaitPointerEvent()
+            val canceled = event.changes.fastAny { it.isConsumed }
+            if (!canceled) {
+                val zoomChange = event.calculateZoom()
+                val rotationChange = event.calculateRotation()
+                val panChange = event.calculatePan()
+
+                if (!pastTouchSlop) {
+                    zoom *= zoomChange
+                    rotation += rotationChange
+                    pan += panChange
+
+                    val centroidSize = event.calculateCentroidSize(useCurrent = false)
+                    val zoomMotion = abs(1 - zoom) * centroidSize
+                    val rotationMotion = abs(rotation * PI.toFloat() * centroidSize / 180f)
+                    val panMotion = pan.getDistance()
+
+                    if (
+                        zoomMotion > touchSlop ||
+                        rotationMotion > touchSlop ||
+                        panMotion > touchSlop
+                    ) {
+                        pastTouchSlop = true
+                    }
+                }
+
+                if (pastTouchSlop) {
+                    if (zoomChange != 1f || panChange != Offset.Zero) {
+                        onGesture(
+                            panChange,
+                            zoomChange,
+                        )
+                    }
+                    event.changes.fastForEach {
+                        if (it.positionChanged()) {
+                            it.consume()
+                        }
+                    }
+                }
+            }
+        } while (!canceled && event.changes.fastAny { it.pressed })
     }
 }
