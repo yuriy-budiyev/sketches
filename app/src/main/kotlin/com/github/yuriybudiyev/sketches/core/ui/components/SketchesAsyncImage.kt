@@ -30,7 +30,6 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateCentroidSize
 import androidx.compose.foundation.gestures.calculatePan
-import androidx.compose.foundation.gestures.calculateRotation
 import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -56,6 +55,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChanged
@@ -78,7 +78,6 @@ import com.github.yuriybudiyev.sketches.core.platform.log.log
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import kotlinx.coroutines.launch
-import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.max
@@ -184,39 +183,63 @@ fun SketchesZoomableAsyncImage(
                 containerSize = size.toSize()
             }
             .pointerInput(Unit) {
-                detectTransformGestures { pan, zoom ->
-                    coroutineScope.launch {
-                        val newScale = (scale.value * zoom).coerceIn(
-                            minimumValue = minScale,
-                            maximumValue = maxScale,
-                        )
-                        val scaledContentWidth = contentSize.width * newScale
-                        val scaledContentHeight = contentSize.height * newScale
+                detectTransformGestures(
+                    onGesture = { pan, zoom ->
+                        coroutineScope.launch {
+                            val newScale = (scale.value * zoom).coerceIn(
+                                minimumValue = minScale,
+                                maximumValue = maxScale,
+                            )
+                            val scaledContentWidth = contentSize.width * newScale
+                            val scaledContentHeight = contentSize.height * newScale
+                            val containerWidthDiff = containerSize.width - scaledContentWidth
+                            val containerHeightDiff = containerSize.height - scaledContentHeight
+                            var newOffsetX = offsetX.value + pan.x
+                            var newOffsetY = offsetY.value + pan.y
+                            if (containerWidthDiff >= 0f) {
+                                newOffsetX = 0f
+                            }
+                            if (containerHeightDiff >= 0f) {
+                                newOffsetY = 0f
+                            }
+                            scale.snapTo(newScale)
+                            offsetX.snapTo(
+                                newOffsetX.coerceIn(
+                                    -containerWidthDiff.absoluteValue / 2f,
+                                    containerWidthDiff.absoluteValue / 2f,
+                                )
+                            )
+                            offsetY.snapTo(
+                                newOffsetY.coerceIn(
+                                    -containerHeightDiff.absoluteValue / 2f,
+                                    containerHeightDiff.absoluteValue / 2f,
+                                )
+                            )
+                        }
+                    },
+                    onAfterGesture = { pan, change ->
+                        val scaledContentWidth = contentSize.width * scale.value
+                        val scaledContentHeight = contentSize.height * scale.value
                         val containerWidthDiff = containerSize.width - scaledContentWidth
                         val containerHeightDiff = containerSize.height - scaledContentHeight
-                        var newOffsetX = offsetX.value + pan.x
-                        var newOffsetY = offsetY.value + pan.y
-                        if (containerWidthDiff >= 0f) {
-                            newOffsetX = 0f
+                        log("-----")
+                        log("scale ${scale.value} $minScale")
+                        log("offsets: ${offsetX.value} ${offsetY.value}")
+                        log("diffs: $containerWidthDiff $containerHeightDiff")
+                        log("-----")
+                        /*if (scale.value > minScale) {
+                            change.consume()
+                        } else */
+                        if (offsetX.value.absoluteValue < containerWidthDiff.absoluteValue.div(2f)) {
+                            change.consume()
                         }
-                        if (containerHeightDiff >= 0f) {
-                            newOffsetY = 0f
-                        }
-                        scale.snapTo(newScale)
-                        offsetX.snapTo(
-                            newOffsetX.coerceIn(
-                                -containerWidthDiff.absoluteValue / 2f,
-                                containerWidthDiff.absoluteValue / 2f,
-                            )
-                        )
-                        offsetY.snapTo(
-                            newOffsetY.coerceIn(
-                                -containerHeightDiff.absoluteValue / 2f,
-                                containerHeightDiff.absoluteValue / 2f,
-                            )
-                        )
+
+                        /*if (offsetX.value != 0f && offsetY.value != 0f) {
+                            change.consume()
+                        }*/
+
                     }
-                }
+                )
             },
         contentAlignment = Alignment.Center,
     ) {
@@ -270,9 +293,9 @@ private fun StateIcon(
 
 private suspend fun PointerInputScope.detectTransformGestures(
     onGesture: (pan: Offset, zoom: Float) -> Unit,
+    onAfterGesture: (pan: Offset, change: PointerInputChange) -> Unit,
 ) {
     awaitEachGesture {
-        var rotation = 0f
         var zoom = 1f
         var pan = Offset.Zero
         var pastTouchSlop = false
@@ -281,27 +304,20 @@ private suspend fun PointerInputScope.detectTransformGestures(
         awaitFirstDown(requireUnconsumed = false)
         do {
             val event = awaitPointerEvent()
-            val canceled = event.changes.fastAny { it.isConsumed }
+            val canceled = event.changes.fastAny { change -> change.isConsumed }
             if (!canceled) {
                 val zoomChange = event.calculateZoom()
-                val rotationChange = event.calculateRotation()
                 val panChange = event.calculatePan()
 
                 if (!pastTouchSlop) {
                     zoom *= zoomChange
-                    rotation += rotationChange
                     pan += panChange
 
                     val centroidSize = event.calculateCentroidSize(useCurrent = false)
                     val zoomMotion = abs(1 - zoom) * centroidSize
-                    val rotationMotion = abs(rotation * PI.toFloat() * centroidSize / 180f)
                     val panMotion = pan.getDistance()
 
-                    if (
-                        zoomMotion > touchSlop ||
-                        rotationMotion > touchSlop ||
-                        panMotion > touchSlop
-                    ) {
+                    if (zoomMotion > touchSlop || panMotion > touchSlop) {
                         pastTouchSlop = true
                     }
                 }
@@ -313,13 +329,17 @@ private suspend fun PointerInputScope.detectTransformGestures(
                             zoomChange,
                         )
                     }
-                    event.changes.fastForEach {
-                        if (it.positionChanged()) {
-                            it.consume()
+                    event.changes.fastForEach { change ->
+                        if (change.positionChanged()) {
+                            onAfterGesture(
+                                panChange,
+                                change,
+                            )
+                            //change.consume()
                         }
                     }
                 }
             }
-        } while (!canceled && event.changes.fastAny { it.pressed })
+        } while (!canceled && event.changes.fastAny { change -> change.pressed })
     }
 }
