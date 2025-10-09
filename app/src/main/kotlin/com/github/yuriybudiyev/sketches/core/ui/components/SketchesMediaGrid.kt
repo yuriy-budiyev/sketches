@@ -80,7 +80,7 @@ fun SketchesMediaGrid(
             val fileSelectedOnComposition = selectedFilesUpdated.contains(file.id)
             Box(
                 modifier = Modifier
-                    .aspectRatio(ratio = 1.0f)
+                    .aspectRatio(ratio = 1f)
                     .border(
                         width = SketchesDimens.MediaItemBorderThickness,
                         color = if (fileSelectedOnComposition) {

@@ -372,7 +372,7 @@ private fun BucketsScreenLayout(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(ratio = 1.0f)
+                        .aspectRatio(ratio = 1f)
                         .border(
                             width = SketchesDimens.MediaItemBorderThickness,
                             color = if (bucketSelectedOnComposition) {
