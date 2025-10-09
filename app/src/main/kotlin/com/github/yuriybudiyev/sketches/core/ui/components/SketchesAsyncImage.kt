@@ -218,21 +218,28 @@ fun SketchesZoomableAsyncImage(
                         }
                     },
                     onAfterGesture = { pan, change ->
-                        val scaledContentWidth = contentSize.width * scale.value
-                        val scaledContentHeight = contentSize.height * scale.value
-                        val containerWidthDiff = containerSize.width - scaledContentWidth
-                        val containerHeightDiff = containerSize.height - scaledContentHeight
+                        //  log("offsetY: ${offsetY.value} $maxOffsetY")
+                        val scaledWidth = contentSize.width * scale.value
+                        val maxOffsetY =
+                            (containerSize.height - (contentSize.height * scale.value)).absoluteValue / 2F
+
+
+
+                        val maxOffsetX =
+                            (containerSize.width - (contentSize.width * scale.value)).absoluteValue / 2F
                         log("-----")
                         log("scale ${scale.value} $minScale")
-                        log("offsets: ${offsetX.value} ${offsetY.value}")
-                        log("diffs: $containerWidthDiff $containerHeightDiff")
+                        log("offsetX: ${offsetX.value} $maxOffsetX")
                         log("-----")
-                        /*if (scale.value > minScale) {
-                            change.consume()
-                        } else */
-                        if (offsetX.value.absoluteValue < containerWidthDiff.absoluteValue.div(2f)) {
+                        if (offsetX.value.absoluteValue < maxOffsetX) {
                             change.consume()
                         }
+                        /*if (containerWidthDiff.absoluteValue > 0f) {
+                            change.consume()
+                        }
+                        if (offsetX.value.absoluteValue < containerWidthDiff.absoluteValue.div(2f)) {
+                            change.consume()
+                        }*/
 
                         /*if (offsetX.value != 0f && offsetY.value != 0f) {
                             change.consume()
