@@ -217,13 +217,11 @@ fun SketchesZoomableAsyncImage(
                             )
                         }
                     },
-                    onAfterGesture = { pan, change ->
+                    onAfterGesture = { change ->
                         //  log("offsetY: ${offsetY.value} $maxOffsetY")
                         val scaledWidth = contentSize.width * scale.value
                         val maxOffsetY =
                             (containerSize.height - (contentSize.height * scale.value)).absoluteValue / 2F
-
-
 
                         val maxOffsetX =
                             (containerSize.width - (contentSize.width * scale.value)).absoluteValue / 2F
@@ -300,7 +298,7 @@ private fun StateIcon(
 
 private suspend fun PointerInputScope.detectTransformGestures(
     onGesture: (pan: Offset, zoom: Float) -> Unit,
-    onAfterGesture: (pan: Offset, change: PointerInputChange) -> Unit,
+    onAfterGesture: (change: PointerInputChange) -> Unit,
 ) {
     awaitEachGesture {
         var zoom = 1f
@@ -338,10 +336,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
                     }
                     event.changes.fastForEach { change ->
                         if (change.positionChanged()) {
-                            onAfterGesture(
-                                panChange,
-                                change,
-                            )
+                            onAfterGesture(change)
                             //change.consume()
                         }
                     }
