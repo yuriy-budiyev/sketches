@@ -106,7 +106,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirm
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
@@ -463,14 +462,14 @@ private fun ImagePage(
     fileUri: String,
     modifier: Modifier = Modifier,
 ) {
-    SketchesZoomableAsyncImage(
+    SketchesAsyncImage(
         uri = fileUri,
         contentDescription = stringResource(R.string.image),
         modifier = modifier,
-/*        contentScale = ContentScale.Fit,
+        contentScale = ContentScale.Fit,
         filterQuality = FilterQuality.High,
         enableLoadingIndicator = false,
-        enableErrorIndicator = true,*/
+        enableErrorIndicator = true,
     )
 }
 

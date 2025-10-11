@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.core.ui.components
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateCentroidSize
@@ -51,7 +50,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -66,7 +64,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
@@ -74,7 +71,6 @@ import coil3.compose.AsyncImagePainter
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.platform.log.log
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import kotlinx.coroutines.launch
@@ -158,18 +154,17 @@ fun SketchesZoomableAsyncImage(
                     outerSize.width / innerSize.width,
                     outerSize.height / innerSize.height,
                 )
-                log("outer: $outerSize inner: $innerSize")
                 minScale = fitScale
                 maxScale = max(
                     fitScale * maxZoom,
                     1f,
                 )
-                log("min: $minScale max: $maxScale")
                 scale.updateBounds(
                     lowerBound = minScale,
                     upperBound = maxScale,
                 )
-                scale.snapTo(fitScale)
+                //TODO
+                //scale.snapTo(fitScale)
             }
         }
     }
@@ -218,31 +213,9 @@ fun SketchesZoomableAsyncImage(
                         }
                     },
                     onAfterGesture = { change ->
-                        //  log("offsetY: ${offsetY.value} $maxOffsetY")
-                        val scaledWidth = contentSize.width * scale.value
-                        val maxOffsetY =
-                            (containerSize.height - (contentSize.height * scale.value)).absoluteValue / 2F
-
-                        val maxOffsetX =
-                            (containerSize.width - (contentSize.width * scale.value)).absoluteValue / 2F
-                        log("-----")
-                        log("scale ${scale.value} $minScale")
-                        log("offsetX: ${offsetX.value} $maxOffsetX")
-                        log("-----")
-                        if (offsetX.value.absoluteValue < maxOffsetX) {
+                        if (scale.value > minScale) {
                             change.consume()
                         }
-                        /*if (containerWidthDiff.absoluteValue > 0f) {
-                            change.consume()
-                        }
-                        if (offsetX.value.absoluteValue < containerWidthDiff.absoluteValue.div(2f)) {
-                            change.consume()
-                        }*/
-
-                        /*if (offsetX.value != 0f && offsetY.value != 0f) {
-                            change.consume()
-                        }*/
-
                     }
                 )
             },
@@ -255,6 +228,9 @@ fun SketchesZoomableAsyncImage(
                     align = Alignment.Center,
                     unbounded = true,
                 )
+                .onSizeChanged { size ->
+                    contentSize = size.toSize()
+                }
                 .graphicsLayer {
                     translationX = offsetX.value
                     translationY = offsetY.value
@@ -265,14 +241,7 @@ fun SketchesZoomableAsyncImage(
                     painter,
                     contentScale = ContentScale.None,
                     alignment = Alignment.Center,
-                )
-                .border(
-                    width = 4.dp,
-                    color = Color.Red,
-                )
-                .onSizeChanged { size ->
-                    contentSize = size.toSize()
-                },
+                ),
         )
     }
 }
@@ -296,6 +265,9 @@ private fun StateIcon(
     }
 }
 
+/**
+ * Slightly changed version of [androidx.compose.foundation.gestures.detectTransformGestures]
+ */
 private suspend fun PointerInputScope.detectTransformGestures(
     onGesture: (pan: Offset, zoom: Float) -> Unit,
     onAfterGesture: (change: PointerInputChange) -> Unit,
@@ -305,7 +277,6 @@ private suspend fun PointerInputScope.detectTransformGestures(
         var pan = Offset.Zero
         var pastTouchSlop = false
         val touchSlop = viewConfiguration.touchSlop
-
         awaitFirstDown(requireUnconsumed = false)
         do {
             val event = awaitPointerEvent()
@@ -313,20 +284,16 @@ private suspend fun PointerInputScope.detectTransformGestures(
             if (!canceled) {
                 val zoomChange = event.calculateZoom()
                 val panChange = event.calculatePan()
-
                 if (!pastTouchSlop) {
                     zoom *= zoomChange
                     pan += panChange
-
                     val centroidSize = event.calculateCentroidSize(useCurrent = false)
                     val zoomMotion = abs(1 - zoom) * centroidSize
                     val panMotion = pan.getDistance()
-
                     if (zoomMotion > touchSlop || panMotion > touchSlop) {
                         pastTouchSlop = true
                     }
                 }
-
                 if (pastTouchSlop) {
                     if (zoomChange != 1f || panChange != Offset.Zero) {
                         onGesture(
@@ -337,7 +304,6 @@ private suspend fun PointerInputScope.detectTransformGestures(
                     event.changes.fastForEach { change ->
                         if (change.positionChanged()) {
                             onAfterGesture(change)
-                            //change.consume()
                         }
                     }
                 }
