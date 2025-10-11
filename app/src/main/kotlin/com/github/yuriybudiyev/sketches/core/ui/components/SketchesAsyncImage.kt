@@ -148,11 +148,13 @@ fun SketchesZoomableAsyncImage(
     val offsetX = remember { Animatable(0f) }
     val offsetY = remember { Animatable(0f) }
     LaunchedEffect(Unit) {
-        snapshotFlow { containerSize to contentSize }.collect { (outerSize, innerSize) ->
-            if (outerSize != Size.Zero && innerSize != Size.Zero) {
+        snapshotFlow { containerSize to contentSize }.collect { (containerSize, contentSize) ->
+            if (containerSize != Size.Zero && contentSize != Size.Zero) {
+                val fitScaleWidth = containerSize.width / contentSize.width
+                val fitScaleHeight = containerSize.height / contentSize.height
                 val fitScale = min(
-                    outerSize.width / innerSize.width,
-                    outerSize.height / innerSize.height,
+                    fitScaleWidth,
+                    fitScaleHeight,
                 )
                 minScale = fitScale
                 maxScale = max(
@@ -160,11 +162,29 @@ fun SketchesZoomableAsyncImage(
                     1f,
                 )
                 scale.updateBounds(
-                    lowerBound = minScale,
-                    upperBound = maxScale,
+                    minScale,
+                    maxScale,
                 )
-                //TODO
-                //scale.snapTo(fitScale)
+                if (scale.value == 0f) {
+                    scale.snapTo(fitScale)
+                    offsetX.snapTo(0f)
+                    offsetX.snapTo(0f)
+                } else {
+                    val maxOffsetX =
+                        (containerSize.width - (contentSize.width * scale.value)).absoluteValue / 2f
+                    val maxOffsetY =
+                        (containerSize.height - (contentSize.height * scale.value)).absoluteValue / 2f
+                    val newOffsetX = offsetX.value.coerceIn(
+                        -maxOffsetX,
+                        +maxOffsetX,
+                    )
+                    val newOffsetY = offsetY.value.coerceIn(
+                        -maxOffsetY,
+                        +maxOffsetY
+                    )
+                    offsetX.snapTo(newOffsetX)
+                    offsetY.snapTo(newOffsetY)
+                }
             }
         }
     }
@@ -201,13 +221,13 @@ fun SketchesZoomableAsyncImage(
                             offsetX.snapTo(
                                 newOffsetX.coerceIn(
                                     -containerWidthDiff.absoluteValue / 2f,
-                                    containerWidthDiff.absoluteValue / 2f,
+                                    +containerWidthDiff.absoluteValue / 2f,
                                 )
                             )
                             offsetY.snapTo(
                                 newOffsetY.coerceIn(
                                     -containerHeightDiff.absoluteValue / 2f,
-                                    containerHeightDiff.absoluteValue / 2f,
+                                    +containerHeightDiff.absoluteValue / 2f,
                                 )
                             )
                         }
