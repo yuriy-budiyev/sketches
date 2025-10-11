@@ -315,7 +315,7 @@ private fun SketchesZoomableAsyncImage(
                             val newOffsetY: Float
                             val midScale =
                                 minScale + ((maxScale - minScale) * doubleTapZoomFractionUpdated)
-                            if (scale.value < midScale) {
+                            if (scale.value == minScale) {
                                 targetScale = midScale
                                 val scaledContentWidth = contentSize.width * targetScale
                                 val scaledContentHeight = contentSize.height * targetScale
