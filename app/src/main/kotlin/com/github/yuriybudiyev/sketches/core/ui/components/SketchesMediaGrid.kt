@@ -77,7 +77,6 @@ fun SketchesMediaGrid(
         items(
             count = filesUpdated.size,
             key = { index -> filesUpdated[index].id },
-            contentType = { index -> filesUpdated[index].mediaType },
         ) { index ->
             val file = filesUpdated[index]
             val fileSelectedOnComposition = selectedFilesUpdated.contains(file.id)
