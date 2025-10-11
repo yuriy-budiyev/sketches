@@ -168,7 +168,7 @@ fun SketchesZoomableAsyncImage(
                 StateIcon(
                     icon = SketchesIcons.ImageLoading,
                     description = stringResource(R.string.image_loading),
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = modifier,
                 )
             }
         }
@@ -177,7 +177,7 @@ fun SketchesZoomableAsyncImage(
                 StateIcon(
                     icon = SketchesIcons.ImageError,
                     description = stringResource(R.string.image_error),
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = modifier,
                 )
             }
         }
