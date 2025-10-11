@@ -192,7 +192,7 @@ fun SketchesZoomableAsyncImage(
             )
         }
         else -> {
-            //Do nothing
+            // Do nothing
         }
     }
 }
