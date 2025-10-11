@@ -129,7 +129,7 @@ fun SketchesZoomableAsyncImage(
     uri: String,
     contentDescription: String,
     modifier: Modifier = Modifier,
-    onSingleTap: (() -> Unit)? = null,
+    onTap: (() -> Unit)? = null,
     @FloatRange(
         from = 1.0,
         fromInclusive = true,
@@ -149,7 +149,7 @@ fun SketchesZoomableAsyncImage(
     require(doubleTapZoomFraction >= 0f && doubleTapZoomFraction <= 1f) {
         "Double tap zoom fraction should be in 0.0 to 1.0 range"
     }
-    val onSingleTapUpdated by rememberUpdatedState(onSingleTap)
+    val onTapUpdated by rememberUpdatedState(onTap)
     val doubleTapZoomFractionUpdated by rememberUpdatedState(doubleTapZoomFraction)
     var painterState by remember {
         mutableStateOf<AsyncImagePainter.State>(AsyncImagePainter.State.Empty)
@@ -328,7 +328,7 @@ fun SketchesZoomableAsyncImage(
                         }
                     },
                     onTap = {
-                        onSingleTapUpdated?.invoke()
+                        onTapUpdated?.invoke()
                     },
                 )
             },
