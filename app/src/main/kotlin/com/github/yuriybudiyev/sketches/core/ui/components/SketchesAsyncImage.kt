@@ -141,7 +141,7 @@ fun SketchesZoomableAsyncImage(
         to = 1.0,
         toInclusive = true,
     )
-    doubleTapZoomFraction: Float = 0.1f,
+    doubleTapZoomFraction: Float = 0.2f,
     enableLoadingIndicator: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
