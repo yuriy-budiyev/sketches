@@ -132,7 +132,7 @@ fun SketchesMediaGrid(
                     modifier = Modifier.matchParentSize(),
                     contentScale = ContentScale.Crop,
                     filterQuality = FilterQuality.Low,
-                    enableLoadingIndicator = true,
+                    enableLoadingIndicator = false,
                     enableErrorIndicator = true,
                 )
                 if (fileSelectedOnComposition) {
