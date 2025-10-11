@@ -30,6 +30,7 @@ import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateCentroidSize
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateZoom
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -238,6 +239,36 @@ fun SketchesZoomableAsyncImage(
                         }
                     }
                 )
+            }
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    val firstDown = awaitFirstDown()
+                    val firstUpOrCancel = waitForUpOrCancellation()
+                    if (firstUpOrCancel != null) {
+                        val secondDown =
+                            withTimeoutOrNull(viewConfiguration.doubleTapTimeoutMillis) {
+                                val minUptime =
+                                    firstUpOrCancel.uptimeMillis + viewConfiguration.doubleTapMinTimeMillis
+                                var change: PointerInputChange
+                                do {
+                                    change = awaitFirstDown()
+                                } while (change.uptimeMillis < minUptime)
+                                change
+                            }
+                        if (secondDown != null) {
+                            val secondUpOrCancel = waitForUpOrCancellation()
+                            if (secondUpOrCancel != null) {
+                                firstDown.consume()
+                                secondDown.consume()
+                                secondUpOrCancel.consume()
+                                coroutineScope.launch {
+                                    scale.snapTo(1f)
+                                }
+                                // onDoubleTap
+                            }
+                        }
+                    }
+                }
             },
         contentAlignment = Alignment.Center,
     ) {
