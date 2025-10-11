@@ -101,7 +101,7 @@ fun SketchesAsyncImage(
         filterQuality = filterQuality,
         loading = if (enableLoadingIndicator) {
             {
-                StateIcon(
+                SketchesStateIconInternal(
                     icon = SketchesIcons.ImageLoading,
                     description = stringResource(R.string.image_loading),
                     modifier = Modifier.fillMaxSize(),
@@ -112,7 +112,7 @@ fun SketchesAsyncImage(
         },
         error = if (enableErrorIndicator) {
             {
-                StateIcon(
+                SketchesStateIconInternal(
                     icon = SketchesIcons.ImageError,
                     description = stringResource(R.string.image_error),
                     modifier = Modifier.fillMaxSize(),
@@ -165,7 +165,7 @@ fun SketchesZoomableAsyncImage(
     when (painterState) {
         is AsyncImagePainter.State.Loading -> {
             if (enableLoadingIndicator) {
-                StateIcon(
+                SketchesStateIconInternal(
                     icon = SketchesIcons.ImageLoading,
                     description = stringResource(R.string.image_loading),
                     modifier = modifier,
@@ -174,7 +174,7 @@ fun SketchesZoomableAsyncImage(
         }
         is AsyncImagePainter.State.Error -> {
             if (enableErrorIndicator) {
-                StateIcon(
+                SketchesStateIconInternal(
                     icon = SketchesIcons.ImageError,
                     description = stringResource(R.string.image_error),
                     modifier = modifier,
@@ -182,7 +182,7 @@ fun SketchesZoomableAsyncImage(
             }
         }
         is AsyncImagePainter.State.Success -> {
-            SketchesZoomableAsyncImage(
+            SketchesZoomableAsyncImageInternal(
                 painter = painter,
                 contentDescription = contentDescription,
                 onTap = onTap,
@@ -198,7 +198,7 @@ fun SketchesZoomableAsyncImage(
 }
 
 @Composable
-private fun SketchesZoomableAsyncImage(
+private fun SketchesZoomableAsyncImageInternal(
     painter: AsyncImagePainter,
     contentDescription: String,
     modifier: Modifier = Modifier,
@@ -407,7 +407,7 @@ private fun SketchesZoomableAsyncImage(
 }
 
 @Composable
-private fun StateIcon(
+private fun SketchesStateIconInternal(
     icon: ImageVector,
     description: String,
     modifier: Modifier = Modifier,
