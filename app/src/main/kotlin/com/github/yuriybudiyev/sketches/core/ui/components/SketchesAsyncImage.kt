@@ -25,12 +25,13 @@
 package com.github.yuriybudiyev.sketches.core.ui.components
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateCentroidSize
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateZoom
-import androidx.compose.foundation.gestures.waitForUpOrCancellation
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -44,6 +45,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -125,8 +127,10 @@ fun SketchesAsyncImage(
 fun SketchesZoomableAsyncImage(
     uri: String,
     contentDescription: String,
+    onTap: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val onTapUpdated by rememberUpdatedState(onTap)
     var painterState by remember {
         mutableStateOf<AsyncImagePainter.State>(AsyncImagePainter.State.Empty)
     }
@@ -241,34 +245,69 @@ fun SketchesZoomableAsyncImage(
                 )
             }
             .pointerInput(Unit) {
-                awaitEachGesture {
-                    val firstDown = awaitFirstDown()
-                    val firstUpOrCancel = waitForUpOrCancellation()
-                    if (firstUpOrCancel != null) {
-                        val secondDown =
-                            withTimeoutOrNull(viewConfiguration.doubleTapTimeoutMillis) {
-                                val minUptime =
-                                    firstUpOrCancel.uptimeMillis + viewConfiguration.doubleTapMinTimeMillis
-                                var change: PointerInputChange
-                                do {
-                                    change = awaitFirstDown()
-                                } while (change.uptimeMillis < minUptime)
-                                change
+                detectTapGestures(
+                    onDoubleTap = { tapOffset ->
+                        coroutineScope.launch {
+                            val midScale = minScale + ((maxScale - minScale) / 2f)
+                            val targetScale: Float
+                            val newOffsetX: Float
+                            val newOffsetY: Float
+                            if (scale.value < midScale) {
+                                targetScale = midScale
+                                val scaledContentWidth = contentSize.width * targetScale
+                                val scaledContentHeight = contentSize.height * targetScale
+                                val containerUnusedWidth = containerSize.width - scaledContentWidth
+                                val containerUnusedHeight =
+                                    containerSize.height - scaledContentHeight
+                                val scaleFactor = targetScale / scale.value
+                                val containerCenter = Offset(
+                                    containerSize.width / 2f,
+                                    containerSize.height / 2f,
+                                )
+                                val focalX = tapOffset.x - containerCenter.x - offsetX.value
+                                val focalY = tapOffset.y - containerCenter.y - offsetX.value
+                                newOffsetX =
+                                    (((offsetX.value - focalX) * scaleFactor) + focalX).coerceIn(
+                                        -containerUnusedWidth.absoluteValue / 2f,
+                                        +containerUnusedWidth.absoluteValue / 2f,
+                                    )
+                                newOffsetY =
+                                    (((offsetY.value - focalY) * scaleFactor) + focalY).coerceIn(
+                                        -containerUnusedHeight.absoluteValue / 2f,
+                                        +containerUnusedHeight.absoluteValue / 2f,
+                                    )
+                            } else {
+                                targetScale = minScale
+                                newOffsetX = 0f
+                                newOffsetY = 0f
                             }
-                        if (secondDown != null) {
-                            val secondUpOrCancel = waitForUpOrCancellation()
-                            if (secondUpOrCancel != null) {
-                                firstDown.consume()
-                                secondDown.consume()
-                                secondUpOrCancel.consume()
-                                coroutineScope.launch {
-                                    scale.snapTo(1f)
-                                }
-                                // onDoubleTap
+                            val scaleJob = launch {
+                                scale.animateTo(
+                                    targetScale,
+                                    tween(),
+                                )
                             }
+                            val offsetXJob = launch {
+                                offsetX.animateTo(
+                                    newOffsetX,
+                                    tween(),
+                                )
+                            }
+                            val offsetYJob = launch {
+                                offsetY.animateTo(
+                                    newOffsetY,
+                                    tween(),
+                                )
+                            }
+                            scaleJob.join()
+                            offsetXJob.join()
+                            offsetYJob.join()
                         }
-                    }
-                }
+                    },
+                    onTap = {
+                        onTapUpdated()
+                    },
+                )
             },
         contentAlignment = Alignment.Center,
     ) {

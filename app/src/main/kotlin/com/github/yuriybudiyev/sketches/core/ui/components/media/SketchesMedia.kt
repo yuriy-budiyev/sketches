@@ -30,6 +30,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -50,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -64,6 +66,7 @@ import kotlin.math.roundToLong
 @Composable
 fun SketchesMediaPlayer(
     state: SketchesMediaState,
+    onDisplayTap: () -> Unit,
     controllerVisible: Boolean,
     modifier: Modifier = Modifier,
     controllerStartPadding: Dp = 0.dp,
@@ -76,6 +79,7 @@ fun SketchesMediaPlayer(
     enableImagePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
+    val onDisplayTapUpdated by rememberUpdatedState(onDisplayTap)
     val controllerVisibleUpdated by rememberUpdatedState(controllerVisible)
     val controllerStartPaddingUpdated by rememberUpdatedState(controllerStartPadding)
     val controllerEndPaddingUpdated by rememberUpdatedState(controllerEndPadding)
@@ -83,7 +87,15 @@ fun SketchesMediaPlayer(
     Box(modifier = modifier) {
         SketchesMediaDisplay(
             state = state,
-            modifier = Modifier.matchParentSize(),
+            modifier = Modifier
+                .matchParentSize()
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onTap = {
+                            onDisplayTapUpdated()
+                        },
+                    )
+                },
             backgroundColor = backgroundColor,
             indicatorColor = controlsColor,
             enableImagePlaceholder = enableImagePlaceholder,
