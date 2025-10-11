@@ -598,7 +598,7 @@ private fun MediaBar(
                     modifier = Modifier.matchParentSize(),
                     contentScale = ContentScale.Crop,
                     filterQuality = FilterQuality.Low,
-                    enableLoadingIndicator = false,
+                    enableLoadingIndicator = true,
                     enableErrorIndicator = true,
                 )
                 if (file.mediaType == MediaType.Video) {
