@@ -391,7 +391,7 @@ private fun BucketsScreenLayout(
                         contentDescription = stringResource(R.string.bucket_cover),
                         modifier = Modifier.matchParentSize(),
                         contentScale = ContentScale.Crop,
-                        enableLoadingIndicator = false,
+                        enableLoadingIndicator = true,
                         enableErrorIndicator = true,
                     )
                     if (bucketSelectedOnComposition) {
