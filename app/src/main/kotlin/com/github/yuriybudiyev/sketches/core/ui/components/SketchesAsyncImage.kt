@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import androidx.annotation.FloatRange
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -50,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -79,7 +81,6 @@ import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.absoluteValue
-import kotlin.math.max
 import kotlin.math.min
 
 @Composable
@@ -127,10 +128,29 @@ fun SketchesAsyncImage(
 fun SketchesZoomableAsyncImage(
     uri: String,
     contentDescription: String,
-    onTap: () -> Unit,
     modifier: Modifier = Modifier,
+    onSingleTap: (() -> Unit)? = null,
+    @FloatRange(
+        from = 1.0,
+        fromInclusive = true,
+    )
+    maxRelativeZoom: Float = 10f,
+    @FloatRange(
+        from = 0.0,
+        fromInclusive = true,
+        to = 1.0,
+        toInclusive = true,
+    )
+    doubleTapZoomFraction: Float = 0.1f,
 ) {
-    val onTapUpdated by rememberUpdatedState(onTap)
+    require(maxRelativeZoom >= 1f) {
+        "Maximum relative zoom can't be lower than 1.0"
+    }
+    require(doubleTapZoomFraction >= 0f && doubleTapZoomFraction <= 1f) {
+        "Double tap zoom fraction should be in 0.0 to 1.0 range"
+    }
+    val onSingleTapUpdated by rememberUpdatedState(onSingleTap)
+    val doubleTapZoomFractionUpdated by rememberUpdatedState(doubleTapZoomFraction)
     var painterState by remember {
         mutableStateOf<AsyncImagePainter.State>(AsyncImagePainter.State.Empty)
     }
@@ -142,17 +162,15 @@ fun SketchesZoomableAsyncImage(
         contentScale = ContentScale.None,
         filterQuality = FilterQuality.High
     )
-    val minZoom = 1f
-    val maxZoom = 5f
     val coroutineScope = rememberCoroutineScope()
     var containerSize by remember { mutableStateOf(Size.Zero) }
     var contentSize by remember { mutableStateOf(Size.Zero) }
-    var minScale by remember { mutableFloatStateOf(minZoom) }
-    var maxScale by remember { mutableFloatStateOf(maxZoom) }
+    var minScale by remember { mutableFloatStateOf(0f) }
+    var maxScale by remember { mutableFloatStateOf(0f) }
     val scale = remember { Animatable(0f) }
     val offsetX = remember { Animatable(0f) }
     val offsetY = remember { Animatable(0f) }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(maxRelativeZoom) {
         snapshotFlow { containerSize to contentSize }.collect { (containerSize, contentSize) ->
             if (containerSize != Size.Zero && contentSize != Size.Zero) {
                 val fitScaleWidth = containerSize.width / contentSize.width
@@ -162,10 +180,7 @@ fun SketchesZoomableAsyncImage(
                     fitScaleHeight,
                 )
                 minScale = fitScale
-                maxScale = max(
-                    fitScale * maxZoom,
-                    1f,
-                )
+                maxScale = fitScale * maxRelativeZoom
                 scale.updateBounds(
                     minScale,
                     maxScale,
@@ -202,6 +217,7 @@ fun SketchesZoomableAsyncImage(
             .onSizeChanged { size ->
                 containerSize = size.toSize()
             }
+            .clipToBounds()
             .pointerInput(Unit) {
                 detectTransformGestures(
                     onGesture = { pan, zoom ->
@@ -248,10 +264,11 @@ fun SketchesZoomableAsyncImage(
                 detectTapGestures(
                     onDoubleTap = { tapOffset ->
                         coroutineScope.launch {
-                            val midScale = minScale + ((maxScale - minScale) / 2f)
                             val targetScale: Float
                             val newOffsetX: Float
                             val newOffsetY: Float
+                            val midScale =
+                                minScale + ((maxScale - minScale) * doubleTapZoomFractionUpdated)
                             if (scale.value < midScale) {
                                 targetScale = midScale
                                 val scaledContentWidth = contentSize.width * targetScale
@@ -266,16 +283,22 @@ fun SketchesZoomableAsyncImage(
                                 )
                                 val focalX = tapOffset.x - containerCenter.x - offsetX.value
                                 val focalY = tapOffset.y - containerCenter.y - offsetX.value
-                                newOffsetX =
+                                newOffsetX = if (containerUnusedWidth > 0f) {
+                                    0f
+                                } else {
                                     (((offsetX.value - focalX) * scaleFactor) + focalX).coerceIn(
                                         -containerUnusedWidth.absoluteValue / 2f,
                                         +containerUnusedWidth.absoluteValue / 2f,
                                     )
-                                newOffsetY =
+                                }
+                                newOffsetY = if (containerUnusedHeight > 0f) {
+                                    0f
+                                } else {
                                     (((offsetY.value - focalY) * scaleFactor) + focalY).coerceIn(
                                         -containerUnusedHeight.absoluteValue / 2f,
                                         +containerUnusedHeight.absoluteValue / 2f,
                                     )
+                                }
                             } else {
                                 targetScale = minScale
                                 newOffsetX = 0f
@@ -305,7 +328,7 @@ fun SketchesZoomableAsyncImage(
                         }
                     },
                     onTap = {
-                        onTapUpdated()
+                        onSingleTapUpdated?.invoke()
                     },
                 )
             },
