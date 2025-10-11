@@ -587,21 +587,26 @@ private fun MediaBar(
                         )
                     },
             ) {
+                val fileUri = file.uri
+                var imageLoaded by remember(fileUri) { mutableStateOf(false) }
                 SketchesAsyncImage(
-                    uri = file.uri,
+                    uri = fileUri,
                     contentDescription = stringResource(
                         id = when (file.mediaType) {
                             MediaType.Image -> R.string.image
                             MediaType.Video -> R.string.video
                         },
                     ),
+                    onImageLoaded = {
+                        imageLoaded = true
+                    },
                     modifier = Modifier.matchParentSize(),
                     contentScale = ContentScale.Crop,
                     filterQuality = FilterQuality.Low,
                     enableLoadingIndicator = false,
                     enableErrorIndicator = true,
                 )
-                if (file.mediaType == MediaType.Video) {
+                if (imageLoaded && file.mediaType == MediaType.Video) {
                     Box(
                         modifier = Modifier
                             .align(alignment = Alignment.BottomStart)

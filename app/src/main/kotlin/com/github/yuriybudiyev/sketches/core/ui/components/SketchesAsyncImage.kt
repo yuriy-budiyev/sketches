@@ -88,17 +88,17 @@ fun SketchesAsyncImage(
     uri: String,
     contentDescription: String,
     modifier: Modifier = Modifier,
+    onImageLoaded: (() -> Unit)? = null,
     contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = FilterQuality.Low,
     enableLoadingIndicator: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
+    val onImageLoadedUpdated by rememberUpdatedState(onImageLoaded)
     SubcomposeAsyncImage(
         model = uri,
         contentDescription = contentDescription,
         modifier = modifier,
-        contentScale = contentScale,
-        filterQuality = filterQuality,
         loading = if (enableLoadingIndicator) {
             {
                 SketchesStateIconInternal(
@@ -121,6 +121,11 @@ fun SketchesAsyncImage(
         } else {
             null
         },
+        onSuccess = {
+            onImageLoadedUpdated?.invoke()
+        },
+        contentScale = contentScale,
+        filterQuality = filterQuality,
     )
 }
 

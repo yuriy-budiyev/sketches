@@ -37,7 +37,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -121,8 +124,10 @@ fun SketchesMediaGrid(
                         },
                     ),
             ) {
+                val fileUri = file.uri
+                var imageLoaded by remember(fileUri) { mutableStateOf(false) }
                 SketchesAsyncImage(
-                    uri = file.uri,
+                    uri = fileUri,
                     contentDescription = stringResource(
                         id = when (file.mediaType) {
                             MediaType.Image -> R.string.image
@@ -130,6 +135,9 @@ fun SketchesMediaGrid(
                         },
                     ),
                     modifier = Modifier.matchParentSize(),
+                    onImageLoaded = {
+                        imageLoaded = true
+                    },
                     contentScale = ContentScale.Crop,
                     filterQuality = FilterQuality.Low,
                     enableLoadingIndicator = false,
@@ -145,7 +153,7 @@ fun SketchesMediaGrid(
                             ),
                     )
                 }
-                if (file.mediaType == MediaType.Video) {
+                if (imageLoaded && file.mediaType == MediaType.Video) {
                     Box(
                         modifier = Modifier
                             .align(alignment = Alignment.BottomStart)
