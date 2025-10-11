@@ -106,6 +106,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirm
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
@@ -253,7 +254,16 @@ private fun ImageScreenLayout(
             .asPaddingValues()
         MediaPager(
             state = pagerState,
-            items = filesUpdated,
+            files = filesUpdated,
+            onPageTap = {
+                coroutineScope.launch {
+                    if (systemBarsControllerUpdated.isSystemBarsVisible) {
+                        systemBarsControllerUpdated.hideSystemBars()
+                    } else {
+                        systemBarsControllerUpdated.showSystemBars()
+                    }
+                }
+            },
             controllerVisible = systemBarsControllerUpdated.isSystemBarsVisible,
             controllerStartPadding = controllerPaddings.calculateStartPadding(layoutDirection),
             controllerEndPadding = controllerPaddings.calculateEndPadding(layoutDirection),
@@ -263,19 +273,7 @@ private fun ImageScreenLayout(
                 .padding(
                     start = contentPaddingStart,
                     end = contentPaddingEnd,
-                )
-                .clickable(
-                    interactionSource = null,
-                    indication = null,
-                ) {
-                    coroutineScope.launch {
-                        if (systemBarsControllerUpdated.isSystemBarsVisible) {
-                            systemBarsControllerUpdated.hideSystemBars()
-                        } else {
-                            systemBarsControllerUpdated.showSystemBars()
-                        }
-                    }
-                },
+                ),
         )
         AnimatedVisibility(
             visible = systemBarsControllerUpdated.isSystemBarsVisible,
@@ -389,14 +387,16 @@ private fun ImageScreenLayout(
 @Composable
 private fun MediaPager(
     state: PagerState,
-    items: List<MediaStoreFile>,
+    files: List<MediaStoreFile>,
+    onPageTap: () -> Unit,
     controllerVisible: Boolean,
     controllerStartPadding: Dp,
     controllerEndPadding: Dp,
     controllerBottomPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
-    val filesUpdated by rememberUpdatedState(items)
+    val filesUpdated by rememberUpdatedState(files)
+    val onPageTapUpdated by rememberUpdatedState(onPageTap)
     val controllerVisibleUpdated by rememberUpdatedState(controllerVisible)
     val controllerStartPaddingUpdated by rememberUpdatedState(controllerStartPadding)
     val controllerEndPaddingUpdated by rememberUpdatedState(controllerEndPadding)
@@ -412,6 +412,7 @@ private fun MediaPager(
             number = page,
             fileUri = file.uri,
             fileType = file.mediaType,
+            onPageTap = onPageTapUpdated,
             controllerVisible = controllerVisibleUpdated,
             controllerStartPadding = controllerStartPaddingUpdated,
             controllerEndPadding = controllerEndPaddingUpdated,
@@ -428,6 +429,7 @@ private fun MediaPage(
     number: Int,
     fileUri: String,
     fileType: MediaType,
+    onPageTap: () -> Unit,
     controllerVisible: Boolean,
     controllerStartPadding: Dp,
     controllerEndPadding: Dp,
@@ -438,6 +440,7 @@ private fun MediaPage(
         MediaType.Image -> {
             ImagePage(
                 fileUri = fileUri,
+                onPageTap = onPageTap,
                 modifier = modifier,
             )
         }
@@ -446,6 +449,7 @@ private fun MediaPage(
                 state = state,
                 number = number,
                 fileUri = fileUri,
+                onPageTap = onPageTap,
                 controllerVisible = controllerVisible,
                 controllerStartPadding = controllerStartPadding,
                 controllerEndPadding = controllerEndPadding,
@@ -460,14 +464,14 @@ private fun MediaPage(
 @NonRestartableComposable
 private fun ImagePage(
     fileUri: String,
+    onPageTap: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SketchesAsyncImage(
+    SketchesZoomableAsyncImage(
         uri = fileUri,
         contentDescription = stringResource(R.string.image),
+        onTap = onPageTap,
         modifier = modifier,
-        contentScale = ContentScale.Fit,
-        filterQuality = FilterQuality.High,
         enableLoadingIndicator = false,
         enableErrorIndicator = true,
     )
@@ -478,6 +482,7 @@ private fun VideoPage(
     state: PagerState,
     number: Int,
     fileUri: String,
+    onPageTap: () -> Unit,
     controllerVisible: Boolean,
     controllerStartPadding: Dp,
     controllerEndPadding: Dp,
@@ -522,6 +527,7 @@ private fun VideoPage(
     }
     SketchesMediaPlayer(
         state = mediaState,
+        onDisplayTap = onPageTap,
         controllerVisible = controllerVisible,
         controllerStartPadding = controllerStartPadding,
         controllerEndPadding = controllerEndPadding,

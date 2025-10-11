@@ -142,6 +142,8 @@ fun SketchesZoomableAsyncImage(
         toInclusive = true,
     )
     doubleTapZoomFraction: Float = 0.1f,
+    enableLoadingIndicator: Boolean = true,
+    enableErrorIndicator: Boolean = true,
 ) {
     require(maxRelativeZoom >= 1f) {
         "Maximum relative zoom can't be lower than 1.0"
@@ -149,8 +151,6 @@ fun SketchesZoomableAsyncImage(
     require(doubleTapZoomFraction >= 0f && doubleTapZoomFraction <= 1f) {
         "Double tap zoom fraction should be in 0.0 to 1.0 range"
     }
-    val onTapUpdated by rememberUpdatedState(onTap)
-    val doubleTapZoomFractionUpdated by rememberUpdatedState(doubleTapZoomFraction)
     var painterState by remember {
         mutableStateOf<AsyncImagePainter.State>(AsyncImagePainter.State.Empty)
     }
@@ -162,7 +162,53 @@ fun SketchesZoomableAsyncImage(
         contentScale = ContentScale.None,
         filterQuality = FilterQuality.High
     )
+    when (painterState) {
+        is AsyncImagePainter.State.Loading -> {
+            if (enableLoadingIndicator) {
+                StateIcon(
+                    icon = SketchesIcons.ImageLoading,
+                    description = stringResource(R.string.image_loading),
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+        }
+        is AsyncImagePainter.State.Error -> {
+            if (enableErrorIndicator) {
+                StateIcon(
+                    icon = SketchesIcons.ImageError,
+                    description = stringResource(R.string.image_error),
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+        }
+        is AsyncImagePainter.State.Success -> {
+            SketchesZoomableAsyncImage(
+                painter = painter,
+                contentDescription = contentDescription,
+                onTap = onTap,
+                modifier = modifier,
+                maxRelativeZoom = maxRelativeZoom,
+                doubleTapZoomFraction = doubleTapZoomFraction,
+            )
+        }
+        else -> {
+            //Do nothing
+        }
+    }
+}
+
+@Composable
+private fun SketchesZoomableAsyncImage(
+    painter: AsyncImagePainter,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+    onTap: (() -> Unit)?,
+    maxRelativeZoom: Float,
+    doubleTapZoomFraction: Float,
+) {
     val coroutineScope = rememberCoroutineScope()
+    val onTapUpdated by rememberUpdatedState(onTap)
+    val doubleTapZoomFractionUpdated by rememberUpdatedState(doubleTapZoomFraction)
     var containerSize by remember { mutableStateOf(Size.Zero) }
     var contentSize by remember { mutableStateOf(Size.Zero) }
     var minScale by remember { mutableFloatStateOf(0f) }
@@ -273,7 +319,8 @@ fun SketchesZoomableAsyncImage(
                                 targetScale = midScale
                                 val scaledContentWidth = contentSize.width * targetScale
                                 val scaledContentHeight = contentSize.height * targetScale
-                                val containerUnusedWidth = containerSize.width - scaledContentWidth
+                                val containerUnusedWidth =
+                                    containerSize.width - scaledContentWidth
                                 val containerUnusedHeight =
                                     containerSize.height - scaledContentHeight
                                 val scaleFactor = targetScale / scale.value
