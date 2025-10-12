@@ -32,8 +32,5 @@ data class MediaStoreFile(
     val dateAdded: Long,
     val mediaType: MediaType,
     val mimeType: String,
-    var width: Int,
-    var height: Int,
-    var rotation: Int,
     val uri: String,
 )
