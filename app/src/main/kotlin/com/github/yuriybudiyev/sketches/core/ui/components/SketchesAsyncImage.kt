@@ -55,6 +55,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -274,29 +275,27 @@ private fun SketchesZoomableAsyncImageInternal(
                             )
                             val scaledContentWidth = contentSize.width * newScale
                             val scaledContentHeight = contentSize.height * newScale
-                            val containerWidthDiff = containerSize.width - scaledContentWidth
-                            val containerHeightDiff = containerSize.height - scaledContentHeight
-                            var newOffsetX = offsetX.value + pan.x
-                            var newOffsetY = offsetY.value + pan.y
-                            if (containerWidthDiff >= 0f) {
-                                newOffsetX = 0f
+                            val unusedContainerWidth = containerSize.width - scaledContentWidth
+                            val unusedContainerHeight = containerSize.height - scaledContentHeight
+                            val newOffsetX = if (unusedContainerWidth < 0f) {
+                                (offsetX.value + pan.x).coerceIn(
+                                    -unusedContainerWidth.absoluteValue / 2f,
+                                    +unusedContainerWidth.absoluteValue / 2f,
+                                )
+                            } else {
+                                0f
                             }
-                            if (containerHeightDiff >= 0f) {
-                                newOffsetY = 0f
+                            val newOffsetY = if (unusedContainerHeight < 0f) {
+                                (offsetY.value + pan.y).coerceIn(
+                                    -unusedContainerHeight.absoluteValue / 2f,
+                                    +unusedContainerHeight.absoluteValue / 2f,
+                                )
+                            } else {
+                                0f
                             }
                             scale.snapTo(newScale)
-                            offsetX.snapTo(
-                                newOffsetX.coerceIn(
-                                    -containerWidthDiff.absoluteValue / 2f,
-                                    +containerWidthDiff.absoluteValue / 2f,
-                                )
-                            )
-                            offsetY.snapTo(
-                                newOffsetY.coerceIn(
-                                    -containerHeightDiff.absoluteValue / 2f,
-                                    +containerHeightDiff.absoluteValue / 2f,
-                                )
-                            )
+                            offsetX.snapTo(newOffsetX)
+                            offsetY.snapTo(newOffsetY)
                         }
                     },
                     onAfterGesture = { change ->
@@ -313,38 +312,33 @@ private fun SketchesZoomableAsyncImageInternal(
                             val targetScale: Float
                             val newOffsetX: Float
                             val newOffsetY: Float
-                            val midScale =
-                                minScale + ((maxScale - minScale) * doubleTapZoomFractionUpdated)
                             if (scale.value == minScale) {
-                                targetScale = midScale
+                                targetScale =
+                                    minScale + ((maxScale - minScale) * doubleTapZoomFractionUpdated)
                                 val scaledContentWidth = contentSize.width * targetScale
                                 val scaledContentHeight = contentSize.height * targetScale
-                                val containerUnusedWidth =
-                                    containerSize.width - scaledContentWidth
-                                val containerUnusedHeight =
+                                val unusedContainerWidth = containerSize.width - scaledContentWidth
+                                val unusedContainerHeight =
                                     containerSize.height - scaledContentHeight
                                 val scaleFactor = targetScale / scale.value
-                                val containerCenter = Offset(
-                                    containerSize.width / 2f,
-                                    containerSize.height / 2f,
-                                )
+                                val containerCenter = containerSize.center
                                 val focalX = tapOffset.x - containerCenter.x - offsetX.value
                                 val focalY = tapOffset.y - containerCenter.y - offsetX.value
-                                newOffsetX = if (containerUnusedWidth > 0f) {
-                                    0f
-                                } else {
+                                newOffsetX = if (unusedContainerWidth < 0f) {
                                     (((offsetX.value - focalX) * scaleFactor) + focalX).coerceIn(
-                                        -containerUnusedWidth.absoluteValue / 2f,
-                                        +containerUnusedWidth.absoluteValue / 2f,
+                                        -unusedContainerWidth.absoluteValue / 2f,
+                                        +unusedContainerWidth.absoluteValue / 2f,
                                     )
-                                }
-                                newOffsetY = if (containerUnusedHeight > 0f) {
-                                    0f
                                 } else {
+                                    0f
+                                }
+                                newOffsetY = if (unusedContainerHeight < 0f) {
                                     (((offsetY.value - focalY) * scaleFactor) + focalY).coerceIn(
-                                        -containerUnusedHeight.absoluteValue / 2f,
-                                        +containerUnusedHeight.absoluteValue / 2f,
+                                        -unusedContainerHeight.absoluteValue / 2f,
+                                        +unusedContainerHeight.absoluteValue / 2f,
                                     )
+                                } else {
+                                    0f
                                 }
                             } else {
                                 targetScale = minScale
