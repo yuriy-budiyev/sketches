@@ -323,7 +323,7 @@ private fun SketchesZoomableAsyncImageInternal(
                                 val scaleFactor = targetScale / scale.value
                                 val containerCenter = containerSize.center
                                 val focalX = tapOffset.x - containerCenter.x - offsetX.value
-                                val focalY = tapOffset.y - containerCenter.y - offsetX.value
+                                val focalY = tapOffset.y - containerCenter.y - offsetY.value
                                 newOffsetX = if (unusedContainerWidth < 0f) {
                                     (((offsetX.value - focalX) * scaleFactor) + focalX).coerceIn(
                                         -unusedContainerWidth.absoluteValue / 2f,
