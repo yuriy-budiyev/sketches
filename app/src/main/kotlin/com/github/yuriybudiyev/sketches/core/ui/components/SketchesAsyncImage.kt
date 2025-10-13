@@ -218,7 +218,7 @@ private fun SketchesZoomableAsyncImageInternal(
     val scale = remember { Animatable(0f) }
     val offsetX = remember { Animatable(0f) }
     val offsetY = remember { Animatable(0f) }
-    LaunchedEffect(maxRelativeZoom) {
+    LaunchedEffect(Unit) {
         snapshotFlow { containerSize to contentSize }.collect { (containerSize, contentSize) ->
             if (containerSize != Size.Zero && contentSize != Size.Zero) {
                 val fitScaleWidth = containerSize.width / contentSize.width
@@ -256,6 +256,13 @@ private fun SketchesZoomableAsyncImageInternal(
             }
         }
     }
+    LaunchedEffect(maxRelativeZoom) {
+        maxScale = minScale * maxRelativeZoom
+        scale.updateBounds(
+            minScale,
+            maxScale,
+        )
+    }
     Box(
         modifier = modifier
             .semantics(mergeDescendants = true) {
@@ -270,18 +277,18 @@ private fun SketchesZoomableAsyncImageInternal(
                 detectTransformGestures(
                     onGesture = { centroid, pan, zoom ->
                         coroutineScope.launch {
-                            val oldScale = scale.value
                             val newScale = (scale.value * zoom).coerceIn(
                                 minimumValue = minScale,
                                 maximumValue = maxScale,
                             )
+                            val scaleFactor = newScale / scale.value
                             val scaledContentWidth = contentSize.width * newScale
                             val scaledContentHeight = contentSize.height * newScale
                             val unusedContainerWidth = containerSize.width - scaledContentWidth
                             val unusedContainerHeight = containerSize.height - scaledContentHeight
                             val relativeCentroid = containerSize.center - centroid
                             val newOffsetX = if (unusedContainerWidth < 0f) {
-                                ((offsetX.value + relativeCentroid.x) * (newScale / oldScale) - relativeCentroid.x + pan.x)
+                                ((offsetX.value + relativeCentroid.x) * scaleFactor - relativeCentroid.x + pan.x)
                                     .coerceIn(
                                         -unusedContainerWidth.absoluteValue / 2f,
                                         +unusedContainerWidth.absoluteValue / 2f,
@@ -290,7 +297,7 @@ private fun SketchesZoomableAsyncImageInternal(
                                 0f
                             }
                             val newOffsetY = if (unusedContainerHeight < 0f) {
-                                ((offsetY.value + relativeCentroid.y) * (newScale / oldScale) - relativeCentroid.y + pan.y)
+                                ((offsetY.value + relativeCentroid.y) * scaleFactor - relativeCentroid.y + pan.y)
                                     .coerceIn(
                                         -unusedContainerHeight.absoluteValue / 2f,
                                         +unusedContainerHeight.absoluteValue / 2f,
@@ -314,45 +321,45 @@ private fun SketchesZoomableAsyncImageInternal(
                 detectTapGestures(
                     onDoubleTap = { tapOffset ->
                         coroutineScope.launch {
-                            val targetScale: Float
+                            val newScale: Float
                             val newOffsetX: Float
                             val newOffsetY: Float
                             if (scale.value == minScale) {
-                                targetScale =
+                                newScale =
                                     minScale + ((maxScale - minScale) * doubleTapZoomFractionUpdated)
-                                val scaledContentWidth = contentSize.width * targetScale
-                                val scaledContentHeight = contentSize.height * targetScale
+                                val scaleFactor = newScale / scale.value
+                                val scaledContentWidth = contentSize.width * newScale
+                                val scaledContentHeight = contentSize.height * newScale
                                 val unusedContainerWidth = containerSize.width - scaledContentWidth
                                 val unusedContainerHeight =
                                     containerSize.height - scaledContentHeight
-                                val scaleFactor = targetScale / scale.value
-                                val containerCenter = containerSize.center
-                                val focalX = tapOffset.x - containerCenter.x - offsetX.value
-                                val focalY = tapOffset.y - containerCenter.y - offsetY.value
+                                val relativeTapOffset = containerSize.center - tapOffset
                                 newOffsetX = if (unusedContainerWidth < 0f) {
-                                    (((offsetX.value - focalX) * scaleFactor) + focalX).coerceIn(
-                                        -unusedContainerWidth.absoluteValue / 2f,
-                                        +unusedContainerWidth.absoluteValue / 2f,
-                                    )
+                                    ((offsetX.value + relativeTapOffset.x) * scaleFactor - relativeTapOffset.x)
+                                        .coerceIn(
+                                            -unusedContainerWidth.absoluteValue / 2f,
+                                            +unusedContainerWidth.absoluteValue / 2f,
+                                        )
                                 } else {
                                     0f
                                 }
                                 newOffsetY = if (unusedContainerHeight < 0f) {
-                                    (((offsetY.value - focalY) * scaleFactor) + focalY).coerceIn(
-                                        -unusedContainerHeight.absoluteValue / 2f,
-                                        +unusedContainerHeight.absoluteValue / 2f,
-                                    )
+                                    ((offsetY.value + relativeTapOffset.y) * scaleFactor - relativeTapOffset.y)
+                                        .coerceIn(
+                                            -unusedContainerHeight.absoluteValue / 2f,
+                                            +unusedContainerHeight.absoluteValue / 2f,
+                                        )
                                 } else {
                                     0f
                                 }
                             } else {
-                                targetScale = minScale
+                                newScale = minScale
                                 newOffsetX = 0f
                                 newOffsetY = 0f
                             }
                             val scaleJob = launch {
                                 scale.animateTo(
-                                    targetScale,
+                                    newScale,
                                     tween(),
                                 )
                             }
