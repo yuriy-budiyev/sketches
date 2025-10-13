@@ -29,6 +29,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculateCentroid
 import androidx.compose.foundation.gestures.calculateCentroidSize
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateZoom
@@ -267,7 +268,7 @@ private fun SketchesZoomableAsyncImageInternal(
             .clipToBounds()
             .pointerInput(Unit) {
                 detectTransformGestures(
-                    onGesture = { pan, zoom ->
+                    onGesture = { centroid, pan, zoom ->
                         coroutineScope.launch {
                             val newScale = (scale.value * zoom).coerceIn(
                                 minimumValue = minScale,
@@ -423,7 +424,7 @@ private fun SketchesStateIconInternal(
  * Slightly changed version of [androidx.compose.foundation.gestures.detectTransformGestures]
  */
 private suspend fun PointerInputScope.detectTransformGestures(
-    onGesture: (pan: Offset, zoom: Float) -> Unit,
+    onGesture: (centroid: Offset, pan: Offset, zoom: Float) -> Unit,
     onAfterGesture: (change: PointerInputChange) -> Unit,
 ) {
     awaitEachGesture {
@@ -450,7 +451,9 @@ private suspend fun PointerInputScope.detectTransformGestures(
                 }
                 if (pastTouchSlop) {
                     if (zoomChange != 1f || panChange != Offset.Zero) {
+                        val centroid = event.calculateCentroid(useCurrent = false)
                         onGesture(
+                            centroid,
                             panChange,
                             zoomChange,
                         )
