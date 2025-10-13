@@ -194,7 +194,7 @@ fun SketchesZoomableAsyncImage(
             )
         }
         else -> {
-            // Do nothing
+            Box(modifier)
         }
     }
 }
