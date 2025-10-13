@@ -270,6 +270,7 @@ private fun SketchesZoomableAsyncImageInternal(
                 detectTransformGestures(
                     onGesture = { centroid, pan, zoom ->
                         coroutineScope.launch {
+                            val oldScale = scale.value
                             val newScale = (scale.value * zoom).coerceIn(
                                 minimumValue = minScale,
                                 maximumValue = maxScale,
@@ -278,19 +279,22 @@ private fun SketchesZoomableAsyncImageInternal(
                             val scaledContentHeight = contentSize.height * newScale
                             val unusedContainerWidth = containerSize.width - scaledContentWidth
                             val unusedContainerHeight = containerSize.height - scaledContentHeight
+                            val relativeCentroid = containerSize.center - centroid
                             val newOffsetX = if (unusedContainerWidth < 0f) {
-                                (offsetX.value + pan.x).coerceIn(
-                                    -unusedContainerWidth.absoluteValue / 2f,
-                                    +unusedContainerWidth.absoluteValue / 2f,
-                                )
+                                ((offsetX.value + relativeCentroid.x) * (newScale / oldScale) - relativeCentroid.x + pan.x)
+                                    .coerceIn(
+                                        -unusedContainerWidth.absoluteValue / 2f,
+                                        +unusedContainerWidth.absoluteValue / 2f,
+                                    )
                             } else {
                                 0f
                             }
                             val newOffsetY = if (unusedContainerHeight < 0f) {
-                                (offsetY.value + pan.y).coerceIn(
-                                    -unusedContainerHeight.absoluteValue / 2f,
-                                    +unusedContainerHeight.absoluteValue / 2f,
-                                )
+                                ((offsetY.value + relativeCentroid.y) * (newScale / oldScale) - relativeCentroid.y + pan.y)
+                                    .coerceIn(
+                                        -unusedContainerHeight.absoluteValue / 2f,
+                                        +unusedContainerHeight.absoluteValue / 2f,
+                                    )
                             } else {
                                 0f
                             }
@@ -451,7 +455,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
                 }
                 if (pastTouchSlop) {
                     if (zoomChange != 1f || panChange != Offset.Zero) {
-                        val centroid = event.calculateCentroid(useCurrent = false)
+                        val centroid = event.calculateCentroid(useCurrent = true)
                         onGesture(
                             centroid,
                             panChange,
