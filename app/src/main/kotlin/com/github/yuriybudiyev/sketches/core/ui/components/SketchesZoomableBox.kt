@@ -84,7 +84,7 @@ fun SketchesZoomableBox(
         toInclusive = true,
     )
     doubleTapZoomFraction: Float = 0.2f,
-    content: @Composable ZoomableBoxScope.() -> Unit,
+    content: @Composable SketchesZoomableBoxScope.() -> Unit,
 ) {
     require(maxRelativeZoom >= 1f) {
         "Maximum relative zoom can't be lower than 1.0"
@@ -271,16 +271,16 @@ fun SketchesZoomableBox(
             },
         contentAlignment = Alignment.Center,
     ) {
-        val zoomableBoxScope = remember { ZoomableBoxScopeImpl(this) }
+        val zoomableScope = remember { SketchesZoomableBoxScopeImpl(this) }
         LaunchedEffect(Unit) {
-            snapshotFlow { zoomableBoxScope.contentSize }.collect { size ->
+            snapshotFlow { zoomableScope.contentSize }.collect { size ->
                 contentSize = size
             }
         }
-        zoomableBoxScope.offsetX = offsetX.value
-        zoomableBoxScope.offsetY = offsetY.value
-        zoomableBoxScope.scale = scale.value
-        zoomableBoxScope.content()
+        zoomableScope.offsetX = offsetX.value
+        zoomableScope.offsetY = offsetY.value
+        zoomableScope.scale = scale.value
+        zoomableScope.content()
     }
 }
 
@@ -335,7 +335,7 @@ private suspend fun PointerInputScope.detectTransformGestures(
 
 @LayoutScopeMarker
 @Stable
-interface ZoomableBoxScope: BoxScope {
+interface SketchesZoomableBoxScope: BoxScope {
 
     /**
      * Connects the element with [SketchesZoomableBox] to enable zoom.
@@ -346,7 +346,9 @@ interface ZoomableBoxScope: BoxScope {
 }
 
 @Stable
-private class ZoomableBoxScopeImpl(private val boxScope: BoxScope): ZoomableBoxScope {
+private class SketchesZoomableBoxScopeImpl(
+    private val boxScope: BoxScope,
+): SketchesZoomableBoxScope {
 
     var contentSize: Size by mutableStateOf(Size.Zero)
 
