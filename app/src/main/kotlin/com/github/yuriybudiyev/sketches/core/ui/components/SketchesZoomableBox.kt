@@ -337,6 +337,9 @@ private suspend fun PointerInputScope.detectTransformGestures(
 @Stable
 interface ZoomableBoxScope: BoxScope {
 
+    /**
+     * Connects the element with [SketchesZoomableBox] to enable zoom.
+     */
     @Stable
     fun Modifier.zoomable(): Modifier
 }
