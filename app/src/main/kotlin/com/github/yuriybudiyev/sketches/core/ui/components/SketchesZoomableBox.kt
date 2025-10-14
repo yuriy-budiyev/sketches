@@ -76,6 +76,7 @@ fun SketchesZoomableBox(
     val scale = remember { Animatable(0f) }
     val offsetX = remember { Animatable(0f) }
     val offsetY = remember { Animatable(0f) }
+    var zoomed by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         snapshotFlow { containerSize to contentSize }.collect { (containerSize, contentSize) ->
             if (containerSize != Size.Zero && contentSize != Size.Zero) {
@@ -91,7 +92,7 @@ fun SketchesZoomableBox(
                     minScale,
                     maxScale,
                 )
-                if (scale.value == 0f) {
+                if (scale.value == 0f || !zoomed) {
                     scale.snapTo(fitScale)
                     offsetX.snapTo(0f)
                     offsetX.snapTo(0f)
@@ -111,6 +112,7 @@ fun SketchesZoomableBox(
                     offsetX.snapTo(newOffsetX)
                     offsetY.snapTo(newOffsetY)
                 }
+                zoomed = scale.value > fitScale
             }
         }
     }
@@ -162,6 +164,7 @@ fun SketchesZoomableBox(
                             scale.snapTo(newScale)
                             offsetX.snapTo(newOffsetX)
                             offsetY.snapTo(newOffsetY)
+                            zoomed = newScale > minScale
                         }
                     },
                     onAfterGesture = { change ->
@@ -232,6 +235,7 @@ fun SketchesZoomableBox(
                             scaleJob.join()
                             offsetXJob.join()
                             offsetYJob.join()
+                            zoomed = newScale > minScale
                         }
                     },
                     onTap = {
