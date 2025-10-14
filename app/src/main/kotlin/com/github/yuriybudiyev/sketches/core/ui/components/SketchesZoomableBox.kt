@@ -353,8 +353,8 @@ private class ZoomableBoxScopeImpl(private val boxScope: BoxScope): ZoomableBoxS
     var scale: Float by mutableFloatStateOf(0f)
 
     @Stable
-    override fun Modifier.zoomable(): Modifier {
-        return this
+    override fun Modifier.zoomable(): Modifier =
+        this
             .onSizeChanged { size ->
                 contentSize = size.toSize()
             }
@@ -364,7 +364,6 @@ private class ZoomableBoxScopeImpl(private val boxScope: BoxScope): ZoomableBoxS
                 scaleX = scale
                 scaleY = scale
             }
-    }
 
     @Stable
     override fun Modifier.align(alignment: Alignment): Modifier =
