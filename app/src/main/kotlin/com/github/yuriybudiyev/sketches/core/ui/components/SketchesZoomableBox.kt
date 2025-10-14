@@ -259,7 +259,10 @@ fun SketchesZoomableBox(
     }
 }
 
-suspend fun PointerInputScope.detectTransformGestures(
+/**
+ * Slightly changed version of [androidx.compose.foundation.gestures.detectTransformGestures]
+ */
+private suspend fun PointerInputScope.detectTransformGestures(
     onGesture: (centroid: Offset, pan: Offset, zoom: Float) -> Unit,
     onAfterGesture: (change: PointerInputChange) -> Unit,
 ) {
