@@ -12,6 +12,7 @@ import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.LayoutScopeMarker
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -304,6 +305,7 @@ suspend fun PointerInputScope.detectTransformGestures(
     }
 }
 
+@LayoutScopeMarker
 @Stable
 interface ZoomableBoxScope: BoxScope {
 
