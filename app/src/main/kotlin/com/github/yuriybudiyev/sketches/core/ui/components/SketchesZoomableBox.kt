@@ -339,6 +339,7 @@ interface ZoomableBoxScope: BoxScope {
 
     /**
      * Connects the element with [SketchesZoomableBox] to enable zoom.
+     * Only one element can be zoomable.
      */
     @Stable
     fun Modifier.zoomable(): Modifier
