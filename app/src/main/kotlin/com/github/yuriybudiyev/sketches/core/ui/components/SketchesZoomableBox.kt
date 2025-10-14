@@ -271,16 +271,16 @@ fun SketchesZoomableBox(
             },
         contentAlignment = Alignment.Center,
     ) {
-        val scope = remember { ZoomableBoxScopeImpl(this) }
+        val zoomableBoxScope = remember { ZoomableBoxScopeImpl(this) }
         LaunchedEffect(Unit) {
-            snapshotFlow { scope.contentSize }.collect { size ->
+            snapshotFlow { zoomableBoxScope.contentSize }.collect { size ->
                 contentSize = size
             }
         }
-        scope.offsetX = offsetX.value
-        scope.offsetY = offsetY.value
-        scope.scale = scale.value
-        scope.content()
+        zoomableBoxScope.offsetX = offsetX.value
+        zoomableBoxScope.offsetY = offsetY.value
+        zoomableBoxScope.scale = scale.value
+        zoomableBoxScope.content()
     }
 }
 
