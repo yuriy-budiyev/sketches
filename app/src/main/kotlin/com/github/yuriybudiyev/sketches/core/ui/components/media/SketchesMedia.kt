@@ -50,12 +50,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
@@ -154,15 +151,7 @@ fun SketchesMediaDisplay(
                         matchHeightConstraintsFirst = displayAspectRatio < 1f
                     )
                     .align(Alignment.Center)
-                    .onSizeChanged { size ->
-                        contentSize = size.toSize()
-                    }
-                    .graphicsLayer {
-                        translationX = offsetX
-                        translationY = offsetY
-                        scaleX = scale
-                        scaleY = scale
-                    },
+                    .zoomable(),
                 factory = { context -> TextureView(context) },
                 update = { view -> state.setVideoView(view) },
                 onReset = { view -> state.clearVideoView(view) },

@@ -40,16 +40,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.toSize
 import coil3.compose.AsyncImagePainter
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.rememberAsyncImagePainter
@@ -166,15 +163,7 @@ fun SketchesZoomableAsyncImage(
                             align = Alignment.Center,
                             unbounded = true,
                         )
-                        .onSizeChanged { size ->
-                            contentSize = size.toSize()
-                        }
-                        .graphicsLayer {
-                            translationX = offsetX
-                            translationY = offsetY
-                            scaleX = scale
-                            scaleY = scale
-                        }
+                        .zoomable()
                         .paint(
                             painter,
                             contentScale = ContentScale.None,

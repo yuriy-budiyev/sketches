@@ -54,6 +54,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.center
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
@@ -336,29 +337,40 @@ private suspend fun PointerInputScope.detectTransformGestures(
 @Stable
 interface ZoomableBoxScope: BoxScope {
 
-    var contentSize: Size
-
-    val offsetX: Float
-
-    val offsetY: Float
-
-    val scale: Float
+    @Stable
+    fun Modifier.zoomable(): Modifier
 }
 
 @Stable
 private class ZoomableBoxScopeImpl(private val boxScope: BoxScope): ZoomableBoxScope {
 
-    override var contentSize: Size by mutableStateOf(Size.Zero)
+    var contentSize: Size by mutableStateOf(Size.Zero)
 
-    override var offsetX: Float by mutableFloatStateOf(0f)
+    var offsetX: Float by mutableFloatStateOf(0f)
 
-    override var offsetY: Float by mutableFloatStateOf(0f)
+    var offsetY: Float by mutableFloatStateOf(0f)
 
-    override var scale: Float by mutableFloatStateOf(0f)
+    var scale: Float by mutableFloatStateOf(0f)
 
+    @Stable
+    override fun Modifier.zoomable(): Modifier {
+        return this
+            .onSizeChanged { size ->
+                contentSize = size.toSize()
+            }
+            .graphicsLayer {
+                translationX = offsetX
+                translationY = offsetY
+                scaleX = scale
+                scaleY = scale
+            }
+    }
+
+    @Stable
     override fun Modifier.align(alignment: Alignment): Modifier =
         with(boxScope) { align(alignment) }
 
+    @Stable
     override fun Modifier.matchParentSize(): Modifier =
         with(boxScope) { matchParentSize() }
 }
