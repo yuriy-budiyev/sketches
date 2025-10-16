@@ -48,8 +48,11 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import coil3.compose.AsyncImagePainter
+import coil3.compose.LocalPlatformContext
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
+import coil3.size.Size
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
@@ -120,7 +123,11 @@ fun SketchesZoomableAsyncImage(
         mutableStateOf<AsyncImagePainter.State>(AsyncImagePainter.State.Empty)
     }
     val painter = rememberAsyncImagePainter(
-        model = uri,
+        model = ImageRequest
+            .Builder(LocalPlatformContext.current)
+            .size(Size.ORIGINAL)
+            .data(uri)
+            .build(),
         onState = { state ->
             painterState = state
         },
