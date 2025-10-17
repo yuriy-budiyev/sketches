@@ -26,7 +26,6 @@ package com.github.yuriybudiyev.sketches.core.ui.components
 
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Icon
@@ -38,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -49,8 +49,8 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
-import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest
 import coil3.size.Size
 import com.github.yuriybudiyev.sketches.R
@@ -67,35 +67,74 @@ fun SketchesAsyncImage(
     enableLoadingIndicator: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
-    SubcomposeAsyncImage(
-        model = uri,
-        contentDescription = contentDescription,
-        modifier = modifier,
-        loading = if (enableLoadingIndicator) {
-            {
-                SketchesStateIconInternal(
-                    icon = SketchesIcons.ImageLoading,
-                    description = stringResource(R.string.image_loading),
-                    modifier = Modifier.fillMaxSize(),
-                )
-            }
-        } else {
-            null
-        },
-        error = if (enableErrorIndicator) {
-            {
-                SketchesStateIconInternal(
-                    icon = SketchesIcons.ImageError,
-                    description = stringResource(R.string.image_error),
-                    modifier = Modifier.fillMaxSize(),
-                )
-            }
-        } else {
-            null
+    val context = LocalPlatformContext.current
+    val sizeResolver = rememberConstraintsSizeResolver()
+    val request = remember(
+        context,
+        sizeResolver,
+        uri,
+    ) {
+        ImageRequest.Builder(context)
+            .size(sizeResolver)
+            .data(uri)
+            .build()
+    }
+    var painterState by remember {
+        mutableStateOf<AsyncImagePainter.State>(AsyncImagePainter.State.Empty)
+    }
+    val painter = rememberAsyncImagePainter(
+        model = request,
+        onState = { state ->
+            painterState = state
         },
         contentScale = contentScale,
-        filterQuality = filterQuality,
+        filterQuality = filterQuality
     )
+    Box(
+        modifier = modifier.then(sizeResolver),
+        contentAlignment = Alignment.Center,
+    ) {
+        when (painterState) {
+            is AsyncImagePainter.State.Loading -> {
+                if (enableLoadingIndicator) {
+                    SketchesStateIconInternal(
+                        icon = SketchesIcons.ImageLoading,
+                        description = stringResource(R.string.image_loading),
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                }
+            }
+            is AsyncImagePainter.State.Error -> {
+                if (enableErrorIndicator) {
+                    SketchesStateIconInternal(
+                        icon = SketchesIcons.ImageError,
+                        description = stringResource(R.string.image_error),
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                }
+            }
+            is AsyncImagePainter.State.Success -> {
+                Box(
+                    modifier = Modifier
+                        .semantics {
+                            this.contentDescription = contentDescription
+                            this.role = Role.Image
+                        }
+                        .align(Alignment.Center)
+                        .matchParentSize()
+                        .clipToBounds()
+                        .paint(
+                            painter,
+                            contentScale = contentScale,
+                            alignment = Alignment.Center,
+                        )
+                )
+            }
+            else -> {
+                // Do nothing
+            }
+        }
+    }
 }
 
 @Composable
