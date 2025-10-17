@@ -361,6 +361,7 @@ private class SketchesZoomableBoxScopeImpl(
     @Stable
     override fun Modifier.zoomable(): Modifier =
         this
+            .align(Alignment.Center)
             .onSizeChanged { size ->
                 contentSize = size.toSize()
             }

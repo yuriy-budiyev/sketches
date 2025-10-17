@@ -150,7 +150,6 @@ fun SketchesMediaDisplay(
                         ratio = displayAspectRatio,
                         matchHeightConstraintsFirst = displayAspectRatio < 1f
                     )
-                    .align(Alignment.Center)
                     .zoomable(),
                 factory = { context -> TextureView(context) },
                 update = { view -> state.setVideoView(view) },

@@ -24,13 +24,13 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
-import androidx.annotation.FloatRange
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -97,20 +97,12 @@ fun SketchesAsyncImage(
         when (painterState) {
             is AsyncImagePainter.State.Loading -> {
                 if (enableLoadingIndicator) {
-                    SketchesStateIconInternal(
-                        icon = SketchesIcons.ImageLoading,
-                        description = stringResource(R.string.image_loading),
-                        modifier = Modifier.align(Alignment.Center),
-                    )
+                    SketchesLoadingStateIcon()
                 }
             }
             is AsyncImagePainter.State.Error -> {
                 if (enableErrorIndicator) {
-                    SketchesStateIconInternal(
-                        icon = SketchesIcons.ImageError,
-                        description = stringResource(R.string.image_error),
-                        modifier = Modifier.align(Alignment.Center),
-                    )
+                    SketchesErrorStateIcon()
                 }
             }
             is AsyncImagePainter.State.Success -> {
@@ -120,7 +112,6 @@ fun SketchesAsyncImage(
                             this.contentDescription = contentDescription
                             this.role = Role.Image
                         }
-                        .align(Alignment.Center)
                         .matchParentSize()
                         .clipToBounds()
                         .paint(
@@ -143,102 +134,110 @@ fun SketchesZoomableAsyncImage(
     contentDescription: String,
     modifier: Modifier = Modifier,
     onTap: (() -> Unit)? = null,
-    @FloatRange(
-        from = 1.0,
-        fromInclusive = true,
-    )
-    maxRelativeZoom: Float = 10f,
-    @FloatRange(
-        from = 0.0,
-        fromInclusive = true,
-        to = 1.0,
-        toInclusive = true,
-    )
-    doubleTapZoomFraction: Float = 0.2f,
     enableLoadingIndicator: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
+    val context = LocalPlatformContext.current
+    val request = remember(
+        context,
+        uri,
+    ) {
+        ImageRequest.Builder(context)
+            .size(Size.ORIGINAL)
+            .data(uri)
+            .build()
+    }
     var painterState by remember {
         mutableStateOf<AsyncImagePainter.State>(AsyncImagePainter.State.Empty)
     }
     val painter = rememberAsyncImagePainter(
-        model = ImageRequest
-            .Builder(LocalPlatformContext.current)
-            .size(Size.ORIGINAL)
-            .data(uri)
-            .build(),
+        model = request,
         onState = { state ->
             painterState = state
         },
         contentScale = ContentScale.None,
         filterQuality = FilterQuality.High
     )
-    when (painterState) {
-        is AsyncImagePainter.State.Loading -> {
-            if (enableLoadingIndicator) {
-                SketchesStateIconInternal(
-                    icon = SketchesIcons.ImageLoading,
-                    description = stringResource(R.string.image_loading),
-                    modifier = modifier,
-                )
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center,
+    ) {
+        when (painterState) {
+            is AsyncImagePainter.State.Loading -> {
+                if (enableLoadingIndicator) {
+                    SketchesLoadingStateIcon()
+                }
             }
-        }
-        is AsyncImagePainter.State.Error -> {
-            if (enableErrorIndicator) {
-                SketchesStateIconInternal(
-                    icon = SketchesIcons.ImageError,
-                    description = stringResource(R.string.image_error),
-                    modifier = modifier,
-                )
+            is AsyncImagePainter.State.Error -> {
+                if (enableErrorIndicator) {
+                    SketchesErrorStateIcon()
+                }
             }
-        }
-        is AsyncImagePainter.State.Success -> {
-            SketchesZoomableBox(
-                modifier = modifier.semantics(mergeDescendants = true) {
-                    this.contentDescription = contentDescription
-                    this.role = Role.Image
-                },
-                onTap = onTap,
-                maxRelativeZoom = maxRelativeZoom,
-                doubleTapZoomFraction = doubleTapZoomFraction
-            ) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .wrapContentSize(
-                            align = Alignment.Center,
-                            unbounded = true,
-                        )
-                        .zoomable()
-                        .paint(
-                            painter,
-                            contentScale = ContentScale.None,
-                            alignment = Alignment.Center,
-                        ),
-                )
+            is AsyncImagePainter.State.Success -> {
+                SketchesZoomableBox(
+                    modifier = modifier
+                        .semantics(mergeDescendants = true) {
+                            this.contentDescription = contentDescription
+                            this.role = Role.Image
+                        }
+                        .matchParentSize(),
+                    onTap = onTap,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .wrapContentSize(
+                                align = Alignment.Center,
+                                unbounded = true,
+                            )
+                            .zoomable()
+                            .paint(
+                                painter,
+                                contentScale = ContentScale.None,
+                                alignment = Alignment.Center,
+                            ),
+                    )
+                }
             }
-        }
-        else -> {
-            Box(modifier)
+            else -> {
+                // Do nothing
+            }
         }
     }
 }
 
 @Composable
-private fun SketchesStateIconInternal(
-    icon: ImageVector,
-    description: String,
+@NonRestartableComposable
+private fun SketchesLoadingStateIcon(modifier: Modifier = Modifier) {
+    SketchesStateIcon(
+        imageVector = SketchesIcons.ImageLoading,
+        contentDescription = stringResource(R.string.image_loading),
+        modifier = modifier,
+    )
+}
+
+@Composable
+@NonRestartableComposable
+private fun SketchesErrorStateIcon(modifier: Modifier = Modifier) {
+    SketchesStateIcon(
+        imageVector = SketchesIcons.ImageError,
+        contentDescription = stringResource(R.string.image_error),
+        modifier = modifier,
+    )
+}
+
+@Composable
+@NonRestartableComposable
+private fun SketchesStateIcon(
+    imageVector: ImageVector,
+    contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = description,
-            modifier = Modifier.size(SketchesDimens.AsyncImageStateIconSize),
-            tint = MaterialTheme.colorScheme.onBackground
-        )
-    }
+    Icon(
+        imageVector = imageVector,
+        contentDescription = contentDescription,
+        modifier = Modifier
+            .size(SketchesDimens.AsyncImageStateIconSize)
+            .then(modifier),
+        tint = MaterialTheme.colorScheme.onBackground,
+    )
 }
