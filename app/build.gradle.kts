@@ -13,11 +13,16 @@ plugins {
 android {
     namespace = "com.github.yuriybudiyev.sketches"
 
+    compileSdk {
+        version = release(36) {
+            minorApiLevel = 1
+        }
+    }
+
     defaultConfig {
         applicationId = "com.github.yuriybudiyev.sketches"
         minSdk = 26
         targetSdk = 36
-        compileSdk = 36
         versionCode = 1
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
