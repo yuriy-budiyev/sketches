@@ -31,11 +31,3 @@ operator fun <T> LazyInject<T>.getValue(
     property: kotlin.reflect.KProperty<*>,
 ): T =
     get()
-
-typealias ProviderInject<T> = javax.inject.Provider<T>
-
-operator fun <T> ProviderInject<T>.getValue(
-    thisRef: Any?,
-    property: kotlin.reflect.KProperty<*>,
-): T =
-    get()
