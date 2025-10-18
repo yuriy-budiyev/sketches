@@ -26,7 +26,7 @@ package com.github.yuriybudiyev.sketches.core.flow
 
 import kotlinx.coroutines.flow.SharingStarted
 
-const val DefaultUiSharingSubscriptionTimeout: Long = 5000L
+const val DefaultUiSharingSubscriptionStopTimeoutMillis: Long = 5000L
 
 fun SharingStarted.Companion.WhileSubscribedUiDefault(): SharingStarted =
-    SharingStarted.WhileSubscribed(DefaultUiSharingSubscriptionTimeout)
+    SharingStarted.WhileSubscribed(DefaultUiSharingSubscriptionStopTimeoutMillis)
