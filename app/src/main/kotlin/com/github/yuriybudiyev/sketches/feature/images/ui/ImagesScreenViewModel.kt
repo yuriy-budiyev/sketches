@@ -27,6 +27,8 @@ package com.github.yuriybudiyev.sketches.feature.images.ui
 import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
+import com.github.yuriybudiyev.sketches.core.dagger.LazyInject
+import com.github.yuriybudiyev.sketches.core.dagger.getValue
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
@@ -50,13 +52,17 @@ import javax.inject.Inject
 class ImagesScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
-    private val dispatchers: SketchesCoroutineDispatchers,
-    private val getMediaFiles: GetMediaFilesUseCase,
-    private val deleteMediaFiles: DeleteMediaFilesUseCase,
+    dispatchersLazy: LazyInject<SketchesCoroutineDispatchers>,
+    getMediaFilesLazy: LazyInject<GetMediaFilesUseCase>,
+    deleteMediaFilesLazy: LazyInject<DeleteMediaFilesUseCase>,
 ): MediaObservingViewModel(
     context,
-    dispatchers,
+    dispatchersLazy,
 ) {
+
+    private val dispatchers: SketchesCoroutineDispatchers by dispatchersLazy
+    private val getMediaFiles: GetMediaFilesUseCase by getMediaFilesLazy
+    private val deleteMediaFiles: DeleteMediaFilesUseCase by deleteMediaFilesLazy
 
     private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
 
