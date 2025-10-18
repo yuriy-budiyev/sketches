@@ -89,7 +89,7 @@ class BucketScreenViewModel @Inject constructor(
             emit(UiState.Error(e))
         }.stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L),
+            started = SharingStarted.Lazily,
             initialValue = UiState.Loading,
         )
 
