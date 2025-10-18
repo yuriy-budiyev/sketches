@@ -26,7 +26,13 @@ package com.github.yuriybudiyev.sketches.core.flow
 
 import kotlinx.coroutines.flow.SharingStarted
 
+/**
+ * The "default", "out of thin air" 5 seconds timeout.
+ */
 const val DefaultUiSharingSubscriptionStopTimeoutMillis: Long = 5000L
 
+/**
+ * Same as [SharingStarted.WhileSubscribed], but with "default", "out of thin air" 5 sec. timeout.
+ */
 fun SharingStarted.Companion.WhileSubscribedUiDefault(): SharingStarted =
     SharingStarted.WhileSubscribed(DefaultUiSharingSubscriptionStopTimeoutMillis)
