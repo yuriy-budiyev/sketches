@@ -33,6 +33,7 @@ const val DefaultUiSharingSubscriptionStopTimeoutMillis: Long = 5000L
 
 /**
  * Same as [SharingStarted.WhileSubscribed], but with "default", "out of thin air" 5 sec. timeout.
+ * There are rumors that this is necessary in order to keep in mind the configuration changes.
  */
 fun SharingStarted.Companion.WhileSubscribedUiDefault(): SharingStarted =
     SharingStarted.WhileSubscribed(DefaultUiSharingSubscriptionStopTimeoutMillis)
