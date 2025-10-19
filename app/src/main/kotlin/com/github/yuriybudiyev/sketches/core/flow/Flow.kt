@@ -27,13 +27,11 @@ package com.github.yuriybudiyev.sketches.core.flow
 import kotlinx.coroutines.flow.SharingStarted
 
 /**
- * The "default", "out of thin air" 5 seconds timeout.
+ * Same as [SharingStarted.WhileSubscribed], but with 5 seconds stop timeout,
+ * to take into account configuration changes and ANRs.
+ *
+ * [ANR details](https://developer.android.com/topic/performance/vitals/anr)
  */
-const val DefaultUiSharingSubscriptionStopTimeoutMillis: Long = 5000L
-
-/**
- * Same as [SharingStarted.WhileSubscribed], but with "default", "out of thin air" 5 sec. timeout.
- * There are rumors that this is necessary in order to keep in mind the configuration changes.
- */
-fun SharingStarted.Companion.WhileSubscribedUiDefault(): SharingStarted =
-    SharingStarted.WhileSubscribed(DefaultUiSharingSubscriptionStopTimeoutMillis)
+@Suppress("FunctionName")
+fun SharingStarted.Companion.WhileSubscribedDefault(): SharingStarted =
+    SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000L)
