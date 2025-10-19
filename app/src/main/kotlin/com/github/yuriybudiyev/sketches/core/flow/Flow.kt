@@ -30,8 +30,10 @@ import kotlinx.coroutines.flow.SharingStarted
  * Same as [SharingStarted.WhileSubscribed], but with 5 seconds stop timeout,
  * to take into account configuration changes and ANRs.
  *
+ * Suitable for usage with UI states.
+ *
  * [ANR details](https://developer.android.com/topic/performance/vitals/anr)
  */
 @Suppress("FunctionName")
-fun SharingStarted.Companion.WhileSubscribedDefault(): SharingStarted =
+fun SharingStarted.Companion.WhileSubscribedUi(): SharingStarted =
     SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000L)
