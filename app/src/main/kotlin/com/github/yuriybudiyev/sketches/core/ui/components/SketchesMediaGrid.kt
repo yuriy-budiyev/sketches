@@ -30,14 +30,19 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,12 +50,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
+import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstCharacter
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun SketchesMediaGrid(
@@ -77,98 +91,200 @@ fun SketchesMediaGrid(
             contentType = { index -> filesUpdated[index].mediaType },
         ) { index ->
             val file = filesUpdated[index]
-            val fileSelectedOnComposition = selectedFilesUpdated.contains(file.id)
-            Box(
-                modifier = Modifier
-                    .aspectRatio(ratio = 1f)
-                    .border(
-                        width = SketchesDimens.MediaItemBorderThickness,
-                        color = if (fileSelectedOnComposition) {
-                            MaterialTheme.colorScheme.onBackground
-                                .copy(alpha = SketchesColors.UiAlphaLowTransparency)
-                        } else {
-                            MaterialTheme.colorScheme.onBackground
-                                .copy(alpha = SketchesColors.UiAlphaHighTransparency)
-                        },
-                        shape = MaterialTheme.shapes.extraSmall,
+            SketchesMediaGridItem(
+                file = file,
+                files = filesUpdated,
+                selectedFiles = selectedFilesUpdated,
+                onClick = {
+                    onItemClickUpdated(
+                        index,
+                        file
                     )
-                    .clip(shape = MaterialTheme.shapes.extraSmall)
-                    .combinedClickable(
-                        onLongClick = {
-                            if (selectedFilesUpdated.isEmpty()) {
-                                selectedFilesUpdated.add(file.id)
-                            } else {
-                                if (selectedFilesUpdated.contains(file.id)) {
-                                    selectedFilesUpdated.clear()
-                                } else {
-                                    selectedFilesUpdated.addAll(filesUpdated.map { file -> file.id })
-                                }
-                            }
-                        },
-                        onClick = {
-                            if (selectedFilesUpdated.isNotEmpty()) {
-                                if (selectedFilesUpdated.contains(file.id)) {
-                                    selectedFilesUpdated.remove(file.id)
-                                } else {
-                                    selectedFilesUpdated.add(file.id)
-                                }
-                            } else {
-                                onItemClickUpdated(
-                                    index,
-                                    file,
-                                )
-                            }
-                        },
-                    ),
-            ) {
-                SketchesAsyncImage(
-                    uri = file.uri,
-                    contentDescription = stringResource(
-                        id = when (file.mediaType) {
-                            MediaType.Image -> R.string.image
-                            MediaType.Video -> R.string.video
-                        },
-                    ),
-                    modifier = Modifier.matchParentSize(),
-                    contentScale = ContentScale.Crop,
-                    filterQuality = FilterQuality.Low,
-                    enableLoadingIndicator = true,
-                    enableErrorIndicator = true,
-                )
-                if (fileSelectedOnComposition) {
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .background(
-                                color = MaterialTheme.colorScheme.background
-                                    .copy(alpha = SketchesColors.UiAlphaHighTransparency),
-                            ),
+                },
+            )
+        }
+    }
+}
+
+@Composable
+fun SketchesGroupingMediaGrid(
+    files: List<MediaStoreFile>,
+    selectedFiles: SnapshotStateSet<Long>,
+    onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
+    modifier: Modifier = Modifier,
+    state: LazyGridState = rememberLazyGridState(),
+    overlayTop: Boolean = false,
+    overlayBottom: Boolean = false,
+) {
+    val filesUpdated by rememberUpdatedState(files)
+    val selectedFilesUpdated by rememberUpdatedState(selectedFiles)
+    val onItemClickUpdated by rememberUpdatedState(onItemClick)
+    var previousDate by remember { mutableStateOf(LocalDate.MAX) }
+    var nowDate by remember { mutableStateOf(LocalDate.now()) }
+    val dateFormatterMonthYear = remember {
+        DateTimeFormatter.ofPattern(
+            "LLLL yyyy",
+            Locale.getDefault(),
+        )
+    }
+    val dateFormatterMonth = remember {
+        DateTimeFormatter.ofPattern(
+            "LLLL",
+            Locale.getDefault(),
+        )
+    }
+    SketchesLazyGrid(
+        modifier = modifier,
+        state = state,
+        overlayTop = overlayTop,
+        overlayBottom = overlayBottom,
+    ) {
+        for ((index, file) in filesUpdated.withIndex()) {
+            val currentDate = LocalDate.ofInstant(
+                Instant.ofEpochMilli(file.dateAdded),
+                ZoneId.systemDefault(),
+            )
+            if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    val text = if (nowDate.year == currentDate.year) {
+                        currentDate.format(dateFormatterMonth)
+                    } else {
+                        currentDate.format(dateFormatterMonthYear)
+                    }
+                    Text(
+                        text = text.capitalizeFirstCharacter(),
+                        modifier = Modifier.padding(
+                            start = 4.dp,
+                            top = 4.dp,
+                            end = 4.dp,
+                            bottom = 0.dp,
+                        ),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 16.sp,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
                     )
                 }
-                if (file.mediaType == MediaType.Video) {
-                    Box(
-                        modifier = Modifier
-                            .align(alignment = Alignment.BottomStart)
-                            .padding(all = SketchesDimens.MediaGridVideoIconPadding)
-                            .let { modifier ->
-                                if (!fileSelectedOnComposition) {
-                                    modifier.background(
-                                        color = MaterialTheme.colorScheme.background
-                                            .copy(alpha = SketchesColors.UiAlphaHighTransparency),
-                                        shape = CircleShape,
-                                    )
-                                } else {
-                                    modifier
-                                }
-                            },
-                    ) {
-                        Icon(
-                            imageVector = SketchesIcons.Video,
-                            contentDescription = stringResource(R.string.video),
-                            tint = MaterialTheme.colorScheme.onBackground,
+                previousDate = currentDate
+            }
+            item(
+                key = file.id,
+                contentType = file.mediaType,
+            ) {
+                SketchesMediaGridItem(
+                    file = file,
+                    files = filesUpdated,
+                    selectedFiles = selectedFilesUpdated,
+                    onClick = {
+                        onItemClickUpdated(
+                            index,
+                            file
                         )
                     }
-                }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SketchesMediaGridItem(
+    file: MediaStoreFile,
+    files: List<MediaStoreFile>,
+    selectedFiles: SnapshotStateSet<Long>,
+    onClick: () -> Unit,
+) {
+    val fileUpdated by rememberUpdatedState(file)
+    val filesUpdated by rememberUpdatedState(files)
+    val selectedFilesUpdated by rememberUpdatedState(selectedFiles)
+    val onClickUpdated by rememberUpdatedState(onClick)
+    val fileSelectedUpdated by rememberUpdatedState(selectedFilesUpdated.contains(fileUpdated.id))
+    Box(
+        modifier = Modifier
+            .aspectRatio(ratio = 1f)
+            .border(
+                width = SketchesDimens.MediaItemBorderThickness,
+                color = if (fileSelectedUpdated) {
+                    MaterialTheme.colorScheme.onBackground
+                        .copy(alpha = SketchesColors.UiAlphaLowTransparency)
+                } else {
+                    MaterialTheme.colorScheme.onBackground
+                        .copy(alpha = SketchesColors.UiAlphaHighTransparency)
+                },
+                shape = MaterialTheme.shapes.extraSmall,
+            )
+            .clip(shape = MaterialTheme.shapes.extraSmall)
+            .combinedClickable(
+                onLongClick = {
+                    if (selectedFilesUpdated.isEmpty()) {
+                        selectedFilesUpdated.add(fileUpdated.id)
+                    } else {
+                        if (selectedFilesUpdated.contains(fileUpdated.id)) {
+                            selectedFilesUpdated.clear()
+                        } else {
+                            selectedFilesUpdated.addAll(filesUpdated.map { file -> file.id })
+                        }
+                    }
+                },
+                onClick = {
+                    if (selectedFilesUpdated.isNotEmpty()) {
+                        if (selectedFilesUpdated.contains(fileUpdated.id)) {
+                            selectedFilesUpdated.remove(fileUpdated.id)
+                        } else {
+                            selectedFilesUpdated.add(fileUpdated.id)
+                        }
+                    } else {
+                        onClickUpdated()
+                    }
+                },
+            ),
+    ) {
+        SketchesAsyncImage(
+            uri = fileUpdated.uri,
+            contentDescription = stringResource(
+                id = when (fileUpdated.mediaType) {
+                    MediaType.Image -> R.string.image
+                    MediaType.Video -> R.string.video
+                },
+            ),
+            modifier = Modifier.matchParentSize(),
+            contentScale = ContentScale.Crop,
+            filterQuality = FilterQuality.Low,
+            enableLoadingIndicator = true,
+            enableErrorIndicator = true,
+        )
+        if (fileSelectedUpdated) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(
+                        color = MaterialTheme.colorScheme.background
+                            .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                    ),
+            )
+        }
+        if (fileUpdated.mediaType == MediaType.Video) {
+            Box(
+                modifier = Modifier
+                    .align(alignment = Alignment.BottomStart)
+                    .padding(all = SketchesDimens.MediaGridVideoIconPadding)
+                    .let { modifier ->
+                        if (!fileSelectedUpdated) {
+                            modifier.background(
+                                color = MaterialTheme.colorScheme.background
+                                    .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                                shape = CircleShape,
+                            )
+                        } else {
+                            modifier
+                        }
+                    },
+            ) {
+                Icon(
+                    imageVector = SketchesIcons.Video,
+                    contentDescription = stringResource(R.string.video),
+                    tint = MaterialTheme.colorScheme.onBackground,
+                )
             }
         }
     }

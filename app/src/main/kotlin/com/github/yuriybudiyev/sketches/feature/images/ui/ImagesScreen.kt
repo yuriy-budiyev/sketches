@@ -74,8 +74,8 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionB
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesGroupingMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemClosestEdge
@@ -210,7 +210,7 @@ fun ImagesScreen(
             is ImagesScreenViewModel.UiState.Images -> {
                 val files = uiState.files
                 allFiles = files
-                SketchesMediaGrid(
+                SketchesGroupingMediaGrid(
                     files = files,
                     selectedFiles = selectedFiles,
                     onItemClick = onImageClick,
