@@ -75,6 +75,7 @@ suspend fun LazyGridState.scrollToItemClosestEdge(
     onlyIfItemAtIndexIsNotVisible: Boolean = true,
     itemSize: suspend (item: LazyGridItemInfo?) -> IntSize = { item -> item?.size ?: IntSize.Zero },
 ) {
+
     val firstItem = layoutInfo.visibleItemsInfo.firstOrNull()
     val itemAtIndex = layoutInfo.visibleItemsInfo.find { info -> info.index == index }
     val orientationAwareViewportSize = when (layoutInfo.orientation) {
