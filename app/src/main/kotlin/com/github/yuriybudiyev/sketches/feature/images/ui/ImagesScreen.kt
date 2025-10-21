@@ -178,7 +178,7 @@ fun ImagesScreen(
                     }
                     log(offset)
                     mediaGridState.scrollToItemClosestEdge(
-                        index = (index + offset).coerceAtMost(allFiles.size - 1),
+                        index = index + offset,
                         animate = false,
                     )
                 }
