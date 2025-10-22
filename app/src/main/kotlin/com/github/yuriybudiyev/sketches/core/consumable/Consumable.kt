@@ -47,13 +47,13 @@ class Consumable<T> private constructor(value: T) {
         return value as T?
     }
 
-    override fun toString(): String =
-        "Consumable($valueInternal)"
-
     @Volatile
     private var valueInternal: Any? = value
 
     private val consumeLock: Any = Any()
+
+    override fun toString(): String =
+        "Consumable($valueInternal)"
 
     private object Consumed {
 
