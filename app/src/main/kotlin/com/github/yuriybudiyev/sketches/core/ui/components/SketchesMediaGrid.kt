@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import android.os.Build
 import android.os.Parcelable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -92,8 +93,8 @@ fun SketchesMediaGrid(
     ) {
         items(
             count = filesUpdated.size,
-            key = { index -> MediaStoreFileKey(filesUpdated[index].id) },
-            contentType = { index -> MediaStoreFileContentType(filesUpdated[index].mediaType) },
+            key = { index -> MediaStoreFileKey(fileId = filesUpdated[index].id) },
+            contentType = { index -> MediaStoreFileContentType(mediaType = filesUpdated[index].mediaType) },
         ) { index ->
             val file = filesUpdated[index]
             SketchesMediaGridItem(
@@ -158,9 +159,13 @@ fun SketchesGroupingMediaGrid(
                 Instant.ofEpochMilli(file.dateAdded),
                 ZoneId.systemDefault(),
             )
+            Build.VERSION_CODES_FULL.R
             if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
                 item(
-                    key = GroupHeaderKey(index),
+                    key = GroupHeaderKey(
+                        year = currentDate.year,
+                        month = currentDate.monthValue,
+                    ),
                     contentType = GroupHeaderContentType,
                     span = { GridItemSpan(maxLineSpan) },
                 ) {
@@ -186,8 +191,8 @@ fun SketchesGroupingMediaGrid(
                 previousDate = currentDate
             }
             item(
-                key = MediaStoreFileKey(file.id),
-                contentType = MediaStoreFileContentType(file.mediaType),
+                key = MediaStoreFileKey(fileId = file.id),
+                contentType = MediaStoreFileContentType(mediaType = file.mediaType),
             ) {
                 SketchesMediaGridItem(
                     file = file,
@@ -332,7 +337,10 @@ private fun SketchesMediaGridItem(
 
 @Immutable
 @Parcelize
-private data class GroupHeaderKey(val position: Int): Parcelable
+private data class GroupHeaderKey(
+    val year: Int,
+    val month: Int,
+): Parcelable
 
 @Immutable
 private data object GroupHeaderContentType
