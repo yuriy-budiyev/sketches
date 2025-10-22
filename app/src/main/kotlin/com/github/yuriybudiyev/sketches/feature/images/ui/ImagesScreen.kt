@@ -176,7 +176,6 @@ fun ImagesScreen(
                         }
                         previousDate = currentDate
                     }
-                    log(offset)
                     mediaGridState.scrollToItemClosestEdge(
                         index = index + offset,
                         animate = false,
