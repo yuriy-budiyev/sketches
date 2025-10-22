@@ -24,6 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.core.consumable
 
+import javax.annotation.concurrent.ThreadSafe
+
+@ThreadSafe
 class Consumable<T> private constructor(value: T) {
 
     val isConsumed: Boolean
