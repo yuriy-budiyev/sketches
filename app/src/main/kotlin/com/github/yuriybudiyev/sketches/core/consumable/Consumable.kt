@@ -58,7 +58,11 @@ class Consumable<T> private constructor(value: T) {
     override fun toString(): String =
         "Consumable($valueInternal)"
 
-    private data object Consumed
+    private object Consumed {
+
+        override fun toString(): String =
+            "Consumed"
+    }
 
     companion object {
 
