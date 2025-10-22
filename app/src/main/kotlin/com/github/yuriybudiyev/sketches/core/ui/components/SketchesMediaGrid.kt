@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import android.os.Parcelable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
@@ -38,6 +39,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,6 +62,7 @@ import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstCharacter
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
+import kotlinx.parcelize.Parcelize
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -89,8 +92,8 @@ fun SketchesMediaGrid(
     ) {
         items(
             count = filesUpdated.size,
-            key = { index -> filesUpdated[index].id },
-            contentType = { index -> filesUpdated[index].mediaType },
+            key = { index -> MediaStoreFileKey(filesUpdated[index].id) },
+            contentType = { index -> MediaStoreFileContentType(filesUpdated[index].mediaType) },
         ) { index ->
             val file = filesUpdated[index]
             SketchesMediaGridItem(
@@ -156,7 +159,11 @@ fun SketchesGroupingMediaGrid(
                 ZoneId.systemDefault(),
             )
             if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
+                item(
+                    key = GroupHeaderKey(index),
+                    contentType = GroupHeaderContentType,
+                    span = { GridItemSpan(maxLineSpan) },
+                ) {
                     val text = if (nowDate.year == currentDate.year) {
                         currentDate.format(dateFormatterMonth)
                     } else {
@@ -179,8 +186,8 @@ fun SketchesGroupingMediaGrid(
                 previousDate = currentDate
             }
             item(
-                key = file.id,
-                contentType = file.mediaType,
+                key = MediaStoreFileKey(file.id),
+                contentType = MediaStoreFileContentType(file.mediaType),
             ) {
                 SketchesMediaGridItem(
                     file = file,
@@ -322,3 +329,17 @@ private fun SketchesMediaGridItem(
         }
     }
 }
+
+@Immutable
+@Parcelize
+private data class GroupHeaderKey(val position: Int): Parcelable
+
+@Immutable
+private data object GroupHeaderContentType
+
+@Immutable
+@Parcelize
+private data class MediaStoreFileKey(val fileId: Long): Parcelable
+
+@Immutable
+private data class MediaStoreFileContentType(val mediaType: MediaType)
