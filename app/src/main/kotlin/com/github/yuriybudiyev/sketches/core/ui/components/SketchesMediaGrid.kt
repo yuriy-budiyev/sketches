@@ -63,7 +63,9 @@ import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.format.TextStyle
+import java.time.temporal.ChronoField
 import java.util.Locale
 
 @Composable
@@ -120,18 +122,27 @@ fun SketchesGroupingMediaGrid(
     val selectedFilesUpdated by rememberUpdatedState(selectedFiles)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
     var previousDate by remember { mutableStateOf(LocalDate.MAX) }
-    var nowDate by remember { mutableStateOf(LocalDate.now()) }
+    val nowDate = remember { LocalDate.now() }
     val dateFormatterMonthYear = remember {
-        DateTimeFormatter.ofPattern(
-            "LLLL yyyy",
-            Locale.getDefault(),
-        )
+        DateTimeFormatterBuilder()
+            .appendText(
+                ChronoField.MONTH_OF_YEAR,
+                TextStyle.FULL_STANDALONE,
+            )
+            .appendLiteral(' ')
+            .appendText(
+                ChronoField.YEAR,
+                TextStyle.FULL_STANDALONE,
+            )
+            .toFormatter(Locale.getDefault())
     }
     val dateFormatterMonth = remember {
-        DateTimeFormatter.ofPattern(
-            "LLLL",
-            Locale.getDefault(),
-        )
+        DateTimeFormatterBuilder()
+            .appendText(
+                ChronoField.MONTH_OF_YEAR,
+                TextStyle.FULL_STANDALONE,
+            )
+            .toFormatter(Locale.getDefault())
     }
     SketchesLazyGrid(
         modifier = modifier,
