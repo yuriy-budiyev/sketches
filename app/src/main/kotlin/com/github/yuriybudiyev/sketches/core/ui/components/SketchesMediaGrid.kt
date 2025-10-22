@@ -187,7 +187,7 @@ fun SketchesGroupingMediaGrid(
     }
 }
 
-fun calculateIndexWithGroups(
+fun calculateMediaIndexWithGroups(
     index: Int,
     files: Collection<MediaStoreFile>,
 ): Int {

@@ -77,7 +77,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesGroupingMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
-import com.github.yuriybudiyev.sketches.core.ui.components.calculateIndexWithGroups
+import com.github.yuriybudiyev.sketches.core.ui.components.calculateMediaIndexWithGroups
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemClosestEdge
 import com.github.yuriybudiyev.sketches.feature.image.ui.NAV_IMAGE_SCREEN_CURRENT_INDEX
@@ -159,7 +159,7 @@ fun ImagesScreen(
             navController.collectNavResult<Int>(NAV_IMAGE_SCREEN_CURRENT_INDEX) { index ->
                 if (index != null) {
                     mediaGridState.scrollToItemClosestEdge(
-                        index = calculateIndexWithGroups(
+                        index = calculateMediaIndexWithGroups(
                             index = index,
                             files = allFiles,
                         ),
