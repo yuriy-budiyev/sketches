@@ -67,7 +67,6 @@ import com.github.yuriybudiyev.sketches.core.navigation.LocalNavController
 import com.github.yuriybudiyev.sketches.core.navigation.collectNavResult
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
-import com.github.yuriybudiyev.sketches.core.platform.log.log
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
@@ -78,14 +77,12 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesGroupingMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.components.calculateIndexWithGroups
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemClosestEdge
 import com.github.yuriybudiyev.sketches.feature.image.ui.NAV_IMAGE_SCREEN_CURRENT_INDEX
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesRoute
 import kotlinx.coroutines.launch
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
 
 @Composable
 fun ImagesRoute(
@@ -161,23 +158,11 @@ fun ImagesScreen(
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             navController.collectNavResult<Int>(NAV_IMAGE_SCREEN_CURRENT_INDEX) { index ->
                 if (index != null) {
-                    var offset = 0
-                    var previousDate = LocalDate.MAX
-                    for ((fileIndex, file) in allFiles.withIndex()) {
-                        val currentDate = LocalDate.ofInstant(
-                            Instant.ofEpochMilli(file.dateAdded),
-                            ZoneId.systemDefault(),
-                        )
-                        if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
-                            offset++
-                        }
-                        if (fileIndex == index) {
-                            break
-                        }
-                        previousDate = currentDate
-                    }
                     mediaGridState.scrollToItemClosestEdge(
-                        index = index + offset,
+                        index = calculateIndexWithGroups(
+                            index = index,
+                            files = allFiles,
+                        ),
                         animate = false,
                     )
                 }

@@ -187,6 +187,28 @@ fun SketchesGroupingMediaGrid(
     }
 }
 
+fun calculateIndexWithGroups(
+    index: Int,
+    files: Collection<MediaStoreFile>,
+): Int {
+    var offset = 0
+    var previousDate = LocalDate.MAX
+    for ((fileIndex, file) in files.withIndex()) {
+        val currentDate = LocalDate.ofInstant(
+            Instant.ofEpochMilli(file.dateAdded),
+            ZoneId.systemDefault(),
+        )
+        if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
+            offset++
+        }
+        if (fileIndex == index) {
+            break
+        }
+        previousDate = currentDate
+    }
+    return index + offset
+}
+
 @Composable
 private fun SketchesMediaGridItem(
     file: MediaStoreFile,
