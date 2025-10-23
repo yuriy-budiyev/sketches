@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
-import android.os.Build
 import android.os.Parcelable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -64,9 +63,7 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import kotlinx.parcelize.Parcelize
-import java.time.Instant
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.format.DateTimeFormatterBuilder
 import java.time.format.TextStyle
 import java.time.temporal.ChronoField
@@ -155,11 +152,7 @@ fun SketchesGroupingMediaGrid(
         overlayBottom = overlayBottom,
     ) {
         for ((index, file) in filesUpdated.withIndex()) {
-            val currentDate = LocalDate.ofInstant(
-                Instant.ofEpochMilli(file.dateAdded),
-                ZoneId.systemDefault(),
-            )
-            Build.VERSION_CODES_FULL.R
+            val currentDate = file.dateAdded.toLocalDate()
             if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
                 item(
                     key = GroupHeaderKey(
@@ -178,7 +171,7 @@ fun SketchesGroupingMediaGrid(
                         text = text.capitalizeFirstCharacter(),
                         modifier = Modifier.padding(
                             start = 4.dp,
-                            top = 4.dp,
+                            top = 8.dp,
                             end = 4.dp,
                             bottom = 0.dp,
                         ),
@@ -217,10 +210,7 @@ fun calculateMediaIndexWithGroups(
     var offset = 0
     var previousDate = LocalDate.MAX
     for ((fileIndex, file) in files.withIndex()) {
-        val currentDate = LocalDate.ofInstant(
-            Instant.ofEpochMilli(file.dateAdded),
-            ZoneId.systemDefault(),
-        )
+        val currentDate = file.dateAdded.toLocalDate()
         if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
             offset++
         }

@@ -24,10 +24,14 @@
 
 package com.github.yuriybudiyev.sketches.core.data.model
 
+import androidx.compose.runtime.Immutable
+import java.time.LocalDateTime
+
+@Immutable
 data class MediaStoreBucket(
     val id: Long,
     val name: String,
     val size: Int,
     val coverUri: String,
-    val coverDateAdded: Long,
+    val coverDateAdded: LocalDateTime,
 )

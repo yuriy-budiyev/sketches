@@ -35,6 +35,9 @@ import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepositor
 import com.github.yuriybudiyev.sketches.core.platform.collections.CollectionsCompat
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -81,7 +84,10 @@ class MediaStoreRepositoryImpl @Inject constructor(
                     MediaStoreFile(
                         id = id,
                         bucketId = c.getLong(bucketIdColumn),
-                        dateAdded = c.getLong(dateAddedColumn) * 1000L,
+                        dateAdded = LocalDateTime.ofInstant(
+                            Instant.ofEpochSecond(c.getLong(dateAddedColumn)),
+                            ZoneId.systemDefault(),
+                        ),
                         mediaType = mediaType,
                         mimeType = c.getStringOrNull(mimeTypeColumn) ?: mediaType.mimeType,
                         uri = ContentUris
@@ -156,7 +162,10 @@ class MediaStoreRepositoryImpl @Inject constructor(
             while (c.moveToNext()) {
                 val id = c.getLong(idColumn)
                 val bucketId = c.getLong(bucketIdColumn)
-                val dateAdded = c.getLong(dateAddedColumn) * 1000L
+                val dateAdded = LocalDateTime.ofInstant(
+                    Instant.ofEpochSecond(c.getLong(dateAddedColumn)),
+                    ZoneId.systemDefault(),
+                )
                 val bucketInfo = destination.getOrPut(bucketId) {
                     BucketInfo(
                         id = bucketId,
@@ -217,6 +226,6 @@ class MediaStoreRepositoryImpl @Inject constructor(
         val name: String,
         var size: Int,
         var coverUri: String,
-        var coverDateAdded: Long,
+        var coverDateAdded: LocalDateTime,
     )
 }

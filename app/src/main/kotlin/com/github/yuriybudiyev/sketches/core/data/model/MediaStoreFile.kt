@@ -24,12 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.core.data.model
 
+import androidx.compose.runtime.Immutable
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
+import java.time.LocalDateTime
 
+@Immutable
 data class MediaStoreFile(
     val id: Long,
     val bucketId: Long,
-    val dateAdded: Long,
+    val dateAdded: LocalDateTime,
     val mediaType: MediaType,
     val mimeType: String,
     val uri: String,

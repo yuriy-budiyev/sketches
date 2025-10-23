@@ -23,8 +23,8 @@ android {
         applicationId = "com.github.yuriybudiyev.sketches"
         minSdk = 26
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.0.2"
+        versionCode = 4
+        versionName = "1.0.3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -67,6 +67,14 @@ android {
         includeInApk = false
         includeInBundle = false
     }
+}
+
+composeCompiler {
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    metricsDestination = layout.buildDirectory.dir("compose_compiler")
+    stabilityConfigurationFiles = listOf(
+        project.rootProject.layout.projectDirectory.file("compose_stability_config.conf")
+    )
 }
 
 kotlin {
