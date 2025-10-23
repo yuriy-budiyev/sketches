@@ -28,7 +28,7 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.consumable.Consumable
 import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
-import com.github.yuriybudiyev.sketches.core.dagger.LazyInject
+import com.github.yuriybudiyev.sketches.core.dagger.LazyProvider
 import com.github.yuriybudiyev.sketches.core.dagger.getValue
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
@@ -56,19 +56,19 @@ import javax.inject.Inject
 class BucketsScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
-    dispatchersLazy: LazyInject<SketchesCoroutineDispatchers>,
-    getMediaBucketsLazy: LazyInject<GetMediaBucketsUseCase>,
-    getBucketsContentLazy: LazyInject<GetBucketsContentUseCase>,
-    deleteContentLazy: LazyInject<DeleteContentUseCase>,
+    dispatchersProvider: LazyProvider<SketchesCoroutineDispatchers>,
+    getMediaBucketsProvider: LazyProvider<GetMediaBucketsUseCase>,
+    getBucketsContentProvider: LazyProvider<GetBucketsContentUseCase>,
+    deleteContentProvider: LazyProvider<DeleteContentUseCase>,
 ): MediaObservingViewModel(
     context,
-    dispatchersLazy,
+    dispatchersProvider,
 ) {
 
-    private val dispatchers: SketchesCoroutineDispatchers by dispatchersLazy
-    private val getMediaBuckets: GetMediaBucketsUseCase by getMediaBucketsLazy
-    private val getBucketsContent: GetBucketsContentUseCase by getBucketsContentLazy
-    private val deleteContent: DeleteContentUseCase by deleteContentLazy
+    private val dispatchers: SketchesCoroutineDispatchers by dispatchersProvider
+    private val getMediaBuckets: GetMediaBucketsUseCase by getMediaBucketsProvider
+    private val getBucketsContent: GetBucketsContentUseCase by getBucketsContentProvider
+    private val deleteContent: DeleteContentUseCase by deleteContentProvider
 
     private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
 

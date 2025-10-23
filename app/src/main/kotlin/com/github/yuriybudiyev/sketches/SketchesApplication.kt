@@ -30,9 +30,9 @@ import androidx.compose.runtime.ExperimentalComposeRuntimeApi
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
+import com.github.yuriybudiyev.sketches.core.dagger.LazyProvider
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
-import javax.inject.Provider
 
 @HiltAndroidApp
 class SketchesApplication: Application(), SingletonImageLoader.Factory {
@@ -48,7 +48,7 @@ class SketchesApplication: Application(), SingletonImageLoader.Factory {
     }
 
     @Inject
-    lateinit var imageLoaderProvider: Provider<ImageLoader>
+    lateinit var imageLoaderProvider: LazyProvider<ImageLoader>
 
     override fun newImageLoader(context: PlatformContext): ImageLoader =
         imageLoaderProvider.get()

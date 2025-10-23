@@ -34,7 +34,7 @@ import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
-import com.github.yuriybudiyev.sketches.core.dagger.LazyInject
+import com.github.yuriybudiyev.sketches.core.dagger.LazyProvider
 import com.github.yuriybudiyev.sketches.core.dagger.getValue
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
@@ -44,10 +44,10 @@ import kotlinx.coroutines.withContext
 
 abstract class MediaObservingViewModel(
     context: Context,
-    dispatchersLazy: LazyInject<SketchesCoroutineDispatchers>,
+    dispatchersProvider: LazyProvider<SketchesCoroutineDispatchers>,
 ): ViewModel() {
 
-    private val dispatchers: SketchesCoroutineDispatchers by dispatchersLazy
+    private val dispatchers: SketchesCoroutineDispatchers by dispatchersProvider
 
     @MainThread
     protected abstract fun onMediaChanged()

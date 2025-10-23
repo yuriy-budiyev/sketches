@@ -24,9 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.core.dagger
 
-typealias LazyInject<T> = dagger.Lazy<T>
+typealias LazyProvider<T> = dagger.Lazy<T>
 
-operator fun <T> LazyInject<T>.getValue(
+operator fun <T> LazyProvider<T>.getValue(
+    thisRef: Any?,
+    property: kotlin.reflect.KProperty<*>,
+): T =
+    get()
+
+operator fun <T> javax.inject.Provider<T>.getValue(
     thisRef: Any?,
     property: kotlin.reflect.KProperty<*>,
 ): T =
