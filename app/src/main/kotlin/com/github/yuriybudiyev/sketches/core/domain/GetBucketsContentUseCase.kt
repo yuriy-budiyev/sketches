@@ -28,12 +28,11 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.Reusable
-import kotlinx.collections.immutable.ImmutableList
 import javax.inject.Inject
 
 @Reusable
 class GetBucketsContentUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    suspend operator fun invoke(buckets: Collection<MediaStoreBucket>): ImmutableList<MediaStoreFile> =
+    suspend operator fun invoke(buckets: Collection<MediaStoreBucket>): List<MediaStoreFile> =
         repository.getBucketsContent(buckets)
 }

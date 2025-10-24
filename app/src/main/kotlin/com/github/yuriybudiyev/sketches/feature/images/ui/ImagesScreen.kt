@@ -82,8 +82,6 @@ import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemClosestEdge
 import com.github.yuriybudiyev.sketches.feature.image.ui.NAV_IMAGE_SCREEN_CURRENT_INDEX
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesRoute
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 @Composable
@@ -117,7 +115,7 @@ fun ImagesScreen(
     val contextUpdated by rememberUpdatedState(LocalContext.current)
     val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
-    var allFiles by remember { mutableStateOf<ImmutableList<MediaStoreFile>>(persistentListOf()) }
+    var allFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptyList()) }
     val selectedFiles = rememberSaveable { SnapshotStateSet<Long>() }
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
@@ -198,7 +196,7 @@ fun ImagesScreen(
                         selectedFiles.clear()
                     }
                     if (allFiles.isNotEmpty()) {
-                        allFiles = persistentListOf()
+                        allFiles = emptyList()
                     }
                 }
             }
@@ -209,7 +207,7 @@ fun ImagesScreen(
                         selectedFiles.clear()
                     }
                     if (allFiles.isNotEmpty()) {
-                        allFiles = persistentListOf()
+                        allFiles = emptyList()
                     }
                 }
             }
@@ -236,7 +234,7 @@ fun ImagesScreen(
                         selectedFiles.clear()
                     }
                     if (allFiles.isNotEmpty()) {
-                        allFiles = persistentListOf()
+                        allFiles = emptyList()
                     }
                 }
             }

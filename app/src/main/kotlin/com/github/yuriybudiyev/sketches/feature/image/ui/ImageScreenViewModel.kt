@@ -39,7 +39,6 @@ import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.FlowCollector
@@ -210,7 +209,7 @@ class ImageScreenViewModel @Inject constructor(
 
         data class Image(
             val index: Int,
-            val files: ImmutableList<MediaStoreFile>,
+            val files: List<MediaStoreFile>,
         ): UiState
 
         data class Error(val thrown: Throwable): UiState

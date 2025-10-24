@@ -35,9 +35,6 @@ import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepositor
 import com.github.yuriybudiyev.sketches.core.platform.collections.CollectionsCompat
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toPersistentList
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -106,7 +103,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getFiles(bucketId: Long?): ImmutableList<MediaStoreFile> {
+    override suspend fun getFiles(bucketId: Long?): List<MediaStoreFile> {
         val imageFiles = collectFiles(
             MediaType.Image,
             bucketId,
@@ -117,13 +114,13 @@ class MediaStoreRepositoryImpl @Inject constructor(
         )
         val filesCount = imageFiles.size + videoFiles.size
         if (filesCount == 0) {
-            return persistentListOf()
+            return emptyList()
         }
         val files = ArrayList<MediaStoreFile>(filesCount)
         files.addAll(imageFiles)
         files.addAll(videoFiles)
         files.sortByDescending { file -> file.dateAdded }
-        return files.toPersistentList()
+        return files
     }
 
     override suspend fun deleteContent(uris: Collection<String>): Boolean {
@@ -197,7 +194,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getBuckets(): ImmutableList<MediaStoreBucket> {
+    override suspend fun getBuckets(): List<MediaStoreBucket> {
         val bucketsInfo = CollectionsCompat.newLinkedHashMap<Long, BucketInfo>(100)
         collectBucketsInfo(
             mediaType = MediaType.Image,
@@ -218,13 +215,11 @@ class MediaStoreRepositoryImpl @Inject constructor(
             )
         }
         buckets.sortByDescending { bucket -> bucket.coverDateAdded }
-        return buckets.toPersistentList()
+        return buckets
     }
 
-    override suspend fun getBucketsContent(buckets: Collection<MediaStoreBucket>): ImmutableList<MediaStoreFile> =
-        buckets
-            .flatMapTo(ArrayList(buckets.fold(0) { size, bucket -> size + bucket.size } + 10)) { bucket -> getFiles(bucket.id) }
-            .toPersistentList()
+    override suspend fun getBucketsContent(buckets: Collection<MediaStoreBucket>): List<MediaStoreFile> =
+        buckets.flatMapTo(ArrayList(buckets.fold(0) { size, bucket -> size + bucket.size } + 10)) { bucket -> getFiles(bucket.id) }
 
     private data class BucketInfo(
         val id: Long,

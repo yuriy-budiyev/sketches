@@ -27,12 +27,11 @@ package com.github.yuriybudiyev.sketches.core.domain
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.Reusable
-import kotlinx.collections.immutable.ImmutableList
 import javax.inject.Inject
 
 @Reusable
 class GetMediaBucketsUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    suspend operator fun invoke(): ImmutableList<MediaStoreBucket> =
+    suspend operator fun invoke(): List<MediaStoreBucket> =
         repository.getBuckets()
 }

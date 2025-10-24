@@ -39,7 +39,6 @@ import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.FlowCollector
@@ -146,7 +145,7 @@ class BucketScreenViewModel @Inject constructor(
 
         data object Loading: UiState
 
-        data class Bucket(val files: ImmutableList<MediaStoreFile>): UiState
+        data class Bucket(val files: List<MediaStoreFile>): UiState
 
         data class Error(val thrown: Throwable): UiState
     }

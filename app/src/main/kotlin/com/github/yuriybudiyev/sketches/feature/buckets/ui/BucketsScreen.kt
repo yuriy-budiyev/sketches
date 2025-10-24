@@ -89,8 +89,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 @Composable
@@ -131,7 +129,7 @@ fun BucketsScreen(
     val onShareBucketsUpdated by rememberUpdatedState(onShareBuckets)
     val onDeleteBucketsUpdated by rememberUpdatedState(onDeleteBuckets)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
-    var allBuckets by remember { mutableStateOf<ImmutableList<MediaStoreBucket>>(persistentListOf()) }
+    var allBuckets by remember { mutableStateOf<List<MediaStoreBucket>>(emptyList()) }
     val selectedBuckets = rememberSaveable { SnapshotStateSet<Long>() }
     val deleteDialogUris = rememberSaveable { SnapshotStateList<String>() }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
@@ -221,7 +219,7 @@ fun BucketsScreen(
                         deleteDialogUris.clear()
                     }
                     if (allBuckets.isNotEmpty()) {
-                        allBuckets = persistentListOf()
+                        allBuckets = emptyList()
                     }
                 }
             }
@@ -235,7 +233,7 @@ fun BucketsScreen(
                         deleteDialogUris.clear()
                     }
                     if (allBuckets.isNotEmpty()) {
-                        allBuckets = persistentListOf()
+                        allBuckets = emptyList()
                     }
                 }
             }
@@ -262,7 +260,7 @@ fun BucketsScreen(
                         deleteDialogUris.clear()
                     }
                     if (allBuckets.isNotEmpty()) {
-                        allBuckets = persistentListOf()
+                        allBuckets = emptyList()
                     }
                 }
             }
@@ -321,7 +319,7 @@ fun BucketsScreen(
 
 @Composable
 private fun BucketsScreenLayout(
-    buckets: ImmutableList<MediaStoreBucket>,
+    buckets: List<MediaStoreBucket>,
     selectedBuckets: SnapshotStateSet<Long>,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
     modifier: Modifier = Modifier,
