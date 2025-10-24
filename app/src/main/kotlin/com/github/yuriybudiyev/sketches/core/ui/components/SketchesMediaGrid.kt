@@ -62,6 +62,7 @@ import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstCharacter
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 import java.time.format.DateTimeFormatterBuilder
@@ -71,7 +72,7 @@ import java.util.Locale
 
 @Composable
 fun SketchesMediaGrid(
-    files: List<MediaStoreFile>,
+    files: ImmutableList<MediaStoreFile>,
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
@@ -111,7 +112,7 @@ fun SketchesMediaGrid(
 
 @Composable
 fun SketchesGroupingMediaGrid(
-    files: List<MediaStoreFile>,
+    files: ImmutableList<MediaStoreFile>,
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
@@ -225,7 +226,7 @@ fun calculateMediaIndexWithGroups(
 @Composable
 private fun SketchesMediaGridItem(
     file: MediaStoreFile,
-    files: List<MediaStoreFile>,
+    files: ImmutableList<MediaStoreFile>,
     selectedFiles: SnapshotStateSet<Long>,
     onClick: () -> Unit,
 ) {

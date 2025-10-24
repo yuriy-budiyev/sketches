@@ -112,6 +112,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketche
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemCentered
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 
 const val NAV_IMAGE_SCREEN_CURRENT_INDEX = "current_index"
@@ -184,7 +185,7 @@ fun ImageScreen(
 @Composable
 private fun ImageScreenLayout(
     index: Int,
-    files: List<MediaStoreFile>,
+    files: ImmutableList<MediaStoreFile>,
     onChange: (index: Int, file: MediaStoreFile) -> Unit,
     onDelete: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
@@ -387,7 +388,7 @@ private fun ImageScreenLayout(
 @Composable
 private fun MediaPager(
     state: PagerState,
-    files: List<MediaStoreFile>,
+    files: ImmutableList<MediaStoreFile>,
     onPageTap: () -> Unit,
     controllerVisible: Boolean,
     controllerStartPadding: Dp,
@@ -542,7 +543,7 @@ private fun VideoPage(
 private fun MediaBar(
     currentIndex: Int,
     state: LazyListState,
-    items: List<MediaStoreFile>,
+    items: ImmutableList<MediaStoreFile>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
 ) {

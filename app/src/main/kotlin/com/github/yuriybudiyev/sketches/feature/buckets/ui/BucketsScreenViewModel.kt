@@ -39,6 +39,7 @@ import com.github.yuriybudiyev.sketches.core.flow.WhileSubscribedUi
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.FlowCollector
@@ -217,7 +218,7 @@ class BucketsScreenViewModel @Inject constructor(
         data object Loading: UiState
 
         data class Buckets(
-            val buckets: List<MediaStoreBucket>,
+            val buckets: ImmutableList<MediaStoreBucket>,
             val action: Consumable<Action>,
         ): UiState {
 

@@ -36,6 +36,7 @@ import com.github.yuriybudiyev.sketches.core.flow.WhileSubscribedUi
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.FlowCollector
@@ -139,7 +140,7 @@ class ImagesScreenViewModel @Inject constructor(
 
         data object Loading: UiState
 
-        data class Images(val files: List<MediaStoreFile>): UiState
+        data class Images(val files: ImmutableList<MediaStoreFile>): UiState
 
         data class Error(val thrown: Throwable): UiState
     }

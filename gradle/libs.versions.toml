@@ -3,6 +3,7 @@ agp = "8.13.0"
 kotlin = "2.2.21"
 kotlin-coroutines = "1.10.2"
 kotlin-serialization = "1.9.0"
+kotlin-collections-immutable = "0.4.0"
 kotlin-ksp = "2.3.0"
 android-tools-desugar = "2.1.5"
 androidx-annotation = "1.9.1"
@@ -57,6 +58,7 @@ kotlin-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-c
 kotlin-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
 kotlin-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlin-serialization" }
 kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlin-serialization" }
+kotlin-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlin-collections-immutable" }
 android-tools-desugar = { group = "com.android.tools", name = "desugar_jdk_libs_nio", version.ref = "android-tools-desugar" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
 androidx-annotation-experimental = { group = "androidx.annotation", name = "annotation-experimental", version.ref = "androidx-annotation-experimental" }
@@ -168,6 +170,7 @@ kotlin = [
     "kotlin-coroutines-android",
     "kotlin-serialization-core",
     "kotlin-serialization-json",
+    "kotlin-collections-immutable",
 ]
 kotlin-test = [
     "kotlin-test",

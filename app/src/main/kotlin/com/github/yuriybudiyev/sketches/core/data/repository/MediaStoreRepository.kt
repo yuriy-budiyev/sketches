@@ -26,14 +26,15 @@ package com.github.yuriybudiyev.sketches.core.data.repository
 
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import kotlinx.collections.immutable.ImmutableList
 
 interface MediaStoreRepository {
 
-    suspend fun getFiles(bucketId: Long? = null): List<MediaStoreFile>
+    suspend fun getFiles(bucketId: Long? = null): ImmutableList<MediaStoreFile>
 
     suspend fun deleteContent(uris: Collection<String>): Boolean
 
-    suspend fun getBuckets(): List<MediaStoreBucket>
+    suspend fun getBuckets(): ImmutableList<MediaStoreBucket>
 
-    suspend fun getBucketsContent(buckets: Collection<MediaStoreBucket>): List<MediaStoreFile>
+    suspend fun getBucketsContent(buckets: Collection<MediaStoreBucket>): ImmutableList<MediaStoreFile>
 }
