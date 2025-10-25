@@ -96,14 +96,18 @@ fun SketchesMediaGrid(
             val file = filesUpdated[index]
             SketchesMediaGridItem(
                 file = file,
-                files = filesUpdated,
-                selectedFiles = selectedFilesUpdated,
-                onClick = {
-                    onItemClickUpdated(
-                        index,
-                        file
-                    )
-                },
+                selectedFilesUpdated.contains(file.id),
+                modifier = Modifier.selectable(
+                    file,
+                    filesUpdated,
+                    selectedFilesUpdated,
+                    onClick = {
+                        onItemClickUpdated(
+                            index,
+                            file,
+                        )
+                    },
+                )
             )
         }
     }
@@ -189,14 +193,18 @@ fun SketchesGroupingMediaGrid(
             ) {
                 SketchesMediaGridItem(
                     file = file,
-                    files = filesUpdated,
-                    selectedFiles = selectedFilesUpdated,
-                    onClick = {
-                        onItemClickUpdated(
-                            index,
-                            file
-                        )
-                    }
+                    selectedFilesUpdated.contains(file.id),
+                    modifier = Modifier.selectable(
+                        file,
+                        filesUpdated,
+                        selectedFilesUpdated,
+                        onClick = {
+                            onItemClickUpdated(
+                                index,
+                                file,
+                            )
+                        },
+                    )
                 )
             }
         }
@@ -225,15 +233,11 @@ fun calculateMediaIndexWithGroups(
 @Composable
 private fun SketchesMediaGridItem(
     file: MediaStoreFile,
-    files: List<MediaStoreFile>,
-    selectedFiles: SnapshotStateSet<Long>,
-    onClick: () -> Unit,
+    fileSelected: Boolean,
+    modifier: Modifier = Modifier,
 ) {
     val fileUpdated by rememberUpdatedState(file)
-    val filesUpdated by rememberUpdatedState(files)
-    val selectedFilesUpdated by rememberUpdatedState(selectedFiles)
-    val onClickUpdated by rememberUpdatedState(onClick)
-    val fileSelectedUpdated by rememberUpdatedState(selectedFilesUpdated.contains(fileUpdated.id))
+    val fileSelectedUpdated by rememberUpdatedState(fileSelected)
     Box(
         modifier = Modifier
             .aspectRatio(ratio = 1f)
@@ -249,30 +253,7 @@ private fun SketchesMediaGridItem(
                 shape = MaterialTheme.shapes.extraSmall,
             )
             .clip(shape = MaterialTheme.shapes.extraSmall)
-            .combinedClickable(
-                onLongClick = {
-                    if (selectedFilesUpdated.isEmpty()) {
-                        selectedFilesUpdated.add(fileUpdated.id)
-                    } else {
-                        if (selectedFilesUpdated.contains(fileUpdated.id)) {
-                            selectedFilesUpdated.clear()
-                        } else {
-                            selectedFilesUpdated.addAll(filesUpdated.map { file -> file.id })
-                        }
-                    }
-                },
-                onClick = {
-                    if (selectedFilesUpdated.isNotEmpty()) {
-                        if (selectedFilesUpdated.contains(fileUpdated.id)) {
-                            selectedFilesUpdated.remove(fileUpdated.id)
-                        } else {
-                            selectedFilesUpdated.add(fileUpdated.id)
-                        }
-                    } else {
-                        onClickUpdated()
-                    }
-                },
-            ),
+            .then(modifier),
     ) {
         SketchesAsyncImage(
             uri = fileUpdated.uri,
@@ -341,3 +322,34 @@ private data class MediaStoreFileKey(val fileId: Long): Parcelable
 
 @Immutable
 private data class MediaStoreFileContentType(val mediaType: MediaType)
+
+private inline fun Modifier.selectable(
+    file: MediaStoreFile,
+    files: List<MediaStoreFile>,
+    selectedFiles: SnapshotStateSet<Long>,
+    crossinline onClick: () -> Unit,
+): Modifier =
+    combinedClickable(
+        onLongClick = {
+            if (selectedFiles.isEmpty()) {
+                selectedFiles.add(file.id)
+            } else {
+                if (selectedFiles.contains(file.id)) {
+                    selectedFiles.clear()
+                } else {
+                    selectedFiles.addAll(files.mapTo(ArrayList(files.size)) { file -> file.id })
+                }
+            }
+        },
+        onClick = {
+            if (selectedFiles.isNotEmpty()) {
+                if (selectedFiles.contains(file.id)) {
+                    selectedFiles.remove(file.id)
+                } else {
+                    selectedFiles.add(file.id)
+                }
+            } else {
+                onClick()
+            }
+        },
+    )
