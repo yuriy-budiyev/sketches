@@ -98,9 +98,9 @@ fun SketchesMediaGrid(
                 file = file,
                 selectedFilesUpdated.contains(file.id),
                 modifier = Modifier.selectable(
-                    file,
-                    filesUpdated,
-                    selectedFilesUpdated,
+                    file = { file },
+                    files = { filesUpdated },
+                    selectedFiles = { selectedFilesUpdated },
                     onClick = {
                         onItemClickUpdated(
                             index,
@@ -195,9 +195,9 @@ fun SketchesGroupingMediaGrid(
                     file = file,
                     selectedFilesUpdated.contains(file.id),
                     modifier = Modifier.selectable(
-                        file,
-                        filesUpdated,
-                        selectedFilesUpdated,
+                        file = { file },
+                        files = { filesUpdated },
+                        selectedFiles = { selectedFilesUpdated },
                         onClick = {
                             onItemClickUpdated(
                                 index,
@@ -324,29 +324,29 @@ private data class MediaStoreFileKey(val fileId: Long): Parcelable
 private data class MediaStoreFileContentType(val mediaType: MediaType)
 
 private inline fun Modifier.selectable(
-    file: MediaStoreFile,
-    files: List<MediaStoreFile>,
-    selectedFiles: SnapshotStateSet<Long>,
+    crossinline file: () -> MediaStoreFile,
+    crossinline files: () -> List<MediaStoreFile>,
+    crossinline selectedFiles: () -> SnapshotStateSet<Long>,
     crossinline onClick: () -> Unit,
 ): Modifier =
     combinedClickable(
         onLongClick = {
-            if (selectedFiles.isEmpty()) {
-                selectedFiles.add(file.id)
+            if (selectedFiles().isEmpty()) {
+                selectedFiles().add(file().id)
             } else {
-                if (selectedFiles.contains(file.id)) {
-                    selectedFiles.clear()
+                if (selectedFiles().contains(file().id)) {
+                    selectedFiles().clear()
                 } else {
-                    selectedFiles.addAll(files.mapTo(ArrayList(files.size)) { file -> file.id })
+                    selectedFiles().addAll(files().mapTo(ArrayList(files().size)) { file -> file.id })
                 }
             }
         },
         onClick = {
-            if (selectedFiles.isNotEmpty()) {
-                if (selectedFiles.contains(file.id)) {
-                    selectedFiles.remove(file.id)
+            if (selectedFiles().isNotEmpty()) {
+                if (selectedFiles().contains(file().id)) {
+                    selectedFiles().remove(file().id)
                 } else {
-                    selectedFiles.add(file.id)
+                    selectedFiles().add(file().id)
                 }
             } else {
                 onClick()
