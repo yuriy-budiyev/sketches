@@ -128,6 +128,14 @@ fun SketchesGroupingMediaGrid(
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
     var previousDate by remember { mutableStateOf(LocalDate.MAX) }
     val nowDate = remember { LocalDate.now() }
+    val dateFormatterMonth = remember {
+        DateTimeFormatterBuilder()
+            .appendText(
+                ChronoField.MONTH_OF_YEAR,
+                TextStyle.FULL_STANDALONE,
+            )
+            .toFormatter(Locale.getDefault())
+    }
     val dateFormatterMonthYear = remember {
         DateTimeFormatterBuilder()
             .appendText(
@@ -137,14 +145,6 @@ fun SketchesGroupingMediaGrid(
             .appendLiteral(' ')
             .appendText(
                 ChronoField.YEAR,
-                TextStyle.FULL_STANDALONE,
-            )
-            .toFormatter(Locale.getDefault())
-    }
-    val dateFormatterMonth = remember {
-        DateTimeFormatterBuilder()
-            .appendText(
-                ChronoField.MONTH_OF_YEAR,
                 TextStyle.FULL_STANDALONE,
             )
             .toFormatter(Locale.getDefault())
