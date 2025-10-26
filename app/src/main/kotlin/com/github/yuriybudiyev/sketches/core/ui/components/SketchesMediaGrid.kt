@@ -331,22 +331,27 @@ private inline fun Modifier.selectable(
 ): Modifier =
     combinedClickable(
         onLongClick = {
-            if (selectedFiles().isEmpty()) {
-                selectedFiles().add(file().id)
+            val file = file()
+            val selectedFiles = selectedFiles()
+            if (selectedFiles.isEmpty()) {
+                selectedFiles.add(file.id)
             } else {
-                if (selectedFiles().contains(file().id)) {
-                    selectedFiles().clear()
+                if (selectedFiles.contains(file.id)) {
+                    selectedFiles.clear()
                 } else {
-                    selectedFiles().addAll(files().mapTo(ArrayList(files().size)) { file -> file.id })
+                    val files = files()
+                    selectedFiles.addAll(files.mapTo(ArrayList(files.size)) { file -> file.id })
                 }
             }
         },
         onClick = {
-            if (selectedFiles().isNotEmpty()) {
-                if (selectedFiles().contains(file().id)) {
-                    selectedFiles().remove(file().id)
+            val selectedFiles = selectedFiles()
+            if (selectedFiles.isNotEmpty()) {
+                val file = file()
+                if (selectedFiles.contains(file.id)) {
+                    selectedFiles.remove(file.id)
                 } else {
-                    selectedFiles().add(file().id)
+                    selectedFiles.add(file.id)
                 }
             } else {
                 onClick()
