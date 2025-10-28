@@ -24,4 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.navigation
 
-interface NavigationRoute
+import androidx.navigation3.runtime.NavKey
+
+interface NavRoute: NavKey
+

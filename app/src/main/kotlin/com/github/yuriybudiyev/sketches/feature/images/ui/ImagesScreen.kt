@@ -54,7 +54,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -63,8 +62,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.utils.filterByIds
-import com.github.yuriybudiyev.sketches.core.navigation.LocalNavController
-import com.github.yuriybudiyev.sketches.core.navigation.collectNavResult
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
@@ -77,18 +74,15 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesGroupingMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
-import com.github.yuriybudiyev.sketches.core.ui.components.calculateMediaIndexWithGroups
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
-import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemClosestEdge
-import com.github.yuriybudiyev.sketches.feature.image.ui.NAV_IMAGE_SCREEN_CURRENT_INDEX
-import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesRoute
+import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
 import kotlinx.coroutines.launch
 
 @Composable
 fun ImagesRoute(
+    viewModel: ImagesScreenViewModel,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
     onRequestUserSelectedMedia: (() -> Unit)? = null,
-    viewModel: ImagesScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
@@ -149,26 +143,26 @@ fun ImagesScreen(
         }
     }
     val mediaGridState = rememberLazyGridState()
-    val navController = LocalNavController.current
+    //val navController = LocalNavController.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    LaunchedEffect(
-        navController,
-        lifecycleOwner,
-    ) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            navController.collectNavResult<Int>(NAV_IMAGE_SCREEN_CURRENT_INDEX) { index ->
-                if (index != null) {
-                    mediaGridState.scrollToItemClosestEdge(
-                        index = calculateMediaIndexWithGroups(
-                            index = index,
-                            files = allFiles,
-                        ),
-                        animate = false,
-                    )
-                }
-            }
-        }
-    }
+    /* LaunchedEffect(
+         navController,
+         lifecycleOwner,
+     ) {
+         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+             navController.collectNavResult<Int>(NAV_IMAGE_SCREEN_CURRENT_INDEX) { index ->
+                 if (index != null) {
+                     mediaGridState.scrollToItemClosestEdge(
+                         index = calculateMediaIndexWithGroups(
+                             index = index,
+                             files = allFiles,
+                         ),
+                         animate = false,
+                     )
+                 }
+             }
+         }
+     }*/
     val systemBarsController = LocalSystemBarsController.current
     LaunchedEffect(
         systemBarsController,
@@ -249,7 +243,7 @@ fun ImagesScreen(
                     selectedFiles.size,
                 )
             } else {
-                stringResource(ImagesRoute.titleRes)
+                stringResource(ImagesNavRoute.titleRes)
             },
             backgroundColor = MaterialTheme.colorScheme.background
                 .copy(alpha = SketchesColors.UiAlphaLowTransparency),

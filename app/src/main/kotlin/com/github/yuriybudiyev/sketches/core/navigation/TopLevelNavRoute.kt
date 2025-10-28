@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 Yuriy Budiyev
+ * Copyright (c) 2024 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,33 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.core.navigation
 
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.map
+import androidx.annotation.StringRes
+import androidx.compose.ui.graphics.vector.ImageVector
 
-suspend fun <T> NavController.collectNavResult(
-    key: String,
-    collector: FlowCollector<T?>,
-) {
-    currentBackStackEntryFlow
-        .map { entry -> entry.savedStateHandle.remove<T>(key) }
-        .collect(collector)
+interface TopLevelNavRoute: NavRoute {
+
+    @get:StringRes
+    val titleRes: Int
+
+    val selectedIcon: ImageVector
+
+    val unselectedIcon: ImageVector
 }
-
-fun <T> NavController.setNavResult(
-    key: String,
-    value: T?,
-) {
-    previousBackStackEntry
-        ?.savedStateHandle
-        ?.set(
-            key = key,
-            value = value,
-        )
-}
-
-val LocalNavController: ProvidableCompositionLocal<NavHostController> =
-    staticCompositionLocalOf { error("CompositionLocal LocalNavController not present") }

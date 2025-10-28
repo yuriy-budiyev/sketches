@@ -65,7 +65,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -88,13 +87,13 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndica
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
-import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsRoute
+import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
 import kotlinx.coroutines.launch
 
 @Composable
 fun BucketsRoute(
+    viewModel: BucketsScreenViewModel,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
-    viewModel: BucketsScreenViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
@@ -275,7 +274,7 @@ fun BucketsScreen(
                     selectedBuckets.size,
                 )
             } else {
-                stringResource(BucketsRoute.titleRes)
+                stringResource(BucketsNavRoute.titleRes)
             },
             backgroundColor = MaterialTheme.colorScheme.background
                 .copy(alpha = SketchesColors.UiAlphaLowTransparency),

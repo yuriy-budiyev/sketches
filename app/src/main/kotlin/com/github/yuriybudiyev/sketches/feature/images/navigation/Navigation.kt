@@ -25,36 +25,15 @@
 package com.github.yuriybudiyev.sketches.feature.images.navigation
 
 import androidx.annotation.StringRes
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.navigation.TopLevelNavigationRoute
+import com.github.yuriybudiyev.sketches.core.navigation.TopLevelNavRoute
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
-import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
-fun NavGraphBuilder.registerImagesScreen(
-    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
-    onRequestUserSelectedMedia: (() -> Unit)? = null,
-) {
-    composable<ImagesRoute>(
-        enterTransition = { fadeIn() },
-        exitTransition = { fadeOut() },
-    ) {
-        ImagesRoute(
-            onImageClick = onImageClick,
-            onRequestUserSelectedMedia = onRequestUserSelectedMedia,
-        )
-    }
-}
-
 @Serializable
-data object ImagesRoute: TopLevelNavigationRoute {
+data object ImagesNavRoute: TopLevelNavRoute {
 
     @Transient
     @get:StringRes

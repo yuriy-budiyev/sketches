@@ -24,43 +24,12 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.navigation
 
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
-import androidx.navigation.compose.composable
-import com.github.yuriybudiyev.sketches.core.navigation.NavigationRoute
+import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import kotlinx.serialization.Serializable
 
-fun NavController.navigateToImageScreen(
-    imageIndex: Int,
-    imageId: Long,
-    bucketId: Long? = null,
-    navOptions: NavOptions? = null,
-) {
-    navigate(
-        ImageRoute(
-            imageIndex,
-            imageId,
-            bucketId
-        ),
-        navOptions
-    )
-}
-
-fun NavGraphBuilder.registerImageScreen() {
-    composable<ImageRoute>(
-        enterTransition = { fadeIn() },
-        exitTransition = { fadeOut() },
-    ) { backStackEntry ->
-        com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute()
-    }
-}
-
 @Serializable
-data class ImageRoute(
+data class ImageNavRoute(
     val imageIndex: Int,
     val imageId: Long,
     val bucketId: Long?,
-): NavigationRoute
+): NavRoute

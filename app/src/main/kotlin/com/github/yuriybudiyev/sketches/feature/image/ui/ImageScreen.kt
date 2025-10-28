@@ -86,14 +86,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.navigation.LocalNavController
-import com.github.yuriybudiyev.sketches.core.navigation.setNavResult
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
@@ -117,12 +114,12 @@ import kotlinx.coroutines.launch
 const val NAV_IMAGE_SCREEN_CURRENT_INDEX = "current_index"
 
 @Composable
-fun ImageRoute(viewModel: ImageScreenViewModel = hiltViewModel()) {
+fun ImageRoute(viewModel: ImageScreenViewModel) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.updateMediaAccess()
     }
-    val navControllerUpdated by rememberUpdatedState(LocalNavController.current)
+    // val navControllerUpdated by rememberUpdatedState(LocalNavController.current)
     ImageScreen(
         uiState = uiState,
         onChange = { index, file ->
@@ -130,10 +127,10 @@ fun ImageRoute(viewModel: ImageScreenViewModel = hiltViewModel()) {
                 fileIndex = index,
                 fileId = file.id,
             )
-            navControllerUpdated.setNavResult(
+            /*navControllerUpdated.setNavResult(
                 key = NAV_IMAGE_SCREEN_CURRENT_INDEX,
                 value = index,
-            )
+            )*/
         },
         onDelete = { _, file ->
             viewModel.deleteMedia(listOf(file))

@@ -25,9 +25,7 @@
 package com.github.yuriybudiyev.sketches.feature.bucket.ui
 
 import android.content.Context
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
 import com.github.yuriybudiyev.sketches.core.dagger.LazyProvider
 import com.github.yuriybudiyev.sketches.core.dagger.getValue
@@ -36,7 +34,10 @@ import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.flow.WhileSubscribedUi
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
-import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketRoute
+import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavRoute
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
@@ -50,13 +51,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-@HiltViewModel
-class BucketScreenViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = BucketScreenViewModel.Factory::class)
+class BucketScreenViewModel @AssistedInject constructor(
     @ApplicationContext
     context: Context,
-    savedStateHandle: SavedStateHandle,
+    @Assisted
+    route: BucketNavRoute,
     dispatchersProvider: LazyProvider<SketchesCoroutineDispatchers>,
     getMediaFilesProvider: LazyProvider<GetMediaFilesUseCase>,
     deleteMediaFilesProvider: LazyProvider<DeleteMediaFilesUseCase>,
@@ -69,7 +70,8 @@ class BucketScreenViewModel @Inject constructor(
     private val getMediaFiles: GetMediaFilesUseCase by getMediaFilesProvider
     private val deleteMediaFiles: DeleteMediaFilesUseCase by deleteMediaFilesProvider
 
-    val navRoute: BucketRoute = savedStateHandle.toRoute()
+    val bucketId: Long = route.bucketId
+    val bucketName: String = route.bucketName
 
     private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
 
@@ -96,7 +98,7 @@ class BucketScreenViewModel @Inject constructor(
 
     private suspend fun FlowCollector<UiState>.updateMedia() {
         try {
-            val files = withContext(dispatchers.io) { getMediaFiles(navRoute.bucketId) }
+            val files = withContext(dispatchers.io) { getMediaFiles(bucketId) }
             if (files.isNotEmpty()) {
                 emit(UiState.Bucket(files))
             } else {
@@ -155,5 +157,11 @@ class BucketScreenViewModel @Inject constructor(
         data object UpdateMedia: UiAction
 
         data class ShowError(val thrown: Throwable): UiAction
+    }
+
+    @AssistedFactory
+    interface Factory {
+
+        fun create(route: BucketNavRoute): BucketScreenViewModel
     }
 }
