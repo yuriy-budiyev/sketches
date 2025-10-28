@@ -98,7 +98,7 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                             { mediaAccessLauncher.requestMediaAccess() }
                         } else {
                             null
-                        }
+                        },
                     )
                     if (currentTopLevelRoute != null) {
                         val bottomSystemBarHeight = WindowInsets.systemBars
@@ -111,16 +111,16 @@ fun SketchesApp(appState: SketchesAppState = rememberSketchesAppState()) {
                             modifier = Modifier
                                 .height(SketchesDimens.BottomBarHeight + bottomSystemBarHeight)
                                 .align(Alignment.BottomStart)
-                                .fillMaxWidth()
+                                .fillMaxWidth(),
                         ) {
-                            topLevelNavigationRoutes.forEach { route ->
+                            for (route in topLevelNavigationRoutes) {
                                 val selected = route == currentTopLevelRoute
                                 NavigationBarItem(
                                     selected = selected,
                                     colors = NavigationBarItemDefaults.colors(
                                         selectedIconColor = MaterialTheme.colorScheme.onPrimary,
                                         unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-                                        indicatorColor = MaterialTheme.colorScheme.primary
+                                        indicatorColor = MaterialTheme.colorScheme.primary,
                                     ),
                                     onClick = {
                                         appState.navigateToTopLevelNavigationRoute(route)
