@@ -63,6 +63,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.TopLevelNavRoute
+import com.github.yuriybudiyev.sketches.core.navigation.drainTo
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.rememberMediaAccessRequestLauncher
@@ -137,15 +138,7 @@ fun SketchesApp() {
                                         val rootRoute = topLevelRoutes.first()
                                         if (route::class != currentTopRoute::class) {
                                             if (route::class == rootRoute::class) {
-                                                val iterator =
-                                                    navBackStack.listIterator(navBackStack.size)
-                                                while (iterator.hasPrevious()) {
-                                                    val previous = iterator.previous()
-                                                    if (previous::class == route::class) {
-                                                        break
-                                                    }
-                                                    iterator.remove()
-                                                }
+                                                navBackStack.drainTo(route::class)
                                             } else {
                                                 navBackStack.add(route)
                                             }
