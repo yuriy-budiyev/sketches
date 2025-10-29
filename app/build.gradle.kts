@@ -95,8 +95,8 @@ dependencies {
     implementation(libs.bundles.androidx.savedstate)
     implementation(libs.bundles.androidx.activity)
     implementation(libs.bundles.androidx.compose)
-    implementation(libs.bundles.androidx.navigation)
     implementation(libs.bundles.androidx.navigation3)
+    implementation(libs.bundles.androidx.navigationevent)
     implementation(libs.bundles.androidx.window)
     implementation(libs.bundles.androidx.work)
     implementation(libs.bundles.androidx.media3)
@@ -114,7 +114,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.bundles.kotlin.test)
     androidTestImplementation(libs.bundles.androidx.test)
-    androidTestImplementation(libs.androidx.navigation.test)
     androidTestImplementation(libs.androidx.compose.ui.test.junit)
     androidTestImplementation(libs.hilt.test)
 }
