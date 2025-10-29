@@ -62,6 +62,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.utils.filterByIds
+import com.github.yuriybudiyev.sketches.core.navigation.LocalResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
@@ -74,7 +75,10 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesGroupingMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.components.calculateMediaIndexWithGroups
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
+import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemClosestEdge
+import com.github.yuriybudiyev.sketches.feature.image.ui.NAV_IMAGE_SCREEN_CURRENT_INDEX
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
 import kotlinx.coroutines.launch
 
@@ -143,26 +147,26 @@ fun ImagesScreen(
         }
     }
     val mediaGridState = rememberLazyGridState()
-    //val navController = LocalNavController.current
+    val resultStore = LocalResultStore.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    /* LaunchedEffect(
-         navController,
-         lifecycleOwner,
-     ) {
-         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-             navController.collectNavResult<Int>(NAV_IMAGE_SCREEN_CURRENT_INDEX) { index ->
-                 if (index != null) {
-                     mediaGridState.scrollToItemClosestEdge(
-                         index = calculateMediaIndexWithGroups(
-                             index = index,
-                             files = allFiles,
-                         ),
-                         animate = false,
-                     )
-                 }
-             }
-         }
-     }*/
+    LaunchedEffect(
+        resultStore,
+        lifecycleOwner,
+    ) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            resultStore.collectResult<Int>(NAV_IMAGE_SCREEN_CURRENT_INDEX) { index ->
+                if (index != null) {
+                    mediaGridState.scrollToItemClosestEdge(
+                        index = calculateMediaIndexWithGroups(
+                            index = index,
+                            files = allFiles,
+                        ),
+                        animate = false,
+                    )
+                }
+            }
+        }
+    }
     val systemBarsController = LocalSystemBarsController.current
     LaunchedEffect(
         systemBarsController,
