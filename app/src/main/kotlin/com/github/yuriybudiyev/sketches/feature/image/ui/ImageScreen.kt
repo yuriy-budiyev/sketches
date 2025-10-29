@@ -84,7 +84,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -344,24 +343,6 @@ private fun ImageScreenLayout(
                             )
                         }
                     },
-                )
-            }
-        }
-        if (contentPaddingBottom > 0.dp) {
-            AnimatedVisibility(
-                visible = systemBarsControllerUpdated.isSystemBarsVisible,
-                enter = fadeIn(),
-                exit = fadeOut(),
-                modifier = Modifier.align(Alignment.BottomStart),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .height(contentPaddingBottom)
-                        .fillMaxWidth()
-                        .background(
-                            color = MaterialTheme.colorScheme.background
-                                .copy(alpha = SketchesColors.UiAlphaLowTransparency)
-                        )
                 )
             }
         }

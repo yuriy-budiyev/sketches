@@ -33,12 +33,8 @@ import androidx.activity.result.component2
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.MaterialTheme
@@ -56,7 +52,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
@@ -212,12 +207,14 @@ fun BucketScreen(
             is BucketScreenViewModel.UiState.Bucket -> {
                 val files = uiState.files
                 allFiles = files
-                BucketScreenLayout(
+                SketchesMediaGrid(
                     files = files,
                     selectedFiles = selectedFiles,
-                    state = mediaGridState,
                     onItemClick = onImageClick,
                     modifier = Modifier.matchParentSize(),
+                    state = mediaGridState,
+                    overlayTop = true,
+                    overlayBottom = false,
                 )
             }
             is BucketScreenViewModel.UiState.Error -> {
@@ -315,30 +312,7 @@ private fun BucketScreenLayout(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
-        SketchesMediaGrid(
-            files = files,
-            selectedFiles = selectedFiles,
-            onItemClick = onItemClick,
-            modifier = Modifier.matchParentSize(),
-            state = state,
-            overlayTop = true,
-            overlayBottom = false,
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(
-                    WindowInsets.systemBars
-                        .asPaddingValues()
-                        .calculateBottomPadding()
-                )
-                .background(
-                    MaterialTheme.colorScheme.background
-                        .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                    RectangleShape
-                )
-                .align(Alignment.BottomCenter)
-        )
+
     }
 }
 
