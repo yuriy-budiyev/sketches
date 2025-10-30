@@ -27,4 +27,3 @@ package com.github.yuriybudiyev.sketches.core.navigation
 import androidx.navigation3.runtime.NavKey
 
 interface NavRoute: NavKey
-
