@@ -170,21 +170,23 @@ fun SketchesApp() {
                             visible = systemBarsControllerUpdated.isSystemBarsVisible,
                             enter = fadeIn(),
                             exit = fadeOut(),
-                            modifier = Modifier.align(Alignment.BottomStart),
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .fillMaxWidth()
+                                .height(
+                                    WindowInsets.navigationBars
+                                        .asPaddingValues()
+                                        .calculateBottomPadding()
+                                ),
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(
-                                        WindowInsets.navigationBars
-                                            .asPaddingValues()
-                                            .calculateBottomPadding()
-                                    )
                                     .background(
                                         MaterialTheme.colorScheme.background
                                             .copy(alpha = SketchesColors.UiAlphaLowTransparency),
                                         RectangleShape
                                     )
+                                    .fillMaxSize()
                             )
                         }
                     }
@@ -198,7 +200,7 @@ fun SketchesApp() {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                    verticalArrangement = Arrangement.Center,
                 ) {
                     SketchesMessage(
                         text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -208,7 +210,7 @@ fun SketchesApp() {
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
+                            .padding(horizontal = 16.dp),
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     SketchesOutlinedButton(text = stringResource(R.string.open_settings)) {
@@ -216,7 +218,7 @@ fun SketchesApp() {
                         intent.data = Uri.fromParts(
                             "package",
                             appContextUpdated.packageName,
-                            null
+                            null,
                         )
                         settingsLauncher.launch(intent)
                     }
