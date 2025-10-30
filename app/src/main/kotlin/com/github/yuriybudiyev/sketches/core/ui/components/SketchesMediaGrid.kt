@@ -50,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -173,12 +174,17 @@ fun SketchesGroupingMediaGrid(
                     }
                     Text(
                         text = text.capitalizeFirstCharacter(),
-                        modifier = Modifier.padding(
-                            start = 4.dp,
-                            top = 8.dp,
-                            end = 4.dp,
-                            bottom = 0.dp,
-                        ),
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.background,
+                                shape = RectangleShape,
+                            )
+                            .padding(
+                                start = 4.dp,
+                                top = 8.dp,
+                                end = 4.dp,
+                                bottom = 0.dp,
+                            ),
                         color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 16.sp,
                         overflow = TextOverflow.Ellipsis,
