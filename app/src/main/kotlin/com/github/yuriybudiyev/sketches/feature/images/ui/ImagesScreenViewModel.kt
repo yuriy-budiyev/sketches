@@ -47,6 +47,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.YearMonth
 import javax.inject.Inject
 
 @HiltViewModel
@@ -90,9 +91,14 @@ class ImagesScreenViewModel @Inject constructor(
 
     private suspend fun FlowCollector<UiState>.updateMedia() {
         try {
-            val files = withContext(dispatchers.io) { getMediaFiles() }
-            if (files.isNotEmpty()) {
-                emit(UiState.Images(files))
+            val groups =
+                withContext(dispatchers.io) {
+                    getMediaFiles().groupBy { file ->
+                        YearMonth.from(file.dateAdded)
+                    }
+                }
+            if (groups.isNotEmpty()) {
+                emit(UiState.Images(groups))
             } else {
                 emit(UiState.Empty)
             }
@@ -139,7 +145,7 @@ class ImagesScreenViewModel @Inject constructor(
 
         data object Loading: UiState
 
-        data class Images(val files: List<MediaStoreFile>): UiState
+        data class Images(val groups: Map<YearMonth, List<MediaStoreFile>>): UiState
 
         data class Error(val thrown: Throwable): UiState
     }

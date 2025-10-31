@@ -41,10 +41,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,6 +63,7 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.format.DateTimeFormatterBuilder
 import java.time.format.TextStyle
 import java.time.temporal.ChronoField
@@ -92,7 +91,7 @@ fun SketchesMediaGrid(
         items(
             count = filesUpdated.size,
             key = { index -> MediaStoreFileKey(fileId = filesUpdated[index].id) },
-            contentType = { index -> MediaStoreFileContentType(mediaType = filesUpdated[index].mediaType) },
+            contentType = { MediaStoreFileContentType },
         ) { index ->
             val file = filesUpdated[index]
             SketchesMediaGridItem(
@@ -100,7 +99,7 @@ fun SketchesMediaGrid(
                 selectedFilesUpdated.contains(file.id),
                 modifier = Modifier.selectable(
                     file = { file },
-                    files = { filesUpdated },
+                    filesIds = { filesUpdated.map { file -> file.id } },
                     selectedFiles = { selectedFilesUpdated },
                     onClick = {
                         onItemClickUpdated(
@@ -116,7 +115,7 @@ fun SketchesMediaGrid(
 
 @Composable
 fun SketchesGroupingMediaGrid(
-    files: List<MediaStoreFile>,
+    items: Map<YearMonth, List<MediaStoreFile>>,
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
@@ -124,10 +123,9 @@ fun SketchesGroupingMediaGrid(
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
-    val filesUpdated by rememberUpdatedState(files)
+    val itemsUpdated by rememberUpdatedState(items)
     val selectedFilesUpdated by rememberUpdatedState(selectedFiles)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
-    var previousDate by remember { mutableStateOf(LocalDate.MAX) }
     val nowDate = remember { LocalDate.now() }
     val dateFormatterMonth = remember {
         DateTimeFormatterBuilder()
@@ -156,57 +154,64 @@ fun SketchesGroupingMediaGrid(
         overlayTop = overlayTop,
         overlayBottom = overlayBottom,
     ) {
-        for ((index, file) in filesUpdated.withIndex()) {
-            val currentDate = file.dateAdded.toLocalDate()
-            if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
-                item(
-                    key = GroupHeaderKey(
-                        year = currentDate.year,
-                        month = currentDate.monthValue,
-                    ),
-                    contentType = GroupHeaderContentType,
-                    span = { GridItemSpan(maxLineSpan) },
-                ) {
-                    val text = if (nowDate.year == currentDate.year) {
-                        currentDate.format(dateFormatterMonth)
-                    } else {
-                        currentDate.format(dateFormatterMonthYear)
-                    }
-                    Text(
-                        text = text.capitalizeFirstCharacter(),
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.background,
-                                shape = RectangleShape,
-                            )
-                            .padding(
-                                start = 4.dp,
-                                top = 8.dp,
-                                end = 4.dp,
-                                bottom = 0.dp,
-                            ),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 16.sp,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
-                    )
-                }
-                previousDate = currentDate
-            }
+        var offset = 0
+        for ((month, files) in itemsUpdated) {
+            val localOffset = offset
+            offset += files.size
             item(
-                key = MediaStoreFileKey(fileId = file.id),
-                contentType = MediaStoreFileContentType(mediaType = file.mediaType),
+                key = GroupHeaderKey(
+                    year = month.year,
+                    month = month.monthValue,
+                ),
+                contentType = GroupHeaderContentType,
+                span = { GridItemSpan(maxLineSpan) },
             ) {
+                val text = if (nowDate.year == month.year) {
+                    month.format(dateFormatterMonth)
+                } else {
+                    month.format(dateFormatterMonthYear)
+                }
+                Text(
+                    text = text.capitalizeFirstCharacter(),
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.background,
+                            shape = RectangleShape,
+                        )
+                        .padding(
+                            start = 4.dp,
+                            top = 8.dp,
+                            end = 4.dp,
+                            bottom = 0.dp,
+                        ),
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = 16.sp,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                )
+            }
+            items(
+                count = files.size,
+                key = { index -> MediaStoreFileKey(files[index].id) },
+                contentType = { MediaStoreFileContentType },
+            ) { index ->
+                val file = files[index]
                 SketchesMediaGridItem(
                     file = file,
                     selectedFilesUpdated.contains(file.id),
                     modifier = Modifier.selectable(
                         file = { file },
-                        files = { filesUpdated },
+                        filesIds = {
+                            itemsUpdated
+                                .asSequence()
+                                .flatMap { (_, files) -> files }
+                                .map { file -> file.id }
+                                .toList()
+                        },
                         selectedFiles = { selectedFilesUpdated },
                         onClick = {
                             onItemClickUpdated(
-                                index,
+                                index + localOffset,
                                 file,
                             )
                         },
@@ -327,11 +332,11 @@ private data object GroupHeaderContentType
 private data class MediaStoreFileKey(val fileId: Long): Parcelable
 
 @Immutable
-private data class MediaStoreFileContentType(val mediaType: MediaType)
+private data object MediaStoreFileContentType
 
 private inline fun Modifier.selectable(
     crossinline file: () -> MediaStoreFile,
-    crossinline files: () -> List<MediaStoreFile>,
+    crossinline filesIds: () -> Collection<Long>,
     crossinline selectedFiles: () -> SnapshotStateSet<Long>,
     crossinline onClick: () -> Unit,
 ): Modifier =
@@ -345,8 +350,7 @@ private inline fun Modifier.selectable(
                 if (selectedFiles.contains(file.id)) {
                     selectedFiles.clear()
                 } else {
-                    val files = files()
-                    selectedFiles.addAll(files.mapTo(ArrayList(files.size)) { file -> file.id })
+                    selectedFiles.addAll(filesIds())
                 }
             }
         },
