@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.components.media
+package com.github.yuriybudiyev.sketches.core.ui.components.mediaplayer
 
 import android.view.TextureView
 import androidx.compose.animation.AnimatedVisibility

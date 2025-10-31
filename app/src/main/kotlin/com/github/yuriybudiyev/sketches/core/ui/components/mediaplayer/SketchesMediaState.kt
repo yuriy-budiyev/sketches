@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.components.media
+package com.github.yuriybudiyev.sketches.core.ui.components.mediaplayer
 
 import android.app.ActivityManager
 import android.content.Context

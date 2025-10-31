@@ -168,8 +168,7 @@ fun BucketsScreen(
     ) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             if (uiState is BucketsScreenViewModel.UiState.Buckets) {
-                val action = uiState.action.consume()
-                when (action) {
+                when (val action = uiState.action.consume()) {
                     is BucketsScreenViewModel.UiState.Buckets.Action.Share -> {
                         val shareInfo = action.files.toShareInfo()
                         shareManagerUpdated.startChooserActivity(

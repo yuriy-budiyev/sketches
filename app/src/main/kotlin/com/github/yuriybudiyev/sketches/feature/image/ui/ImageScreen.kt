@@ -104,8 +104,8 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableAsyncImage
-import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaPlayer
-import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaState
+import com.github.yuriybudiyev.sketches.core.ui.components.mediaplayer.SketchesMediaPlayer
+import com.github.yuriybudiyev.sketches.core.ui.components.mediaplayer.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemCentered
