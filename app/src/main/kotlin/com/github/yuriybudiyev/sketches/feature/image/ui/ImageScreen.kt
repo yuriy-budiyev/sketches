@@ -121,7 +121,7 @@ fun ImageRoute(viewModel: ImageScreenViewModel) {
     }
     val resultStoreUpdated by rememberUpdatedState(LocalResultStore.current)
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
-        resultStoreUpdated.setResult(
+        resultStoreUpdated.putResult(
             key = NAV_IMAGE_SCREEN_CURRENT_INDEX,
             value = viewModel.currentFileIndex
         )

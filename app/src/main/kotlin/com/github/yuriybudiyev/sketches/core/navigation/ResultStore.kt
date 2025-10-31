@@ -28,34 +28,34 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.staticCompositionLocalOf
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.map
 
 class ResultStore {
 
-    inline fun <reified T> setResult(
+    fun <T> putResult(
         key: String,
         value: T?,
     ) {
-        results[key] = value
+        storage[key] = value
     }
 
-    inline fun <reified T> getResult(key: String): T? =
-        results.remove(key) as T?
-
-    inline fun <reified T> getResultFlow(key: String): Flow<T?> =
-        snapshotFlow { results }.map { results -> results.remove(key) as T? }
-
-    suspend inline fun <reified T> collectResult(
+    suspend fun <T> collectResult(
         key: String,
         collector: FlowCollector<T?>,
     ) {
-        getResultFlow<T>(key).collect(collector)
+        snapshotFlow { storage.toMap() }
+            .map { storage -> storage[key] }
+            .collect { value ->
+                if (value !== null && storage[key] === value) {
+                    storage.remove(key)
+                }
+                @Suppress("UNCHECKED_CAST")
+                collector.emit(value as T?)
+            }
     }
 
-    @PublishedApi
-    internal val results: SnapshotStateMap<String, Any?> = SnapshotStateMap()
+    private val storage: SnapshotStateMap<String, Any?> = SnapshotStateMap()
 }
 
 val LocalResultStore: ProvidableCompositionLocal<ResultStore> =
