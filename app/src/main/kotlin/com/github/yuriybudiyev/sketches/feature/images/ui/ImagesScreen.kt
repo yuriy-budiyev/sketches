@@ -212,10 +212,9 @@ fun ImagesScreen(
                 }
             }
             is ImagesScreenViewModel.UiState.Images -> {
-                val groups = uiState.groups
-                allFiles = groups.flatMap { (_, files) -> files }
+                allFiles = uiState.files
                 SketchesGroupingMediaGrid(
-                    items = groups,
+                    items = uiState.groups,
                     selectedFiles = selectedFiles,
                     onItemClick = onImageClick,
                     modifier = Modifier.matchParentSize(),

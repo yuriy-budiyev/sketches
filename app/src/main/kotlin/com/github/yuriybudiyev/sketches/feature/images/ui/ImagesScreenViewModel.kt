@@ -91,14 +91,19 @@ class ImagesScreenViewModel @Inject constructor(
 
     private suspend fun FlowCollector<UiState>.updateMedia() {
         try {
-            val groups =
-                withContext(dispatchers.io) {
-                    getMediaFiles().groupBy { file ->
+            val files = withContext(dispatchers.io) { getMediaFiles() }
+            if (files.isNotEmpty()) {
+                val groups = withContext(dispatchers.default) {
+                    files.groupBy { file ->
                         YearMonth.from(file.dateAdded)
                     }
                 }
-            if (groups.isNotEmpty()) {
-                emit(UiState.Images(groups))
+                emit(
+                    UiState.Images(
+                        files = files,
+                        groups = groups,
+                    )
+                )
             } else {
                 emit(UiState.Empty)
             }
@@ -145,7 +150,10 @@ class ImagesScreenViewModel @Inject constructor(
 
         data object Loading: UiState
 
-        data class Images(val groups: Map<YearMonth, List<MediaStoreFile>>): UiState
+        data class Images(
+            val files: List<MediaStoreFile>,
+            val groups: Map<YearMonth, List<MediaStoreFile>>,
+        ): UiState
 
         data class Error(val thrown: Throwable): UiState
     }
