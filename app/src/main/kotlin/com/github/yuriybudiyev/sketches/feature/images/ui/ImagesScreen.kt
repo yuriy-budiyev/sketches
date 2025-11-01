@@ -78,7 +78,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.calculateMediaIndexWithGroups
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemClosestEdge
-import com.github.yuriybudiyev.sketches.feature.image.ui.NAV_IMAGE_SCREEN_CURRENT_INDEX
+import com.github.yuriybudiyev.sketches.feature.images.navigation.ImageScreenNavResult
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
 import kotlinx.coroutines.launch
 
@@ -154,11 +154,11 @@ fun ImagesScreen(
         lifecycleOwner,
     ) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            resultStore.collectResult<Int>(NAV_IMAGE_SCREEN_CURRENT_INDEX) { index ->
-                if (index != null) {
+            resultStore.collectResult<ImageScreenNavResult> { result ->
+                if (result != null) {
                     mediaGridState.scrollToItemClosestEdge(
                         index = calculateMediaIndexWithGroups(
-                            index = index,
+                            index = result.fileIndex,
                             files = allFiles,
                         ),
                         animate = false,

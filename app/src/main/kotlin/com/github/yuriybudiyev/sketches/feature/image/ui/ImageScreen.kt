@@ -109,9 +109,8 @@ import com.github.yuriybudiyev.sketches.core.ui.components.mediaplayer.rememberS
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemCentered
+import com.github.yuriybudiyev.sketches.feature.images.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
-
-const val NAV_IMAGE_SCREEN_CURRENT_INDEX = "sketches.feature.image.ui.current_index"
 
 @Composable
 fun ImageRoute(viewModel: ImageScreenViewModel) {
@@ -122,8 +121,10 @@ fun ImageRoute(viewModel: ImageScreenViewModel) {
     val resultStoreUpdated by rememberUpdatedState(LocalResultStore.current)
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
         resultStoreUpdated.putResult(
-            key = NAV_IMAGE_SCREEN_CURRENT_INDEX,
-            value = viewModel.currentFileIndex
+            result = ImageScreenNavResult(
+                fileIndex = viewModel.currentFileIndex,
+                fileId = viewModel.currentFileId,
+            )
         )
     }
     ImageScreen(

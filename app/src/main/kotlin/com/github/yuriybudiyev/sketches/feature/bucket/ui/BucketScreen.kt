@@ -78,7 +78,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemClosestEdge
-import com.github.yuriybudiyev.sketches.feature.image.ui.NAV_IMAGE_SCREEN_CURRENT_INDEX
+import com.github.yuriybudiyev.sketches.feature.images.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
 
 @Composable
@@ -152,10 +152,10 @@ fun BucketScreen(
         lifecycleOwner,
     ) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            resultStore.collectResult<Int>(NAV_IMAGE_SCREEN_CURRENT_INDEX) { index ->
-                if (index != null) {
+            resultStore.collectResult<ImageScreenNavResult> { result ->
+                if (result != null) {
                     mediaGridState.scrollToItemClosestEdge(
-                        index = index,
+                        index = result.fileIndex,
                         animate = false,
                     )
                 }

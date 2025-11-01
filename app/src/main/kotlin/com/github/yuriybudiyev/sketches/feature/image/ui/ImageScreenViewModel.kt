@@ -194,7 +194,9 @@ class ImageScreenViewModel @AssistedInject constructor(
     var currentFileIndex: Int
         private set
 
-    private var currentFileId: Long
+    var currentFileId: Long
+        private set
+
     private var currentBucketId: Long?
 
     init {

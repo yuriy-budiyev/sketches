@@ -33,17 +33,12 @@ import kotlinx.coroutines.flow.map
 
 class ResultStore {
 
-    fun <T> putResult(
-        key: String,
-        value: T?,
-    ) {
-        storage[key] = value
+    inline fun <reified T> putResult(result: T?) {
+        storage[T::class.qualifiedName!!] = result
     }
 
-    suspend fun <T> collectResult(
-        key: String,
-        collector: FlowCollector<T?>,
-    ) {
+    suspend inline fun <reified T> collectResult(collector: FlowCollector<T?>) {
+        val key = T::class.qualifiedName!!
         snapshotFlow { storage.toMap() }
             .map { storage -> storage[key] }
             .collect { value ->
@@ -55,7 +50,8 @@ class ResultStore {
             }
     }
 
-    private val storage: SnapshotStateMap<String, Any?> = SnapshotStateMap()
+    @PublishedApi
+    internal val storage: SnapshotStateMap<String, Any?> = SnapshotStateMap()
 }
 
 val LocalResultStore: ProvidableCompositionLocal<ResultStore> =

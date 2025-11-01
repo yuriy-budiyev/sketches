@@ -45,3 +45,8 @@ data object ImagesNavRoute: TopLevelNavRoute {
     @Transient
     override val unselectedIcon: ImageVector = SketchesIcons.ImagesUnselected
 }
+
+data class ImageScreenNavResult(
+    val fileIndex: Int,
+    val fileId: Long,
+)
