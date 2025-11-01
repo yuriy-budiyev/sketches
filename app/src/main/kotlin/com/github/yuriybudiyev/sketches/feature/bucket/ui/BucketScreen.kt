@@ -75,6 +75,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirm
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGrid
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemClosestEdge
@@ -156,6 +157,7 @@ fun BucketScreen(
                 if (result != null) {
                     mediaGridState.scrollToItemClosestEdge(
                         index = result.fileIndex,
+                        itemType = SketchesMediaGridContentType.MediaStoreFile,
                         animate = false,
                     )
                 }

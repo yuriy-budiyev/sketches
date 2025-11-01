@@ -74,6 +74,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirm
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesGroupingMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.calculateMediaIndexWithGroups
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
@@ -158,9 +159,10 @@ fun ImagesScreen(
                 if (result != null) {
                     mediaGridState.scrollToItemClosestEdge(
                         index = calculateMediaIndexWithGroups(
-                            index = result.fileIndex,
+                            fileIndex = result.fileIndex,
                             files = allFiles,
                         ),
+                        itemType = SketchesMediaGridContentType.MediaStoreFile,
                         animate = false,
                     )
                 }

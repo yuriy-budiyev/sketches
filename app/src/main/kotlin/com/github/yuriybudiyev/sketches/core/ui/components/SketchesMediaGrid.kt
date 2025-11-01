@@ -69,6 +69,31 @@ import java.time.format.TextStyle
 import java.time.temporal.ChronoField
 import java.util.Locale
 
+sealed interface SketchesMediaGridKey: Parcelable {
+
+    @Parcelize
+    @Immutable
+    data class GroupHeader(
+        val year: Int,
+        val month: Int,
+    ): SketchesMediaGridKey
+
+    @Parcelize
+    @Immutable
+    data class MediaStoreFile(
+        val fileId: Long,
+    ): SketchesMediaGridKey
+}
+
+sealed interface SketchesMediaGridContentType {
+
+    @Immutable
+    data object GroupHeader: SketchesMediaGridContentType
+
+    @Immutable
+    data object MediaStoreFile: SketchesMediaGridContentType
+}
+
 @Composable
 fun SketchesMediaGrid(
     files: List<MediaStoreFile>,
@@ -90,8 +115,8 @@ fun SketchesMediaGrid(
     ) {
         items(
             count = filesUpdated.size,
-            key = { index -> MediaStoreFileKey(fileId = filesUpdated[index].id) },
-            contentType = { MediaStoreFileContentType },
+            key = { index -> SketchesMediaGridKey.MediaStoreFile(fileId = filesUpdated[index].id) },
+            contentType = { SketchesMediaGridContentType.MediaStoreFile },
         ) { index ->
             val file = filesUpdated[index]
             SketchesMediaGridItem(
@@ -159,11 +184,11 @@ fun SketchesGroupingMediaGrid(
             val localOffset = offset
             offset += files.size
             item(
-                key = GroupHeaderKey(
+                key = SketchesMediaGridKey.GroupHeader(
                     year = month.year,
                     month = month.monthValue,
                 ),
-                contentType = GroupHeaderContentType,
+                contentType = SketchesMediaGridContentType.GroupHeader,
                 span = { GridItemSpan(maxLineSpan) },
             ) {
                 val text = if (nowDate.year == month.year) {
@@ -192,8 +217,8 @@ fun SketchesGroupingMediaGrid(
             }
             items(
                 count = files.size,
-                key = { index -> MediaStoreFileKey(files[index].id) },
-                contentType = { MediaStoreFileContentType },
+                key = { index -> SketchesMediaGridKey.MediaStoreFile(files[index].id) },
+                contentType = { SketchesMediaGridContentType.MediaStoreFile },
             ) { index ->
                 val file = files[index]
                 SketchesMediaGridItem(
@@ -223,22 +248,22 @@ fun SketchesGroupingMediaGrid(
 }
 
 fun calculateMediaIndexWithGroups(
-    index: Int,
+    fileIndex: Int,
     files: Collection<MediaStoreFile>,
 ): Int {
     var offset = 0
     var previousDate = LocalDate.MAX
-    for ((fileIndex, file) in files.withIndex()) {
+    for ((index, file) in files.withIndex()) {
         val currentDate = file.dateAdded.toLocalDate()
         if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
             offset++
         }
-        if (fileIndex == index) {
+        if (index == fileIndex) {
             break
         }
         previousDate = currentDate
     }
-    return index + offset
+    return fileIndex + offset
 }
 
 @Composable
@@ -316,23 +341,6 @@ private fun SketchesMediaGridItem(
         }
     }
 }
-
-@Immutable
-@Parcelize
-private data class GroupHeaderKey(
-    val year: Int,
-    val month: Int,
-): Parcelable
-
-@Immutable
-private data object GroupHeaderContentType
-
-@Immutable
-@Parcelize
-private data class MediaStoreFileKey(val fileId: Long): Parcelable
-
-@Immutable
-private data object MediaStoreFileContentType
 
 private inline fun Modifier.selectable(
     crossinline file: () -> MediaStoreFile,
