@@ -27,6 +27,7 @@ package com.github.yuriybudiyev.sketches
 import android.app.Application
 import androidx.compose.runtime.Composer
 import androidx.compose.runtime.ExperimentalComposeRuntimeApi
+import androidx.compose.runtime.tooling.ComposeStackTraceMode
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
@@ -44,7 +45,9 @@ class SketchesApplication: Application(), SingletonImageLoader.Factory {
 
     @OptIn(ExperimentalComposeRuntimeApi::class)
     private fun enableComposeDiagnosticStackTraceForDebugBuilds() {
-        Composer.setDiagnosticStackTraceEnabled(BuildConfig.DEBUG)
+        if (BuildConfig.DEBUG) {
+            Composer.setDiagnosticStackTraceMode(ComposeStackTraceMode.SourceInformation)
+        }
     }
 
     @Inject
