@@ -62,7 +62,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.utils.filterByIds
-import com.github.yuriybudiyev.sketches.core.navigation.LocalResultStore
+import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
@@ -148,24 +148,22 @@ fun ImagesScreen(
         }
     }
     val mediaGridState = rememberLazyGridState()
-    val resultStore = LocalResultStore.current
+    val navResultStore = LocalNavResultStore.current
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(
-        resultStore,
+        navResultStore,
         lifecycleOwner,
     ) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            resultStore.collectResult<ImageScreenNavResult> { result ->
-                if (result != null) {
-                    mediaGridState.scrollToItemClosestEdge(
-                        index = calculateMediaIndexWithGroups(
-                            fileIndex = result.fileIndex,
-                            files = allFiles,
-                        ),
-                        itemType = SketchesMediaGridContentType.MediaStoreFile,
-                        animate = false,
-                    )
-                }
+            navResultStore.collectNavResult<ImageScreenNavResult> { result ->
+                mediaGridState.scrollToItemClosestEdge(
+                    index = calculateMediaIndexWithGroups(
+                        fileIndex = result.fileIndex,
+                        files = allFiles,
+                    ),
+                    itemType = SketchesMediaGridContentType.MediaStoreFile,
+                    animate = false,
+                )
             }
         }
     }

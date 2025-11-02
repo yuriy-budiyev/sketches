@@ -24,11 +24,13 @@
 
 package com.github.yuriybudiyev.sketches.feature.images.navigation
 
+import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.TopLevelNavRoute
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
@@ -46,7 +48,8 @@ data object ImagesNavRoute: TopLevelNavRoute {
     override val unselectedIcon: ImageVector = SketchesIcons.ImagesUnselected
 }
 
+@Parcelize
 data class ImageScreenNavResult(
     val fileIndex: Int,
     val fileId: Long,
-)
+): Parcelable

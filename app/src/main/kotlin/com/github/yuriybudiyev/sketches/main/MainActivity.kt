@@ -41,7 +41,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -49,8 +48,8 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
-import com.github.yuriybudiyev.sketches.core.navigation.LocalResultStore
-import com.github.yuriybudiyev.sketches.core.navigation.ResultStore
+import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
+import com.github.yuriybudiyev.sketches.core.navigation.rememberResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.bars.SystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
@@ -113,11 +112,11 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
             window.desiredHdrHeadroom = 1.5f
         }
         setContent {
-            val resultStore = remember { ResultStore() }
+            val resultStore = rememberResultStore()
             CompositionLocalProvider(
                 LocalSystemBarsController provides this,
                 LocalShareManager provides this,
-                LocalResultStore provides resultStore,
+                LocalNavResultStore provides resultStore,
             ) {
                 SketchesTheme {
                     SketchesApp()

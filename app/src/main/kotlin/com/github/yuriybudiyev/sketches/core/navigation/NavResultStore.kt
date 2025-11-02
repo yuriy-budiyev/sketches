@@ -24,35 +24,79 @@
 
 package com.github.yuriybudiyev.sketches.core.navigation
 
+import android.os.Parcelable
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.SaverScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.staticCompositionLocalOf
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.map
+import kotlinx.parcelize.Parcelize
 
-class ResultStore {
+class NavResultStore {
 
-    inline fun <reified T> putResult(result: T?) {
+    inline fun <reified T: Parcelable> putNavResult(result: T) {
         storage[T::class.qualifiedName!!] = result
     }
 
-    suspend inline fun <reified T> collectResult(collector: FlowCollector<T?>) {
+    suspend inline fun <reified T: Parcelable> collectNavResult(collector: FlowCollector<T>) {
         val key = T::class.qualifiedName!!
         snapshotFlow { storage.toMap() }
             .map { storage -> storage[key] }
             .collect { value ->
-                if (value !== null && storage[key] === value) {
-                    storage.remove(key)
+                if (value !== null) {
+                    if (storage[key] !== value) {
+                        storage.remove(key)
+                    }
+                    collector.emit(value as T)
                 }
-                @Suppress("UNCHECKED_CAST")
-                collector.emit(value as T?)
             }
     }
 
     @PublishedApi
-    internal val storage: SnapshotStateMap<String, Any?> = SnapshotStateMap()
+    internal val storage: SnapshotStateMap<String, Parcelable> = SnapshotStateMap()
 }
 
-val LocalResultStore: ProvidableCompositionLocal<ResultStore> =
+val LocalNavResultStore: ProvidableCompositionLocal<NavResultStore> =
     staticCompositionLocalOf { error("CompositionLocal LocalResultStore not present") }
+
+@Composable
+fun rememberResultStore(): NavResultStore =
+    rememberSaveable(saver = ResultStoreSaver()) { NavResultStore() }
+
+private class ResultStoreSaver: Saver<NavResultStore, ArrayList<KeyValue>> {
+
+    override fun SaverScope.save(value: NavResultStore): ArrayList<KeyValue>? {
+        val storage = value.storage
+        if (storage.isEmpty()) {
+            return null
+        }
+        val saveable = ArrayList<KeyValue>(storage.size)
+        for (entry in storage) {
+            saveable.add(
+                KeyValue(
+                    key = entry.key,
+                    value = entry.value,
+                )
+            )
+        }
+        return saveable
+    }
+
+    override fun restore(value: ArrayList<KeyValue>): NavResultStore =
+        NavResultStore().apply {
+            for (saved in value) {
+                storage[saved.key] = saved.value
+            }
+        }
+}
+
+@Parcelize
+private class KeyValue(
+    val key: String,
+    val value: Parcelable,
+): Parcelable

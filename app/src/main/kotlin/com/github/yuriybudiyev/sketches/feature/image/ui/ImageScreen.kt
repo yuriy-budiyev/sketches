@@ -90,7 +90,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.navigation.LocalResultStore
+import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
@@ -118,9 +118,9 @@ fun ImageRoute(viewModel: ImageScreenViewModel) {
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.updateMediaAccess()
     }
-    val resultStoreUpdated by rememberUpdatedState(LocalResultStore.current)
+    val navResultStoreUpdated by rememberUpdatedState(LocalNavResultStore.current)
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
-        resultStoreUpdated.putResult(
+        navResultStoreUpdated.putNavResult(
             result = ImageScreenNavResult(
                 fileIndex = viewModel.currentFileIndex,
                 fileId = viewModel.currentFileId,
