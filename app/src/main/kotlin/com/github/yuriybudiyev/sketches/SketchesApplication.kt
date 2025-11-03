@@ -45,11 +45,13 @@ class SketchesApplication: Application(), SingletonImageLoader.Factory {
 
     @OptIn(ExperimentalComposeRuntimeApi::class)
     private fun enableComposeDiagnosticStackTraceForDebugBuilds() {
-        if (BuildConfig.DEBUG) {
-            Composer.setDiagnosticStackTraceMode(ComposeStackTraceMode.SourceInformation)
-        } else {
-            Composer.setDiagnosticStackTraceMode(ComposeStackTraceMode.GroupKeys)
-        }
+        Composer.setDiagnosticStackTraceMode(
+            if (BuildConfig.DEBUG) {
+                ComposeStackTraceMode.SourceInformation
+            } else {
+                ComposeStackTraceMode.GroupKeys
+            }
+        )
     }
 
     @Inject
