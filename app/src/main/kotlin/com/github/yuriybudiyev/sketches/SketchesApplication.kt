@@ -40,11 +40,11 @@ class SketchesApplication: Application(), SingletonImageLoader.Factory {
 
     override fun onCreate() {
         super.onCreate()
-        enableComposeDiagnosticStackTraceForDebugBuilds()
+        configureComposeDiagnosticStackTraceMode()
     }
 
     @OptIn(ExperimentalComposeRuntimeApi::class)
-    private fun enableComposeDiagnosticStackTraceForDebugBuilds() {
+    private fun configureComposeDiagnosticStackTraceMode() {
         Composer.setDiagnosticStackTraceMode(
             if (BuildConfig.DEBUG) {
                 ComposeStackTraceMode.SourceInformation
