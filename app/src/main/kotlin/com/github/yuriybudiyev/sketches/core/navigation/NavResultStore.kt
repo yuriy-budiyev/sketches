@@ -69,7 +69,7 @@ val LocalNavResultStore: ProvidableCompositionLocal<NavResultStore> =
     staticCompositionLocalOf { error("CompositionLocal LocalResultStore not present") }
 
 @Composable
-fun rememberResultStore(): NavResultStore =
+fun rememberNavResultStore(): NavResultStore =
     rememberSaveable(saver = ResultStoreSaver()) { NavResultStore() }
 
 private class ResultStoreSaver: Saver<NavResultStore, ArrayList<KeyValue>> {
