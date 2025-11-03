@@ -49,7 +49,7 @@ class NavResultStore {
             .map { storage -> storage[key] }
             .collect { value ->
                 if (value !== null) {
-                    if (storage[key] !== value) {
+                    if (storage[key] === value) {
                         storage.remove(key)
                     }
                     collector.emit(value as T)
