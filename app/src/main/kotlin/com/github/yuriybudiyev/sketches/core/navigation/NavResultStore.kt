@@ -58,6 +58,9 @@ class NavResultStore {
             }
     }
 
+    /**
+     * Do not use this directly.
+     */
     @PublishedApi
     internal val storage: SnapshotStateMap<String, Parcelable> = SnapshotStateMap()
 }
