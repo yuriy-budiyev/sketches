@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -59,7 +60,7 @@ import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 
 @Composable
 fun SketchesAsyncImage(
-    uri: String,
+    uri: Uri,
     contentDescription: String,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
@@ -130,7 +131,7 @@ fun SketchesAsyncImage(
 
 @Composable
 fun SketchesZoomableAsyncImage(
-    uri: String,
+    uri: Uri,
     contentDescription: String,
     modifier: Modifier = Modifier,
     onTap: (() -> Unit)? = null,

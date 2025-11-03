@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.data.model
 
+import android.net.Uri
 import androidx.compose.runtime.Immutable
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import java.time.LocalDateTime
@@ -35,5 +36,5 @@ data class MediaStoreFile(
     val dateAdded: LocalDateTime,
     val mediaType: MediaType,
     val mimeType: String,
-    val uri: String,
+    val uri: Uri,
 )

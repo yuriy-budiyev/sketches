@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
 import android.app.Activity
+import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -64,7 +65,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -120,7 +120,7 @@ fun BucketsScreen(
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
     onShareBuckets: (buckets: Collection<MediaStoreBucket>) -> Unit,
     onDeleteBuckets: (buckets: Collection<MediaStoreBucket>) -> Unit,
-    onDeleteMedia: (uris: Collection<String>) -> Unit,
+    onDeleteMedia: (uris: Collection<Uri>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val contextUpdated by rememberUpdatedState(LocalContext.current)
@@ -130,7 +130,7 @@ fun BucketsScreen(
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     var allBuckets by remember { mutableStateOf<List<MediaStoreBucket>>(emptyList()) }
     val selectedBuckets = rememberSaveable { SnapshotStateSet<Long>() }
-    val deleteDialogUris = rememberSaveable { SnapshotStateList<String>() }
+    val deleteDialogUris = rememberSaveable { SnapshotStateList<Uri>() }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->
@@ -182,7 +182,7 @@ fun BucketsScreen(
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             deleteRequestLauncher.launchDeleteMediaRequest(
                                 contextUpdated,
-                                action.files.map { file -> file.uri.toUri() },
+                                action.files.map { file -> file.uri },
                             )
                         } else {
                             if (deleteDialogUris.isNotEmpty()) {

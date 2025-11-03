@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.core.platform.share
 
 import android.net.Uri
-import androidx.core.net.toUri
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import java.util.EnumSet
@@ -46,7 +45,7 @@ fun Collection<MediaStoreFile>.toShareInfo(): ShareInfo {
     }
     if (size == 1) {
         val file = this.first()
-        uris.add(file.uri.toUri())
+        uris.add(file.uri)
         return ShareInfo(
             uris = uris,
             mimeType = file.mimeType,
@@ -54,7 +53,7 @@ fun Collection<MediaStoreFile>.toShareInfo(): ShareInfo {
     }
     val mediaTypes = EnumSet.noneOf(MediaType::class.java)
     for (file in this) {
-        uris.add(file.uri.toUri())
+        uris.add(file.uri)
         mediaTypes.add(file.mediaType)
     }
     return ShareInfo(

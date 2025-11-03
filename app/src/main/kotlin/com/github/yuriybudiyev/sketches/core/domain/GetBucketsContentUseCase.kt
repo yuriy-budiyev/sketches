@@ -34,5 +34,5 @@ import javax.inject.Inject
 class GetBucketsContentUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
     suspend operator fun invoke(buckets: Collection<MediaStoreBucket>): List<MediaStoreFile> =
-        repository.getBucketsContent(buckets)
+        buckets.flatMapTo(ArrayList(buckets.fold(0) { size, bucket -> size + bucket.size })) { bucket -> repository.getFiles(bucket.id) }
 }

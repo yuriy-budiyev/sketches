@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.consumable.Consumable
 import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
@@ -182,7 +183,7 @@ class BucketsScreenViewModel @Inject constructor(
 
     private var deleteMediaJob: Job? = null
 
-    fun deleteMedia(uris: Collection<String>) {
+    fun deleteMedia(uris: Collection<Uri>) {
         deleteMediaJob?.cancel()
         deleteMediaJob = viewModelScope.launch {
             try {

@@ -26,9 +26,9 @@ package com.github.yuriybudiyev.sketches.core.data.repository.implementation
 
 import android.content.ContentUris
 import android.content.Context
+import android.net.Uri
 import android.provider.MediaStore
 import androidx.core.database.getStringOrNull
-import androidx.core.net.toUri
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
@@ -94,13 +94,25 @@ class MediaStoreRepositoryImpl @Inject constructor(
                             .withAppendedId(
                                 contentUri,
                                 id,
-                            )
-                            .toString(),
+                            ),
                     ),
                 )
             }
             return files
         }
+    }
+
+    override suspend fun deleteContent(uris: Collection<Uri>): Boolean {
+        val contentResolver = context.contentResolver
+        var count = 0
+        for (uri in uris) {
+            count += contentResolver.delete(
+                uri,
+                null,
+                null,
+            )
+        }
+        return count > 0
     }
 
     override suspend fun getFiles(bucketId: Long?): List<MediaStoreFile> {
@@ -121,19 +133,6 @@ class MediaStoreRepositoryImpl @Inject constructor(
         files.addAll(videoFiles)
         files.sortByDescending { file -> file.dateAdded }
         return files
-    }
-
-    override suspend fun deleteContent(uris: Collection<String>): Boolean {
-        val contentResolver = context.contentResolver
-        var count = 0
-        for (uri in uris) {
-            count += contentResolver.delete(
-                uri.toUri(),
-                null,
-                null,
-            )
-        }
-        return count > 0
     }
 
     private fun collectBucketsInfo(
@@ -174,8 +173,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
                             .withAppendedId(
                                 contentUri,
                                 id
-                            )
-                            .toString(),
+                            ),
                         coverDateAdded = dateAdded,
                         size = 0
                     )
@@ -188,7 +186,6 @@ class MediaStoreRepositoryImpl @Inject constructor(
                             contentUri,
                             id,
                         )
-                        .toString()
                 }
             }
         }
@@ -218,14 +215,11 @@ class MediaStoreRepositoryImpl @Inject constructor(
         return buckets
     }
 
-    override suspend fun getBucketsContent(buckets: Collection<MediaStoreBucket>): List<MediaStoreFile> =
-        buckets.flatMapTo(ArrayList(buckets.fold(0) { size, bucket -> size + bucket.size })) { bucket -> getFiles(bucket.id) }
-
     private data class BucketInfo(
         val id: Long,
         val name: String,
         var size: Int,
-        var coverUri: String,
+        var coverUri: Uri,
         var coverDateAdded: LocalDateTime,
     )
 }

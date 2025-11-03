@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -84,7 +85,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
-import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -324,7 +324,7 @@ private fun ImageScreenLayout(
                             coroutineScope.launch {
                                 deleteRequestLauncher.launchDeleteMediaRequest(
                                     contextUpdated,
-                                    listOf(filesUpdated[currentIndex].uri.toUri()),
+                                    listOf(filesUpdated[currentIndex].uri),
                                 )
                             }
                         } else {
@@ -340,7 +340,7 @@ private fun ImageScreenLayout(
                         coroutineScope.launch {
                             val file = filesUpdated[currentIndex]
                             shareManagerUpdated.startChooserActivity(
-                                file.uri.toUri(),
+                                file.uri,
                                 file.mimeType,
                                 shareDescription,
                             )
@@ -409,7 +409,7 @@ private fun MediaPager(
 private fun MediaPage(
     state: PagerState,
     number: Int,
-    fileUri: String,
+    fileUri: Uri,
     fileType: MediaType,
     onPageTap: () -> Unit,
     controllerVisible: Boolean,
@@ -445,7 +445,7 @@ private fun MediaPage(
 @Composable
 @NonRestartableComposable
 private fun ImagePage(
-    fileUri: String,
+    fileUri: Uri,
     onPageTap: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -463,7 +463,7 @@ private fun ImagePage(
 private fun VideoPage(
     state: PagerState,
     number: Int,
-    fileUri: String,
+    fileUri: Uri,
     onPageTap: () -> Unit,
     controllerVisible: Boolean,
     controllerStartPadding: Dp,

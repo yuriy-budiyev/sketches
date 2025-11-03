@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.domain
 
+import android.net.Uri
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.Reusable
 import javax.inject.Inject
@@ -31,6 +32,6 @@ import javax.inject.Inject
 @Reusable
 class DeleteContentUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    suspend operator fun invoke(uris: Collection<String>): Boolean =
+    suspend operator fun invoke(uris: Collection<Uri>): Boolean =
         repository.deleteContent(uris)
 }

@@ -54,7 +54,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -258,7 +257,7 @@ fun BucketScreen(
                                     contextUpdated,
                                     allFiles
                                         .filterByIds(selectedFiles.toSet())
-                                        .map { file -> file.uri.toUri() },
+                                        .map { file -> file.uri },
                                 )
                             }
                         } else {
