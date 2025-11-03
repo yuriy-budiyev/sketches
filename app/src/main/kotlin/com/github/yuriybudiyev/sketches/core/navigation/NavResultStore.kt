@@ -33,7 +33,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.staticCompositionLocalOf
-import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 
@@ -43,7 +42,9 @@ class NavResultStore {
         storage[T::class.qualifiedName!!] = result
     }
 
-    suspend inline fun <reified T: Parcelable> collectNavResult(collector: FlowCollector<T>) {
+    suspend inline fun <reified T: Parcelable> collectNavResult(
+        crossinline onResult: suspend (result: T) -> Unit,
+    ) {
         val key = T::class.qualifiedName!!
         snapshotFlow { storage.toMap() }
             .map { storage -> storage[key] }
@@ -52,7 +53,7 @@ class NavResultStore {
                     if (storage[key] === value) {
                         storage.remove(key)
                     }
-                    collector.emit(value as T)
+                    onResult(value as T)
                 }
             }
     }
