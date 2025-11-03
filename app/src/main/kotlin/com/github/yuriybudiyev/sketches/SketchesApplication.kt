@@ -47,6 +47,8 @@ class SketchesApplication: Application(), SingletonImageLoader.Factory {
     private fun enableComposeDiagnosticStackTraceForDebugBuilds() {
         if (BuildConfig.DEBUG) {
             Composer.setDiagnosticStackTraceMode(ComposeStackTraceMode.SourceInformation)
+        } else {
+            Composer.setDiagnosticStackTraceMode(ComposeStackTraceMode.GroupKeys)
         }
     }
 
