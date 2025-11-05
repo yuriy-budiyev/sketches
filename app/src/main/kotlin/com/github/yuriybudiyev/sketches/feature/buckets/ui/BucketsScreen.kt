@@ -338,6 +338,7 @@ private fun BucketsScreenLayout(
             val bucketSelectedOnComposition = selectedBucketsUpdated.contains(bucket.id)
             Column(
                 modifier = Modifier
+                    .clip(shape = MaterialTheme.shapes.extraSmall)
                     .combinedClickable(
                         onLongClick = {
                             if (selectedBucketsUpdated.isEmpty()) {
@@ -364,8 +365,7 @@ private fun BucketsScreenLayout(
                                 )
                             }
                         },
-                    )
-                    .clip(shape = MaterialTheme.shapes.extraSmall),
+                    ),
             ) {
                 Box(
                     modifier = Modifier
