@@ -159,7 +159,7 @@ fun SketchesApp() {
                                             } else {
                                                 route.unselectedIcon
                                             },
-                                            contentDescription = stringResource(route.titleRes)
+                                            contentDescription = stringResource(route.titleRes),
                                         )
                                     },
                                 )
@@ -176,7 +176,7 @@ fun SketchesApp() {
                                 .height(
                                     WindowInsets.navigationBars
                                         .asPaddingValues()
-                                        .calculateBottomPadding()
+                                        .calculateBottomPadding(),
                                 ),
                         ) {
                             Box(
@@ -186,7 +186,7 @@ fun SketchesApp() {
                                             .copy(alpha = SketchesColors.UiAlphaLowTransparency),
                                         RectangleShape
                                     )
-                                    .fillMaxSize()
+                                    .fillMaxSize(),
                             )
                         }
                     }
@@ -213,15 +213,18 @@ fun SketchesApp() {
                             .padding(horizontal = 16.dp),
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    SketchesOutlinedButton(text = stringResource(R.string.open_settings)) {
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        intent.data = Uri.fromParts(
-                            "package",
-                            appContextUpdated.packageName,
-                            null,
-                        )
-                        settingsLauncher.launch(intent)
-                    }
+                    SketchesOutlinedButton(
+                        text = stringResource(R.string.open_settings),
+                        onClick = {
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intent.data = Uri.fromParts(
+                                "package",
+                                appContextUpdated.packageName,
+                                null,
+                            )
+                            settingsLauncher.launch(intent)
+                        },
+                    )
                 }
                 LaunchedEffect(Unit) {
                     mediaAccessLauncher.requestMediaAccess()
