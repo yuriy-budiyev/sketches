@@ -25,9 +25,9 @@
 package com.github.yuriybudiyev.sketches.feature.bucket.navigation
 
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
-import kotlinx.serialization.Serializable
+import kotlinx.parcelize.Parcelize
 
-@Serializable
+@Parcelize
 data class BucketNavRoute(
     val bucketId: Long,
     val bucketName: String,

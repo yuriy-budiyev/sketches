@@ -29,19 +29,19 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.TopLevelNavRoute
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 
-@Serializable
+@Parcelize
 data object BucketsNavRoute: TopLevelNavRoute {
 
-    @Transient
     @get:StringRes
+    @IgnoredOnParcel
     override val titleRes: Int = R.string.buckets
 
-    @Transient
+    @IgnoredOnParcel
     override val selectedIcon: ImageVector = SketchesIcons.BucketsSelected
 
-    @Transient
+    @IgnoredOnParcel
     override val unselectedIcon: ImageVector = SketchesIcons.BucketsUnselected
 }

@@ -30,21 +30,20 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.TopLevelNavRoute
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
-@Serializable
+@Parcelize
 data object ImagesNavRoute: TopLevelNavRoute {
 
-    @Transient
     @get:StringRes
+    @IgnoredOnParcel
     override val titleRes: Int = R.string.images
 
-    @Transient
+    @IgnoredOnParcel
     override val selectedIcon: ImageVector = SketchesIcons.ImagesSelected
 
-    @Transient
+    @IgnoredOnParcel
     override val unselectedIcon: ImageVector = SketchesIcons.ImagesUnselected
 }
 

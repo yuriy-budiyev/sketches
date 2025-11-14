@@ -24,6 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.navigation
 
-import androidx.navigation3.runtime.NavKey
+import android.os.Parcelable
 
-interface NavRoute: NavKey
+interface NavRoute: Parcelable

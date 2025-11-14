@@ -68,7 +68,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
-import androidx.navigation3.runtime.rememberNavBackStack
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.TopLevelNavRoute
@@ -84,6 +83,7 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavDisplay
+import com.github.yuriybudiyev.sketches.main.navigation.rememberNavBackStack
 
 @Composable
 fun SketchesApp() {
