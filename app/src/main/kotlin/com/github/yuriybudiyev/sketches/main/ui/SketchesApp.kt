@@ -69,7 +69,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.TopLevelNavRoute
-import com.github.yuriybudiyev.sketches.core.navigation.drainTo
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
@@ -142,15 +141,11 @@ fun SketchesApp() {
                                         indicatorColor = MaterialTheme.colorScheme.primary,
                                     ),
                                     onClick = {
-                                        val currentTopRoute = navBackStack.last()
-                                        val rootRoute = topLevelRoutes.first()
-                                        if (route::class != currentTopRoute::class) {
-                                            if (route::class == rootRoute::class) {
-                                                navBackStack.drainTo(route::class)
-                                            } else {
-                                                navBackStack.add(route)
-                                            }
+                                        val index = navBackStack.indexOf(route)
+                                        if (index != -1) {
+                                            navBackStack.removeAt(index)
                                         }
+                                        navBackStack.add(route)
                                     },
                                     icon = {
                                         Icon(
