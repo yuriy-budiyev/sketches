@@ -53,6 +53,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,8 +68,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.navigation3.runtime.rememberNavBackStack
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.TopLevelNavRoute
+import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
@@ -80,7 +84,6 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavDisplay
-import com.github.yuriybudiyev.sketches.main.navigation.rememberSketchesNavBackStack
 
 @Composable
 fun SketchesApp() {
@@ -107,16 +110,28 @@ fun SketchesApp() {
                             BucketsNavRoute,
                         )
                     }
-                    val navBackStack = rememberSketchesNavBackStack(topLevelRoutes.first())
-                    SketchesNavDisplay(
-                        backStack = navBackStack,
-                        modifier = Modifier.matchParentSize(),
-                        onRequestUserSelectedMedia = if (mediaAccess == MediaAccess.UserSelected) {
-                            { mediaAccessLauncher.requestMediaAccess() }
-                        } else {
-                            null
-                        },
-                    )
+                    val navBackStack = rememberNavBackStack(topLevelRoutes.first())
+                    val navResultStore = rememberNavResultStore()
+                    CompositionLocalProvider(LocalNavResultStore.provides(navResultStore)) {
+                        SketchesNavDisplay(
+                            backStack = navBackStack,
+                            modifier = Modifier.matchParentSize(),
+                            onBack = {
+                                if (navBackStack.isNotEmpty()) {
+                                    if (navBackStack.last() == topLevelRoutes.first()) {
+                                        navBackStack.clear()
+                                    } else {
+                                        navBackStack.removeLastOrNull()
+                                    }
+                                }
+                            },
+                            onRequestUserSelectedMedia = if (mediaAccess == MediaAccess.UserSelected) {
+                                { mediaAccessLauncher.requestMediaAccess() }
+                            } else {
+                                null
+                            },
+                        )
+                    }
                     val topRoute = navBackStack.last()
                     if (topRoute is TopLevelNavRoute) {
                         val bottomSystemBarHeight = WindowInsets.systemBars

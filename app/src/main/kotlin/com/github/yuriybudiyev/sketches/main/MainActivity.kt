@@ -48,8 +48,6 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
-import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
-import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.bars.SystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
@@ -115,7 +113,6 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
             CompositionLocalProvider(
                 LocalSystemBarsController.provides(this),
                 LocalShareManager.provides(this),
-                LocalNavResultStore.provides(rememberNavResultStore()),
             ) {
                 SketchesTheme {
                     SketchesApp()

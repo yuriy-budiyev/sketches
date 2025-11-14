@@ -29,17 +29,14 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
-import androidx.compose.runtime.saveable.rememberSerializable
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
-import androidx.navigation3.runtime.serialization.NavBackStackSerializer
-import androidx.navigation3.runtime.serialization.NavKeySerializer
 import androidx.navigation3.ui.NavDisplay
-import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketScreenViewModel
@@ -54,13 +51,15 @@ import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
 @Composable
 @NonRestartableComposable
 fun SketchesNavDisplay(
-    backStack: NavBackStack<NavRoute>,
+    backStack: NavBackStack<NavKey>,
     modifier: Modifier = Modifier,
+    onBack: () -> Unit = { backStack.removeLastOrNull() },
     onRequestUserSelectedMedia: (() -> Unit)? = null,
 ) {
     NavDisplay(
         backStack = backStack,
         modifier = modifier,
+        onBack = onBack,
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator(),
@@ -141,11 +140,3 @@ fun SketchesNavDisplay(
         }
     )
 }
-
-@Composable
-fun rememberSketchesNavBackStack(root: NavRoute): NavBackStack<NavRoute> =
-    rememberSerializable(
-        serializer = NavBackStackSerializer(NavKeySerializer()),
-    ) {
-        NavBackStack(root)
-    }
