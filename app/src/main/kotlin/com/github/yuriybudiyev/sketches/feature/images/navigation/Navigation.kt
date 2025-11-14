@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.feature.images.navigation
 
-import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.github.yuriybudiyev.sketches.R
@@ -46,9 +45,3 @@ data object ImagesNavRoute: TopLevelNavRoute {
     @IgnoredOnParcel
     override val unselectedIcon: ImageVector = SketchesIcons.ImagesUnselected
 }
-
-@Parcelize
-data class ImageScreenNavResult(
-    val fileIndex: Int,
-    val fileId: Long,
-): Parcelable

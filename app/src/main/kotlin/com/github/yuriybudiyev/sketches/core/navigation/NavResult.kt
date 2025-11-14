@@ -36,13 +36,15 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 
+interface NavResult: Parcelable
+
 class NavResultStore {
 
-    inline fun <reified T: Parcelable> putNavResult(result: T) {
+    inline fun <reified T: NavResult> putNavResult(result: T) {
         storage[T::class.qualifiedName!!] = result
     }
 
-    suspend inline fun <reified T: Parcelable> collectNavResult(
+    suspend inline fun <reified T: NavResult> collectNavResult(
         crossinline onResult: suspend (result: T) -> Unit,
     ) {
         val key = T::class.qualifiedName!!

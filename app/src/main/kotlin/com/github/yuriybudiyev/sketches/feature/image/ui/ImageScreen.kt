@@ -109,7 +109,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.mediaplayer.rememberS
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemCentered
-import com.github.yuriybudiyev.sketches.feature.images.navigation.ImageScreenNavResult
+import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
 
 @Composable

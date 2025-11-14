@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.navigation
 
+import com.github.yuriybudiyev.sketches.core.navigation.NavResult
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import kotlinx.parcelize.Parcelize
 
@@ -33,3 +34,9 @@ data class ImageNavRoute(
     val imageId: Long,
     val bucketId: Long?,
 ): NavRoute
+
+@Parcelize
+data class ImageScreenNavResult(
+    val fileIndex: Int,
+    val fileId: Long,
+): NavResult
