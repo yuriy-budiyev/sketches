@@ -148,7 +148,7 @@ fun SketchesApp() {
                                     ),
                                     onClick = {
                                         if (route != topRoute) {
-                                            navBackStack.clear()
+                                            navBackStack.remove(route)
                                             navBackStack.add(route)
                                         }
                                     },

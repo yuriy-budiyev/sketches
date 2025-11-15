@@ -35,8 +35,14 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberDecoratedNavEntries
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.scene.SceneInfo
+import androidx.navigation3.scene.SinglePaneSceneStrategy
+import androidx.navigation3.scene.rememberSceneState
 import androidx.navigation3.ui.NavDisplay
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
@@ -54,38 +60,14 @@ import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
 fun SketchesNavDisplay(
     backStack: SnapshotStateList<NavRoute>,
     modifier: Modifier = Modifier,
-    onBack: () -> Unit = { backStack.removeLastOrNull() },
     onRequestUserSelectedMedia: (() -> Unit)? = null,
 ) {
-    NavDisplay(
+    val navEntries = rememberDecoratedNavEntries(
         backStack = backStack,
-        modifier = modifier,
-        onBack = onBack,
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator(),
         ),
-        transitionSpec = {
-            ContentTransform(
-                fadeIn(),
-                fadeOut(),
-                sizeTransform = null,
-            )
-        },
-        popTransitionSpec = {
-            ContentTransform(
-                fadeIn(),
-                fadeOut(),
-                sizeTransform = null,
-            )
-        },
-        predictivePopTransitionSpec = {
-            ContentTransform(
-                fadeIn(),
-                fadeOut(),
-                sizeTransform = null,
-            )
-        },
         entryProvider = entryProvider {
             entry<ImagesNavRoute> {
                 ImagesRoute(
@@ -138,7 +120,58 @@ fun SketchesNavDisplay(
                     ),
                 )
             }
-        }
+        },
+    )
+    val sceneState = rememberSceneState(
+        entries = navEntries,
+        sceneStrategy = SinglePaneSceneStrategy(),
+        onBack = { },
+    )
+    val scene = sceneState.currentScene
+    // Predictive Back Handling
+    val currentInfo = SceneInfo(scene)
+    val previousSceneInfos = sceneState.previousScenes.map { SceneInfo(it) }
+    val gestureState = rememberNavigationEventState(
+        currentInfo = currentInfo,
+        backInfo = previousSceneInfos,
+    )
+    NavigationBackHandler(
+        state = gestureState,
+        isBackEnabled = scene.previousEntries.isNotEmpty(),
+        onBackCompleted = {
+            // If `enabled` becomes stale (e.g., it was set to false but a gesture was
+            // dispatched in the same frame), this may result in no entries being popped
+            // due to entries.size being smaller than scene.previousEntries.size
+            // but that's preferable to crashing with an IndexOutOfBoundsException
+            backStack.removeLastOrNull() //TODO
+            //repeat(navEntries.size - scene.previousEntries.size) { onBack() }
+        },
+    )
+    NavDisplay(
+        sceneState,
+        gestureState,
+        modifier,
+        transitionSpec = {
+            ContentTransform(
+                fadeIn(),
+                fadeOut(),
+                sizeTransform = null,
+            )
+        },
+        popTransitionSpec = {
+            ContentTransform(
+                fadeIn(),
+                fadeOut(),
+                sizeTransform = null,
+            )
+        },
+        predictivePopTransitionSpec = {
+            ContentTransform(
+                fadeIn(),
+                fadeOut(),
+                sizeTransform = null,
+            )
+        },
     )
 }
 
