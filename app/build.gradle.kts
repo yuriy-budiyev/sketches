@@ -23,8 +23,8 @@ android {
         applicationId = "com.github.yuriybudiyev.sketches"
         minSdk = 26
         targetSdk = 36
-        versionCode = 13
-        versionName = "1.0.12"
+        versionCode = 14
+        versionName = "1.0.13"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -105,6 +105,7 @@ dependencies {
     implementation(libs.bundles.coil)
     implementation(libs.guava)
     implementation(libs.okio)
+    ksp(libs.kotlin.metadata.jvm)
     ksp(libs.bundles.hilt.compiler)
     debugImplementation(libs.bundles.androidx.compose.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
