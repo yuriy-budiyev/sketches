@@ -28,6 +28,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -88,6 +89,7 @@ import com.github.yuriybudiyev.sketches.main.navigation.rememberNavBackStack
 @Composable
 fun SketchesApp() {
     val appContextUpdated by rememberUpdatedState(LocalContext.current.applicationContext)
+    val activityUpdated by rememberUpdatedState(LocalActivity.current)
     val systemBarsControllerUpdated by rememberUpdatedState(LocalSystemBarsController.current)
     var mediaAccess by remember { mutableStateOf(appContextUpdated.checkMediaAccess()) }
     val mediaAccessLauncher = rememberMediaAccessRequestLauncher { result ->
@@ -119,7 +121,7 @@ fun SketchesApp() {
                             onBack = {
                                 if (navBackStack.isNotEmpty()) {
                                     if (navBackStack.last() == topLevelRoutes.first()) {
-                                        navBackStack.clear()
+                                        activityUpdated?.finish()
                                     } else {
                                         navBackStack.removeLastOrNull()
                                     }
@@ -156,10 +158,7 @@ fun SketchesApp() {
                                         indicatorColor = MaterialTheme.colorScheme.primary,
                                     ),
                                     onClick = {
-                                        val index = navBackStack.indexOf(route)
-                                        if (index != -1) {
-                                            navBackStack.removeAt(index)
-                                        }
+                                        navBackStack.remove(route)
                                         navBackStack.add(route)
                                     },
                                     icon = {
