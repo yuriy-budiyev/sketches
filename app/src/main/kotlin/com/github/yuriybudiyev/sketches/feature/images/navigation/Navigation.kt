@@ -27,13 +27,13 @@ package com.github.yuriybudiyev.sketches.feature.images.navigation
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.navigation.TopLevelNavRoute
+import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data object ImagesNavRoute: TopLevelNavRoute {
+data object ImagesNavRoute: RootNavRoute {
 
     @get:StringRes
     @IgnoredOnParcel

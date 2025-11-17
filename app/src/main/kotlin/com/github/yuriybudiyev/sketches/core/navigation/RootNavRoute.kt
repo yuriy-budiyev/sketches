@@ -27,7 +27,7 @@ package com.github.yuriybudiyev.sketches.core.navigation
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 
-interface TopLevelNavRoute: NavRoute {
+interface RootNavRoute: NavRoute {
 
     @get:StringRes
     val titleRes: Int

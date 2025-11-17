@@ -24,15 +24,28 @@
 
 package com.github.yuriybudiyev.sketches.main.navigation
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.Lifecycle
@@ -62,8 +75,11 @@ import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.compose.LocalSavedStateRegistryOwner
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
-import com.github.yuriybudiyev.sketches.core.navigation.TopLevelNavRoute
+import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
+import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
+import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketScreenViewModel
@@ -95,7 +111,7 @@ fun SketchesNavRoot(
     val saveableStateNavEntryDecorator = remember {
         NavEntryDecorator<NavRoute>(
             onPop = { contentKey ->
-                if (contentKey !is TopLevelNavRoute) {
+                if (contentKey !is RootNavRoute) {
                     saveableStateHolder.removeState(contentKey)
                 }
             },
@@ -115,7 +131,7 @@ fun SketchesNavRoot(
         val navEntryViewModel = navEntryViewModelProvider[NavEntryViewModel::class]
         return@remember NavEntryDecorator<NavRoute>(
             onPop = ({ contentKey ->
-                if (contentKey !is TopLevelNavRoute) {
+                if (contentKey !is RootNavRoute) {
                     navEntryViewModel.clearViewModelStore(contentKey)
                 }
             }),
@@ -147,7 +163,9 @@ fun SketchesNavRoot(
                         }
                     }
                 }
-                CompositionLocalProvider(LocalViewModelStoreOwner provides childViewModelStoreOwner) {
+                CompositionLocalProvider(
+                    LocalViewModelStoreOwner.provides(childViewModelStoreOwner)
+                ) {
                     navEntry.Content()
                 }
             },
@@ -213,10 +231,11 @@ fun SketchesNavRoot(
             }
         },
     )
+    val popBackNavStack = remember<() -> Unit> { { navBackStack.removeLastOrNull() } }
     val sceneState = rememberSceneState(
         entries = navEntries,
         sceneStrategy = SinglePaneSceneStrategy(),
-        onBack = { }, //TODO
+        onBack = popBackNavStack,
     )
     val scene = sceneState.currentScene
     val currentInfo = SceneInfo(scene)
@@ -229,37 +248,86 @@ fun SketchesNavRoot(
         state = gestureState,
         isBackEnabled = scene.previousEntries.isNotEmpty(),
         onBackCompleted = {
-            repeat(navEntries.size - scene.previousEntries.size) { } //TODO
+            repeat(navEntries.size - scene.previousEntries.size) { popBackNavStack() }
         },
     )
     val navResultStore = rememberNavResultStore()
-    CompositionLocalProvider(LocalNavResultStore.provides(navResultStore)) {
-        NavDisplay(
-            sceneState,
-            gestureState,
-            modifier,
-            transitionSpec = {
-                ContentTransform(
-                    fadeIn(),
-                    fadeOut(),
-                    sizeTransform = null,
+    Box(modifier = modifier) {
+        CompositionLocalProvider(LocalNavResultStore.provides(navResultStore)) {
+            NavDisplay(
+                sceneState = sceneState,
+                navigationEventState = gestureState,
+                modifier = Modifier.matchParentSize(),
+                transitionSpec = {
+                    ContentTransform(
+                        fadeIn(),
+                        fadeOut(),
+                        sizeTransform = null,
+                    )
+                },
+                popTransitionSpec = {
+                    ContentTransform(
+                        fadeIn(),
+                        fadeOut(),
+                        sizeTransform = null,
+                    )
+                },
+                predictivePopTransitionSpec = {
+                    ContentTransform(
+                        fadeIn(),
+                        fadeOut(),
+                        sizeTransform = null,
+                    )
+                },
+            )
+        }
+        val topRoute = navBackStack.lastOrNull()
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .fillMaxWidth()
+        ) {
+            AnimatedVisibility(
+                visible = topRoute is RootNavRoute,
+                enter = fadeIn(),
+                exit = fadeOut(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(SketchesDimens.Material3AppBarHeight),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .background(
+                            MaterialTheme.colorScheme.background
+                                .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                            RectangleShape
+                        )
+                        .fillMaxSize(),
                 )
-            },
-            popTransitionSpec = {
-                ContentTransform(
-                    fadeIn(),
-                    fadeOut(),
-                    sizeTransform = null,
+            }
+            AnimatedVisibility(
+                visible = LocalSystemBarsController.current.isSystemBarsVisible,
+                enter = fadeIn(),
+                exit = fadeOut(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(
+                        WindowInsets.navigationBars
+                            .asPaddingValues()
+                            .calculateBottomPadding(),
+                    ),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .background(
+                            MaterialTheme.colorScheme.background
+                                .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                            RectangleShape
+                        )
+                        .fillMaxSize(),
                 )
-            },
-            predictivePopTransitionSpec = {
-                ContentTransform(
-                    fadeIn(),
-                    fadeOut(),
-                    sizeTransform = null,
-                )
-            },
-        )
+            }
+        }
     }
 }
 
