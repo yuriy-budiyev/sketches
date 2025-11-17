@@ -26,6 +26,7 @@ package com.github.yuriybudiyev.sketches.main.navigation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -289,15 +290,15 @@ fun SketchesNavRoot(
                 },
             )
         }
-        val topRoute = navBackStack.lastOrNull()
+        val topRoute = navBackStack.lastOrNull() //TODO
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .fillMaxWidth()
         ) {
             AnimatedVisibility(
-                visible = topRoute is RootNavRoute,
-                enter = fadeIn(),
+                visible = topRoute is RootNavRoute, //TODO
+                enter = EnterTransition.None,
                 exit = fadeOut(),
                 modifier = Modifier
                     .fillMaxWidth()
