@@ -111,9 +111,10 @@ fun SketchesNavRoot(
             BucketsNavRoute,
         )
     }
+    val initialRoute = rootRoutes.first()
     val navBackStack = rememberSaveable {
         SnapshotStateList<NavRoute>().apply {
-            add(rootRoutes.first())
+            add(initialRoute)
         }
     }
     val saveableStateHolder = rememberSaveableStateHolder()
@@ -325,7 +326,9 @@ fun SketchesNavRoot(
                             ),
                             onClick = {
                                 if (route != topRoute) {
-                                    navBackStack.clear()
+                                    if (route == initialRoute) {
+                                        navBackStack.clear()
+                                    }
                                     navBackStack.add(route)
                                 }
                             },
