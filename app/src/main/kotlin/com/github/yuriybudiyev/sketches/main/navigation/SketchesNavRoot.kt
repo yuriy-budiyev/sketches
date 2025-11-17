@@ -29,23 +29,30 @@ import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.Lifecycle
@@ -62,6 +69,7 @@ import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberDecoratedNavEntries
@@ -102,7 +110,7 @@ fun SketchesNavRoot(
             BucketsNavRoute,
         )
     }
-    val navBackStack = remember {
+    val navBackStack = rememberSaveable {
         SnapshotStateList<NavRoute>().apply {
             add(rootRoutes.first())
         }
@@ -178,7 +186,7 @@ fun SketchesNavRoot(
             viewModelStoreNavEntryDecorator,
         ),
         entryProvider = entryProvider {
-            entry<ImagesNavRoute> {
+            navRouteEntry<ImagesNavRoute> {
                 ImagesRoute(
                     viewModel = hiltViewModel(),
                     onImageClick = { index, file ->
@@ -193,7 +201,7 @@ fun SketchesNavRoot(
                     onRequestUserSelectedMedia = onRequestUserSelectedMedia,
                 )
             }
-            entry<BucketsNavRoute> {
+            navRouteEntry<BucketsNavRoute> {
                 BucketsRoute(
                     viewModel = hiltViewModel(),
                     onBucketClick = { _, bucket ->
@@ -206,7 +214,7 @@ fun SketchesNavRoot(
                     }
                 )
             }
-            entry<BucketNavRoute> { route ->
+            navRouteEntry<BucketNavRoute> { route ->
                 BucketRoute(
                     viewModel = hiltViewModel<BucketScreenViewModel, BucketScreenViewModel.Factory>(
                         creationCallback = { factory -> factory.create(route) }
@@ -222,7 +230,7 @@ fun SketchesNavRoot(
                     }
                 )
             }
-            entry<ImageNavRoute> { route ->
+            navRouteEntry<ImageNavRoute> { route ->
                 ImageRoute(
                     viewModel = hiltViewModel<ImageScreenViewModel, ImageScreenViewModel.Factory>(
                         creationCallback = { factory -> factory.create(route) }
@@ -295,7 +303,7 @@ fun SketchesNavRoot(
                     .fillMaxWidth()
                     .height(SketchesDimens.Material3AppBarHeight),
             ) {
-                Box(
+                Row(
                     modifier = Modifier
                         .background(
                             MaterialTheme.colorScheme.background
@@ -303,7 +311,36 @@ fun SketchesNavRoot(
                             RectangleShape
                         )
                         .fillMaxSize(),
-                )
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                ) {
+                    for (route in rootRoutes) {
+                        val selected = route == topRoute
+                        NavigationBarItem(
+                            selected = selected,
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                                unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+                                indicatorColor = MaterialTheme.colorScheme.primary,
+                            ),
+                            onClick = {
+                                if (route != topRoute) {
+                                    navBackStack.clear()
+                                    navBackStack.add(route)
+                                }
+                            },
+                            icon = {
+                                Icon(
+                                    imageVector = if (selected) {
+                                        route.selectedIcon
+                                    } else {
+                                        route.unselectedIcon
+                                    },
+                                    contentDescription = stringResource(route.titleRes),
+                                )
+                            },
+                        )
+                    }
+                }
             }
             AnimatedVisibility(
                 visible = LocalSystemBarsController.current.isSystemBarsVisible,
@@ -347,4 +384,14 @@ private class NavEntryViewModel: ViewModel() {
     }
 
     private val viewModelStores: LinkedHashMap<Any, ViewModelStore> = LinkedHashMap()
+}
+
+private inline fun <reified T: NavRoute> EntryProviderScope<NavRoute>.navRouteEntry(
+    noinline content: @Composable (T) -> Unit,
+) {
+    addEntryProvider(
+        clazz = T::class,
+        clazzContentKey = { navRoute -> navRoute },
+        content = content
+    )
 }
