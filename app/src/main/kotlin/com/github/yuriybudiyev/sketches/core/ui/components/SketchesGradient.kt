@@ -22,23 +22,37 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.dimens
+package com.github.yuriybudiyev.sketches.core.ui.components
 
-import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 
-object SketchesDimens {
-
-    val Material3AppBarHeight = 64.dp
-    val BottomBarHeight = Material3AppBarHeight
-    val LazyGridOverlayTop = Material3AppBarHeight
-    val LazyGridOverlayBottom = BottomBarHeight
-    val LazyGridItemSize = 104.dp
-    val LazyGridItemSpacing = 4.dp
-    val MediaGridVideoIconPadding = 4.dp
-    val AsyncImageStateIconSize = 48.dp
-    val MediaBarItemSize = 56.dp
-    val MediaItemBorderThickness = 1.dp
-    val MediaBarItemSpacing = 4.dp
-    val MediaBarVideoIconPadding = 2.dp
-    val GradientHeight = Material3AppBarHeight / 2
+@Composable
+@NonRestartableComposable
+fun SketchesGradient(
+    topColor: Color,
+    bottomColor: Color,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(SketchesDimens.GradientHeight)
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        topColor,
+                        bottomColor
+                    ),
+                )
+            )
+    )
 }
