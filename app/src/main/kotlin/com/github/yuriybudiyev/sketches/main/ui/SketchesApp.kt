@@ -65,7 +65,6 @@ import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavRoot
 @Composable
 fun SketchesApp() {
     val appContextUpdated by rememberUpdatedState(LocalContext.current.applicationContext)
-    val systemBarsControllerUpdated by rememberUpdatedState(LocalSystemBarsController.current)
     var mediaAccess by remember { mutableStateOf(appContextUpdated.checkMediaAccess()) }
     val mediaAccessLauncher = rememberMediaAccessRequestLauncher { result ->
         mediaAccess = result
