@@ -117,6 +117,61 @@ fun SketchesNavRoot(
             add(initialRoute)
         }
     }
+    val navEntryProvider = remember {
+        entryProvider {
+            navRouteEntry<ImagesNavRoute> {
+                ImagesRoute(
+                    viewModel = hiltViewModel(),
+                    onImageClick = { index, file ->
+                        navBackStack.add(
+                            ImageNavRoute(
+                                imageIndex = index,
+                                imageId = file.id,
+                                bucketId = null
+                            )
+                        )
+                    },
+                    onRequestUserSelectedMedia = onRequestUserSelectedMedia,
+                )
+            }
+            navRouteEntry<BucketsNavRoute> {
+                BucketsRoute(
+                    viewModel = hiltViewModel(),
+                    onBucketClick = { _, bucket ->
+                        navBackStack.add(
+                            BucketNavRoute(
+                                bucketId = bucket.id,
+                                bucketName = bucket.name,
+                            )
+                        )
+                    }
+                )
+            }
+            navRouteEntry<BucketNavRoute> { route ->
+                BucketRoute(
+                    viewModel = hiltViewModel<BucketScreenViewModel, BucketScreenViewModel.Factory>(
+                        creationCallback = { factory -> factory.create(route) }
+                    ),
+                    onImageClick = { index, file ->
+                        navBackStack.add(
+                            ImageNavRoute(
+                                imageIndex = index,
+                                imageId = file.id,
+                                bucketId = file.bucketId
+                            )
+                        )
+                    }
+                )
+            }
+            navRouteEntry<ImageNavRoute> { route ->
+                ImageRoute(
+                    viewModel = hiltViewModel<ImageScreenViewModel, ImageScreenViewModel.Factory>(
+                        creationCallback = { factory -> factory.create(route) }
+                    ),
+                )
+            }
+        }
+    }
     val saveableStateHolder = rememberSaveableStateHolder()
     val saveableStateNavEntryDecorator = remember {
         NavEntryDecorator<NavRoute>(
@@ -187,59 +242,7 @@ fun SketchesNavRoot(
             saveableStateNavEntryDecorator,
             viewModelStoreNavEntryDecorator,
         ),
-        entryProvider = entryProvider {
-            navRouteEntry<ImagesNavRoute> {
-                ImagesRoute(
-                    viewModel = hiltViewModel(),
-                    onImageClick = { index, file ->
-                        navBackStack.add(
-                            ImageNavRoute(
-                                imageIndex = index,
-                                imageId = file.id,
-                                bucketId = null
-                            )
-                        )
-                    },
-                    onRequestUserSelectedMedia = onRequestUserSelectedMedia,
-                )
-            }
-            navRouteEntry<BucketsNavRoute> {
-                BucketsRoute(
-                    viewModel = hiltViewModel(),
-                    onBucketClick = { _, bucket ->
-                        navBackStack.add(
-                            BucketNavRoute(
-                                bucketId = bucket.id,
-                                bucketName = bucket.name,
-                            )
-                        )
-                    }
-                )
-            }
-            navRouteEntry<BucketNavRoute> { route ->
-                BucketRoute(
-                    viewModel = hiltViewModel<BucketScreenViewModel, BucketScreenViewModel.Factory>(
-                        creationCallback = { factory -> factory.create(route) }
-                    ),
-                    onImageClick = { index, file ->
-                        navBackStack.add(
-                            ImageNavRoute(
-                                imageIndex = index,
-                                imageId = file.id,
-                                bucketId = file.bucketId
-                            )
-                        )
-                    }
-                )
-            }
-            navRouteEntry<ImageNavRoute> { route ->
-                ImageRoute(
-                    viewModel = hiltViewModel<ImageScreenViewModel, ImageScreenViewModel.Factory>(
-                        creationCallback = { factory -> factory.create(route) }
-                    ),
-                )
-            }
-        },
+        entryProvider = navEntryProvider,
     )
     val popBackNavStack = remember<() -> Unit> { { navBackStack.removeLastOrNull() } }
     val sceneState = rememberSceneState(
@@ -247,18 +250,18 @@ fun SketchesNavRoot(
         sceneStrategy = SinglePaneSceneStrategy(),
         onBack = popBackNavStack,
     )
-    val scene = sceneState.currentScene
-    val currentInfo = SceneInfo(scene)
-    val previousSceneInfos = sceneState.previousScenes.map { SceneInfo(it) }
-    val gestureState = rememberNavigationEventState(
+    val currentScene = sceneState.currentScene
+    val currentInfo = SceneInfo(currentScene)
+    val previousSceneInfos = sceneState.previousScenes.map { scene -> SceneInfo(scene) }
+    val navEventState = rememberNavigationEventState(
         currentInfo = currentInfo,
         backInfo = previousSceneInfos,
     )
     NavigationBackHandler(
-        state = gestureState,
-        isBackEnabled = scene.previousEntries.isNotEmpty(),
+        state = navEventState,
+        isBackEnabled = currentScene.previousEntries.isNotEmpty(),
         onBackCompleted = {
-            repeat(navEntries.size - scene.previousEntries.size) { popBackNavStack() }
+            repeat(navEntries.size - currentScene.previousEntries.size) { popBackNavStack() }
         },
     )
     val navResultStore = rememberNavResultStore()
@@ -266,7 +269,7 @@ fun SketchesNavRoot(
         CompositionLocalProvider(LocalNavResultStore.provides(navResultStore)) {
             NavDisplay(
                 sceneState = sceneState,
-                navigationEventState = gestureState,
+                navigationEventState = navEventState,
                 modifier = Modifier.matchParentSize(),
                 transitionSpec = {
                     ContentTransform(
@@ -396,6 +399,6 @@ private inline fun <reified T: NavRoute> EntryProviderScope<NavRoute>.navRouteEn
     addEntryProvider(
         clazz = T::class,
         clazzContentKey = { navRoute -> navRoute },
-        content = content
+        content = content,
     )
 }
