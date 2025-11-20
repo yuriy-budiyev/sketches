@@ -54,7 +54,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.rememberMediaAccessRequestLauncher
@@ -81,100 +80,12 @@ fun SketchesApp() {
             MediaAccess.Full, MediaAccess.UserSelected -> {
                 SketchesNavRoot(
                     modifier = Modifier.fillMaxSize(),
-                    onRequestUserSelectedMedia = if (mediaAccess == MediaAccess.UserSelected) {
+                    onRequestMediaAccess = if (mediaAccess == MediaAccess.UserSelected) {
                         { mediaAccessLauncher.requestMediaAccess() }
                     } else {
                         null
                     },
                 )
-                /*Box(modifier = Modifier.fillMaxSize()) {
-                    val topLevelRoutes = remember {
-                        listOf(
-                            ImagesNavRoute,
-                            BucketsNavRoute,
-                        )
-                    }*/
-                /*val navBackStack = rememberNavBackStack(topLevelRoutes.first())
-                val navResultStore = rememberNavResultStore()
-                CompositionLocalProvider(LocalNavResultStore.provides(navResultStore)) {
-                    SketchesNavDisplay(
-                        backStack = navBackStack,
-                        modifier = Modifier.matchParentSize(),
-                        onRequestUserSelectedMedia = if (mediaAccess == MediaAccess.UserSelected) {
-                            { mediaAccessLauncher.requestMediaAccess() }
-                        } else {
-                            null
-                        },
-                    )
-                }
-                val topRoute = navBackStack.last()
-                if (topRoute is TopLevelNavRoute) {
-                    val bottomSystemBarHeight = WindowInsets.systemBars
-                        .asPaddingValues()
-                        .calculateBottomPadding()
-                    NavigationBar(
-                        containerColor = MaterialTheme.colorScheme.background
-                            .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                        contentColor = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier
-                            .height(SketchesDimens.BottomBarHeight + bottomSystemBarHeight)
-                            .align(Alignment.BottomStart)
-                            .fillMaxWidth(),
-                    ) {
-                        for (route in topLevelRoutes) {
-                            val selected = route == topRoute
-                            NavigationBarItem(
-                                selected = selected,
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                                    unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-                                    indicatorColor = MaterialTheme.colorScheme.primary,
-                                ),
-                                onClick = {
-                                    if (route != topRoute) {
-                                        navBackStack.remove(route)
-                                        navBackStack.add(route)
-                                    }
-                                },
-                                icon = {
-                                    Icon(
-                                        imageVector = if (selected) {
-                                            route.selectedIcon
-                                        } else {
-                                            route.unselectedIcon
-                                        },
-                                        contentDescription = stringResource(route.titleRes),
-                                    )
-                                },
-                            )
-                        }
-                    }
-                } else {
-                    AnimatedVisibility(
-                        visible = systemBarsControllerUpdated.isSystemBarsVisible,
-                        enter = fadeIn(),
-                        exit = fadeOut(),
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .fillMaxWidth()
-                            .height(
-                                WindowInsets.navigationBars
-                                    .asPaddingValues()
-                                    .calculateBottomPadding(),
-                            ),
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    MaterialTheme.colorScheme.background
-                                        .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                                    RectangleShape
-                                )
-                                .fillMaxSize(),
-                        )
-                    }
-                }*/
-                //}
             }
             MediaAccess.None -> {
                 val settingsLauncher = rememberLauncherForActivityResult(

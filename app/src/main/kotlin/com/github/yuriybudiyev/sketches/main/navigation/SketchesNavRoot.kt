@@ -46,7 +46,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -103,7 +105,7 @@ import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
 @Composable
 fun SketchesNavRoot(
     modifier: Modifier = Modifier,
-    onRequestUserSelectedMedia: (() -> Unit)? = null,
+    onRequestMediaAccess: (() -> Unit)? = null,
 ) {
     val rootRoutes = remember {
         listOf(
@@ -117,6 +119,7 @@ fun SketchesNavRoot(
             add(initialRoute)
         }
     }
+    val onRequestMediaAccessUpdated by rememberUpdatedState(onRequestMediaAccess)
     val navEntryProvider = remember {
         entryProvider {
             navRouteEntry<ImagesNavRoute> {
@@ -131,7 +134,7 @@ fun SketchesNavRoot(
                             )
                         )
                     },
-                    onRequestUserSelectedMedia = onRequestUserSelectedMedia,
+                    onRequestUserSelectedMedia = onRequestMediaAccessUpdated,
                 )
             }
             navRouteEntry<BucketsNavRoute> {
