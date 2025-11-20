@@ -54,6 +54,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
@@ -73,6 +74,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.utils.filterByIds
+import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
@@ -87,7 +89,10 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndica
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
+import com.github.yuriybudiyev.sketches.core.ui.utils.SnapshotStateListSaver
+import com.github.yuriybudiyev.sketches.core.ui.utils.SnapshotStateSetSaver
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @Composable
@@ -129,8 +134,10 @@ fun BucketsScreen(
     val onDeleteBucketsUpdated by rememberUpdatedState(onDeleteBuckets)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     var allBuckets by remember { mutableStateOf<List<MediaStoreBucket>>(emptyList()) }
-    val selectedBuckets = rememberSaveable { SnapshotStateSet<Long>() }
-    val deleteDialogUris = rememberSaveable { SnapshotStateList<Uri>() }
+    val selectedBuckets =
+        rememberSaveable(saver = SnapshotStateSetSaver()) { SnapshotStateSet<Long>() }
+    val deleteDialogUris =
+        rememberSaveable(saver = SnapshotStateListSaver()) { SnapshotStateList<Uri>() }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->
@@ -198,6 +205,18 @@ fun BucketsScreen(
             }
         }
     }
+    val rootNavBarController = LocalRootNavBarController.current
+    LaunchedEffect(rootNavBarController) {
+        snapshotFlow { selectedBuckets.toSet().isNotEmpty() }
+            .distinctUntilChanged()
+            .collect { hasSelectedBuckets ->
+                if (hasSelectedBuckets) {
+                    rootNavBarController.hideRootNavBar()
+                } else {
+                    rootNavBarController.showRootNavBar()
+                }
+            }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -223,17 +242,6 @@ fun BucketsScreen(
             }
             is BucketsScreenViewModel.UiState.Loading -> {
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
-                SideEffect {
-                    if (selectedBuckets.isNotEmpty()) {
-                        selectedBuckets.clear()
-                    }
-                    if (deleteDialogUris.isNotEmpty()) {
-                        deleteDialogUris.clear()
-                    }
-                    if (allBuckets.isNotEmpty()) {
-                        allBuckets = emptyList()
-                    }
-                }
             }
             is BucketsScreenViewModel.UiState.Buckets -> {
                 val buckets = uiState.buckets

@@ -76,6 +76,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
+import com.github.yuriybudiyev.sketches.core.ui.utils.SnapshotStateSetSaver
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemClosestEdge
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
@@ -111,7 +112,8 @@ fun BucketScreen(
     val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     var allFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptyList()) }
-    val selectedFiles = rememberSaveable { SnapshotStateSet<Long>() }
+    val selectedFiles =
+        rememberSaveable(saver = SnapshotStateSetSaver()) { SnapshotStateSet<Long>() }
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -193,14 +195,6 @@ fun BucketScreen(
             }
             is BucketScreenViewModel.UiState.Loading -> {
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
-                SideEffect {
-                    if (selectedFiles.isNotEmpty()) {
-                        selectedFiles.clear()
-                    }
-                    if (allFiles.isNotEmpty()) {
-                        allFiles = emptyList()
-                    }
-                }
             }
             is BucketScreenViewModel.UiState.Bucket -> {
                 val files = uiState.files

@@ -48,6 +48,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,6 +63,7 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.utils.filterByIds
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
+import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
@@ -77,9 +79,11 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGridCont
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.calculateMediaIndexWithGroups
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
+import com.github.yuriybudiyev.sketches.core.ui.utils.SnapshotStateSetSaver
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemClosestEdge
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @Composable
@@ -114,7 +118,8 @@ fun ImagesScreen(
     val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     var allFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptyList()) }
-    val selectedFiles = rememberSaveable { SnapshotStateSet<Long>() }
+    val selectedFiles =
+        rememberSaveable(saver = SnapshotStateSetSaver()) { SnapshotStateSet<Long>() }
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -177,6 +182,18 @@ fun ImagesScreen(
             }
         }
     }
+    val rootNavBarController = LocalRootNavBarController.current
+    LaunchedEffect(rootNavBarController) {
+        snapshotFlow { selectedFiles.toSet().isNotEmpty() }
+            .distinctUntilChanged()
+            .collect { hasSelectedFiles ->
+                if (hasSelectedFiles) {
+                    rootNavBarController.hideRootNavBar()
+                } else {
+                    rootNavBarController.showRootNavBar()
+                }
+            }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -199,14 +216,6 @@ fun ImagesScreen(
             }
             is ImagesScreenViewModel.UiState.Loading -> {
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
-                SideEffect {
-                    if (selectedFiles.isNotEmpty()) {
-                        selectedFiles.clear()
-                    }
-                    if (allFiles.isNotEmpty()) {
-                        allFiles = emptyList()
-                    }
-                }
             }
             is ImagesScreenViewModel.UiState.Images -> {
                 allFiles = uiState.files
