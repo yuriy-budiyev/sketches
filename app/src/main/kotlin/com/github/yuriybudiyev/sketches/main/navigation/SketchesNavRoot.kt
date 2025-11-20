@@ -26,7 +26,6 @@ package com.github.yuriybudiyev.sketches.main.navigation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -297,15 +296,14 @@ fun SketchesNavRoot(
                 },
             )
         }
-        val topRoute = navBackStack.lastOrNull() //TODO
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .fillMaxWidth()
         ) {
             AnimatedVisibility(
-                visible = topRoute is RootNavRoute, //TODO
-                enter = EnterTransition.None,
+                visible = navBackStack.lastOrNull() is RootNavRoute,
+                enter = fadeIn(),
                 exit = fadeOut(),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -321,8 +319,9 @@ fun SketchesNavRoot(
                         .fillMaxSize(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
+                    val topRootRoute = navBackStack.findClosestRoot()
                     for (route in rootRoutes) {
-                        val selected = route == topRoute
+                        val selected = route == topRootRoute
                         NavigationBarItem(
                             selected = selected,
                             colors = NavigationBarItemDefaults.colors(
@@ -331,7 +330,7 @@ fun SketchesNavRoot(
                                 indicatorColor = MaterialTheme.colorScheme.primary,
                             ),
                             onClick = {
-                                if (route != topRoute) {
+                                if (route != topRootRoute) {
                                     if (route == initialRoute) {
                                         navBackStack.clear()
                                     }
@@ -404,4 +403,15 @@ private inline fun <reified T: NavRoute> EntryProviderScope<NavRoute>.navRouteEn
         clazzContentKey = { navRoute -> navRoute },
         content = content,
     )
+}
+
+private fun List<NavRoute>.findClosestRoot(): RootNavRoute? {
+    val iterator = listIterator(size)
+    while (iterator.hasPrevious()) {
+        val route = iterator.previous()
+        if (route is RootNavRoute) {
+            return route
+        }
+    }
+    return null
 }
