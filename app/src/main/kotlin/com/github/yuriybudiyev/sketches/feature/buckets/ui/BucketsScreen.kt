@@ -41,6 +41,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -217,6 +219,20 @@ fun BucketsScreen(
                 }
             }
     }
+    val bucketsGridState = rememberLazyGridState()
+    DisposableEffect(rootNavBarController) {
+        val scrollToTop: () -> Unit = {
+            coroutineScope.launch {
+                if (allBuckets.isNotEmpty()) {
+                    bucketsGridState.animateScrollToItem(index = 0)
+                }
+            }
+        }
+        rootNavBarController.addOnClickListener(scrollToTop)
+        onDispose {
+            rootNavBarController.removeOnClickListener(scrollToTop)
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -247,6 +263,7 @@ fun BucketsScreen(
                 val buckets = uiState.buckets
                 allBuckets = buckets
                 BucketsScreenLayout(
+                    state = bucketsGridState,
                     buckets = buckets,
                     selectedBuckets = selectedBuckets,
                     onBucketClick = onBucketClick,
@@ -325,6 +342,7 @@ fun BucketsScreen(
 
 @Composable
 private fun BucketsScreenLayout(
+    state: LazyGridState,
     buckets: List<MediaStoreBucket>,
     selectedBuckets: SnapshotStateSet<Long>,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
@@ -335,6 +353,7 @@ private fun BucketsScreenLayout(
     val onBucketClickUpdated by rememberUpdatedState(onBucketClick)
     SketchesLazyGrid(
         modifier = modifier,
+        state = state,
         overlayTop = true,
         overlayBottom = true,
     ) {

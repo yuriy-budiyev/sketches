@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
 import android.content.Context
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
 import com.github.yuriybudiyev.sketches.core.dagger.LazyProvider
@@ -56,6 +57,7 @@ import kotlinx.coroutines.withContext
 class ImageScreenViewModel @AssistedInject constructor(
     @ApplicationContext
     context: Context,
+    private val savedStateHandle: SavedStateHandle,
     @Assisted
     route: ImageNavRoute,
     dispatchersProvider: LazyProvider<SketchesCoroutineDispatchers>,
@@ -188,7 +190,9 @@ class ImageScreenViewModel @AssistedInject constructor(
         fileId: Long,
     ) {
         currentFileIndex = fileIndex
+        savedStateHandle[Keys.CurrentFileIndex] = fileIndex
         currentFileId = fileId
+        savedStateHandle[Keys.CurrentFileId] = fileId
     }
 
     var currentFileIndex: Int
@@ -200,8 +204,8 @@ class ImageScreenViewModel @AssistedInject constructor(
     private var currentBucketId: Long?
 
     init {
-        currentFileIndex = route.imageIndex
-        currentFileId = route.imageId
+        currentFileIndex = savedStateHandle[Keys.CurrentFileIndex] ?: route.imageIndex
+        currentFileId = savedStateHandle[Keys.CurrentFileId] ?: route.imageId
         currentBucketId = route.bucketId
     }
 
@@ -230,5 +234,11 @@ class ImageScreenViewModel @AssistedInject constructor(
     interface Factory {
 
         fun create(route: ImageNavRoute): ImageScreenViewModel
+    }
+
+    private object Keys {
+
+        const val CurrentFileIndex = "current_file_index"
+        const val CurrentFileId = "current_file_id"
     }
 }

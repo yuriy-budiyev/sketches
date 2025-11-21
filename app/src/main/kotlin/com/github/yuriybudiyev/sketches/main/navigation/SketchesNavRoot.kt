@@ -46,10 +46,14 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -86,9 +90,9 @@ import androidx.savedstate.compose.LocalSavedStateRegistryOwner
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
+import com.github.yuriybudiyev.sketches.core.navigation.RootNavBarController
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
-import com.github.yuriybudiyev.sketches.core.navigation.rememberRootNavBarController
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
@@ -340,7 +344,9 @@ fun SketchesNavRoot(
                                 indicatorColor = MaterialTheme.colorScheme.primary,
                             ),
                             onClick = {
-                                if (route != topRootRoute) {
+                                if (route == topRootRoute) {
+                                    rootNavBarController.dispatchOnClick()
+                                } else {
                                     if (route == initialRoute) {
                                         navBackStack.clear()
                                     }
@@ -424,4 +430,49 @@ private class ViewModelStoreViewModel: ViewModel() {
     }
 
     private val viewModelStores: LinkedHashMap<Any, ViewModelStore> = LinkedHashMap()
+}
+
+@Composable
+private fun rememberRootNavBarController(): RootNavBarControllerImpl =
+    rememberSaveable(saver = RootNavBarControllerImplSaver()) { RootNavBarControllerImpl() }
+
+private class RootNavBarControllerImpl(): RootNavBarController {
+
+    override var isRootNavBarVisible: Boolean by mutableStateOf(true)
+
+    override fun showRootNavBar() {
+        isRootNavBarVisible = true
+    }
+
+    override fun hideRootNavBar() {
+        isRootNavBarVisible = false
+    }
+
+    override fun addOnClickListener(onClick: () -> Unit) {
+        listeners.add(onClick)
+    }
+
+    override fun removeOnClickListener(onClick: () -> Unit) {
+        listeners.remove(onClick)
+    }
+
+    fun dispatchOnClick() {
+        for (onClick in listeners) {
+            onClick()
+        }
+    }
+
+    private val listeners: LinkedHashSet<() -> Unit> = LinkedHashSet()
+}
+
+private class RootNavBarControllerImplSaver: Saver<RootNavBarControllerImpl, Boolean> {
+
+    override fun SaverScope.save(value: RootNavBarControllerImpl): Boolean =
+        value.isRootNavBarVisible
+
+    override fun restore(value: Boolean): RootNavBarControllerImpl {
+        val controller = RootNavBarControllerImpl()
+        controller.isRootNavBarVisible = value
+        return controller
+    }
 }
