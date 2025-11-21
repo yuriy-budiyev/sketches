@@ -448,8 +448,9 @@ private class RootNavBarControllerImpl(): RootNavBarController {
         isRootNavBarVisible = false
     }
 
-    override fun addOnClickListener(onClick: () -> Unit) {
+    override fun addOnClickListener(onClick: () -> Unit): () -> Unit {
         listeners.add(onClick)
+        return onClick
     }
 
     override fun removeOnClickListener(onClick: () -> Unit) {

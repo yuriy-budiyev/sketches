@@ -195,16 +195,15 @@ fun ImagesScreen(
             }
     }
     DisposableEffect(rootNavBarController) {
-        val scrollToTop: () -> Unit = {
+        val listener = rootNavBarController.addOnClickListener {
             coroutineScope.launch {
                 if (allFiles.isNotEmpty()) {
                     mediaGridState.animateScrollToItem(index = 0)
                 }
             }
         }
-        rootNavBarController.addOnClickListener(scrollToTop)
         onDispose {
-            rootNavBarController.removeOnClickListener(scrollToTop)
+            rootNavBarController.removeOnClickListener(listener)
         }
     }
     Box(

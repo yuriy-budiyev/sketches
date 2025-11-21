@@ -35,7 +35,7 @@ interface RootNavBarController {
 
     fun hideRootNavBar()
 
-    fun addOnClickListener(onClick: () -> Unit)
+    fun addOnClickListener(onClick: () -> Unit): () -> Unit
 
     fun removeOnClickListener(onClick: () -> Unit)
 }

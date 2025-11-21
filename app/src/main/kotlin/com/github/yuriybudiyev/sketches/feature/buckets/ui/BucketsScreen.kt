@@ -221,16 +221,15 @@ fun BucketsScreen(
     }
     val bucketsGridState = rememberLazyGridState()
     DisposableEffect(rootNavBarController) {
-        val scrollToTop: () -> Unit = {
+        val listener = rootNavBarController.addOnClickListener {
             coroutineScope.launch {
                 if (allBuckets.isNotEmpty()) {
                     bucketsGridState.animateScrollToItem(index = 0)
                 }
             }
         }
-        rootNavBarController.addOnClickListener(scrollToTop)
         onDispose {
-            rootNavBarController.removeOnClickListener(scrollToTop)
+            rootNavBarController.removeOnClickListener(listener)
         }
     }
     Box(
