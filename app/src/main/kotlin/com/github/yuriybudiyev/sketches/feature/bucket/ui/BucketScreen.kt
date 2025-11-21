@@ -76,8 +76,8 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
-import com.github.yuriybudiyev.sketches.core.ui.utils.SnapshotStateSetSaver
-import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemClosestEdge
+import com.github.yuriybudiyev.sketches.core.ui.saver.SnapshotStateSetSaver
+import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemClosestEdge
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
 

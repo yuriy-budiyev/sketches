@@ -92,7 +92,7 @@ import com.github.yuriybudiyev.sketches.core.navigation.rememberRootNavBarContro
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
-import com.github.yuriybudiyev.sketches.core.ui.utils.SnapshotStateListSaver
+import com.github.yuriybudiyev.sketches.core.ui.saver.SnapshotStateListSaver
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketScreenViewModel
@@ -195,20 +195,21 @@ fun SketchesNavRoot(
     }
     val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current)
     val viewModelStoreNavEntryDecorator = remember(viewModelStoreOwner) {
-        val navEntryViewModelProvider = ViewModelProvider.create(
+        val viewModelStoreViewModelProvider = ViewModelProvider.create(
             store = viewModelStoreOwner.viewModelStore,
-            factory = viewModelFactory { initializer { NavEntryViewModel() } },
+            factory = viewModelFactory { initializer { ViewModelStoreViewModel() } },
         )
-        val navEntryViewModel = navEntryViewModelProvider[NavEntryViewModel::class]
+        val viewModelStoreViewModel =
+            viewModelStoreViewModelProvider[ViewModelStoreViewModel::class]
         return@remember NavEntryDecorator<NavRoute>(
             onPop = ({ contentKey ->
                 if (contentKey !is RootNavRoute) {
-                    navEntryViewModel.clearViewModelStore(contentKey)
+                    viewModelStoreViewModel.clearViewModelStore(contentKey)
                 }
             }),
             decorate = { navEntry ->
                 val navEntryViewModelStore =
-                    navEntryViewModel.getOrCreateViewModelStore(navEntry.contentKey)
+                    viewModelStoreViewModel.getOrCreateViewModelStore(navEntry.contentKey)
                 val savedStateRegistryOwner = LocalSavedStateRegistryOwner.current
                 val childViewModelStoreOwner = remember {
                     object:
@@ -407,13 +408,13 @@ private fun List<NavRoute>.findClosestRoot(): RootNavRoute? {
     return null
 }
 
-private class NavEntryViewModel: ViewModel() {
+private class ViewModelStoreViewModel: ViewModel() {
 
-    fun getOrCreateViewModelStore(contentKey: Any): ViewModelStore =
-        viewModelStores.getOrPut(contentKey) { ViewModelStore() }
+    fun getOrCreateViewModelStore(key: Any): ViewModelStore =
+        viewModelStores.getOrPut(key) { ViewModelStore() }
 
-    fun clearViewModelStore(contentKey: Any) {
-        viewModelStores.remove(contentKey)?.clear()
+    fun clearViewModelStore(key: Any) {
+        viewModelStores.remove(key)?.clear()
     }
 
     override fun onCleared() {

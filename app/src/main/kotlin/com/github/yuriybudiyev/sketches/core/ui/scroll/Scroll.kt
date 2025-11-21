@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Yuriy Budiyev
+ * Copyright (c) 2025 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +22,11 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.utils
+package com.github.yuriybudiyev.sketches.core.ui.scroll
 
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.SaverScope
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.unit.IntSize
 
 suspend fun LazyListState.scrollToItemCentered(
@@ -97,7 +93,7 @@ suspend fun LazyGridState.scrollToItemClosestEdge(
             return
         }
     }
-    val itemSize = itemAtIndex?.size ?: firstItemOfType?.size ?: IntSize.Zero
+    val itemSize = itemAtIndex?.size ?: firstItemOfType?.size ?: IntSize.Companion.Zero
     val orientationAwareItemSize = when (layoutInfo.orientation) {
         Orientation.Vertical -> itemSize.height
         Orientation.Horizontal -> itemSize.width
@@ -121,47 +117,5 @@ suspend fun LazyGridState.scrollToItemClosestEdge(
             index = index,
             scrollOffset = offset,
         )
-    }
-}
-
-class SnapshotStateSetSaver<T: Any>: Saver<SnapshotStateSet<T>, ArrayList<T>> {
-
-    override fun SaverScope.save(value: SnapshotStateSet<T>): ArrayList<T>? {
-        if (value.isEmpty()) {
-            return null
-        }
-        val list = ArrayList<T>(value.size)
-        for (element in value.toSet()) {
-            require(canBeSaved(element))
-            list.add(element)
-        }
-        return list
-    }
-
-    override fun restore(value: ArrayList<T>): SnapshotStateSet<T> {
-        val set = SnapshotStateSet<T>()
-        set.addAll(value)
-        return set
-    }
-}
-
-class SnapshotStateListSaver<T: Any>: Saver<SnapshotStateList<T>, ArrayList<T>> {
-
-    override fun SaverScope.save(value: SnapshotStateList<T>): ArrayList<T>? {
-        if (value.isEmpty()) {
-            return null
-        }
-        val list = ArrayList<T>(value.size)
-        for (element in value.toList()) {
-            require(canBeSaved(element))
-            list.add(element)
-        }
-        return list
-    }
-
-    override fun restore(value: ArrayList<T>): SnapshotStateList<T> {
-        val list = SnapshotStateList<T>()
-        list.addAll(value)
-        return list
     }
 }
