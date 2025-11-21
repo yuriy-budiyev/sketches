@@ -24,7 +24,14 @@
 
 package com.github.yuriybudiyev.sketches.core.navigation
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.SaverScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 
 interface RootNavBarController {
@@ -38,3 +45,32 @@ interface RootNavBarController {
 
 val LocalRootNavBarController: ProvidableCompositionLocal<RootNavBarController> =
     staticCompositionLocalOf { error("CompositionLocal LocalRootNavBarController not present") }
+
+@Composable
+fun rememberRootNavBarController(): RootNavBarController =
+    rememberSaveable(saver = RootNavBarControllerImplSaver()) { RootNavBarControllerImpl() }
+
+private class RootNavBarControllerImpl(): RootNavBarController {
+
+    override var isRootNavBarVisible: Boolean by mutableStateOf(true)
+
+    override fun showRootNavBar() {
+        isRootNavBarVisible = true
+    }
+
+    override fun hideRootNavBar() {
+        isRootNavBarVisible = false
+    }
+}
+
+private class RootNavBarControllerImplSaver: Saver<RootNavBarControllerImpl, Boolean> {
+
+    override fun SaverScope.save(value: RootNavBarControllerImpl): Boolean =
+        value.isRootNavBarVisible
+
+    override fun restore(value: Boolean): RootNavBarControllerImpl {
+        val controller = RootNavBarControllerImpl()
+        controller.isRootNavBarVisible = value
+        return controller
+    }
+}
