@@ -93,7 +93,7 @@ suspend fun LazyGridState.scrollToItemClosestEdge(
             return
         }
     }
-    val itemSize = itemAtIndex?.size ?: firstItemOfType?.size ?: IntSize.Companion.Zero
+    val itemSize = itemAtIndex?.size ?: firstItemOfType?.size ?: IntSize.Zero
     val orientationAwareItemSize = when (layoutInfo.orientation) {
         Orientation.Vertical -> itemSize.height
         Orientation.Horizontal -> itemSize.width
