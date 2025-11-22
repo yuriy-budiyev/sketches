@@ -22,29 +22,31 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.saver
+package com.github.yuriybudiyev.sketches.core.saver
 
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
-import androidx.compose.runtime.snapshots.SnapshotStateSet
+import androidx.compose.runtime.snapshots.SnapshotStateList
 
-class SnapshotStateSetSaver<T: Any>: Saver<SnapshotStateSet<T>, ArrayList<T>> {
+class SnapshotStateListSaver<T: Any>: Saver<SnapshotStateList<T>, ArrayList<T>> {
 
-    override fun SaverScope.save(value: SnapshotStateSet<T>): ArrayList<T>? {
-        if (value.isEmpty()) {
+    override fun SaverScope.save(value: SnapshotStateList<T>): ArrayList<T>? {
+        val snapshot = value.toList()
+        val snapshotSize = snapshot.size
+        if (snapshotSize == 0) {
             return null
         }
-        val list = ArrayList<T>(value.size)
-        for (element in value.toSet()) {
+        val arrayList = ArrayList<T>(snapshotSize)
+        for (element in snapshot) {
             require(canBeSaved(element))
-            list.add(element)
+            arrayList.add(element)
         }
-        return list
+        return arrayList
     }
 
-    override fun restore(value: ArrayList<T>): SnapshotStateSet<T> {
-        val set = SnapshotStateSet<T>()
-        set.addAll(value)
-        return set
+    override fun restore(value: ArrayList<T>): SnapshotStateList<T> {
+        val list = SnapshotStateList<T>()
+        list.addAll(value)
+        return list
     }
 }

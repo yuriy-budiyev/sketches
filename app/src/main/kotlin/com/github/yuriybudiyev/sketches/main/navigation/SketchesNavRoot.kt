@@ -94,9 +94,9 @@ import com.github.yuriybudiyev.sketches.core.navigation.RootNavBarController
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
+import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateListSaver
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
-import com.github.yuriybudiyev.sketches.core.ui.saver.SnapshotStateListSaver
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketScreenViewModel

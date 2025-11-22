@@ -80,6 +80,8 @@ import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarControlle
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
+import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateListSaver
+import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateSetSaver
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAsyncImage
@@ -91,8 +93,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndica
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
-import com.github.yuriybudiyev.sketches.core.ui.saver.SnapshotStateListSaver
-import com.github.yuriybudiyev.sketches.core.ui.saver.SnapshotStateSetSaver
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
