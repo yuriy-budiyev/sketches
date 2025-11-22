@@ -75,20 +75,21 @@ fun rememberNavResultStore(): NavResultStore =
 private class ResultStoreSaver: Saver<NavResultStore, ArrayList<KeyValue>> {
 
     override fun SaverScope.save(value: NavResultStore): ArrayList<KeyValue>? {
-        val storage = value.storage
-        if (storage.isEmpty()) {
+        val snapshot = value.storage.toMap()
+        val snapshotSize = snapshot.size
+        if (snapshotSize == 0) {
             return null
         }
-        val saveable = ArrayList<KeyValue>(storage.size)
-        for (entry in storage) {
-            saveable.add(
+        val arrayList = ArrayList<KeyValue>(snapshotSize)
+        for (element in snapshot) {
+            arrayList.add(
                 KeyValue(
-                    key = entry.key,
-                    value = entry.value,
+                    key = element.key,
+                    value = element.value,
                 )
             )
         }
-        return saveable
+        return arrayList
     }
 
     override fun restore(value: ArrayList<KeyValue>): NavResultStore =
