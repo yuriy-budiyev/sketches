@@ -94,8 +94,8 @@ private class ResultStoreSaver: Saver<NavResultStore, ArrayList<KeyValue>> {
 
     override fun restore(value: ArrayList<KeyValue>): NavResultStore =
         NavResultStore().apply {
-            for (saved in value) {
-                storage[saved.key] = saved.value
+            for (element in value) {
+                storage[element.key] = element.value
             }
         }
 }
