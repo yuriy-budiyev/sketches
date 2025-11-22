@@ -234,7 +234,10 @@ fun SketchesNavRoot(
                             }
 
                         init {
-                            require(lifecycle.currentState == Lifecycle.State.INITIALIZED)
+                            require(lifecycle.currentState == Lifecycle.State.INITIALIZED) {
+                                "ViewModelStore decoration must be initialized before a " +
+                                    "ViewModel with SavedStateHandle can be requested"
+                            }
                             enableSavedStateHandles()
                         }
                     }

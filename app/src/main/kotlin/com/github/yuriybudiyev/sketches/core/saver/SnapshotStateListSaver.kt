@@ -38,7 +38,7 @@ class SnapshotStateListSaver<T: Any>: Saver<SnapshotStateList<T>, ArrayList<T>> 
         }
         val arrayList = ArrayList<T>(snapshotSize)
         for (element in snapshot) {
-            require(canBeSaved(element))
+            require(canBeSaved(element)) { "Element can't be saved: $element" }
             arrayList.add(element)
         }
         return arrayList
