@@ -122,14 +122,15 @@ fun ImageRoute(viewModel: ImageScreenViewModel) {
     ImageScreen(
         uiState = uiState,
         onChange = { index, file ->
+            val fileId = file.id
             viewModel.setCurrentFileInfo(
                 fileIndex = index,
-                fileId = file.id,
+                fileId = fileId,
             )
             navResultStoreUpdated.putNavResult(
                 result = ImageScreenNavResult(
-                    fileIndex = viewModel.currentFileIndex,
-                    fileId = viewModel.currentFileId,
+                    fileIndex = index,
+                    fileId = fileId,
                 )
             )
         },
