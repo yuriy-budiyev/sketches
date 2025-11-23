@@ -26,9 +26,15 @@ package com.github.yuriybudiyev.sketches.feature.images.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation3.runtime.EntryProviderScope
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
+import com.github.yuriybudiyev.sketches.core.navigation.registerNavRoute
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
+import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
@@ -44,4 +50,17 @@ data object ImagesNavRoute: RootNavRoute {
 
     @IgnoredOnParcel
     override val unselectedIcon: ImageVector = SketchesIcons.ImagesUnselected
+}
+
+fun EntryProviderScope<NavRoute>.registerImagesNavRoute(
+    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onRequestUserSelectedMedia: (() -> Unit)? = null,
+) {
+    registerNavRoute<ImagesNavRoute> {
+        ImagesRoute(
+            viewModel = hiltViewModel(),
+            onImageClick = onImageClick,
+            onRequestUserSelectedMedia = onRequestUserSelectedMedia,
+        )
+    }
 }

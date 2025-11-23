@@ -24,7 +24,13 @@
 
 package com.github.yuriybudiyev.sketches.feature.bucket.navigation
 
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation3.runtime.EntryProviderScope
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
+import com.github.yuriybudiyev.sketches.core.navigation.registerNavRoute
+import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
+import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketScreenViewModel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -32,3 +38,16 @@ data class BucketNavRoute(
     val bucketId: Long,
     val bucketName: String,
 ): NavRoute
+
+fun EntryProviderScope<NavRoute>.registerBucketNavRoute(
+    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+) {
+    registerNavRoute<BucketNavRoute> { route ->
+        BucketRoute(
+            viewModel = hiltViewModel<BucketScreenViewModel, BucketScreenViewModel.Factory>(
+                creationCallback = { factory -> factory.create(route) }
+            ),
+            onImageClick = onImageClick,
+        )
+    }
+}

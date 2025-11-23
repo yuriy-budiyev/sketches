@@ -24,8 +24,13 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.navigation
 
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation3.runtime.EntryProviderScope
 import com.github.yuriybudiyev.sketches.core.navigation.NavResult
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
+import com.github.yuriybudiyev.sketches.core.navigation.registerNavRoute
+import com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute
+import com.github.yuriybudiyev.sketches.feature.image.ui.ImageScreenViewModel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -40,3 +45,13 @@ data class ImageScreenNavResult(
     val fileIndex: Int,
     val fileId: Long,
 ): NavResult
+
+fun EntryProviderScope<NavRoute>.registerImageNavRoute() {
+    registerNavRoute<ImageNavRoute> { route ->
+        ImageRoute(
+            viewModel = hiltViewModel<ImageScreenViewModel, ImageScreenViewModel.Factory>(
+                creationCallback = { factory -> factory.create(route) }
+            ),
+        )
+    }
+}

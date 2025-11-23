@@ -26,9 +26,15 @@ package com.github.yuriybudiyev.sketches.feature.buckets.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation3.runtime.EntryProviderScope
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
+import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
+import com.github.yuriybudiyev.sketches.core.navigation.registerNavRoute
 import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
+import com.github.yuriybudiyev.sketches.feature.buckets.ui.BucketsRoute
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
@@ -44,4 +50,15 @@ data object BucketsNavRoute: RootNavRoute {
 
     @IgnoredOnParcel
     override val unselectedIcon: ImageVector = SketchesIcons.BucketsUnselected
+}
+
+fun EntryProviderScope<NavRoute>.registerBucketsNavRoute(
+    onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
+) {
+    registerNavRoute<BucketsNavRoute> {
+        BucketsRoute(
+            viewModel = hiltViewModel(),
+            onBucketClick = onBucketClick,
+        )
+    }
 }

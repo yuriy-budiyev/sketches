@@ -28,7 +28,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 /**
- * Implementations of this interface should be data classes or data objects,
+ * Implementations of this interface should be stable data classes or data objects,
  * and be marked with [Parcelize] annotation or implement [Parcelable] manually.
  */
 interface NavRoute: Parcelable

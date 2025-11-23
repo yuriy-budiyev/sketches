@@ -59,7 +59,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SAVED_STATE_REGISTRY_OWNER_KEY
@@ -75,7 +74,6 @@ import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberDecoratedNavEntries
@@ -98,15 +96,13 @@ import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateListSaver
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavRoute
-import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
-import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketScreenViewModel
+import com.github.yuriybudiyev.sketches.feature.bucket.navigation.registerBucketNavRoute
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
-import com.github.yuriybudiyev.sketches.feature.buckets.ui.BucketsRoute
+import com.github.yuriybudiyev.sketches.feature.buckets.navigation.registerBucketsNavRoute
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageNavRoute
-import com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute
-import com.github.yuriybudiyev.sketches.feature.image.ui.ImageScreenViewModel
+import com.github.yuriybudiyev.sketches.feature.image.navigation.registerImageNavRoute
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
-import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
+import com.github.yuriybudiyev.sketches.feature.images.navigation.registerImagesNavRoute
 
 @Composable
 fun SketchesNavRoot(
@@ -129,57 +125,40 @@ fun SketchesNavRoot(
     val onRequestMediaAccessUpdated by rememberUpdatedState(onRequestMediaAccess)
     val navEntryProvider = remember {
         entryProvider {
-            navRouteEntry<ImagesNavRoute> {
-                ImagesRoute(
-                    viewModel = hiltViewModel(),
-                    onImageClick = { index, file ->
-                        navBackStack.add(
-                            ImageNavRoute(
-                                imageIndex = index,
-                                imageId = file.id,
-                                bucketId = null
-                            )
+            registerImagesNavRoute(
+                onImageClick = { index, file ->
+                    navBackStack.add(
+                        ImageNavRoute(
+                            imageIndex = index,
+                            imageId = file.id,
+                            bucketId = null
                         )
-                    },
-                    onRequestUserSelectedMedia = onRequestMediaAccessUpdated,
-                )
-            }
-            navRouteEntry<BucketsNavRoute> {
-                BucketsRoute(
-                    viewModel = hiltViewModel(),
-                    onBucketClick = { _, bucket ->
-                        navBackStack.add(
-                            BucketNavRoute(
-                                bucketId = bucket.id,
-                                bucketName = bucket.name,
-                            )
+                    )
+                },
+                onRequestUserSelectedMedia = onRequestMediaAccessUpdated,
+            )
+            registerBucketsNavRoute(
+                onBucketClick = { _, bucket ->
+                    navBackStack.add(
+                        BucketNavRoute(
+                            bucketId = bucket.id,
+                            bucketName = bucket.name,
                         )
-                    }
-                )
-            }
-            navRouteEntry<BucketNavRoute> { route ->
-                BucketRoute(
-                    viewModel = hiltViewModel<BucketScreenViewModel, BucketScreenViewModel.Factory>(
-                        creationCallback = { factory -> factory.create(route) }
-                    ),
-                    onImageClick = { index, file ->
-                        navBackStack.add(
-                            ImageNavRoute(
-                                imageIndex = index,
-                                imageId = file.id,
-                                bucketId = file.bucketId
-                            )
+                    )
+                },
+            )
+            registerBucketNavRoute(
+                onImageClick = { index, file ->
+                    navBackStack.add(
+                        ImageNavRoute(
+                            imageIndex = index,
+                            imageId = file.id,
+                            bucketId = file.bucketId
                         )
-                    }
-                )
-            }
-            navRouteEntry<ImageNavRoute> { route ->
-                ImageRoute(
-                    viewModel = hiltViewModel<ImageScreenViewModel, ImageScreenViewModel.Factory>(
-                        creationCallback = { factory -> factory.create(route) }
-                    ),
-                )
-            }
+                    )
+                },
+            )
+            registerImageNavRoute()
         }
     }
     val saveableStateHolder = rememberSaveableStateHolder()
@@ -394,16 +373,6 @@ fun SketchesNavRoot(
             }
         }
     }
-}
-
-private inline fun <reified T: NavRoute> EntryProviderScope<NavRoute>.navRouteEntry(
-    noinline content: @Composable (T) -> Unit,
-) {
-    addEntryProvider(
-        clazz = T::class,
-        clazzContentKey = { navRoute -> navRoute },
-        content = content,
-    )
 }
 
 private fun List<NavRoute>.findClosestRoot(): RootNavRoute? {

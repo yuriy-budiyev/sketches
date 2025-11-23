@@ -24,11 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.core.navigation
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import androidx.compose.runtime.Composable
+import androidx.navigation3.runtime.EntryProviderScope
 
-/**
- * Implementations of this interface should be marked with [Parcelize] annotation
- * or implement [Parcelable] manually.
- */
-interface NavResult: Parcelable
+inline fun <reified T: NavRoute> EntryProviderScope<NavRoute>.registerNavRoute(
+    noinline content: @Composable (T) -> Unit,
+) {
+    addEntryProvider(
+        clazz = T::class,
+        clazzContentKey = { navRoute -> navRoute },
+        content = content,
+    )
+}
