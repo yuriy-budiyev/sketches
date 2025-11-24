@@ -523,7 +523,7 @@ private fun VideoPage(
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
-fun rememberMediaBarState(
+private fun rememberMediaBarState(
     initialFirstVisibleItemIndex: Int = 0,
     initialFirstVisibleItemScrollOffset: Int = 0,
 ): LazyListState =
