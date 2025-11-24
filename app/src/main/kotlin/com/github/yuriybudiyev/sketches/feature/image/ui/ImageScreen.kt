@@ -32,6 +32,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -55,6 +56,7 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.layout.LazyLayoutCacheWindow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -197,7 +199,7 @@ private fun ImageScreenLayout(
     val onDeleteUpdated by rememberUpdatedState(onDelete)
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState(currentIndex) { filesUpdated.size }
-    val barState = rememberLazyListState(currentIndex)
+    val barState = rememberMediaBarState(currentIndex)
     val systemBarsControllerUpdated by rememberUpdatedState(LocalSystemBarsController.current)
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -518,6 +520,21 @@ private fun VideoPage(
         enableErrorIndicator = true
     )
 }
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+fun rememberMediaBarState(
+    initialFirstVisibleItemIndex: Int = 0,
+    initialFirstVisibleItemScrollOffset: Int = 0,
+): LazyListState =
+    rememberLazyListState(
+        cacheWindow = LazyLayoutCacheWindow(
+            aheadFraction = 0.5f,
+            behindFraction = 0.5f,
+        ),
+        initialFirstVisibleItemIndex = initialFirstVisibleItemIndex,
+        initialFirstVisibleItemScrollOffset = initialFirstVisibleItemScrollOffset,
+    )
 
 @Composable
 private fun MediaBar(

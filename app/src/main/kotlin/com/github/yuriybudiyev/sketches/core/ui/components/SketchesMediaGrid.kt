@@ -33,7 +33,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -100,7 +99,7 @@ fun SketchesMediaGrid(
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
-    state: LazyGridState = rememberLazyGridState(),
+    state: LazyGridState = rememberSketchesLazyGridState(),
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
@@ -144,7 +143,7 @@ fun SketchesGroupingMediaGrid(
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
-    state: LazyGridState = rememberLazyGridState(),
+    state: LazyGridState = rememberSketchesLazyGridState(),
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
