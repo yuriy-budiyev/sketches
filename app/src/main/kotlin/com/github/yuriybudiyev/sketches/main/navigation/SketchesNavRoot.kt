@@ -122,12 +122,14 @@ fun SketchesNavRoot(
                 add(initialRoute)
             }
         }
+    val pushNavBackStack = remember<(NavRoute) -> Unit> { { route -> navBackStack.add(route) } }
+    val popNavBackStack = remember<() -> Unit> { { navBackStack.removeLastOrNull() } }
     val onRequestMediaAccessUpdated by rememberUpdatedState(onRequestMediaAccess)
     val navEntryProvider = remember {
         entryProvider {
             registerImagesNavRoute(
                 onImageClick = { index, file ->
-                    navBackStack.add(
+                    pushNavBackStack(
                         ImageNavRoute(
                             imageIndex = index,
                             imageId = file.id,
@@ -139,7 +141,7 @@ fun SketchesNavRoot(
             )
             registerBucketsNavRoute(
                 onBucketClick = { _, bucket ->
-                    navBackStack.add(
+                    pushNavBackStack(
                         BucketNavRoute(
                             bucketId = bucket.id,
                             bucketName = bucket.name,
@@ -149,7 +151,7 @@ fun SketchesNavRoot(
             )
             registerBucketNavRoute(
                 onImageClick = { index, file ->
-                    navBackStack.add(
+                    pushNavBackStack(
                         ImageNavRoute(
                             imageIndex = index,
                             imageId = file.id,
@@ -237,11 +239,10 @@ fun SketchesNavRoot(
         ),
         entryProvider = navEntryProvider,
     )
-    val popBackNavStack = remember<() -> Unit> { { navBackStack.removeLastOrNull() } }
     val sceneState = rememberSceneState(
         entries = navEntries,
         sceneStrategy = SinglePaneSceneStrategy(),
-        onBack = popBackNavStack,
+        onBack = popNavBackStack,
     )
     val currentScene = sceneState.currentScene
     val currentInfo = SceneInfo(currentScene)
@@ -254,7 +255,7 @@ fun SketchesNavRoot(
         state = navEventState,
         isBackEnabled = currentScene.previousEntries.isNotEmpty(),
         onBackCompleted = {
-            repeat(navEntries.size - currentScene.previousEntries.size) { popBackNavStack() }
+            repeat(navEntries.size - currentScene.previousEntries.size) { popNavBackStack() }
         },
     )
     val navResultStore = rememberNavResultStore()
