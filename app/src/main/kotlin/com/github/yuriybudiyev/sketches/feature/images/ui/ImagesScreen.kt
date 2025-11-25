@@ -195,7 +195,7 @@ fun ImagesScreen(
             }
     }
     DisposableEffect(rootNavBarController) {
-        val listener = rootNavBarController.addOnClickListener {
+        rootNavBarController.setOnClickListener(ImagesNavRoute) {
             coroutineScope.launch {
                 if (allFiles.isNotEmpty()) {
                     mediaGridState.animateScrollToItem(index = 0)
@@ -203,7 +203,7 @@ fun ImagesScreen(
             }
         }
         onDispose {
-            rootNavBarController.removeOnClickListener(listener)
+            rootNavBarController.clearOnClickListener(ImagesNavRoute)
         }
     }
     Box(

@@ -35,9 +35,12 @@ interface RootNavBarController {
 
     fun hideRootNavBar()
 
-    fun addOnClickListener(onClick: () -> Unit): () -> Unit
+    fun setOnClickListener(
+        route: RootNavRoute,
+        onClick: () -> Unit,
+    )
 
-    fun removeOnClickListener(onClick: () -> Unit)
+    fun clearOnClickListener(route: RootNavRoute)
 }
 
 val LocalRootNavBarController: ProvidableCompositionLocal<RootNavBarController> =

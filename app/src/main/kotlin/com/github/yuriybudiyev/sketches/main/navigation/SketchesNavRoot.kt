@@ -328,7 +328,7 @@ fun SketchesNavRoot(
                             ),
                             onClick = {
                                 if (route == topRootRoute) {
-                                    rootNavBarController.dispatchOnClick()
+                                    rootNavBarController.dispatchOnClick(route)
                                 } else {
                                     if (route == initialRoute) {
                                         navBackStack.clear()
@@ -421,22 +421,22 @@ private class RootNavBarControllerImpl(): RootNavBarController {
         isRootNavBarVisible = false
     }
 
-    override fun addOnClickListener(onClick: () -> Unit): () -> Unit {
-        listeners.add(onClick)
-        return onClick
+    override fun setOnClickListener(
+        route: RootNavRoute,
+        onClick: () -> Unit,
+    ) {
+        listeners[route] = onClick
     }
 
-    override fun removeOnClickListener(onClick: () -> Unit) {
-        listeners.remove(onClick)
+    override fun clearOnClickListener(route: RootNavRoute) {
+        listeners.remove(route)
     }
 
-    fun dispatchOnClick() {
-        for (onClick in listeners) {
-            onClick()
-        }
+    fun dispatchOnClick(route: RootNavRoute) {
+        listeners[route]?.invoke()
     }
 
-    private val listeners: LinkedHashSet<() -> Unit> = LinkedHashSet()
+    private val listeners: HashMap<RootNavRoute, () -> Unit> = HashMap()
 }
 
 private class RootNavBarControllerImplSaver: Saver<RootNavBarControllerImpl, Boolean> {

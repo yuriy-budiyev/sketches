@@ -221,7 +221,7 @@ fun BucketsScreen(
     }
     val bucketsGridState = rememberSketchesLazyGridState()
     DisposableEffect(rootNavBarController) {
-        val listener = rootNavBarController.addOnClickListener {
+        rootNavBarController.setOnClickListener(BucketsNavRoute) {
             coroutineScope.launch {
                 if (allBuckets.isNotEmpty()) {
                     bucketsGridState.animateScrollToItem(index = 0)
@@ -229,7 +229,7 @@ fun BucketsScreen(
             }
         }
         onDispose {
-            rootNavBarController.removeOnClickListener(listener)
+            rootNavBarController.clearOnClickListener(BucketsNavRoute)
         }
     }
     Box(
