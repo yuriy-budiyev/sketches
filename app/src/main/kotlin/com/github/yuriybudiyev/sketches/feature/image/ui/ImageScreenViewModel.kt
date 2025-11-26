@@ -27,7 +27,8 @@ package com.github.yuriybudiyev.sketches.feature.image.ui
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
+import com.github.yuriybudiyev.sketches.core.coroutines.di.DispatcherType
 import com.github.yuriybudiyev.sketches.core.dagger.LazyProvider
 import com.github.yuriybudiyev.sketches.core.dagger.getValue
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
@@ -42,6 +43,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -60,15 +62,13 @@ class ImageScreenViewModel @AssistedInject constructor(
     private val savedStateHandle: SavedStateHandle,
     @Assisted
     route: ImageNavRoute,
-    dispatchersProvider: LazyProvider<SketchesCoroutineDispatchers>,
+    @Dispatcher(DispatcherType.IO)
+    ioDispatcherProvider: LazyProvider<CoroutineDispatcher>,
     getMediaFilesProvider: LazyProvider<GetMediaFilesUseCase>,
     deleteMediaFilesProvider: LazyProvider<DeleteMediaFilesUseCase>,
-): MediaObservingViewModel(
-    context,
-    dispatchersProvider,
-) {
+): MediaObservingViewModel(context) {
 
-    private val dispatchers: SketchesCoroutineDispatchers by dispatchersProvider
+    private val ioDispatcher: CoroutineDispatcher by ioDispatcherProvider
     private val getMediaFiles: GetMediaFilesUseCase by getMediaFilesProvider
     private val deleteMediaFiles: DeleteMediaFilesUseCase by deleteMediaFilesProvider
 
@@ -105,7 +105,7 @@ class ImageScreenViewModel @AssistedInject constructor(
             return
         }
         try {
-            val files = withContext(dispatchers.io) { getMediaFiles(bucketId) }
+            val files = withContext(ioDispatcher) { getMediaFiles(bucketId) }
             val filesSize = files.size
             if (filesSize > 0) {
                 if (fileIndex < filesSize && files[fileIndex].id == fileId) {
@@ -161,7 +161,7 @@ class ImageScreenViewModel @AssistedInject constructor(
         deleteMediaJob?.cancel()
         deleteMediaJob = viewModelScope.launch {
             try {
-                withContext(dispatchers.io) {
+                withContext(ioDispatcher) {
                     deleteMediaFiles(files)
                 }
             } catch (_: CancellationException) {

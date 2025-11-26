@@ -26,7 +26,8 @@ package com.github.yuriybudiyev.sketches.feature.images.ui
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
+import com.github.yuriybudiyev.sketches.core.coroutines.di.DispatcherType
 import com.github.yuriybudiyev.sketches.core.dagger.LazyProvider
 import com.github.yuriybudiyev.sketches.core.dagger.getValue
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
@@ -37,6 +38,7 @@ import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -54,15 +56,16 @@ import javax.inject.Inject
 class ImagesScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
-    dispatchersProvider: LazyProvider<SketchesCoroutineDispatchers>,
+    @Dispatcher(DispatcherType.Default)
+    defaultDispatcherProvider: LazyProvider<CoroutineDispatcher>,
+    @Dispatcher(DispatcherType.IO)
+    ioDispatcherProvider: LazyProvider<CoroutineDispatcher>,
     getMediaFilesProvider: LazyProvider<GetMediaFilesUseCase>,
     deleteMediaFilesProvider: LazyProvider<DeleteMediaFilesUseCase>,
-): MediaObservingViewModel(
-    context,
-    dispatchersProvider,
-) {
+): MediaObservingViewModel(context) {
 
-    private val dispatchers: SketchesCoroutineDispatchers by dispatchersProvider
+    private val defaultDispatcher: CoroutineDispatcher by defaultDispatcherProvider
+    private val ioDispatcher: CoroutineDispatcher by ioDispatcherProvider
     private val getMediaFiles: GetMediaFilesUseCase by getMediaFilesProvider
     private val deleteMediaFiles: DeleteMediaFilesUseCase by deleteMediaFilesProvider
 
@@ -91,9 +94,9 @@ class ImagesScreenViewModel @Inject constructor(
 
     private suspend fun FlowCollector<UiState>.updateMedia() {
         try {
-            val files = withContext(dispatchers.io) { getMediaFiles() }
+            val files = withContext(ioDispatcher) { getMediaFiles() }
             if (files.isNotEmpty()) {
-                val groups = withContext(dispatchers.default) {
+                val groups = withContext(defaultDispatcher) {
                     files.groupBy { file ->
                         YearMonth.from(file.dateAdded)
                     }
@@ -120,7 +123,7 @@ class ImagesScreenViewModel @Inject constructor(
         deleteMediaJob?.cancel()
         deleteMediaJob = viewModelScope.launch {
             try {
-                withContext(dispatchers.io) {
+                withContext(ioDispatcher) {
                     deleteMediaFiles(files)
                 }
             } catch (_: CancellationException) {

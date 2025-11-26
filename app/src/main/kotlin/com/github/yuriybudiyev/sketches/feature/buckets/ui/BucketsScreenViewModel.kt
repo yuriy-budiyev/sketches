@@ -28,7 +28,8 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.consumable.Consumable
-import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
+import com.github.yuriybudiyev.sketches.core.coroutines.di.DispatcherType
 import com.github.yuriybudiyev.sketches.core.dagger.LazyProvider
 import com.github.yuriybudiyev.sketches.core.dagger.getValue
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
@@ -41,6 +42,7 @@ import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -57,16 +59,14 @@ import javax.inject.Inject
 class BucketsScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
-    dispatchersProvider: LazyProvider<SketchesCoroutineDispatchers>,
+    @Dispatcher(DispatcherType.IO)
+    ioDispatcherProvider: LazyProvider<CoroutineDispatcher>,
     getMediaBucketsProvider: LazyProvider<GetMediaBucketsUseCase>,
     getBucketsContentProvider: LazyProvider<GetBucketsContentUseCase>,
     deleteContentProvider: LazyProvider<DeleteContentUseCase>,
-): MediaObservingViewModel(
-    context,
-    dispatchersProvider,
-) {
+): MediaObservingViewModel(context) {
 
-    private val dispatchers: SketchesCoroutineDispatchers by dispatchersProvider
+    private val ioDispatcher: CoroutineDispatcher by ioDispatcherProvider
     private val getMediaBuckets: GetMediaBucketsUseCase by getMediaBucketsProvider
     private val getBucketsContent: GetBucketsContentUseCase by getBucketsContentProvider
     private val deleteContent: DeleteContentUseCase by deleteContentProvider
@@ -106,7 +106,7 @@ class BucketsScreenViewModel @Inject constructor(
 
     private suspend fun FlowCollector<UiState>.updateBuckets() {
         try {
-            val buckets = withContext(dispatchers.io) { getMediaBuckets() }
+            val buckets = withContext(ioDispatcher) { getMediaBuckets() }
             if (buckets.isNotEmpty()) {
                 val oldValue = uiState.value
                 if (oldValue is UiState.Buckets) {
@@ -139,7 +139,7 @@ class BucketsScreenViewModel @Inject constructor(
         action: (files: List<MediaStoreFile>) -> UiState.Buckets.Action,
     ) {
         try {
-            val files = withContext(dispatchers.io) { getBucketsContent(buckets) }
+            val files = withContext(ioDispatcher) { getBucketsContent(buckets) }
             if (files.isNotEmpty()) {
                 val oldState = uiState.value
                 if (oldState is UiState.Buckets) {
@@ -187,7 +187,7 @@ class BucketsScreenViewModel @Inject constructor(
         deleteMediaJob?.cancel()
         deleteMediaJob = viewModelScope.launch {
             try {
-                withContext(dispatchers.io) {
+                withContext(ioDispatcher) {
                     deleteContent(uris)
                 }
             } catch (_: CancellationException) {

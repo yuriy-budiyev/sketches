@@ -26,7 +26,8 @@ package com.github.yuriybudiyev.sketches.feature.bucket.ui
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.coroutines.SketchesCoroutineDispatchers
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
+import com.github.yuriybudiyev.sketches.core.coroutines.di.DispatcherType
 import com.github.yuriybudiyev.sketches.core.dagger.LazyProvider
 import com.github.yuriybudiyev.sketches.core.dagger.getValue
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
@@ -41,6 +42,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -58,15 +60,13 @@ class BucketScreenViewModel @AssistedInject constructor(
     context: Context,
     @Assisted
     route: BucketNavRoute,
-    dispatchersProvider: LazyProvider<SketchesCoroutineDispatchers>,
+    @Dispatcher(DispatcherType.IO)
+    ioDispatcherProvider: LazyProvider<CoroutineDispatcher>,
     getMediaFilesProvider: LazyProvider<GetMediaFilesUseCase>,
     deleteMediaFilesProvider: LazyProvider<DeleteMediaFilesUseCase>,
-): MediaObservingViewModel(
-    context,
-    dispatchersProvider,
-) {
+): MediaObservingViewModel(context) {
 
-    private val dispatchers: SketchesCoroutineDispatchers by dispatchersProvider
+    private val ioDispatcher: CoroutineDispatcher by ioDispatcherProvider
     private val getMediaFiles: GetMediaFilesUseCase by getMediaFilesProvider
     private val deleteMediaFiles: DeleteMediaFilesUseCase by deleteMediaFilesProvider
 
@@ -98,7 +98,7 @@ class BucketScreenViewModel @AssistedInject constructor(
 
     private suspend fun FlowCollector<UiState>.updateMedia() {
         try {
-            val files = withContext(dispatchers.io) { getMediaFiles(bucketId) }
+            val files = withContext(ioDispatcher) { getMediaFiles(bucketId) }
             if (files.isNotEmpty()) {
                 emit(UiState.Bucket(files))
             } else {
@@ -117,7 +117,7 @@ class BucketScreenViewModel @AssistedInject constructor(
         deleteMediaJob?.cancel()
         deleteMediaJob = viewModelScope.launch {
             try {
-                withContext(dispatchers.io) {
+                withContext(ioDispatcher) {
                     deleteMediaFiles(files)
                 }
             } catch (_: CancellationException) {
