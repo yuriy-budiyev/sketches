@@ -32,7 +32,6 @@ import androidx.core.database.getStringOrNull
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
-import com.github.yuriybudiyev.sketches.core.platform.collections.CollectionsCompat
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.Instant
@@ -192,7 +191,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getBuckets(): List<MediaStoreBucket> {
-        val bucketsInfo = CollectionsCompat.newLinkedHashMap<Long, BucketInfo>(100)
+        val bucketsInfo = LinkedHashMap<Long, BucketInfo>()
         collectBucketsInfo(
             mediaType = MediaType.Image,
             destination = bucketsInfo,
