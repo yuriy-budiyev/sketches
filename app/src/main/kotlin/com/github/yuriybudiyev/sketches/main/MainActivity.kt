@@ -136,12 +136,12 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
         private set
 
     override fun showSystemBars() {
-        val insetsController = WindowCompat
+        WindowCompat
             .getInsetsController(
                 window,
                 window.decorView,
             )
-        insetsController.show(WindowInsetsCompat.Type.systemBars())
+            .show(WindowInsetsCompat.Type.systemBars())
     }
 
     override fun hideSystemBars() {
