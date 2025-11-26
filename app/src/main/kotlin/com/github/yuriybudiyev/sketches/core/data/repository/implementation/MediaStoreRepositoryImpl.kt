@@ -111,7 +111,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
                 null,
             )
         }
-        return count > 0
+        return count == uris.size
     }
 
     override suspend fun getFiles(bucketId: Long?): List<MediaStoreFile> {
