@@ -29,7 +29,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import javax.inject.Qualifier
 
 @Module
@@ -37,26 +36,26 @@ import javax.inject.Qualifier
 object CoroutineDispatchersModule {
 
     @Provides
-    @Dispatcher(DispatcherType.Default)
+    @Dispatcher(Dispatchers.Default)
     fun provideDefaultDispatcher(): CoroutineDispatcher =
-        Dispatchers.Default
+        kotlinx.coroutines.Dispatchers.Default
 
     @Provides
-    @Dispatcher(DispatcherType.Main)
+    @Dispatcher(Dispatchers.Main)
     fun provideMainDispatcher(): CoroutineDispatcher =
-        Dispatchers.Main
+        kotlinx.coroutines.Dispatchers.Main
 
     @Provides
-    @Dispatcher(DispatcherType.IO)
+    @Dispatcher(Dispatchers.IO)
     fun provideIODispatcher(): CoroutineDispatcher =
-        Dispatchers.IO
+        kotlinx.coroutines.Dispatchers.IO
 }
 
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Dispatcher(@Suppress("unused") val type: DispatcherType)
+annotation class Dispatcher(@Suppress("unused") val dispatcher: Dispatchers)
 
-enum class DispatcherType {
+enum class Dispatchers {
     Default,
     Main,
     IO,

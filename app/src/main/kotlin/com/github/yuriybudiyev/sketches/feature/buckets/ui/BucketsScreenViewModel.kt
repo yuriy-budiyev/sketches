@@ -29,7 +29,7 @@ import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.consumable.Consumable
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
-import com.github.yuriybudiyev.sketches.core.coroutines.di.DispatcherType
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.dagger.LazyProvider
 import com.github.yuriybudiyev.sketches.core.dagger.getValue
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
@@ -59,7 +59,7 @@ import javax.inject.Inject
 class BucketsScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
-    @Dispatcher(DispatcherType.IO)
+    @Dispatcher(Dispatchers.IO)
     ioDispatcherProvider: LazyProvider<CoroutineDispatcher>,
     getMediaBucketsProvider: LazyProvider<GetMediaBucketsUseCase>,
     getBucketsContentProvider: LazyProvider<GetBucketsContentUseCase>,

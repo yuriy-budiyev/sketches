@@ -28,7 +28,7 @@ import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
-import com.github.yuriybudiyev.sketches.core.coroutines.di.DispatcherType
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.dagger.LazyProvider
 import com.github.yuriybudiyev.sketches.core.dagger.getValue
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
@@ -62,7 +62,7 @@ class ImageScreenViewModel @AssistedInject constructor(
     private val savedStateHandle: SavedStateHandle,
     @Assisted
     route: ImageNavRoute,
-    @Dispatcher(DispatcherType.IO)
+    @Dispatcher(Dispatchers.IO)
     ioDispatcherProvider: LazyProvider<CoroutineDispatcher>,
     getMediaFilesProvider: LazyProvider<GetMediaFilesUseCase>,
     deleteMediaFilesProvider: LazyProvider<DeleteMediaFilesUseCase>,
