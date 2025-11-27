@@ -133,7 +133,7 @@ fun SketchesNavRoot(
                         ImageNavRoute(
                             imageIndex = index,
                             imageId = file.id,
-                            bucketId = null
+                            bucketId = null,
                         )
                     )
                 },
@@ -155,7 +155,7 @@ fun SketchesNavRoot(
                         ImageNavRoute(
                             imageIndex = index,
                             imageId = file.id,
-                            bucketId = file.bucketId
+                            bucketId = file.bucketId,
                         )
                     )
                 },
