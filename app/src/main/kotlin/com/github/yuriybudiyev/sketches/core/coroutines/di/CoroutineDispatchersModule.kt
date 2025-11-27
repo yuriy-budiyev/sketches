@@ -49,6 +49,11 @@ object CoroutineDispatchersModule {
     @Dispatcher(Dispatchers.IO)
     fun provideIODispatcher(): CoroutineDispatcher =
         kotlinx.coroutines.Dispatchers.IO
+
+    @Provides
+    @Dispatcher(Dispatchers.Unconfined)
+    fun provideUnconfinedDispatcher(): CoroutineDispatcher =
+        kotlinx.coroutines.Dispatchers.Unconfined
 }
 
 @Qualifier
@@ -59,4 +64,5 @@ enum class Dispatchers {
     Default,
     Main,
     IO,
+    Unconfined,
 }
