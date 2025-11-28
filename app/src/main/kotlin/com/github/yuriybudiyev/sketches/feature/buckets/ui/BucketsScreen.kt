@@ -304,6 +304,27 @@ fun BucketsScreen(
                 .copy(alpha = SketchesColors.UiAlphaLowTransparency),
         ) {
             if (selectedBuckets.isNotEmpty()) {
+                if (selectedBuckets.size >= allBuckets.size) {
+                    SketchesAppBarActionButton(
+                        icon = SketchesIcons.SelectNone,
+                        description = stringResource(R.string.select_none),
+                        onClick = {
+                            coroutineScope.launch {
+                                selectedBuckets.clear()
+                            }
+                        },
+                    )
+                } else {
+                    SketchesAppBarActionButton(
+                        icon = SketchesIcons.SelectAll,
+                        description = stringResource(R.string.select_all),
+                        onClick = {
+                            coroutineScope.launch {
+                                selectedBuckets.addAll(allBuckets.map { bucket -> bucket.id })
+                            }
+                        },
+                    )
+                }
                 SketchesAppBarActionButton(
                     icon = SketchesIcons.Delete,
                     description = stringResource(R.string.delete_selected),
@@ -370,12 +391,6 @@ private fun BucketsScreenLayout(
                         onLongClick = {
                             if (selectedBucketsUpdated.isEmpty()) {
                                 selectedBucketsUpdated.add(bucketUpdated.id)
-                            } else {
-                                if (selectedBucketsUpdated.contains(bucketUpdated.id)) {
-                                    selectedBucketsUpdated.clear()
-                                } else {
-                                    selectedBucketsUpdated.addAll(bucketsUpdated.map { bucket -> bucket.id })
-                                }
                             }
                         },
                         onClick = {

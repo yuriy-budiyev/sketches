@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,10 +42,9 @@ fun SketchesAppBarActionButton(
     icon: ImageVector,
     description: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     Box(
-        modifier = modifier
+        modifier = Modifier
             .size(size = 48.dp)
             .clip(shape = CircleShape)
             .clickable(onClick = onClick),
@@ -53,6 +53,7 @@ fun SketchesAppBarActionButton(
         Icon(
             imageVector = icon,
             contentDescription = description,
+            tint = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.size(size = 24.dp),
         )
     }

@@ -34,11 +34,13 @@ import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material.icons.rounded.BrokenImage
 import androidx.compose.material.icons.rounded.CheckCircleOutline
 import androidx.compose.material.icons.rounded.DeleteForever
+import androidx.compose.material.icons.rounded.Deselect
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PermMedia
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.PlayCircleOutline
+import androidx.compose.material.icons.rounded.SelectAll
 import androidx.compose.material.icons.rounded.Share
 
 object SketchesIcons {
@@ -49,6 +51,8 @@ object SketchesIcons {
     val BucketsUnselected = Icons.Outlined.PhotoLibrary
     val ImageLoading = Icons.Rounded.Image
     val ImageError = Icons.Rounded.BrokenImage
+    val SelectAll = Icons.Rounded.SelectAll
+    val SelectNone = Icons.Rounded.Deselect
     val Share = Icons.Rounded.Share
     val Delete = Icons.Rounded.DeleteForever
     val Video = Icons.Rounded.PlayCircleOutline

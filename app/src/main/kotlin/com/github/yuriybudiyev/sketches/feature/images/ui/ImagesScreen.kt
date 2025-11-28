@@ -281,6 +281,27 @@ fun ImagesScreen(
                 )
             }
             if (selectedFiles.isNotEmpty()) {
+                if (selectedFiles.size >= allFiles.size) {
+                    SketchesAppBarActionButton(
+                        icon = SketchesIcons.SelectNone,
+                        description = stringResource(R.string.select_none),
+                        onClick = {
+                            coroutineScope.launch {
+                                selectedFiles.clear()
+                            }
+                        },
+                    )
+                } else {
+                    SketchesAppBarActionButton(
+                        icon = SketchesIcons.SelectAll,
+                        description = stringResource(R.string.select_all),
+                        onClick = {
+                            coroutineScope.launch {
+                                selectedFiles.addAll(allFiles.map { file -> file.id })
+                            }
+                        },
+                    )
+                }
                 SketchesAppBarActionButton(
                     icon = SketchesIcons.Delete,
                     description = stringResource(R.string.delete_selected),

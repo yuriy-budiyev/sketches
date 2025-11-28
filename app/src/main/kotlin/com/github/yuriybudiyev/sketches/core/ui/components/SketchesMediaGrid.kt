@@ -117,21 +117,29 @@ fun SketchesMediaGrid(
             key = { index -> SketchesMediaGridKey.MediaStoreFile(fileId = filesUpdated[index].id) },
             contentType = { SketchesMediaGridContentType.MediaStoreFile },
         ) { index ->
-            val file = filesUpdated[index]
+            val fileUpdated by rememberUpdatedState(filesUpdated[index])
             SketchesMediaGridItem(
-                file = file,
-                selectedFilesUpdated.contains(file.id),
-                modifier = Modifier.selectable(
-                    file = { file },
-                    filesIds = { filesUpdated.map { file -> file.id } },
-                    selectedFiles = { selectedFilesUpdated },
-                    onClick = {
+                file = fileUpdated,
+                selectedFilesUpdated.contains(fileUpdated.id),
+                onLongClick = {
+                    if (selectedFilesUpdated.isEmpty()) {
+                        selectedFilesUpdated.add(fileUpdated.id)
+                    }
+                },
+                onClick = {
+                    if (selectedFilesUpdated.isNotEmpty()) {
+                        if (selectedFilesUpdated.contains(fileUpdated.id)) {
+                            selectedFilesUpdated.remove(fileUpdated.id)
+                        } else {
+                            selectedFilesUpdated.add(fileUpdated.id)
+                        }
+                    } else {
                         onItemClickUpdated(
                             index,
-                            file,
+                            fileUpdated,
                         )
-                    },
-                )
+                    }
+                },
             )
         }
     }
@@ -178,10 +186,7 @@ fun SketchesGroupingMediaGrid(
         overlayTop = overlayTop,
         overlayBottom = overlayBottom,
     ) {
-        var offset = 0
         for ((month, files) in itemsUpdated) {
-            val localOffset = offset
-            offset += files.size
             item(
                 key = SketchesMediaGridKey.GroupHeader(
                     year = month.year,
@@ -219,27 +224,29 @@ fun SketchesGroupingMediaGrid(
                 key = { index -> SketchesMediaGridKey.MediaStoreFile(files[index].id) },
                 contentType = { SketchesMediaGridContentType.MediaStoreFile },
             ) { index ->
-                val file = files[index]
+                val fileUpdated by rememberUpdatedState(files[index])
                 SketchesMediaGridItem(
-                    file = file,
-                    selectedFilesUpdated.contains(file.id),
-                    modifier = Modifier.selectable(
-                        file = { file },
-                        filesIds = {
-                            itemsUpdated
-                                .asSequence()
-                                .flatMap { (_, files) -> files }
-                                .map { file -> file.id }
-                                .toList()
-                        },
-                        selectedFiles = { selectedFilesUpdated },
-                        onClick = {
+                    file = fileUpdated,
+                    selectedFilesUpdated.contains(fileUpdated.id),
+                    onLongClick = {
+                        if (selectedFilesUpdated.isEmpty()) {
+                            selectedFilesUpdated.add(fileUpdated.id)
+                        }
+                    },
+                    onClick = {
+                        if (selectedFilesUpdated.isNotEmpty()) {
+                            if (selectedFilesUpdated.contains(fileUpdated.id)) {
+                                selectedFilesUpdated.remove(fileUpdated.id)
+                            } else {
+                                selectedFilesUpdated.add(fileUpdated.id)
+                            }
+                        } else {
                             onItemClickUpdated(
-                                index + localOffset,
-                                file,
+                                index,
+                                fileUpdated,
                             )
-                        },
-                    )
+                        }
+                    },
                 )
             }
         }
@@ -269,7 +276,8 @@ fun calculateMediaIndexWithGroups(
 private fun SketchesMediaGridItem(
     file: MediaStoreFile,
     fileSelected: Boolean,
-    modifier: Modifier = Modifier,
+    onLongClick: () -> Unit,
+    onClick: () -> Unit,
 ) {
     val fileUpdated by rememberUpdatedState(file)
     val fileSelectedUpdated by rememberUpdatedState(fileSelected)
@@ -288,7 +296,10 @@ private fun SketchesMediaGridItem(
                 shape = MaterialTheme.shapes.extraSmall,
             )
             .clip(shape = MaterialTheme.shapes.extraSmall)
-            .then(modifier),
+            .combinedClickable(
+                onLongClick = onLongClick,
+                onClick = onClick,
+            ),
     ) {
         SketchesAsyncImage(
             uri = fileUpdated.uri,
@@ -345,38 +356,3 @@ private fun SketchesMediaGridItem(
         }
     }
 }
-
-private inline fun Modifier.selectable(
-    crossinline file: () -> MediaStoreFile,
-    crossinline filesIds: () -> Collection<Long>,
-    crossinline selectedFiles: () -> SnapshotStateSet<Long>,
-    crossinline onClick: () -> Unit,
-): Modifier =
-    combinedClickable(
-        onLongClick = {
-            val file = file()
-            val selectedFiles = selectedFiles()
-            if (selectedFiles.isEmpty()) {
-                selectedFiles.add(file.id)
-            } else {
-                if (selectedFiles.contains(file.id)) {
-                    selectedFiles.clear()
-                } else {
-                    selectedFiles.addAll(filesIds())
-                }
-            }
-        },
-        onClick = {
-            val selectedFiles = selectedFiles()
-            if (selectedFiles.isNotEmpty()) {
-                val file = file()
-                if (selectedFiles.contains(file.id)) {
-                    selectedFiles.remove(file.id)
-                } else {
-                    selectedFiles.add(file.id)
-                }
-            } else {
-                onClick()
-            }
-        },
-    )
