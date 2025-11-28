@@ -313,12 +313,23 @@ private fun SketchesMediaGridItem(
                             .copy(alpha = SketchesColors.UiAlphaHighTransparency),
                     ),
             )
+            Icon(
+                imageVector = SketchesIcons.MediaSelected,
+                contentDescription = stringResource(R.string.selected),
+                tint = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .align(alignment = Alignment.TopStart)
+                    .padding(all = SketchesDimens.MediaGridIconPadding),
+            )
         }
         if (fileUpdated.mediaType == MediaType.Video) {
-            Box(
+            Icon(
+                imageVector = SketchesIcons.Video,
+                contentDescription = stringResource(R.string.video),
+                tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .align(alignment = Alignment.BottomStart)
-                    .padding(all = SketchesDimens.MediaGridVideoIconPadding)
+                    .padding(all = SketchesDimens.MediaGridIconPadding)
                     .let { modifier ->
                         if (!fileSelectedUpdated) {
                             modifier.background(
@@ -330,13 +341,7 @@ private fun SketchesMediaGridItem(
                             modifier
                         }
                     },
-            ) {
-                Icon(
-                    imageVector = SketchesIcons.Video,
-                    contentDescription = stringResource(R.string.video),
-                    tint = MaterialTheme.colorScheme.onBackground,
-                )
-            }
+            )
         }
     }
 }

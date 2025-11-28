@@ -42,6 +42,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -360,17 +361,17 @@ private fun BucketsScreenLayout(
             count = bucketsUpdated.size,
             key = { index -> bucketsUpdated[index].id },
         ) { index ->
-            val bucket = bucketsUpdated[index]
-            val bucketSelectedOnComposition = selectedBucketsUpdated.contains(bucket.id)
+            val bucketUpdated by rememberUpdatedState(bucketsUpdated[index])
+            val bucketSelectedUpdated by rememberUpdatedState(selectedBucketsUpdated.contains(bucketUpdated.id))
             Column(
                 modifier = Modifier
                     .clip(shape = MaterialTheme.shapes.extraSmall)
                     .combinedClickable(
                         onLongClick = {
                             if (selectedBucketsUpdated.isEmpty()) {
-                                selectedBucketsUpdated.add(bucket.id)
+                                selectedBucketsUpdated.add(bucketUpdated.id)
                             } else {
-                                if (selectedBucketsUpdated.contains(bucket.id)) {
+                                if (selectedBucketsUpdated.contains(bucketUpdated.id)) {
                                     selectedBucketsUpdated.clear()
                                 } else {
                                     selectedBucketsUpdated.addAll(bucketsUpdated.map { bucket -> bucket.id })
@@ -379,15 +380,15 @@ private fun BucketsScreenLayout(
                         },
                         onClick = {
                             if (selectedBucketsUpdated.isNotEmpty()) {
-                                if (selectedBucketsUpdated.contains(bucket.id)) {
-                                    selectedBucketsUpdated.remove(bucket.id)
+                                if (selectedBucketsUpdated.contains(bucketUpdated.id)) {
+                                    selectedBucketsUpdated.remove(bucketUpdated.id)
                                 } else {
-                                    selectedBucketsUpdated.add(bucket.id)
+                                    selectedBucketsUpdated.add(bucketUpdated.id)
                                 }
                             } else {
                                 onBucketClickUpdated(
                                     index,
-                                    bucket,
+                                    bucketUpdated,
                                 )
                             }
                         },
@@ -399,7 +400,7 @@ private fun BucketsScreenLayout(
                         .aspectRatio(ratio = 1f)
                         .border(
                             width = SketchesDimens.MediaItemBorderThickness,
-                            color = if (bucketSelectedOnComposition) {
+                            color = if (bucketSelectedUpdated) {
                                 MaterialTheme.colorScheme.onBackground
                                     .copy(alpha = SketchesColors.UiAlphaLowTransparency)
                             } else {
@@ -411,14 +412,14 @@ private fun BucketsScreenLayout(
                         .clip(shape = MaterialTheme.shapes.extraSmall)
                 ) {
                     SketchesAsyncImage(
-                        uri = bucket.coverUri,
+                        uri = bucketUpdated.coverUri,
                         contentDescription = stringResource(R.string.bucket_cover),
                         modifier = Modifier.matchParentSize(),
                         contentScale = ContentScale.Crop,
                         enableLoadingIndicator = true,
                         enableErrorIndicator = true,
                     )
-                    if (bucketSelectedOnComposition) {
+                    if (bucketSelectedUpdated) {
                         Box(
                             modifier = Modifier
                                 .matchParentSize()
@@ -427,10 +428,18 @@ private fun BucketsScreenLayout(
                                         .copy(alpha = SketchesColors.UiAlphaHighTransparency),
                                 ),
                         )
+                        Icon(
+                            imageVector = SketchesIcons.MediaSelected,
+                            contentDescription = stringResource(R.string.selected),
+                            tint = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier
+                                .align(alignment = Alignment.TopStart)
+                                .padding(all = SketchesDimens.MediaGridIconPadding),
+                        )
                     }
                 }
                 Text(
-                    text = bucket.name,
+                    text = bucketUpdated.name,
                     modifier = Modifier.padding(
                         start = 4.dp,
                         top = 4.dp,
@@ -443,7 +452,7 @@ private fun BucketsScreenLayout(
                     maxLines = 1,
                 )
                 Text(
-                    text = bucket.size.toString(),
+                    text = bucketUpdated.size.toString(),
                     modifier = Modifier.padding(
                         start = 4.dp,
                         top = 0.dp,

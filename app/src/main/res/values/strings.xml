@@ -1,4 +1,5 @@
-<resources>
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Sketches</string>
     <string name="no_images_found">No images found</string>
     <string name="loading_message">Loading</string>
@@ -28,4 +29,5 @@
     <string name="delete_selected">Delete selected</string>
     <string name="share_selected">Share selected</string>
     <string name="selected_count">Selected: %d</string>
+    <string name="selected" tools:override="true">Selected</string>
 </resources>

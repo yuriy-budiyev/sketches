@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.outlined.Photo
 import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material.icons.rounded.BrokenImage
+import androidx.compose.material.icons.rounded.CheckCircleOutline
 import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.Pause
@@ -56,4 +57,5 @@ object SketchesIcons {
     val VolumeEnabled = Icons.AutoMirrored.Rounded.VolumeUp
     val VolumeDisabled = Icons.AutoMirrored.Rounded.VolumeOff
     val UpdateMediaSelection = Icons.Rounded.PermMedia
+    val MediaSelected = Icons.Rounded.CheckCircleOutline
 }
