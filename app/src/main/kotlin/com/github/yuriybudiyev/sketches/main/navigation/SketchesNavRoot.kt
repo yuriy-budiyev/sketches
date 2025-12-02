@@ -122,8 +122,8 @@ fun SketchesNavRoot(
                 add(initialRoute)
             }
         }
-    val pushNavBackStack = remember<(NavRoute) -> Unit> { { route -> navBackStack.add(route) } }
-    val popNavBackStack = remember<() -> Unit> { { navBackStack.removeLastOrNull() } }
+    val pushNavBackStack = remember { fun(route: NavRoute) { navBackStack.add(route) } }
+    val popNavBackStack = remember { fun() { navBackStack.removeLastOrNull() } }
     val onRequestMediaAccessUpdated by rememberUpdatedState(onRequestMediaAccess)
     val navEntryProvider = remember {
         entryProvider {
