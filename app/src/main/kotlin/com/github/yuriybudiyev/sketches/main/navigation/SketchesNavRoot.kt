@@ -115,7 +115,7 @@ fun SketchesNavRoot(
             BucketsNavRoute,
         )
     }
-    val initialRoute by rememberUpdatedState(rootRoutes.first())
+    val initialRoute = remember { rootRoutes.first() }
     val navBackStack =
         rememberSaveable(saver = SnapshotStateListSaver()) {
             SnapshotStateList<NavRoute>().apply {
