@@ -333,7 +333,7 @@ fun SketchesNavRoot(
                                     if (route == initialRoute) {
                                         navBackStack.clear()
                                     }
-                                    navBackStack.add(route)
+                                    pushNavBackStack(route)
                                 }
                             },
                             icon = {
