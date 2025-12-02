@@ -376,9 +376,8 @@ fun SketchesNavRoot(
     }
 }
 
-private fun SnapshotStateList<NavRoute>.findClosestRoot(): RootNavRoute? {
-    val snapshot = this.toList()
-    val iterator = snapshot.listIterator(snapshot.size)
+private fun List<NavRoute>.findClosestRoot(): RootNavRoute? {
+    val iterator = listIterator(size)
     while (iterator.hasPrevious()) {
         val route = iterator.previous()
         if (route is RootNavRoute) {
