@@ -24,15 +24,17 @@
 
 package com.github.yuriybudiyev.sketches.core.navigation
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.ui.graphics.vector.ImageVector
 
 interface RootNavRoute: NavRoute {
 
     @get:StringRes
     val titleRes: Int
 
-    val selectedIcon: ImageVector
+    @get:DrawableRes
+    val selectedIconRes: Int
 
-    val unselectedIcon: ImageVector
+    @get:DrawableRes
+    val unselectedIconRes: Int
 }
