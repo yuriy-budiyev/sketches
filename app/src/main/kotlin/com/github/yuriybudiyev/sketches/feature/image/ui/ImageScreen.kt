@@ -193,7 +193,6 @@ private fun ImageScreenLayout(
     var currentIndex by remember { mutableIntStateOf(index) }
     val contextUpdated by rememberUpdatedState(LocalContext.current)
     val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
-    val indexUpdated by rememberUpdatedState(index)
     val filesUpdated by rememberUpdatedState(files)
     val onChangeUpdated by rememberUpdatedState(onChange)
     val onDeleteUpdated by rememberUpdatedState(onDelete)
@@ -206,13 +205,6 @@ private fun ImageScreenLayout(
         onResult = { },
     )
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        snapshotFlow { indexUpdated }.collect { page ->
-            coroutineScope.launch {
-                pagerState.scrollToPage(page)
-            }
-        }
-    }
     LaunchedEffect(Unit) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
             currentIndex = page
