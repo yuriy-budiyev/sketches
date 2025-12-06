@@ -46,11 +46,11 @@ data object ImagesNavRoute: RootNavRoute {
 
     @get:DrawableRes
     @IgnoredOnParcel
-    override val selectedIconRes: Int = R.drawable.nav_route_images_selected
+    override val selectedIconRes: Int = R.drawable.ic_images_selected
 
     @get:DrawableRes
     @IgnoredOnParcel
-    override val unselectedIconRes: Int = R.drawable.nav_route_images_unselected
+    override val unselectedIconRes: Int = R.drawable.ic_images_unselected
 }
 
 fun EntryProviderScope<NavRoute>.registerImagesNavRoute(

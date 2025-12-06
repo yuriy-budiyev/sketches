@@ -46,11 +46,11 @@ data object BucketsNavRoute: RootNavRoute {
 
     @get:DrawableRes
     @IgnoredOnParcel
-    override val selectedIconRes: Int = R.drawable.nav_route_buckets_selected
+    override val selectedIconRes: Int = R.drawable.ic_buckets_selected
 
     @get:DrawableRes
     @IgnoredOnParcel
-    override val unselectedIconRes: Int = R.drawable.nav_route_buckets_unselected
+    override val unselectedIconRes: Int = R.drawable.ic_buckets_unselected
 }
 
 fun EntryProviderScope<NavRoute>.registerBucketsNavRoute(
