@@ -51,6 +51,6 @@ object SketchesColors {
         val SurfaceContainerHigh = Color(0xFF272727)
     }
 
-    const val UiAlphaLowTransparency = 0.75f
-    const val UiAlphaHighTransparency = 0.25f
+    const val UiAlphaLowTransparency = 0.85f
+    const val UiAlphaHighTransparency = 0.35f
 }
