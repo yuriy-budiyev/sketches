@@ -24,7 +24,7 @@
     <string name="delete_image_dialog_positive">Delete</string>
     <string name="delete_image_dialog_negative">Dismiss</string>
     <string name="image_loading">Loading image</string>
-    <string name="update_selected_media">Update selected media</string>
+    <string name="request_media_access">Update selected media</string>
     <string name="delete_selected">Delete selected</string>
     <string name="share_selected">Share selected</string>
     <string name="selected_count">Selected: %d</string>

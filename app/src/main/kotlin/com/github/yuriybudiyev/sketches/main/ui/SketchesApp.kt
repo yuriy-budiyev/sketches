@@ -59,6 +59,7 @@ import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMed
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.rememberMediaAccessRequestLauncher
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesOutlinedButton
+import com.github.yuriybudiyev.sketches.feature.images.ui.rememberOnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavRoot
 
 @Composable
@@ -68,8 +69,12 @@ fun SketchesApp() {
     val mediaAccessLauncher = rememberMediaAccessRequestLauncher { result ->
         mediaAccess = result
     }
+    val onRequestMediaAccess = rememberOnRequestMediaAccess {
+        mediaAccessLauncher.requestMediaAccess()
+    }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         mediaAccess = appContextUpdated.checkMediaAccess()
+        onRequestMediaAccess.isEnabled = mediaAccess == MediaAccess.UserSelected
     }
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -80,11 +85,7 @@ fun SketchesApp() {
             MediaAccess.Full, MediaAccess.UserSelected -> {
                 SketchesNavRoot(
                     modifier = Modifier.fillMaxSize(),
-                    onRequestMediaAccess = if (mediaAccess == MediaAccess.UserSelected) {
-                        { mediaAccessLauncher.requestMediaAccess() }
-                    } else {
-                        null
-                    },
+                    onRequestMediaAccess = onRequestMediaAccess,
                 )
             }
             MediaAccess.None -> {

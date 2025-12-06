@@ -34,6 +34,7 @@ import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.registerNavRoute
 import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
+import com.github.yuriybudiyev.sketches.feature.images.ui.OnRequestMediaAccess
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
@@ -55,13 +56,13 @@ data object ImagesNavRoute: RootNavRoute {
 
 fun EntryProviderScope<NavRoute>.registerImagesNavRoute(
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
-    onRequestUserSelectedMedia: (() -> Unit)? = null,
+    onRequestMediaAccess: OnRequestMediaAccess,
 ) {
     registerNavRoute<ImagesNavRoute> {
         ImagesRoute(
             viewModel = hiltViewModel(),
             onImageClick = onImageClick,
-            onRequestUserSelectedMedia = onRequestUserSelectedMedia,
+            onRequestMediaAccess = onRequestMediaAccess,
         )
     }
 }

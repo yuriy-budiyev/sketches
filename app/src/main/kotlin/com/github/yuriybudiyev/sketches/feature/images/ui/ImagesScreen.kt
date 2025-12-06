@@ -37,6 +37,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -89,7 +90,7 @@ import kotlinx.coroutines.launch
 fun ImagesRoute(
     viewModel: ImagesScreenViewModel,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
-    onRequestUserSelectedMedia: (() -> Unit)? = null,
+    onRequestMediaAccess: OnRequestMediaAccess,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
@@ -97,7 +98,7 @@ fun ImagesRoute(
     }
     ImagesScreen(
         uiState = uiState,
-        onRequestUserSelectedMedia = onRequestUserSelectedMedia,
+        onRequestMediaAccess = onRequestMediaAccess,
         onImageClick = onImageClick,
         onDeleteMedia = { files ->
             viewModel.deleteMedia(files)
@@ -108,7 +109,7 @@ fun ImagesRoute(
 @Composable
 fun ImagesScreen(
     uiState: ImagesScreenViewModel.UiState,
-    onRequestUserSelectedMedia: (() -> Unit)?,
+    onRequestMediaAccess: OnRequestMediaAccess,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
     onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
 ) {
@@ -270,12 +271,12 @@ fun ImagesScreen(
             backgroundColor = MaterialTheme.colorScheme.background
                 .copy(alpha = SketchesColors.UiAlphaLowTransparency),
         ) {
-            if (onRequestUserSelectedMedia != null) {
+            if (onRequestMediaAccess.isEnabled) {
                 SketchesAppBarActionButton(
                     iconRes = R.drawable.ic_media_permission,
-                    description = stringResource(R.string.update_selected_media),
+                    description = stringResource(R.string.request_media_access),
                     onClick = {
-                        onRequestUserSelectedMedia()
+                        onRequestMediaAccess()
                     },
                 )
             }
@@ -354,6 +355,23 @@ fun ImagesScreen(
             )
         }
     }
+}
+
+@Composable
+inline fun rememberOnRequestMediaAccess(
+    crossinline onRequestMediaAccess: @DisallowComposableCalls () -> Unit,
+): OnRequestMediaAccess =
+    remember {
+        object: OnRequestMediaAccess() {
+            override fun invoke() {
+                onRequestMediaAccess()
+            }
+        }
+    }
+
+abstract class OnRequestMediaAccess: () -> Unit {
+
+    var isEnabled: Boolean by mutableStateOf(false)
 }
 
 private const val ACTION_SHARE = "com.github.yuriybudiyev.sketches.feature.images.ui.ACTION_SHARE"

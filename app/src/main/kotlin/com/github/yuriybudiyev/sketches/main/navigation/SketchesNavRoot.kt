@@ -48,7 +48,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -104,11 +103,12 @@ import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageNavRoute
 import com.github.yuriybudiyev.sketches.feature.image.navigation.registerImageNavRoute
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
 import com.github.yuriybudiyev.sketches.feature.images.navigation.registerImagesNavRoute
+import com.github.yuriybudiyev.sketches.feature.images.ui.OnRequestMediaAccess
 
 @Composable
 fun SketchesNavRoot(
     modifier: Modifier = Modifier,
-    onRequestMediaAccess: (() -> Unit)? = null,
+    onRequestMediaAccess: OnRequestMediaAccess,
 ) {
     val rootRoutes = remember {
         listOf(
@@ -125,7 +125,6 @@ fun SketchesNavRoot(
         }
     val pushNavBackStack = remember { fun(route: NavRoute) { navBackStack.add(route) } }
     val popNavBackStack = remember { fun() { navBackStack.removeLastOrNull() } }
-    val onRequestMediaAccessUpdated by rememberUpdatedState(onRequestMediaAccess)
     val navEntryProvider = remember {
         entryProvider {
             registerImagesNavRoute(
@@ -138,7 +137,7 @@ fun SketchesNavRoot(
                         )
                     )
                 },
-                onRequestUserSelectedMedia = onRequestMediaAccessUpdated,
+                onRequestMediaAccess = onRequestMediaAccess,
             )
             registerBucketsNavRoute(
                 onBucketClick = { _, bucket ->

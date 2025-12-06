@@ -24,7 +24,7 @@
     <string name="delete_image_dialog_positive">Удалить</string>
     <string name="delete_image_dialog_negative">Отмена</string>
     <string name="image_loading">Загрузка изображения</string>
-    <string name="update_selected_media">Обновить выбранные изображения</string>
+    <string name="request_media_access">Обновить выбранные изображения</string>
     <string name="delete_selected">Удалить выбранное</string>
     <string name="share_selected">Поделиться выбранным</string>
     <string name="selected_count">Выбрано: %d</string>
