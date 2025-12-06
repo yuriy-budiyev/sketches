@@ -51,8 +51,10 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -79,7 +81,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGridCont
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.calculateMediaIndexWithGroups
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
-import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemClosestEdge
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
@@ -273,7 +274,7 @@ fun ImagesScreen(
         ) {
             if (onRequestUserSelectedMedia != null) {
                 SketchesAppBarActionButton(
-                    icon = SketchesIcons.UpdateMediaSelection,
+                    icon = ImageVector.vectorResource(R.drawable.ic_media_permission),
                     description = stringResource(R.string.update_selected_media),
                     onClick = {
                         onRequestUserSelectedMedia()
@@ -283,7 +284,7 @@ fun ImagesScreen(
             if (selectedFiles.isNotEmpty()) {
                 if (selectedFiles.size >= allFiles.size) {
                     SketchesAppBarActionButton(
-                        icon = SketchesIcons.SelectNone,
+                        icon = ImageVector.vectorResource(R.drawable.ic_select_none),
                         description = stringResource(R.string.select_none),
                         onClick = {
                             coroutineScope.launch {
@@ -293,7 +294,7 @@ fun ImagesScreen(
                     )
                 } else {
                     SketchesAppBarActionButton(
-                        icon = SketchesIcons.SelectAll,
+                        icon = ImageVector.vectorResource(R.drawable.ic_select_all),
                         description = stringResource(R.string.select_all),
                         onClick = {
                             coroutineScope.launch {
@@ -303,7 +304,7 @@ fun ImagesScreen(
                     )
                 }
                 SketchesAppBarActionButton(
-                    icon = SketchesIcons.Delete,
+                    icon = ImageVector.vectorResource(R.drawable.ic_delete),
                     description = stringResource(R.string.delete_selected),
                     onClick = {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -322,7 +323,7 @@ fun ImagesScreen(
                 )
                 val shareDescription = stringResource(R.string.share_selected)
                 SketchesAppBarActionButton(
-                    icon = SketchesIcons.Share,
+                    icon = ImageVector.vectorResource(R.drawable.ic_share),
                     description = shareDescription,
                     onClick = {
                         coroutineScope.launch {

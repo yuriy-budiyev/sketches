@@ -50,7 +50,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -58,7 +60,6 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
-import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import kotlinx.coroutines.launch
 import kotlin.math.roundToLong
 
@@ -169,7 +170,7 @@ fun SketchesMediaDisplay(
             if (state.isPlaybackError) {
                 if (enableErrorIndicator) {
                     Icon(
-                        imageVector = SketchesIcons.ImageError,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_image_error),
                         contentDescription = stringResource(R.string.image_error),
                         modifier = Modifier
                             .size(48.dp)
@@ -180,7 +181,7 @@ fun SketchesMediaDisplay(
             } else {
                 if (enableImagePlaceholder) {
                     Icon(
-                        imageVector = SketchesIcons.ImageLoading,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_image_loading),
                         contentDescription = stringResource(R.string.image),
                         modifier = Modifier
                             .size(48.dp)
@@ -219,11 +220,13 @@ fun SketchesMediaController(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = if (state.isPlaying) {
-                    SketchesIcons.Pause
-                } else {
-                    SketchesIcons.Play
-                },
+                imageVector = ImageVector.vectorResource(
+                    if (state.isPlaying) {
+                        R.drawable.ic_pause
+                    } else {
+                        R.drawable.ic_play
+                    },
+                ),
                 contentDescription = stringResource(
                     id = if (state.isPlaying) {
                         R.string.pause
@@ -231,6 +234,7 @@ fun SketchesMediaController(
                         R.string.play
                     }
                 ),
+                tint = color,
                 modifier = Modifier.size(size = 24.dp)
             )
         }
@@ -293,11 +297,13 @@ fun SketchesMediaController(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = if (state.isVolumeEnabled) {
-                    SketchesIcons.VolumeEnabled
-                } else {
-                    SketchesIcons.VolumeDisabled
-                },
+                imageVector = ImageVector.vectorResource(
+                    if (state.isVolumeEnabled) {
+                        R.drawable.ic_volume_enabled
+                    } else {
+                        R.drawable.ic_volume_disabled
+                    },
+                ),
                 contentDescription = stringResource(
                     id = if (state.isVolumeEnabled) {
                         R.string.disable_volume
@@ -305,6 +311,7 @@ fun SketchesMediaController(
                         R.string.enable_volume
                     }
                 ),
+                tint = color,
                 modifier = Modifier.size(size = 24.dp)
             )
         }

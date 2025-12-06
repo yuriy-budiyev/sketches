@@ -62,9 +62,11 @@ import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -93,7 +95,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndica
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
-import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -306,7 +307,7 @@ fun BucketsScreen(
             if (selectedBuckets.isNotEmpty()) {
                 if (selectedBuckets.size >= allBuckets.size) {
                     SketchesAppBarActionButton(
-                        icon = SketchesIcons.SelectNone,
+                        icon = ImageVector.vectorResource(R.drawable.ic_select_none),
                         description = stringResource(R.string.select_none),
                         onClick = {
                             coroutineScope.launch {
@@ -316,7 +317,7 @@ fun BucketsScreen(
                     )
                 } else {
                     SketchesAppBarActionButton(
-                        icon = SketchesIcons.SelectAll,
+                        icon = ImageVector.vectorResource(R.drawable.ic_select_all),
                         description = stringResource(R.string.select_all),
                         onClick = {
                             coroutineScope.launch {
@@ -326,7 +327,7 @@ fun BucketsScreen(
                     )
                 }
                 SketchesAppBarActionButton(
-                    icon = SketchesIcons.Delete,
+                    icon = ImageVector.vectorResource(R.drawable.ic_delete),
                     description = stringResource(R.string.delete_selected),
                     onClick = {
                         onDeleteBucketsUpdated(allBuckets.filterByIds(selectedBuckets.toSet()))
@@ -334,7 +335,7 @@ fun BucketsScreen(
                 )
                 val shareDescription = stringResource(R.string.share_selected)
                 SketchesAppBarActionButton(
-                    icon = SketchesIcons.Share,
+                    icon = ImageVector.vectorResource(R.drawable.ic_share),
                     description = shareDescription,
                     onClick = {
                         onShareBucketsUpdated(allBuckets.filterByIds(selectedBuckets.toSet()))
@@ -444,7 +445,7 @@ private fun BucketsScreenLayout(
                                 ),
                         )
                         Icon(
-                            imageVector = SketchesIcons.MediaSelected,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_media_selected),
                             contentDescription = stringResource(R.string.selected),
                             tint = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier

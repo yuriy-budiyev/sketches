@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -56,7 +57,6 @@ import coil3.request.ImageRequest
 import coil3.size.Size
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
-import com.github.yuriybudiyev.sketches.core.ui.icons.SketchesIcons
 
 @Composable
 fun SketchesAsyncImage(
@@ -210,7 +210,7 @@ fun SketchesZoomableAsyncImage(
 @NonRestartableComposable
 private fun SketchesLoadingStateIcon(modifier: Modifier = Modifier) {
     SketchesStateIcon(
-        imageVector = SketchesIcons.ImageLoading,
+        imageVector = ImageVector.vectorResource(R.drawable.ic_image_loading),
         contentDescription = stringResource(R.string.image_loading),
         modifier = modifier,
     )
@@ -220,7 +220,7 @@ private fun SketchesLoadingStateIcon(modifier: Modifier = Modifier) {
 @NonRestartableComposable
 private fun SketchesErrorStateIcon(modifier: Modifier = Modifier) {
     SketchesStateIcon(
-        imageVector = SketchesIcons.ImageError,
+        imageVector = ImageVector.vectorResource(R.drawable.ic_image_error),
         contentDescription = stringResource(R.string.image_error),
         modifier = modifier,
     )
