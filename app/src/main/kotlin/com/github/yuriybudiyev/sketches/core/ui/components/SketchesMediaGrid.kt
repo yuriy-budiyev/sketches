@@ -48,10 +48,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -326,7 +325,7 @@ private fun SketchesMediaGridItem(
                     ),
             )
             Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_media_selected),
+                painter = painterResource(R.drawable.ic_media_selected),
                 contentDescription = stringResource(R.string.selected),
                 tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
@@ -336,7 +335,7 @@ private fun SketchesMediaGridItem(
         }
         if (fileUpdated.mediaType == MediaType.Video) {
             Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_video),
+                painter = painterResource(R.drawable.ic_video),
                 contentDescription = stringResource(R.string.video),
                 tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier

@@ -81,13 +81,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -319,7 +318,7 @@ private fun ImageScreenLayout(
                     .copy(alpha = SketchesColors.UiAlphaLowTransparency),
             ) {
                 SketchesAppBarActionButton(
-                    icon = ImageVector.vectorResource(R.drawable.ic_delete),
+                    iconRes = R.drawable.ic_delete,
                     description = stringResource(R.string.delete_image),
                     onClick = {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -336,7 +335,7 @@ private fun ImageScreenLayout(
                 )
                 val shareDescription = stringResource(R.string.share_image)
                 SketchesAppBarActionButton(
-                    icon = ImageVector.vectorResource(R.drawable.ic_share),
+                    iconRes = R.drawable.ic_share,
                     description = shareDescription,
                     onClick = {
                         coroutineScope.launch {
@@ -612,7 +611,7 @@ private fun MediaBar(
                             ),
                     ) {
                         Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_video),
+                            painter = painterResource(R.drawable.ic_video),
                             contentDescription = stringResource(R.string.video),
                             tint = MaterialTheme.colorScheme.onBackground,
                         )

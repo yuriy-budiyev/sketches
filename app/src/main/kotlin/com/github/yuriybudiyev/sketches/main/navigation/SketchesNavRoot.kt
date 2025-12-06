@@ -58,9 +58,8 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SAVED_STATE_REGISTRY_OWNER_KEY
@@ -340,7 +339,7 @@ fun SketchesNavRoot(
                             },
                             icon = {
                                 Icon(
-                                    imageVector = ImageVector.vectorResource(
+                                    painter = painterResource(
                                         if (selected) {
                                             route.selectedIconRes
                                         } else {

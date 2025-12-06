@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.ui.components
 
 import android.net.Uri
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -41,10 +42,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -210,7 +210,7 @@ fun SketchesZoomableAsyncImage(
 @NonRestartableComposable
 private fun SketchesLoadingStateIcon(modifier: Modifier = Modifier) {
     SketchesStateIcon(
-        imageVector = ImageVector.vectorResource(R.drawable.ic_image_loading),
+        iconRes = R.drawable.ic_image_loading,
         contentDescription = stringResource(R.string.image_loading),
         modifier = modifier,
     )
@@ -220,21 +220,21 @@ private fun SketchesLoadingStateIcon(modifier: Modifier = Modifier) {
 @NonRestartableComposable
 private fun SketchesErrorStateIcon(modifier: Modifier = Modifier) {
     SketchesStateIcon(
-        imageVector = ImageVector.vectorResource(R.drawable.ic_image_error),
+        iconRes = R.drawable.ic_image_error,
         contentDescription = stringResource(R.string.image_error),
         modifier = modifier,
     )
 }
 
 @Composable
-@NonRestartableComposable
 private fun SketchesStateIcon(
-    imageVector: ImageVector,
+    @DrawableRes
+    iconRes: Int,
     contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
     Icon(
-        imageVector = imageVector,
+        painter = painterResource(iconRes),
         contentDescription = contentDescription,
         modifier = Modifier
             .size(SketchesDimens.AsyncImageStateIconSize)

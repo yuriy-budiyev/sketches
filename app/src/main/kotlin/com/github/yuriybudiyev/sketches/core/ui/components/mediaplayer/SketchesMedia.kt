@@ -50,9 +50,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -170,7 +169,7 @@ fun SketchesMediaDisplay(
             if (state.isPlaybackError) {
                 if (enableErrorIndicator) {
                     Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_image_error),
+                        painter = painterResource(R.drawable.ic_image_error),
                         contentDescription = stringResource(R.string.image_error),
                         modifier = Modifier
                             .size(48.dp)
@@ -181,7 +180,7 @@ fun SketchesMediaDisplay(
             } else {
                 if (enableImagePlaceholder) {
                     Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_image_loading),
+                        painter = painterResource(R.drawable.ic_image_loading),
                         contentDescription = stringResource(R.string.image),
                         modifier = Modifier
                             .size(48.dp)
@@ -220,7 +219,7 @@ fun SketchesMediaController(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = ImageVector.vectorResource(
+                painter = painterResource(
                     if (state.isPlaying) {
                         R.drawable.ic_pause
                     } else {
@@ -297,7 +296,7 @@ fun SketchesMediaController(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = ImageVector.vectorResource(
+                painter = painterResource(
                     if (state.isVolumeEnabled) {
                         R.drawable.ic_volume_enabled
                     } else {

@@ -50,10 +50,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -243,7 +241,7 @@ fun BucketScreen(
             if (selectedFiles.isNotEmpty()) {
                 if (selectedFiles.size >= allFiles.size) {
                     SketchesAppBarActionButton(
-                        icon = ImageVector.vectorResource(R.drawable.ic_select_none),
+                        iconRes = R.drawable.ic_select_none,
                         description = stringResource(R.string.select_none),
                         onClick = {
                             coroutineScope.launch {
@@ -253,7 +251,7 @@ fun BucketScreen(
                     )
                 } else {
                     SketchesAppBarActionButton(
-                        icon = ImageVector.vectorResource(R.drawable.ic_select_all),
+                        iconRes = R.drawable.ic_select_all,
                         description = stringResource(R.string.select_all),
                         onClick = {
                             coroutineScope.launch {
@@ -263,7 +261,7 @@ fun BucketScreen(
                     )
                 }
                 SketchesAppBarActionButton(
-                    icon = ImageVector.vectorResource(R.drawable.ic_delete),
+                    iconRes = R.drawable.ic_delete,
                     description = stringResource(R.string.delete_selected),
                     onClick = {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -282,7 +280,7 @@ fun BucketScreen(
                 )
                 val shareDescription = stringResource(R.string.share_selected)
                 SketchesAppBarActionButton(
-                    icon = ImageVector.vectorResource(R.drawable.ic_share),
+                    iconRes = R.drawable.ic_share,
                     description = shareDescription,
                     onClick = {
                         coroutineScope.launch {
