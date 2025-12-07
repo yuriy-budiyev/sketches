@@ -330,7 +330,12 @@ private fun SketchesMediaGridItem(
                 tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .align(alignment = Alignment.TopStart)
-                    .padding(all = SketchesDimens.MediaGridIconPadding),
+                    .padding(all = SketchesDimens.MediaGridIconPadding)
+                    .background(
+                        color = MaterialTheme.colorScheme.background
+                            .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                        shape = CircleShape,
+                    ),
             )
         }
         if (fileUpdated.mediaType == MediaType.Video) {
@@ -341,17 +346,11 @@ private fun SketchesMediaGridItem(
                 modifier = Modifier
                     .align(alignment = Alignment.BottomStart)
                     .padding(all = SketchesDimens.MediaGridIconPadding)
-                    .let { modifier ->
-                        if (!fileSelectedUpdated) {
-                            modifier.background(
-                                color = MaterialTheme.colorScheme.background
-                                    .copy(alpha = SketchesColors.UiAlphaHighTransparency),
-                                shape = CircleShape,
-                            )
-                        } else {
-                            modifier
-                        }
-                    },
+                    .background(
+                        color = MaterialTheme.colorScheme.background
+                            .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                        shape = CircleShape,
+                    ),
             )
         }
     }

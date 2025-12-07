@@ -592,22 +592,19 @@ private fun MediaBar(
                     enableErrorIndicator = true,
                 )
                 if (file.mediaType == MediaType.Video) {
-                    Box(
+                    Icon(
+                        painter = painterResource(R.drawable.ic_video),
+                        contentDescription = stringResource(R.string.video),
+                        tint = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier
                             .align(alignment = Alignment.BottomStart)
                             .padding(all = SketchesDimens.MediaBarVideoIconPadding)
                             .background(
                                 color = MaterialTheme.colorScheme.background
-                                    .copy(alpha = SketchesColors.UiAlphaHighTransparency),
-                                shape = CircleShape
+                                    .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                                shape = CircleShape,
                             ),
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_video),
-                            contentDescription = stringResource(R.string.video),
-                            tint = MaterialTheme.colorScheme.onBackground,
-                        )
-                    }
+                    )
                 }
             }
         }
