@@ -42,6 +42,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -449,7 +450,12 @@ private fun BucketsScreenLayout(
                             tint = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier
                                 .align(alignment = Alignment.TopStart)
-                                .padding(all = SketchesDimens.MediaGridIconPadding),
+                                .padding(all = SketchesDimens.MediaGridIconPadding)
+                                .background(
+                                    color = MaterialTheme.colorScheme.background
+                                        .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                                    shape = CircleShape,
+                                ),
                         )
                     }
                 }
