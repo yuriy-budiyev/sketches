@@ -29,12 +29,21 @@ import kotlin.reflect.KProperty
 
 typealias LazyProvider<T> = dagger.Lazy<T>
 
+/**
+ * Provides a fully-constructed and injected instance of [T].
+ *
+ * Returns the underlying value, computing the value if necessary. All calls to
+ * the same [LazyProvider] instance will return the same result.
+ */
 operator fun <T> LazyProvider<T>.getValue(
     thisRef: Any?,
     property: KProperty<*>,
 ): T =
     get()
 
+/**
+ * Provides a fully-constructed and injected instance of [T].
+ */
 operator fun <T> Provider<T>.getValue(
     thisRef: Any?,
     property: KProperty<*>,
