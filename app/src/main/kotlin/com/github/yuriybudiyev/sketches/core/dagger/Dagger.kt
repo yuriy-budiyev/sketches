@@ -24,16 +24,19 @@
 
 package com.github.yuriybudiyev.sketches.core.dagger
 
+import javax.inject.Provider
+import kotlin.reflect.KProperty
+
 typealias LazyProvider<T> = dagger.Lazy<T>
 
 operator fun <T> LazyProvider<T>.getValue(
     thisRef: Any?,
-    property: kotlin.reflect.KProperty<*>,
+    property: KProperty<*>,
 ): T =
     get()
 
-operator fun <T> javax.inject.Provider<T>.getValue(
+operator fun <T> Provider<T>.getValue(
     thisRef: Any?,
-    property: kotlin.reflect.KProperty<*>,
+    property: KProperty<*>,
 ): T =
     get()
