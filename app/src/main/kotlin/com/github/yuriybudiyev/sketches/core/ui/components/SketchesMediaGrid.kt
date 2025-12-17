@@ -57,7 +57,7 @@ import androidx.compose.ui.unit.sp
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
-import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstCharacter
+import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import kotlinx.parcelize.Parcelize
@@ -201,7 +201,7 @@ fun SketchesGroupingMediaGrid(
                     month.format(dateFormatterMonthYear)
                 }
                 Text(
-                    text = text.capitalizeFirstCharacter(),
+                    text = text.capitalizeFirstChar(),
                     modifier = Modifier
                         .background(
                             color = MaterialTheme.colorScheme.background,

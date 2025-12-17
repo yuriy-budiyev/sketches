@@ -24,12 +24,14 @@
 
 package com.github.yuriybudiyev.sketches.core.text
 
-fun String.capitalizeFirstCharacter(): String =
-    if (this.isEmpty() || this.isBlank() || Character.isUpperCase(this[0])) {
+fun String.capitalizeFirstChar(): String =
+    if (this.isEmpty() || this[0].isUpperCase()) {
         this
     } else {
         val builder = StringBuilder(this.length)
-        builder.append(Character.toUpperCase(this[0]))
-        builder.append(this.substring(1))
+        builder.append(this[0].uppercaseChar())
+        if (this.length > 1) {
+            builder.append(this.substring(1))
+        }
         builder.toString()
     }
