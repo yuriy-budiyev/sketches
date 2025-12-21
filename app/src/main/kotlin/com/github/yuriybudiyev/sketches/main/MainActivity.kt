@@ -251,7 +251,7 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
         onSharedListeners.remove(listenerAction)
     }
 
-    private val onSharedListeners: MutableMap<String?, () -> Unit> = LinkedHashMap()
+    private val onSharedListeners: HashMap<String?, () -> Unit> = HashMap()
     private val shareReceiver: BroadcastReceiver = DynamicChooserCallbackReceiver()
 
     private companion object {

@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -203,6 +204,7 @@ fun SketchesGroupingMediaGrid(
                 Text(
                     text = text.capitalizeFirstChar(),
                     modifier = Modifier
+                        .animateItem()
                         .background(
                             color = MaterialTheme.colorScheme.background,
                             shape = RectangleShape,
@@ -273,7 +275,7 @@ fun calculateMediaIndexWithGroups(
 }
 
 @Composable
-private fun SketchesMediaGridItem(
+private fun LazyGridItemScope.SketchesMediaGridItem(
     file: MediaStoreFile,
     fileSelected: Boolean,
     onLongClick: () -> Unit,
@@ -283,6 +285,7 @@ private fun SketchesMediaGridItem(
     val fileSelectedUpdated by rememberUpdatedState(fileSelected)
     Box(
         modifier = Modifier
+            .animateItem()
             .aspectRatio(ratio = 1f)
             .border(
                 width = SketchesDimens.MediaItemBorderThickness,

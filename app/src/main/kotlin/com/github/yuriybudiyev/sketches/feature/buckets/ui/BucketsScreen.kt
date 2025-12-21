@@ -387,6 +387,7 @@ private fun BucketsScreenLayout(
             val bucketSelectedUpdated by rememberUpdatedState(selectedBucketsUpdated.contains(bucketUpdated.id))
             Column(
                 modifier = Modifier
+                    .animateItem()
                     .clip(shape = MaterialTheme.shapes.extraSmall)
                     .combinedClickable(
                         onLongClick = {
