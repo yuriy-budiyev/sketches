@@ -36,7 +36,13 @@ import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.time.DurationUnit
+import kotlin.time.measureTime
 
 abstract class MediaObservingViewModel(context: Context): ViewModel() {
 
@@ -87,9 +93,31 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
 
     private inner class Observer: ContentObserver(Handler(Looper.getMainLooper())) {
 
+        private var mediaChangedJob: Job? = null
+        private var delayResetJob: Job? = null
+        private var currentDelay: Long = 0L
+
         override fun onChange(selfChange: Boolean) {
-            viewModelScope.launch {
-                onMediaChanged()
+            mediaChangedJob?.cancel()
+            mediaChangedJob = viewModelScope.launch {
+                val delayed = measureTime {
+                    try {
+                        delay(timeMillis = currentDelay)
+                    } catch (_: CancellationException) {
+                    }
+                }
+                currentDelay -= delayed.toLong(DurationUnit.MILLISECONDS)
+                if (currentDelay <= 0L) {
+                    currentDelay = 1000L
+                }
+                if (isActive) {
+                    onMediaChanged()
+                }
+            }
+            delayResetJob?.cancel()
+            delayResetJob = viewModelScope.launch {
+                delay(timeMillis = currentDelay + 250L)
+                currentDelay = 0L
             }
         }
     }

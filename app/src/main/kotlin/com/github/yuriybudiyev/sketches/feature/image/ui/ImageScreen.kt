@@ -205,6 +205,9 @@ private fun ImageScreenLayout(
         onResult = { },
     )
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(index) {
+        pagerState.scrollToPage(index)
+    }
     LaunchedEffect(Unit) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
             currentIndex = page
@@ -223,10 +226,12 @@ private fun ImageScreenLayout(
     LaunchedEffect(Unit) {
         snapshotFlow { systemBarsControllerUpdated.isSystemBarsVisible }.collect { visible ->
             if (visible) {
-                barState.scrollToItemCentered(
-                    index = pagerState.currentPage,
-                    animate = false,
-                )
+                coroutineScope.launch {
+                    barState.scrollToItemCentered(
+                        index = pagerState.currentPage,
+                        animate = false,
+                    )
+                }
             }
         }
     }
@@ -346,10 +351,12 @@ private fun ImageScreenLayout(
             SketchesDeleteConfirmationDialog(
                 onDelete = {
                     deleteDialogVisible = false
-                    onDeleteUpdated(
-                        currentIndex,
-                        filesUpdated[currentIndex],
-                    )
+                    coroutineScope.launch {
+                        onDeleteUpdated(
+                            currentIndex,
+                            filesUpdated[currentIndex],
+                        )
+                    }
                 },
                 onDismiss = {
                     deleteDialogVisible = false
@@ -536,6 +543,7 @@ private fun MediaBar(
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val currentIndexUpdated by rememberUpdatedState(currentIndex)
     val itemsUpdated by rememberUpdatedState(items)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
@@ -571,10 +579,12 @@ private fun MediaBar(
                     )
                     .clip(shape = MaterialTheme.shapes.extraSmall)
                     .clickable {
-                        onItemClickUpdated(
-                            position,
-                            file,
-                        )
+                        coroutineScope.launch {
+                            onItemClickUpdated(
+                                position,
+                                file,
+                            )
+                        }
                     },
             ) {
                 SketchesAsyncImage(

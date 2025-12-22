@@ -135,12 +135,19 @@ class ImageScreenViewModel @AssistedInject constructor(
                             forwardIndex++
                         }
                     }
+                    val removedFiles = (uiState.value as? UiState.Image)?.let { state ->
+                        state.files.size - filesSize
+                    } ?: 0
                     emit(
                         UiState.Image(
-                            index = actualIndex.coerceIn(
-                                0,
-                                filesSize - 1,
-                            ),
+                            index = if (backwardIndex == -1 && forwardIndex == filesSize && removedFiles > 1) {
+                                0
+                            } else {
+                                actualIndex.coerceIn(
+                                    0,
+                                    filesSize - 1,
+                                )
+                            },
                             files = files,
                         ),
                     )
