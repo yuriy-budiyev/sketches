@@ -100,13 +100,13 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
         override fun onChange(selfChange: Boolean) {
             mediaChangedJob?.cancel()
             mediaChangedJob = viewModelScope.launch {
-                val delayed = measureTime {
+                val delayTime = measureTime {
                     try {
                         delay(timeMillis = currentDelay)
                     } catch (_: CancellationException) {
                     }
                 }
-                currentDelay -= delayed.toLong(DurationUnit.MILLISECONDS)
+                currentDelay -= delayTime.toLong(DurationUnit.MILLISECONDS)
                 if (currentDelay <= 0L) {
                     currentDelay = 1000L
                 }
