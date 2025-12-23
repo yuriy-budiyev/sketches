@@ -93,32 +93,32 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
 
     private inner class Observer: ContentObserver(Handler(Looper.getMainLooper())) {
 
-        private var mediaChangedJob: Job? = null
-        private var delayResetJob: Job? = null
-        private var currentDelay: Long = 0L
-
         override fun onChange(selfChange: Boolean) {
-            mediaChangedJob?.cancel()
-            mediaChangedJob = viewModelScope.launch {
-                val delayTime = measureTime {
+            callbackJob?.cancel()
+            callbackJob = viewModelScope.launch {
+                val actualDelay = measureTime {
                     try {
-                        delay(timeMillis = currentDelay)
+                        delay(timeMillis = callbackDelay)
                     } catch (_: CancellationException) {
                     }
                 }
-                currentDelay -= delayTime.toLong(DurationUnit.MILLISECONDS)
-                if (currentDelay <= 0L) {
-                    currentDelay = 1000L
+                callbackDelay -= actualDelay.toLong(DurationUnit.MILLISECONDS)
+                if (callbackDelay <= 0L) {
+                    callbackDelay = 1000L
                 }
                 if (isActive) {
                     onMediaChanged()
                 }
             }
-            delayResetJob?.cancel()
-            delayResetJob = viewModelScope.launch {
-                delay(timeMillis = currentDelay + 250L)
-                currentDelay = 0L
+            callbackDelayResetJob?.cancel()
+            callbackDelayResetJob = viewModelScope.launch {
+                delay(timeMillis = callbackDelay + 250L)
+                callbackDelay = 0L
             }
         }
+
+        private var callbackJob: Job? = null
+        private var callbackDelayResetJob: Job? = null
+        private var callbackDelay: Long = 0L
     }
 }
