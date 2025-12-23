@@ -36,13 +36,9 @@ import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlin.time.DurationUnit
-import kotlin.time.measureTime
 
 abstract class MediaObservingViewModel(context: Context): ViewModel() {
 
@@ -94,31 +90,22 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
     private inner class Observer: ContentObserver(Handler(Looper.getMainLooper())) {
 
         override fun onChange(selfChange: Boolean) {
-            callbackJob?.cancel()
-            callbackJob = viewModelScope.launch {
-                val actualDelay = measureTime {
-                    try {
-                        delay(timeMillis = callbackDelay)
-                    } catch (_: CancellationException) {
-                    }
+            lastCallbackJob?.cancel()
+            val currentCallTime = System.nanoTime()
+            if (currentCallTime - lastCallTime > 1000000000L) {
+                viewModelScope.launch {
+                    onMediaChanged()
                 }
-                callbackDelay -= actualDelay.toLong(DurationUnit.MILLISECONDS)
-                if (callbackDelay <= 0L) {
-                    callbackDelay = 1000L
-                }
-                if (isActive) {
+                lastCallTime = currentCallTime
+            } else {
+                lastCallbackJob = viewModelScope.launch {
+                    delay(timeMillis = 1000L)
                     onMediaChanged()
                 }
             }
-            callbackDelayResetJob?.cancel()
-            callbackDelayResetJob = viewModelScope.launch {
-                delay(timeMillis = callbackDelay + 250L)
-                callbackDelay = 0L
-            }
         }
 
-        private var callbackJob: Job? = null
-        private var callbackDelayResetJob: Job? = null
-        private var callbackDelay: Long = 0L
+        private var lastCallbackJob: Job? = null
+        private var lastCallTime: Long = 0L
     }
 }
