@@ -270,8 +270,10 @@ fun SketchesMediaController(
             onValueChangeFinished = {
                 if (playingOnSeek) {
                     playingOnSeek = false
-                    state.coroutineScope.launch {
-                        state.play()
+                    if (state.position < state.duration) {
+                        state.coroutineScope.launch {
+                            state.play()
+                        }
                     }
                 }
                 seeking = false

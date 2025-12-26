@@ -548,10 +548,12 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
     }
 
     override fun onForgotten() {
+        player.removeListener(this)
         releasePlayer()
     }
 
     override fun onAbandoned() {
+        player.removeListener(this)
         releasePlayer()
     }
 
