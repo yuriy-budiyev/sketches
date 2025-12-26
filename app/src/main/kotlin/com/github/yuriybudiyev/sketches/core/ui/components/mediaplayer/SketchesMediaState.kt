@@ -160,6 +160,8 @@ sealed interface SketchesMediaState {
 
     fun close()
 
+    fun release()
+
     companion object {
 
         const val UnknownTime: Long = Long.MIN_VALUE
@@ -526,14 +528,6 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
         }
     }
 
-    private fun releasePlayer() {
-        uri = null
-        stopPositionPeriodicUpdate()
-        player.withCheck(Player.COMMAND_RELEASE) {
-            release()
-        }
-    }
-
     override fun close() {
         player.withCheck(Player.COMMAND_STOP) {
             player.stop()
@@ -541,6 +535,18 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
         player.withCheck(Player.COMMAND_CHANGE_MEDIA_ITEMS) {
             player.clearMediaItems()
         }
+    }
+
+    private fun releasePlayer() {
+        uri = null
+        stopPositionPeriodicUpdate()
+        player.removeListener(this)
+        player.withCheck(Player.COMMAND_RELEASE) {
+            release()
+        }
+    }
+
+    override fun release() {
         releasePlayer()
     }
 
@@ -548,12 +554,10 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
     }
 
     override fun onForgotten() {
-        player.removeListener(this)
         releasePlayer()
     }
 
     override fun onAbandoned() {
-        player.removeListener(this)
         releasePlayer()
     }
 

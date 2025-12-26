@@ -477,6 +477,7 @@ private fun VideoPage(
         mediaState.open(fileUri)
         onDispose {
             mediaState.close()
+            mediaState.release()
         }
     }
     LaunchedEffect(state) {
