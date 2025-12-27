@@ -35,9 +35,7 @@ import java.util.concurrent.atomic.AtomicLong
 class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
     Runtime
         .getRuntime()
-        .availableProcessors()
-        .minus(2)
-        .coerceAtLeast(1),
+        .availableProcessors(),
     ImageLoaderThreadFactory(),
     AbortPolicy(),
 ) {
