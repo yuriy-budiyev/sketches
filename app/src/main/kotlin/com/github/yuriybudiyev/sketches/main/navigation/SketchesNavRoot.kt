@@ -45,6 +45,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,7 +61,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SAVED_STATE_REGISTRY_OWNER_KEY
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.VIEW_MODEL_STORE_OWNER_KEY
@@ -123,6 +123,11 @@ fun SketchesNavRoot(
                 add(initialRoute)
             }
         }
+    val currentRouteIsRootNavRoute by remember {
+        derivedStateOf {
+            navBackStack.lastOrNull() is RootNavRoute
+        }
+    }
     val pushNavBackStack = remember { fun(route: NavRoute) { navBackStack.add(route) } }
     val popNavBackStack = remember { fun() { navBackStack.removeLastOrNull() } }
     val navEntryProvider = remember {
@@ -164,22 +169,11 @@ fun SketchesNavRoot(
         }
     }
     val saveableStateHolder = rememberSaveableStateHolder()
-    val saveableStateNavEntryDecorator = remember {
-        NavEntryDecorator<NavRoute>(
-            onPop = { contentKey ->
-                if (contentKey !is RootNavRoute) {
-                    saveableStateHolder.removeState(contentKey)
-                }
-            },
-            decorate = { navEntry ->
-                saveableStateHolder.SaveableStateProvider(navEntry.contentKey) {
-                    navEntry.Content()
-                }
-            },
-        )
-    }
-    val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current)
-    val viewModelStoreNavEntryDecorator = remember(viewModelStoreOwner) {
+    val viewModelStoreOwner =
+        checkNotNull(LocalViewModelStoreOwner.current) {
+            "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+        }
+    val navEntryDecorator = remember(viewModelStoreOwner) {
         val viewModelStoreViewModelProvider = ViewModelProvider.create(
             store = viewModelStoreOwner.viewModelStore,
             factory = viewModelFactory { initializer { ViewModelStoreViewModel() } },
@@ -190,53 +184,49 @@ fun SketchesNavRoot(
             onPop = ({ contentKey ->
                 if (contentKey !is RootNavRoute) {
                     viewModelStoreViewModel.clearViewModelStore(contentKey)
+                    saveableStateHolder.removeState(contentKey)
                 }
             }),
             decorate = { navEntry ->
-                val navEntryViewModelStore =
-                    viewModelStoreViewModel.getOrCreateViewModelStore(navEntry.contentKey)
-                val savedStateRegistryOwner = LocalSavedStateRegistryOwner.current
-                val childViewModelStoreOwner = remember {
-                    object:
-                        ViewModelStoreOwner,
-                        SavedStateRegistryOwner by savedStateRegistryOwner,
-                        HasDefaultViewModelProviderFactory {
+                saveableStateHolder.SaveableStateProvider(navEntry.contentKey) {
+                    val navEntryViewModelStore =
+                        viewModelStoreViewModel.getOrCreateViewModelStore(navEntry.contentKey)
+                    val savedStateRegistryOwner = LocalSavedStateRegistryOwner.current
+                    val childViewModelStoreOwner = remember {
+                        object:
+                            ViewModelStoreOwner,
+                            SavedStateRegistryOwner by savedStateRegistryOwner,
+                            HasDefaultViewModelProviderFactory {
 
-                        override val viewModelStore: ViewModelStore
-                            get() = navEntryViewModelStore
+                            override val viewModelStore: ViewModelStore
+                                get() = navEntryViewModelStore
 
-                        override val defaultViewModelProviderFactory: ViewModelProvider.Factory
-                            get() = SavedStateViewModelFactory()
+                            override val defaultViewModelProviderFactory: ViewModelProvider.Factory
+                                get() = SavedStateViewModelFactory()
 
-                        override val defaultViewModelCreationExtras: CreationExtras
-                            get() = MutableCreationExtras().also { extras ->
-                                extras[SAVED_STATE_REGISTRY_OWNER_KEY] = this
-                                extras[VIEW_MODEL_STORE_OWNER_KEY] = this
+                            override val defaultViewModelCreationExtras: CreationExtras
+                                get() = MutableCreationExtras().also { extras ->
+                                    extras[SAVED_STATE_REGISTRY_OWNER_KEY] = this
+                                    extras[VIEW_MODEL_STORE_OWNER_KEY] = this
+                                }
+
+                            init {
+                                enableSavedStateHandles()
                             }
-
-                        init {
-                            require(lifecycle.currentState == Lifecycle.State.INITIALIZED) {
-                                "ViewModelStore decoration must be initialized before a " +
-                                    "ViewModel with SavedStateHandle can be requested"
-                            }
-                            enableSavedStateHandles()
                         }
                     }
-                }
-                CompositionLocalProvider(
-                    LocalViewModelStoreOwner.provides(childViewModelStoreOwner)
-                ) {
-                    navEntry.Content()
+                    CompositionLocalProvider(
+                        LocalViewModelStoreOwner.provides(childViewModelStoreOwner)
+                    ) {
+                        navEntry.Content()
+                    }
                 }
             },
         )
     }
     val navEntries = rememberDecoratedNavEntries(
         backStack = navBackStack,
-        entryDecorators = listOf(
-            saveableStateNavEntryDecorator,
-            viewModelStoreNavEntryDecorator,
-        ),
+        entryDecorators = listOf(navEntryDecorator),
         entryProvider = navEntryProvider,
     )
     val sceneState = rememberSceneState(
@@ -298,7 +288,7 @@ fun SketchesNavRoot(
                 .fillMaxWidth()
         ) {
             AnimatedVisibility(
-                visible = navBackStack.lastOrNull() is RootNavRoute &&
+                visible = currentRouteIsRootNavRoute &&
                     rootNavBarController.isRootNavBarVisible,
                 enter = fadeIn(),
                 exit = fadeOut(),
