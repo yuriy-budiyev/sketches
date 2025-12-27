@@ -123,7 +123,7 @@ fun SketchesNavRoot(
                 add(initialRoute)
             }
         }
-    val currentRouteIsRootNavRoute by remember {
+    val currentRouteIsRoot by remember {
         derivedStateOf {
             navBackStack.lastOrNull() is RootNavRoute
         }
@@ -216,7 +216,7 @@ fun SketchesNavRoot(
                         }
                     }
                     CompositionLocalProvider(
-                        LocalViewModelStoreOwner.provides(childViewModelStoreOwner)
+                        LocalViewModelStoreOwner.provides(childViewModelStoreOwner),
                     ) {
                         navEntry.Content()
                     }
@@ -288,8 +288,7 @@ fun SketchesNavRoot(
                 .fillMaxWidth()
         ) {
             AnimatedVisibility(
-                visible = currentRouteIsRootNavRoute &&
-                    rootNavBarController.isRootNavBarVisible,
+                visible = currentRouteIsRoot && rootNavBarController.isRootNavBarVisible,
                 enter = fadeIn(),
                 exit = fadeOut(),
                 modifier = Modifier
