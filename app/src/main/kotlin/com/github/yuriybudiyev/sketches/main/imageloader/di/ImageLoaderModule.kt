@@ -57,14 +57,14 @@ object ImageLoaderModule {
             .Builder(context)
             .serviceLoaderEnabled(false)
             .coroutineContext(ImageLoaderExecutor().asCoroutineDispatcher())
-            .memoryCache {
+            .memoryCache(
                 MemoryCache
                     .Builder()
                     .maxSizeBytes(context.getMaxMemory() / 2L)
                     .strongReferencesEnabled(true)
                     .weakReferencesEnabled(false)
                     .build()
-            }
+            )
             .components {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     add(AnimatedImageDecoder.Factory())
