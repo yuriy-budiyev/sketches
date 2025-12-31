@@ -24,9 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components.mediaplayer
 
-import android.app.ActivityManager
 import android.content.Context
-import android.content.pm.ApplicationInfo
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -61,6 +59,7 @@ import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -169,7 +168,6 @@ sealed interface SketchesMediaState {
 }
 
 @Stable
-@UnstableApi
 private class SketchesMediaStateImpl @RememberInComposition constructor(
     context: Context,
     override val coroutineScope: CoroutineScope,
@@ -180,7 +178,7 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
         .setLoadControl(
             DefaultLoadControl
                 .Builder()
-                .setTargetBufferBytes(context.calculateBufferSize())
+                .setTargetBufferBytes((context.getMaxMemory() / 8L).toInt())
                 .build()
         )
         .setMediaSourceFactory(ProgressiveMediaSource.Factory(DefaultDataSource.Factory(context)))
@@ -697,12 +695,4 @@ private inline fun <T> Player.withCheck(
     } else {
         unavailable()
     }
-}
-
-private fun Context.calculateBufferSize(): Int {
-    val activityManager = getSystemService(ActivityManager::class.java)
-    val largeHeap = (applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
-    val memoryClass =
-        if (largeHeap) activityManager.largeMemoryClass else activityManager.memoryClass
-    return memoryClass * 1024 * 1024 / 8
 }

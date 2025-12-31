@@ -29,9 +29,11 @@ import android.os.Build
 import coil3.ImageLoader
 import coil3.gif.AnimatedImageDecoder
 import coil3.gif.GifDecoder
+import coil3.memory.MemoryCache
 import coil3.serviceLoaderEnabled
 import coil3.svg.SvgDecoder
 import coil3.video.VideoFrameDecoder
+import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
 import com.github.yuriybudiyev.sketches.main.imageloader.executor.ImageLoaderExecutor
 import dagger.Module
 import dagger.Provides
@@ -55,6 +57,14 @@ object ImageLoaderModule {
             .Builder(context)
             .serviceLoaderEnabled(false)
             .coroutineContext(ImageLoaderExecutor().asCoroutineDispatcher())
+            .memoryCache {
+                MemoryCache
+                    .Builder()
+                    .maxSizeBytes(context.getMaxMemory() / 2L)
+                    .strongReferencesEnabled(true)
+                    .weakReferencesEnabled(false)
+                    .build()
+            }
             .components {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     add(AnimatedImageDecoder.Factory())
