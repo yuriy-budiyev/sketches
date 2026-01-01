@@ -50,7 +50,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.UiComposable
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -85,7 +84,7 @@ fun SketchesZoomableBox(
         toInclusive = true,
     )
     doubleTapZoomFraction: Float = 0.2f,
-    content: @Composable @UiComposable SketchesZoomableBoxScope.() -> Unit,
+    content: @Composable SketchesZoomableBoxScope.() -> Unit,
 ) {
     require(maxRelativeZoom >= 1f) {
         "Maximum relative zoom can't be lower than 1.0"

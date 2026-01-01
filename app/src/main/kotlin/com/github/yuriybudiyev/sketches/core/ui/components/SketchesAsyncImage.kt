@@ -96,6 +96,9 @@ fun SketchesAsyncImage(
         contentAlignment = Alignment.Center,
     ) {
         when (painterState) {
+            is AsyncImagePainter.State.Empty -> {
+                // Do nothing
+            }
             is AsyncImagePainter.State.Loading -> {
                 if (enableLoadingIndicator) {
                     SketchesLoadingStateIcon()
@@ -121,9 +124,6 @@ fun SketchesAsyncImage(
                             alignment = Alignment.Center,
                         )
                 )
-            }
-            else -> {
-                // Do nothing
             }
         }
     }
@@ -164,6 +164,9 @@ fun SketchesZoomableAsyncImage(
         contentAlignment = Alignment.Center,
     ) {
         when (painterState) {
+            is AsyncImagePainter.State.Empty -> {
+                // Do nothing
+            }
             is AsyncImagePainter.State.Loading -> {
                 if (enableLoadingIndicator) {
                     SketchesLoadingStateIcon()
@@ -198,9 +201,6 @@ fun SketchesZoomableAsyncImage(
                             ),
                     )
                 }
-            }
-            else -> {
-                // Do nothing
             }
         }
     }
