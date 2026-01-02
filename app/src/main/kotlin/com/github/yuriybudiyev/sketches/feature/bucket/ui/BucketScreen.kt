@@ -168,8 +168,7 @@ fun BucketScreen(
     val scrollToStartButtonVisible by remember {
         derivedStateOf {
             with(mediaGridState) {
-                lastScrolledBackward && !isScrollInProgress
-                    && !(firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0)
+                lastScrolledBackward && !(firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0)
             }
         }
     }
