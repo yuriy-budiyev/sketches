@@ -25,21 +25,38 @@
 package com.github.yuriybudiyev.sketches.feature.bucket.ui
 
 import android.app.Activity
+import android.content.res.Configuration
 import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.component1
 import androidx.activity.result.component2
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,8 +67,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -145,6 +165,14 @@ fun BucketScreen(
         }
     }
     val mediaGridState = rememberSketchesLazyGridState()
+    val scrollToStartButtonVisible by remember {
+        derivedStateOf {
+            with(mediaGridState) {
+                lastScrolledBackward && !isScrollInProgress
+                    && !(firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0)
+            }
+        }
+    }
     val navResultStore = LocalNavResultStore.current
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(
@@ -295,6 +323,43 @@ fun BucketScreen(
                             )
                         }
                     },
+                )
+            }
+        }
+        var contentInsets = WindowInsets.navigationBars
+            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+        if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            contentInsets = contentInsets
+                .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
+        }
+        AnimatedVisibility(
+            visible = scrollToStartButtonVisible,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(contentInsets.asPaddingValues())
+                .padding(16.dp),
+        ) {
+            FloatingActionButton(
+                shape = CircleShape,
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp,
+                    focusedElevation = 0.dp,
+                    hoveredElevation = 0.dp,
+                ),
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                onClick = {
+                    coroutineScope.launch {
+                        mediaGridState.animateScrollToItem(0)
+                    }
+                }
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_scroll_to_start),
+                    contentDescription = stringResource(R.string.scroll_to_start),
                 )
             }
         }

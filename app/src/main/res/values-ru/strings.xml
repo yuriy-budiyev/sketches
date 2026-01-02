@@ -31,4 +31,5 @@
     <string name="selected" tools:override="true">Выбрано</string>
     <string name="select_all">Выбрать всё</string>
     <string name="select_none">Снять выделение</string>
+    <string name="scroll_to_start">Прокрутить в начало</string>
 </resources>

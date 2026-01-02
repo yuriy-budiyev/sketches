@@ -31,4 +31,5 @@
     <string name="selected" tools:override="true">Selected</string>
     <string name="select_all">Select all</string>
     <string name="select_none">Clear selection</string>
+    <string name="scroll_to_start">Scroll to start</string>
 </resources>
