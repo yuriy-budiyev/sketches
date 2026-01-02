@@ -153,13 +153,13 @@ fun BucketsScreen(
         },
     )
     DisposableEffect(Unit) {
-        shareManagerUpdated.registerOnSharedListener(ACTION_SHARE) {
+        shareManagerUpdated.registerOnSharedListener(ShareAction) {
             coroutineScope.launch {
                 selectedBuckets.clear()
             }
         }
         onDispose {
-            shareManagerUpdated.unregisterOnSharedListener(ACTION_SHARE)
+            shareManagerUpdated.unregisterOnSharedListener(ShareAction)
         }
     }
     LaunchedEffect(Unit) {
@@ -186,7 +186,7 @@ fun BucketsScreen(
                             uris = shareInfo.uris,
                             mimeType = shareInfo.mimeType,
                             chooserTitle = contextUpdated.getString(R.string.share_selected),
-                            listenerAction = ACTION_SHARE,
+                            listenerAction = ShareAction,
                         )
                     }
                     is BucketsScreenViewModel.UiState.Buckets.Action.Delete -> {
@@ -491,4 +491,5 @@ private fun BucketsScreenLayout(
     }
 }
 
-private const val ACTION_SHARE = "com.github.yuriybudiyev.sketches.feature.buckets.ui.ACTION_SHARE"
+private const val ShareAction: String =
+    "com.github.yuriybudiyev.sketches.feature.buckets.ui.ShareAction"

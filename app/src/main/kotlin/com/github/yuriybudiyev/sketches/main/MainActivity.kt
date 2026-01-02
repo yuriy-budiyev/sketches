@@ -122,7 +122,7 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
         ContextCompat.registerReceiver(
             this,
             shareReceiver,
-            IntentFilter(ActionChooserCallbackResend),
+            IntentFilter(ChooserCallbackResendAction),
             ContextCompat.RECEIVER_NOT_EXPORTED,
         )
     }
@@ -256,10 +256,10 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
 
     private companion object {
 
-        const val ActionChooserCallbackResend: String =
-            "com.github.yuriybudiyev.sketches.main.ActionChooserCallbackResend"
+        const val ChooserCallbackResendAction: String =
+            "com.github.yuriybudiyev.sketches.main.ChooserCallbackResendAction"
 
-        const val ExtraChooserCallbackAction: String = "ChooserCallbackAction"
+        const val ChooserCallbackActionExtra: String = "ChooserCallbackAction"
     }
 
     class ChooserCallbackReceiver: BroadcastReceiver() {
@@ -269,9 +269,9 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
             intent: Intent,
         ) {
             context.sendBroadcast(
-                Intent(ActionChooserCallbackResend)
+                Intent(ChooserCallbackResendAction)
                     .putExtra(
-                        ExtraChooserCallbackAction,
+                        ChooserCallbackActionExtra,
                         intent.action,
                     )
                     .setPackage(context.packageName)
@@ -286,7 +286,7 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
             intent: Intent,
         ) {
             lifecycleScope.launch {
-                onSharedListeners[intent.getStringExtra(ExtraChooserCallbackAction)]?.invoke()
+                onSharedListeners[intent.getStringExtra(ChooserCallbackActionExtra)]?.invoke()
             }
         }
     }

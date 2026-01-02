@@ -132,13 +132,13 @@ fun ImagesScreen(
         },
     )
     DisposableEffect(Unit) {
-        shareManagerUpdated.registerOnSharedListener(ACTION_SHARE) {
+        shareManagerUpdated.registerOnSharedListener(ShareAction) {
             coroutineScope.launch {
                 selectedFiles.clear()
             }
         }
         onDispose {
-            shareManagerUpdated.unregisterOnSharedListener(ACTION_SHARE)
+            shareManagerUpdated.unregisterOnSharedListener(ShareAction)
         }
     }
     LaunchedEffect(Unit) {
@@ -333,7 +333,7 @@ fun ImagesScreen(
                                 uris = shareInfo.uris,
                                 mimeType = shareInfo.mimeType,
                                 chooserTitle = shareDescription,
-                                listenerAction = ACTION_SHARE,
+                                listenerAction = ShareAction,
                             )
                         }
                     },
@@ -374,4 +374,5 @@ abstract class OnRequestMediaAccess: () -> Unit {
     var isEnabled: Boolean by mutableStateOf(false)
 }
 
-private const val ACTION_SHARE = "com.github.yuriybudiyev.sketches.feature.images.ui.ACTION_SHARE"
+private const val ShareAction: String =
+    "com.github.yuriybudiyev.sketches.feature.images.ui.ShareAction"
