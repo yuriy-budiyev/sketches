@@ -69,6 +69,7 @@ import java.time.format.TextStyle
 import java.time.temporal.ChronoField
 import java.util.Locale
 
+@Immutable
 sealed interface SketchesMediaGridKey: Parcelable {
 
     @Parcelize
@@ -85,6 +86,7 @@ sealed interface SketchesMediaGridKey: Parcelable {
     ): SketchesMediaGridKey
 }
 
+@Immutable
 sealed interface SketchesMediaGridContentType {
 
     @Immutable
