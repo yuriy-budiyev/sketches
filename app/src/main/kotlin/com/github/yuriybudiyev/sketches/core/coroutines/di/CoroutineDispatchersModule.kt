@@ -58,7 +58,7 @@ object CoroutineDispatchersModule {
 
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Dispatcher(@Suppress("unused") val dispatcher: Dispatchers)
+annotation class Dispatcher(val dispatcher: Dispatchers)
 
 enum class Dispatchers {
     Default,

@@ -23,7 +23,7 @@ android {
 
     defaultConfig {
         applicationId = "com.github.yuriybudiyev.sketches"
-        minSdk = 26
+        minSdk = 23
         targetSdk = 36
         versionCode = 36
         versionName = "1.0.37"

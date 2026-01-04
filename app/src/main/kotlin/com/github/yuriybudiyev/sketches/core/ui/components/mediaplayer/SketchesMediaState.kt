@@ -168,6 +168,7 @@ sealed interface SketchesMediaState {
 }
 
 @Stable
+@OptIn(UnstableApi::class)
 private class SketchesMediaStateImpl @RememberInComposition constructor(
     context: Context,
     override val coroutineScope: CoroutineScope,
