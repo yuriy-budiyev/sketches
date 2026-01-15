@@ -24,6 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.core.consumable
 
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
 import javax.annotation.concurrent.ThreadSafe
 
 @ThreadSafe
@@ -38,13 +40,16 @@ class Consumable<T> private constructor(value: T) {
         if (value === Consumed) {
             value = null
         } else {
-            synchronized(consumeLock) {
+            consumeLock.lock()
+            try {
                 value = valueInternal
                 if (value === Consumed) {
                     value = null
                 } else {
                     valueInternal = Consumed
                 }
+            } finally {
+                consumeLock.unlock()
             }
         }
         return value as T?
@@ -53,7 +58,7 @@ class Consumable<T> private constructor(value: T) {
     @Volatile
     private var valueInternal: Any? = value
 
-    private val consumeLock: Any = Any()
+    private val consumeLock: Lock = ReentrantLock()
 
     override fun toString(): String =
         "Consumable($valueInternal)"
