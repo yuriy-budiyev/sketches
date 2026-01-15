@@ -29,6 +29,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.MainCoroutineDispatcher
 import javax.inject.Qualifier
 
 @Module
@@ -42,7 +43,7 @@ object CoroutineDispatchersModule {
 
     @Provides
     @Dispatcher(Dispatchers.Main)
-    fun provideMainDispatcher(): CoroutineDispatcher =
+    fun provideMainDispatcher(): MainCoroutineDispatcher =
         kotlinx.coroutines.Dispatchers.Main
 
     @Provides
