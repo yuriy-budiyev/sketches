@@ -309,8 +309,8 @@ private fun ImageScreenLayout(
             modifier = Modifier.align(Alignment.TopStart),
         ) {
             SketchesTopAppBar(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                text = filesUpdated[currentIndex].displayName,
+                modifier = Modifier.fillMaxWidth(),
                 backgroundColor = MaterialTheme.colorScheme.background
                     .copy(alpha = SketchesColors.UiAlphaLowTransparency),
             ) {

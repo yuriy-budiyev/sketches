@@ -33,6 +33,7 @@ import java.time.LocalDateTime
 data class MediaStoreFile(
     val id: Long,
     val bucketId: Long,
+    val displayName: String,
     val dateAdded: LocalDateTime,
     val mediaType: MediaType,
     val mimeType: String,

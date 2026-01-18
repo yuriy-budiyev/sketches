@@ -58,7 +58,7 @@ fun SketchesTopAppBar(
                     text = text,
                     color = contentColor,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    overflow = TextOverflow.MiddleEllipsis,
                 )
             }
         },

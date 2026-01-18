@@ -57,6 +57,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
             arrayOf(
                 MediaStore.MediaColumns._ID,
                 MediaStore.MediaColumns.BUCKET_ID,
+                MediaStore.MediaColumns.DISPLAY_NAME,
                 MediaStore.MediaColumns.DATE_ADDED,
                 MediaStore.MediaColumns.MIME_TYPE,
             ),
@@ -76,6 +77,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
             val files = ArrayList<MediaStoreFile>(c.count)
             val idColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
             val bucketIdColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_ID)
+            val displayNameColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)
             val dateAddedColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_ADDED)
             val mimeTypeColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE)
             while (c.moveToNext()) {
@@ -84,6 +86,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
                     MediaStoreFile(
                         id = id,
                         bucketId = c.getLong(bucketIdColumn),
+                        displayName = c.getStringOrNull(displayNameColumn) ?: id.toString(),
                         dateAdded = LocalDateTime.ofInstant(
                             Instant.ofEpochSecond(c.getLong(dateAddedColumn)),
                             ZoneId.systemDefault(),
