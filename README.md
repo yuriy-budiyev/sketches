@@ -4,7 +4,7 @@ Android gallery app based on Compose, Coil and Media3 with zoom, share, delete a
 
 #### Multimodule
 
-I will wait for AGP 9 (since it comes with breaking changes) and AS 2025.3.1 (for proper Kotlin 2.3 support) before converting this app to a multimodule one.
+I will wait for ~~AGP 9 (since it comes with breaking changes) and~~ AS 2025.3.1 (for proper Kotlin 2.3 support) before converting this app to a multimodule one.
 
 #### Screenshot
 
