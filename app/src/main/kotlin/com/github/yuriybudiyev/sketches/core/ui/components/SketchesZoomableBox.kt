@@ -333,9 +333,9 @@ private suspend fun PointerInputScope.detectTransformGestures(
     }
 }
 
-@LayoutScopeMarker
 @Stable
-interface SketchesZoomableBoxScope: BoxScope {
+@LayoutScopeMarker
+sealed interface SketchesZoomableBoxScope: BoxScope {
 
     /**
      * Connects the element with [SketchesZoomableBox] to enable zoom.
