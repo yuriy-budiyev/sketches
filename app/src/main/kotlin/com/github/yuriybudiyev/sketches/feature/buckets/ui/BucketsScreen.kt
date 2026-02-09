@@ -152,7 +152,7 @@ fun BucketsScreen(
             }
         },
     )
-    DisposableEffect(Unit) {
+    DisposableEffect(shareManagerUpdated) {
         shareManagerUpdated.registerOnSharedListener(ShareAction) {
             coroutineScope.launch {
                 selectedBuckets.clear()

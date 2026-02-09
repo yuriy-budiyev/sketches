@@ -131,7 +131,7 @@ fun ImagesScreen(
             }
         },
     )
-    DisposableEffect(Unit) {
+    DisposableEffect(shareManagerUpdated) {
         shareManagerUpdated.registerOnSharedListener(ShareAction) {
             coroutineScope.launch {
                 selectedFiles.clear()
