@@ -45,7 +45,7 @@ fun EntryProviderScope<NavRoute>.registerBucketNavRoute(
     registerNavRoute<BucketNavRoute> { route ->
         BucketRoute(
             viewModel = hiltViewModel<BucketScreenViewModel, BucketScreenViewModel.Factory>(
-                creationCallback = { factory -> factory.create(route) }
+                creationCallback = { factory -> factory.create(route) },
             ),
             onImageClick = onImageClick,
         )

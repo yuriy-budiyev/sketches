@@ -73,9 +73,9 @@ fun SketchesErrorMessage(
                                 ClipEntry(
                                     ClipData.newPlainText(
                                         "Stack trace",
-                                        thrownUpdated.stackTraceToString()
-                                    )
-                                )
+                                        thrownUpdated.stackTraceToString(),
+                                    ),
+                                ),
                             )
                         }
                     }

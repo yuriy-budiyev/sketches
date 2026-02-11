@@ -274,7 +274,7 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
                         ChooserCallbackActionExtra,
                         intent.action,
                     )
-                    .setPackage(context.packageName)
+                    .setPackage(context.packageName),
             )
         }
     }

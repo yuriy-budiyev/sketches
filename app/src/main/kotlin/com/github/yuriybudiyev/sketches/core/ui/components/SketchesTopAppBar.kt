@@ -68,7 +68,7 @@ fun SketchesTopAppBar(
             containerColor = backgroundColor,
             titleContentColor = contentColor,
             navigationIconContentColor = contentColor,
-            actionIconContentColor = contentColor
+            actionIconContentColor = contentColor,
         ),
         windowInsets = WindowInsets.systemBars
             .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))

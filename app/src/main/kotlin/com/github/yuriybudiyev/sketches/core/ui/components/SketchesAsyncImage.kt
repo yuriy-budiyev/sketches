@@ -89,7 +89,7 @@ fun SketchesAsyncImage(
             painterState = state
         },
         contentScale = contentScale,
-        filterQuality = filterQuality
+        filterQuality = filterQuality,
     )
     Box(
         modifier = modifier.then(sizeResolver),
@@ -122,7 +122,7 @@ fun SketchesAsyncImage(
                             painter,
                             contentScale = contentScale,
                             alignment = Alignment.Center,
-                        )
+                        ),
                 )
             }
         }
@@ -157,7 +157,7 @@ fun SketchesZoomableAsyncImage(
             painterState = state
         },
         contentScale = ContentScale.None,
-        filterQuality = FilterQuality.High
+        filterQuality = FilterQuality.High,
     )
     Box(
         modifier = modifier,

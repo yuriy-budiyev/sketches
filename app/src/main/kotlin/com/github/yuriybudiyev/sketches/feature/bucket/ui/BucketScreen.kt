@@ -115,7 +115,7 @@ fun BucketRoute(
         onImageClick = onImageClick,
         onDeleteMedia = { files ->
             viewModel.deleteMedia(files)
-        }
+        },
     )
 }
 
@@ -354,7 +354,7 @@ fun BucketScreen(
                     coroutineScope.launch {
                         mediaGridState.animateScrollToItem(0)
                     }
-                }
+                },
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_scroll_to_start),

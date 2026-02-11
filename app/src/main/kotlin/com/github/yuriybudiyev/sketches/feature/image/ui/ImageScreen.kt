@@ -133,7 +133,7 @@ fun ImageRoute(viewModel: ImageScreenViewModel) {
                 result = ImageScreenNavResult(
                     fileIndex = index,
                     fileId = fileId,
-                )
+                ),
             )
         },
         onDelete = { _, file ->
@@ -296,7 +296,7 @@ private fun ImageScreenLayout(
                     )
                     .background(
                         color = MaterialTheme.colorScheme.background
-                            .copy(alpha = SketchesColors.UiAlphaLowTransparency)
+                            .copy(alpha = SketchesColors.UiAlphaLowTransparency),
                     )
                     .height(SketchesDimens.BottomBarHeight)
                     .fillMaxWidth(),
@@ -517,7 +517,7 @@ private fun VideoPage(
         controllerBottomPadding = controllerBottomPadding,
         modifier = modifier,
         enableImagePlaceholder = false,
-        enableErrorIndicator = true
+        enableErrorIndicator = true,
     )
 }
 

@@ -80,12 +80,12 @@ fun rememberSketchesMediaState(
         coroutineScope,
         saver = SketchesMediaStateImplSaver(
             appContext,
-            coroutineScope
-        )
+            coroutineScope,
+        ),
     ) {
         SketchesMediaStateImpl(
             appContext,
-            coroutineScope
+            coroutineScope,
         )
     }
 }
@@ -123,7 +123,7 @@ sealed interface SketchesMediaState {
 
     @get:FloatRange(
         from = 0.0,
-        fromInclusive = false
+        fromInclusive = false,
     )
     val displayAspectRatio: Float
 
@@ -180,7 +180,7 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
             DefaultLoadControl
                 .Builder()
                 .setTargetBufferBytes((context.getMaxMemory() / 8L).toInt())
-                .build()
+                .build(),
         )
         .setMediaSourceFactory(ProgressiveMediaSource.Factory(DefaultDataSource.Factory(context)))
         .build()
@@ -302,7 +302,7 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
 
     @FloatRange(
         from = 0.0,
-        fromInclusive = false
+        fromInclusive = false,
     )
     private fun displayAspectRatioInternal(videoSize: VideoSize = player.videoSize): Float {
         val width = videoSize.width.toFloat()
@@ -316,11 +316,11 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
 
     @get:FloatRange(
         from = 0.0,
-        fromInclusive = false
+        fromInclusive = false,
     )
     @setparam:FloatRange(
         from = 0.0,
-        fromInclusive = false
+        fromInclusive = false,
     )
     override var displayAspectRatio: Float by mutableFloatStateOf(displayAspectRatioInternal())
         private set
@@ -401,7 +401,7 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
                     position = contentPosition,
                     duration = contentDuration,
                     unknownToCheck = C.TIME_UNSET,
-                    unknownToReturn = SketchesMediaState.UnknownTime
+                    unknownToReturn = SketchesMediaState.UnknownTime,
                 )
             },
             unavailable = { SketchesMediaState.UnknownTime },
@@ -424,7 +424,7 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
             position != unknownToCheck && duration != unknownToCheck -> {
                 position.coerceIn(
                     minimumValue = 0L,
-                    maximumValue = duration
+                    maximumValue = duration,
                 )
             }
             position != unknownToCheck -> {
@@ -505,7 +505,7 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
         player.withCheck(Player.COMMAND_CHANGE_MEDIA_ITEMS) {
             setMediaItem(
                 MediaItem.fromUri(uri),
-                position
+                position,
             )
             this@SketchesMediaStateImpl.uri = uri
         }
@@ -574,15 +574,15 @@ private class SketchesMediaStateImplSaver(
     override fun restore(value: Bundle): SketchesMediaStateImpl =
         SketchesMediaStateImpl(
             context,
-            coroutineScope
+            coroutineScope,
         ).apply {
             val volumeEnabled = value.getBoolean(
                 Keys.VolumeEnabled,
-                false
+                false,
             )
             val repeatEnabled = value.getBoolean(
                 Keys.RepeatEnabled,
-                false
+                false,
             )
             val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 value.getParcelable(
@@ -596,18 +596,18 @@ private class SketchesMediaStateImplSaver(
             if (uri != null) {
                 val playing = value.getBoolean(
                     Keys.Playing,
-                    false
+                    false,
                 )
                 val position = value.getLong(
                     Keys.Position,
-                    0L
+                    0L,
                 )
                 open(
                     uri = uri,
                     position = position,
                     playWhenReady = playing,
                     volumeEnabled = volumeEnabled,
-                    repeatEnabled = repeatEnabled
+                    repeatEnabled = repeatEnabled,
                 )
             } else {
                 if (volumeEnabled) {
@@ -627,23 +627,23 @@ private class SketchesMediaStateImplSaver(
         Bundle().apply {
             putBoolean(
                 Keys.Playing,
-                value.isPlaying
+                value.isPlaying,
             )
             putBoolean(
                 Keys.VolumeEnabled,
-                value.isVolumeEnabled
+                value.isVolumeEnabled,
             )
             putBoolean(
                 Keys.RepeatEnabled,
-                value.isRepeatEnabled
+                value.isRepeatEnabled,
             )
             putLong(
                 Keys.Position,
-                value.position
+                value.position,
             )
             putParcelable(
                 Keys.Uri,
-                value.uri
+                value.uri,
             )
         }
 
@@ -666,7 +666,7 @@ private inline fun Player.withCheck(
     contract {
         callsInPlace(
             available,
-            InvocationKind.AT_MOST_ONCE
+            InvocationKind.AT_MOST_ONCE,
         )
     }
     if (isCommandAvailable(command)) {
@@ -684,11 +684,11 @@ private inline fun <T> Player.withCheck(
     contract {
         callsInPlace(
             available,
-            InvocationKind.AT_MOST_ONCE
+            InvocationKind.AT_MOST_ONCE,
         )
         callsInPlace(
             unavailable,
-            InvocationKind.AT_MOST_ONCE
+            InvocationKind.AT_MOST_ONCE,
         )
     }
     return if (isCommandAvailable(command)) {

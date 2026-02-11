@@ -139,7 +139,7 @@ fun SketchesNavRoot(
                             imageIndex = index,
                             imageId = file.id,
                             bucketId = null,
-                        )
+                        ),
                     )
                 },
                 onRequestMediaAccess = onRequestMediaAccess,
@@ -150,7 +150,7 @@ fun SketchesNavRoot(
                         BucketNavRoute(
                             bucketId = bucket.id,
                             bucketName = bucket.name,
-                        )
+                        ),
                     )
                 },
             )
@@ -161,7 +161,7 @@ fun SketchesNavRoot(
                             imageIndex = index,
                             imageId = file.id,
                             bucketId = file.bucketId,
-                        )
+                        ),
                     )
                 },
             )
@@ -253,7 +253,7 @@ fun SketchesNavRoot(
     Box(modifier = modifier) {
         CompositionLocalProvider(
             LocalNavResultStore.provides(navResultStore),
-            LocalRootNavBarController.provides(rootNavBarController)
+            LocalRootNavBarController.provides(rootNavBarController),
         ) {
             NavDisplay(
                 sceneState = sceneState,
@@ -285,7 +285,7 @@ fun SketchesNavRoot(
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .fillMaxWidth()
+                .fillMaxWidth(),
         ) {
             AnimatedVisibility(
                 visible = currentRouteIsRoot && rootNavBarController.isRootNavBarVisible,
@@ -300,7 +300,7 @@ fun SketchesNavRoot(
                         .background(
                             MaterialTheme.colorScheme.background
                                 .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                            RectangleShape
+                            RectangleShape,
                         )
                         .fillMaxSize(),
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -332,7 +332,7 @@ fun SketchesNavRoot(
                                             route.selectedIconRes
                                         } else {
                                             route.unselectedIconRes
-                                        }
+                                        },
                                     ),
                                     contentDescription = stringResource(route.titleRes),
                                 )
@@ -358,7 +358,7 @@ fun SketchesNavRoot(
                         .background(
                             MaterialTheme.colorScheme.background
                                 .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                            RectangleShape
+                            RectangleShape,
                         )
                         .fillMaxSize(),
                 )

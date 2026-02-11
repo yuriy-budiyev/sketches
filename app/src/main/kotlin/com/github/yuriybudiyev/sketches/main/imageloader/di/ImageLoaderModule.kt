@@ -63,7 +63,7 @@ object ImageLoaderModule {
                     .maxSizeBytes(context.getMaxMemory() / 2L)
                     .strongReferencesEnabled(true)
                     .weakReferencesEnabled(false)
-                    .build()
+                    .build(),
             )
             .components {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

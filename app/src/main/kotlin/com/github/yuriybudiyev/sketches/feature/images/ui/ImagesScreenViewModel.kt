@@ -106,7 +106,7 @@ class ImagesScreenViewModel @Inject constructor(
                     UiState.Images(
                         files = files,
                         groups = groups,
-                    )
+                    ),
                 )
             } else {
                 emit(UiState.Empty)

@@ -43,7 +43,7 @@ fun SketchesTheme(content: @Composable () -> Unit) {
             SketchesLightColorScheme
         },
         typography = SketchesTypography,
-        content = content
+        content = content,
     )
 }
 

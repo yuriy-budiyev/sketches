@@ -44,7 +44,7 @@ class SketchesApplication: Application(), SingletonImageLoader.Factory {
                 ComposeStackTraceMode.SourceInformation
             } else {
                 ComposeStackTraceMode.GroupKeys
-            }
+            },
         )
     }
 

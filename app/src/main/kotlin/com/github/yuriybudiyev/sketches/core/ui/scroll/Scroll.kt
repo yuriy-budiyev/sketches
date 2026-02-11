@@ -44,7 +44,7 @@ suspend fun LazyListState.scrollToItemCentered(
         .minus(
             visibleItemsInfo.firstOrNull { item -> item.index == index }?.size
                 ?: visibleItemsInfo.firstOrNull()?.size
-                ?: 0
+                ?: 0,
         )
         .div(2)
         .unaryMinus()

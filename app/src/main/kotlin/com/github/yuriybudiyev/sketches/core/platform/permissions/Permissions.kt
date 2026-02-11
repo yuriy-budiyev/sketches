@@ -31,5 +31,5 @@ import androidx.core.content.ContextCompat
 fun Context.checkPermissionGranted(permission: String): Boolean =
     ContextCompat.checkSelfPermission(
         this,
-        permission
+        permission,
     ) == PackageManager.PERMISSION_GRANTED

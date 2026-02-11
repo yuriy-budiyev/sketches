@@ -77,12 +77,12 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
             registerContentObserver(
                 MediaType.Image.contentUri,
                 true,
-                imagesObserver
+                imagesObserver,
             )
             registerContentObserver(
                 MediaType.Video.contentUri,
                 true,
-                videoObserver
+                videoObserver,
             )
         }
     }

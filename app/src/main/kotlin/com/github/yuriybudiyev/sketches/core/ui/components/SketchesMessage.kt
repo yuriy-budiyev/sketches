@@ -48,7 +48,7 @@ fun SketchesMessage(
         modifier = modifier,
         color = MaterialTheme.colorScheme.onBackground,
         fontSize = 18.sp,
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Center,
     )
 }
 
@@ -59,13 +59,13 @@ fun SketchesCenteredMessage(
 ) {
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         SketchesMessage(
             text = text,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
         )
     }
 }

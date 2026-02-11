@@ -90,13 +90,13 @@ fun SketchesMediaPlayer(
             backgroundColor = backgroundColor,
             indicatorColor = controlsColor,
             enableImagePlaceholder = enableImagePlaceholder,
-            enableErrorIndicator = enableErrorIndicator
+            enableErrorIndicator = enableErrorIndicator,
         )
         AnimatedVisibility(
             visible = controllerVisibleUpdated,
             enter = fadeIn(),
             exit = fadeOut(),
-            modifier = Modifier.align(alignment = Alignment.BottomStart)
+            modifier = Modifier.align(alignment = Alignment.BottomStart),
         ) {
             SketchesMediaController(
                 state = state,
@@ -105,11 +105,11 @@ fun SketchesMediaPlayer(
                     .height(height = 64.dp)
                     .background(
                         color = controlsBackgroundColor,
-                        shape = RectangleShape
+                        shape = RectangleShape,
                     )
                     .padding(
                         start = controllerStartPaddingUpdated + 4.dp,
-                        end = controllerEndPaddingUpdated + 4.dp
+                        end = controllerEndPaddingUpdated + 4.dp,
                     )
                     .clickable(
                         interactionSource = null,
@@ -139,7 +139,7 @@ fun SketchesMediaDisplay(
                 .matchParentSize()
                 .background(
                     color = backgroundColor,
-                    shape = RectangleShape
+                    shape = RectangleShape,
                 ),
             onTap = onTap,
         ) {
@@ -148,7 +148,7 @@ fun SketchesMediaDisplay(
                 modifier = Modifier
                     .aspectRatio(
                         ratio = displayAspectRatio,
-                        matchHeightConstraintsFirst = displayAspectRatio < 1f
+                        matchHeightConstraintsFirst = displayAspectRatio < 1f,
                     )
                     .zoomable(),
                 factory = { context -> TextureView(context) },
@@ -163,8 +163,8 @@ fun SketchesMediaDisplay(
                     .matchParentSize()
                     .background(
                         color = backgroundColor,
-                        shape = RectangleShape
-                    )
+                        shape = RectangleShape,
+                    ),
             )
             if (state.isPlaybackError) {
                 if (enableErrorIndicator) {
@@ -174,7 +174,7 @@ fun SketchesMediaDisplay(
                         modifier = Modifier
                             .size(48.dp)
                             .align(Alignment.Center),
-                        tint = indicatorColor
+                        tint = indicatorColor,
                     )
                 }
             } else {
@@ -185,7 +185,7 @@ fun SketchesMediaDisplay(
                         modifier = Modifier
                             .size(48.dp)
                             .align(Alignment.Center),
-                        tint = indicatorColor
+                        tint = indicatorColor,
                     )
                 }
             }
@@ -201,7 +201,7 @@ fun SketchesMediaController(
 ) {
     Row(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             modifier = Modifier
@@ -216,7 +216,7 @@ fun SketchesMediaController(
                         }
                     }
                 },
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Icon(
                 painter = painterResource(
@@ -231,10 +231,10 @@ fun SketchesMediaController(
                         R.string.pause
                     } else {
                         R.string.play
-                    }
+                    },
                 ),
                 tint = color,
-                modifier = Modifier.size(size = 24.dp)
+                modifier = Modifier.size(size = 24.dp),
             )
         }
         val position = state.position
@@ -280,7 +280,7 @@ fun SketchesMediaController(
             },
             modifier = Modifier.weight(weight = 1f),
             thumbColor = color,
-            trackColor = color.copy(alpha = SketchesColors.UiAlphaLowTransparency)
+            trackColor = color.copy(alpha = SketchesColors.UiAlphaLowTransparency),
         )
         Box(
             modifier = Modifier
@@ -295,7 +295,7 @@ fun SketchesMediaController(
                         }
                     }
                 },
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Icon(
                 painter = painterResource(
@@ -310,10 +310,10 @@ fun SketchesMediaController(
                         R.string.disable_volume
                     } else {
                         R.string.enable_volume
-                    }
+                    },
                 ),
                 tint = color,
-                modifier = Modifier.size(size = 24.dp)
+                modifier = Modifier.size(size = 24.dp),
             )
         }
     }

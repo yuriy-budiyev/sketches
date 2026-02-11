@@ -87,7 +87,7 @@ fun SketchesLazyGrid(
                 SketchesDimens.LazyGridOverlayTop
             } else {
                 SketchesDimens.LazyGridItemSpacing
-            }
+            },
         )
     val contentPaddingEnd = contentPaddings
         .calculateEndPadding(layoutDirection)
@@ -99,7 +99,7 @@ fun SketchesLazyGrid(
                 SketchesDimens.LazyGridOverlayBottom
             } else {
                 SketchesDimens.LazyGridItemSpacing
-            }
+            },
         )
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = SketchesDimens.LazyGridItemSize),

@@ -102,7 +102,7 @@ fun ImagesRoute(
         onImageClick = onImageClick,
         onDeleteMedia = { files ->
             viewModel.deleteMedia(files)
-        }
+        },
     )
 }
 

@@ -119,7 +119,7 @@ fun BucketsRoute(
         },
         onDeleteMedia = { uris ->
             viewModel.deleteMedia(uris)
-        }
+        },
     )
 }
 
@@ -274,7 +274,7 @@ fun BucketsScreen(
             is BucketsScreenViewModel.UiState.Error -> {
                 SketchesErrorMessage(
                     thrown = uiState.thrown,
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier.matchParentSize(),
                 )
                 SideEffect {
                     if (selectedBuckets.isNotEmpty()) {
@@ -426,7 +426,7 @@ private fun BucketsScreenLayout(
                             },
                             shape = MaterialTheme.shapes.extraSmall,
                         )
-                        .clip(shape = MaterialTheme.shapes.extraSmall)
+                        .clip(shape = MaterialTheme.shapes.extraSmall),
                 ) {
                     SketchesAsyncImage(
                         uri = bucketUpdated.coverUri,

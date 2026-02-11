@@ -35,12 +35,12 @@ fun log(
         Log.d(
             LogTag,
             message.toString(),
-            throwable
+            throwable,
         ) > 0
     } else {
         Log.d(
             LogTag,
-            message.toString()
+            message.toString(),
         ) > 0
     }
 

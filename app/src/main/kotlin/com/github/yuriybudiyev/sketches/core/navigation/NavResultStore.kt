@@ -86,7 +86,7 @@ private class ResultStoreSaver: Saver<NavResultStore, ArrayList<KeyValue>> {
                 KeyValue(
                     key = element.key,
                     value = element.value,
-                )
+                ),
             )
         }
         return arrayList

@@ -133,7 +133,7 @@ fun SketchesZoomableBox(
                     )
                     val newOffsetY = offsetY.value.coerceIn(
                         -maxOffsetY,
-                        +maxOffsetY
+                        +maxOffsetY,
                     )
                     offsetX.snapTo(newOffsetX)
                     offsetY.snapTo(newOffsetY)
@@ -197,7 +197,7 @@ fun SketchesZoomableBox(
                         if (scale.value > minScale) {
                             change.consume()
                         }
-                    }
+                    },
                 )
             }
             .pointerInput(Unit) {

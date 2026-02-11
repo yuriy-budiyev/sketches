@@ -50,7 +50,7 @@ fun EntryProviderScope<NavRoute>.registerImageNavRoute() {
     registerNavRoute<ImageNavRoute> { route ->
         ImageRoute(
             viewModel = hiltViewModel<ImageScreenViewModel, ImageScreenViewModel.Factory>(
-                creationCallback = { factory -> factory.create(route) }
+                creationCallback = { factory -> factory.create(route) },
             ),
         )
     }

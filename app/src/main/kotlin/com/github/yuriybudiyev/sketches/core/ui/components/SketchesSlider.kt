@@ -63,7 +63,7 @@ fun SketchesSlider(
     val trackHeight = 4.dp
     val thumbSize = DpSize(
         width = 20.dp,
-        height = 20.dp
+        height = 20.dp,
     )
     val colors = SliderDefaults.colors(
         thumbColor = thumbColor,
@@ -75,7 +75,7 @@ fun SketchesSlider(
         disabledActiveTrackColor = trackColor,
         disabledActiveTickColor = trackColor,
         disabledInactiveTrackColor = trackColor,
-        disabledInactiveTickColor = trackColor
+        disabledInactiveTickColor = trackColor,
     )
     Slider(
         value = value,
@@ -84,7 +84,7 @@ fun SketchesSlider(
         modifier = Modifier
             .requiredSizeIn(
                 minWidth = thumbSize.width,
-                minHeight = trackHeight
+                minHeight = trackHeight,
             )
             .then(modifier),
         interactionSource = interactionSource,
@@ -97,16 +97,16 @@ fun SketchesSlider(
                     .shadow(
                         1.dp,
                         CircleShape,
-                        clip = false
+                        clip = false,
                     )
                     .indication(
                         interactionSource = interactionSource,
                         indication = ripple(
                             bounded = false,
-                            radius = 20.dp
-                        )
+                            radius = 20.dp,
+                        ),
                     ),
-                colors = colors
+                colors = colors,
             )
         },
         track = {
@@ -116,7 +116,7 @@ fun SketchesSlider(
                 thumbTrackGapSize = 0.dp,
                 trackInsideCornerSize = 0.dp,
                 drawStopIndicator = null,
-                colors = colors
+                colors = colors,
             )
         },
     )

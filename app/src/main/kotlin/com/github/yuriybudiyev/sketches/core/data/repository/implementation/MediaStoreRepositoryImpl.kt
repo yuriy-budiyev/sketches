@@ -175,10 +175,10 @@ class MediaStoreRepositoryImpl @Inject constructor(
                         coverUri = ContentUris
                             .withAppendedId(
                                 contentUri,
-                                id
+                                id,
                             ),
                         coverDateAdded = dateAdded,
-                        size = 0
+                        size = 0,
                     )
                 }
                 bucketInfo.size++

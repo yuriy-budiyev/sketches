@@ -39,7 +39,7 @@ fun SketchesOutlinedButton(
 ) {
     OutlinedButton(
         onClick = onClick,
-        modifier = modifier
+        modifier = modifier,
     ) {
         Text(
             text = text,
