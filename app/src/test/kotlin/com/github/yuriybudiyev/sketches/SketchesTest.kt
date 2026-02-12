@@ -25,11 +25,17 @@
 
 package com.github.yuriybudiyev.sketches
 
+import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import org.junit.Test
 
 class SketchesTest {
 
     @Test
-    fun test() {
+    fun test_capitalizeFirstChar() {
+        assert("a".capitalizeFirstChar() == "A")
+        assert("aaa".capitalizeFirstChar() == "Aaa")
+        val initial = "Aaa"
+        val capitalized = initial.capitalizeFirstChar()
+        assert(initial === capitalized)
     }
 }
