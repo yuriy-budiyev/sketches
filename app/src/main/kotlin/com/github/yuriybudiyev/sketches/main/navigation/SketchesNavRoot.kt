@@ -88,6 +88,7 @@ import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.compose.LocalSavedStateRegistryOwner
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
+import com.github.yuriybudiyev.sketches.core.navigation.LocalNavSharedTransitionScope
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavBarController
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
@@ -252,11 +253,12 @@ fun SketchesNavRoot(
     val navResultStore = rememberNavResultStore()
     val rootNavBarController = rememberRootNavBarController()
     Box(modifier = modifier) {
-        CompositionLocalProvider(
-            LocalNavResultStore.provides(navResultStore),
-            LocalRootNavBarController.provides(rootNavBarController),
-        ) {
-            SharedTransitionScope { transitionModifier ->
+        SharedTransitionScope { transitionModifier ->
+            CompositionLocalProvider(
+                LocalNavResultStore.provides(navResultStore),
+                LocalRootNavBarController.provides(rootNavBarController),
+                LocalNavSharedTransitionScope.provides(this@SharedTransitionScope),
+            ) {
                 NavDisplay(
                     sceneState = sceneState,
                     navigationEventState = navEventState,
