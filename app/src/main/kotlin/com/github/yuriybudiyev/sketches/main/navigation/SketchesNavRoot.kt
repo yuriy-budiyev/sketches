@@ -26,6 +26,7 @@ package com.github.yuriybudiyev.sketches.main.navigation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -255,32 +256,36 @@ fun SketchesNavRoot(
             LocalNavResultStore.provides(navResultStore),
             LocalRootNavBarController.provides(rootNavBarController),
         ) {
-            NavDisplay(
-                sceneState = sceneState,
-                navigationEventState = navEventState,
-                modifier = Modifier.matchParentSize(),
-                transitionSpec = {
-                    ContentTransform(
-                        fadeIn(),
-                        fadeOut(),
-                        sizeTransform = null,
-                    )
-                },
-                popTransitionSpec = {
-                    ContentTransform(
-                        fadeIn(),
-                        fadeOut(),
-                        sizeTransform = null,
-                    )
-                },
-                predictivePopTransitionSpec = {
-                    ContentTransform(
-                        fadeIn(),
-                        fadeOut(),
-                        sizeTransform = null,
-                    )
-                },
-            )
+            SharedTransitionScope { transitionModifier ->
+                NavDisplay(
+                    sceneState = sceneState,
+                    navigationEventState = navEventState,
+                    modifier = Modifier
+                        .matchParentSize()
+                        .then(transitionModifier),
+                    transitionSpec = {
+                        ContentTransform(
+                            fadeIn(),
+                            fadeOut(),
+                            sizeTransform = null,
+                        )
+                    },
+                    popTransitionSpec = {
+                        ContentTransform(
+                            fadeIn(),
+                            fadeOut(),
+                            sizeTransform = null,
+                        )
+                    },
+                    predictivePopTransitionSpec = {
+                        ContentTransform(
+                            fadeIn(),
+                            fadeOut(),
+                            sizeTransform = null,
+                        )
+                    },
+                )
+            }
         }
         Column(
             modifier = Modifier
@@ -400,7 +405,7 @@ private class ViewModelStoreViewModel: ViewModel() {
 private fun rememberRootNavBarController(): RootNavBarControllerImpl =
     rememberSaveable(saver = RootNavBarControllerImplSaver()) { RootNavBarControllerImpl() }
 
-private class RootNavBarControllerImpl(): RootNavBarController {
+private class RootNavBarControllerImpl: RootNavBarController {
 
     override var isRootNavBarVisible: Boolean by mutableStateOf(true)
 
