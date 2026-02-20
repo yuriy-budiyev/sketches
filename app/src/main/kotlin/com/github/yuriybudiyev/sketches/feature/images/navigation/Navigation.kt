@@ -33,8 +33,8 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.registerNavRoute
+import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
-import com.github.yuriybudiyev.sketches.feature.images.ui.OnRequestMediaAccess
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 

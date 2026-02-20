@@ -57,9 +57,9 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.rememberMediaAccessRequestLauncher
+import com.github.yuriybudiyev.sketches.core.platform.permissions.media.rememberOnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesOutlinedButton
-import com.github.yuriybudiyev.sketches.feature.images.ui.rememberOnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavRoot
 
 @Composable

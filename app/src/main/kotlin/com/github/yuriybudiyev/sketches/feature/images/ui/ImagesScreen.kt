@@ -37,7 +37,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -66,6 +65,7 @@ import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
+import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateSetSaver
@@ -355,23 +355,6 @@ fun ImagesScreen(
             )
         }
     }
-}
-
-@Composable
-inline fun rememberOnRequestMediaAccess(
-    crossinline onRequestMediaAccess: @DisallowComposableCalls () -> Unit,
-): OnRequestMediaAccess =
-    remember {
-        object: OnRequestMediaAccess() {
-            override fun invoke() {
-                onRequestMediaAccess()
-            }
-        }
-    }
-
-abstract class OnRequestMediaAccess: () -> Unit {
-
-    var isEnabled: Boolean by mutableStateOf(false)
 }
 
 private const val ShareAction: String =

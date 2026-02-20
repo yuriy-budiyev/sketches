@@ -94,6 +94,7 @@ import com.github.yuriybudiyev.sketches.core.navigation.RootNavBarController
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
+import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateListSaver
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
@@ -105,7 +106,6 @@ import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageNavRoute
 import com.github.yuriybudiyev.sketches.feature.image.navigation.registerImageNavRoute
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
 import com.github.yuriybudiyev.sketches.feature.images.navigation.registerImagesNavRoute
-import com.github.yuriybudiyev.sketches.feature.images.ui.OnRequestMediaAccess
 
 @Composable
 fun SketchesNavRoot(

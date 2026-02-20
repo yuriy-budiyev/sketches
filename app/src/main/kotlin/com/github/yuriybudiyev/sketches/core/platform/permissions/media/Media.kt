@@ -31,6 +31,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisallowComposableCalls
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.github.yuriybudiyev.sketches.core.platform.permissions.checkPermissionGranted
 
 enum class MediaAccess {
@@ -149,4 +155,25 @@ inline fun rememberMediaAccessRequestLauncher(
         },
     )
     return MediaAccessRequestLauncher(launcher)
+}
+
+@Composable
+inline fun rememberOnRequestMediaAccess(
+    crossinline onRequestMediaAccess: @DisallowComposableCalls () -> Unit,
+): OnRequestMediaAccess =
+    remember {
+        object: OnRequestMediaAccess() {
+            override fun invoke() {
+                onRequestMediaAccess()
+            }
+        }
+    }
+
+/**
+ * Don't extend this class directly, use [rememberOnRequestMediaAccess]
+ */
+@Stable
+abstract class OnRequestMediaAccess: () -> Unit {
+
+    var isEnabled: Boolean by mutableStateOf(false)
 }
