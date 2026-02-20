@@ -35,6 +35,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.Window
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -62,7 +63,7 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val window = window
+        val window: Window = window!!
         WindowCompat.setDecorFitsSystemWindows(
             window,
             false,
