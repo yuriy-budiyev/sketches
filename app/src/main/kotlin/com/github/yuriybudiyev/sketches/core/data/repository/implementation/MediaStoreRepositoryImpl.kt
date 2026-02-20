@@ -28,11 +28,11 @@ import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
+import androidx.collection.MutableLongObjectMap
 import androidx.core.database.getStringOrNull
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
-import com.github.yuriybudiyev.sketches.core.platform.collections.CollectionsCompat
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.Instant
@@ -140,7 +140,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
 
     private fun collectBucketsInfo(
         mediaType: MediaType,
-        destination: MutableMap<Long, BucketInfo>,
+        destination: MutableLongObjectMap<BucketInfo>,
     ) {
         val contentUri = mediaType.contentUri
         val cursor = context.contentResolver.query(
@@ -195,7 +195,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getBuckets(): List<MediaStoreBucket> {
-        val bucketsInfo = CollectionsCompat.newLinkedHashMap<Long, BucketInfo>(numMappings = 96)
+        val bucketsInfo = MutableLongObjectMap<BucketInfo>(128)
         collectBucketsInfo(
             mediaType = MediaType.Image,
             destination = bucketsInfo,
@@ -205,13 +205,15 @@ class MediaStoreRepositoryImpl @Inject constructor(
             destination = bucketsInfo,
         )
         val buckets = ArrayList<MediaStoreBucket>(bucketsInfo.size)
-        bucketsInfo.mapTo(buckets) { (_, info) ->
-            MediaStoreBucket(
-                id = info.id,
-                name = info.name,
-                size = info.size,
-                coverUri = info.coverUri,
-                coverDateAdded = info.coverDateAdded,
+        bucketsInfo.forEachValue { info ->
+            buckets.add(
+                MediaStoreBucket(
+                    id = info.id,
+                    name = info.name,
+                    size = info.size,
+                    coverUri = info.coverUri,
+                    coverDateAdded = info.coverDateAdded,
+                ),
             )
         }
         buckets.sortByDescending { bucket -> bucket.coverDateAdded }
