@@ -24,8 +24,8 @@ android {
         applicationId = "com.github.yuriybudiyev.sketches"
         minSdk = 23
         targetSdk = 36
-        versionCode = 40
-        versionName = "1.0.41"
+        versionCode = 41
+        versionName = "1.0.42"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -42,7 +42,7 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -74,7 +74,7 @@ composeCompiler {
     reportsDestination = layout.buildDirectory.dir("compose_compiler")
     metricsDestination = layout.buildDirectory.dir("compose_compiler")
     stabilityConfigurationFiles = listOf(
-        project.rootProject.layout.projectDirectory.file("compose_stability_config.conf")
+        project.rootProject.layout.projectDirectory.file("compose_stability_config.conf"),
     )
 }
 
