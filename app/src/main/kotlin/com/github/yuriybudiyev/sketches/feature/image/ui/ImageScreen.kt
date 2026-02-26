@@ -602,6 +602,16 @@ private fun MediaBar(
                     enableLoadingIndicator = false,
                     enableErrorIndicator = true,
                 )
+                if (position == currentIndexUpdated) {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .background(
+                                color = MaterialTheme.colorScheme.background
+                                    .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                            ),
+                    )
+                }
                 if (file.mediaType == MediaType.Video) {
                     Icon(
                         painter = painterResource(R.drawable.ic_video),
