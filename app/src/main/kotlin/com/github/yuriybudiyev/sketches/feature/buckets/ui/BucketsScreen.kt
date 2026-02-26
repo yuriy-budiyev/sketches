@@ -433,8 +433,7 @@ private fun BucketsScreenLayout(
                         contentDescription = stringResource(R.string.bucket_cover),
                         modifier = Modifier.matchParentSize(),
                         contentScale = ContentScale.Crop,
-                        enableLoadingIndicator = true,
-                        enableErrorIndicator = true,
+                        enableLoadingIndicator = false,
                     )
                     if (bucketSelectedUpdated) {
                         Box(

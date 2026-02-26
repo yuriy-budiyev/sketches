@@ -26,6 +26,7 @@ package com.github.yuriybudiyev.sketches.core.ui.components
 
 import android.net.Uri
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -42,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -55,7 +57,9 @@ import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest
 import coil3.size.Size
+import coil3.video.videoFramePercent
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 
 @Composable
@@ -65,6 +69,7 @@ fun SketchesAsyncImage(
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = FilterQuality.Low,
+    enableImageStateBackground: Boolean = true,
     enableLoadingIndicator: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
@@ -76,6 +81,7 @@ fun SketchesAsyncImage(
         uri,
     ) {
         ImageRequest.Builder(context)
+            .videoFramePercent(0.1)
             .size(sizeResolver)
             .data(uri)
             .build()
@@ -91,22 +97,25 @@ fun SketchesAsyncImage(
         contentScale = contentScale,
         filterQuality = filterQuality,
     )
-    Box(
-        modifier = modifier.then(sizeResolver),
-        contentAlignment = Alignment.Center,
-    ) {
+    Box(modifier = modifier.then(sizeResolver)) {
         when (painterState) {
             is AsyncImagePainter.State.Empty -> {
                 // Do nothing
             }
             is AsyncImagePainter.State.Loading -> {
+                if (enableImageStateBackground) {
+                    SketchesImageStateBackground(modifier = Modifier.matchParentSize())
+                }
                 if (enableLoadingIndicator) {
-                    SketchesLoadingStateIcon()
+                    SketchesLoadingStateIcon(modifier = Modifier.align(Alignment.Center))
                 }
             }
             is AsyncImagePainter.State.Error -> {
+                if (enableImageStateBackground) {
+                    SketchesImageStateBackground(modifier = Modifier.matchParentSize())
+                }
                 if (enableErrorIndicator) {
-                    SketchesErrorStateIcon()
+                    SketchesErrorStateIcon(modifier = Modifier.align(Alignment.Center))
                 }
             }
             is AsyncImagePainter.State.Success -> {
@@ -135,6 +144,7 @@ fun SketchesZoomableAsyncImage(
     contentDescription: String,
     modifier: Modifier = Modifier,
     onTap: (() -> Unit)? = null,
+    enableImageStateBackground: Boolean = true,
     enableLoadingIndicator: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
@@ -159,22 +169,25 @@ fun SketchesZoomableAsyncImage(
         contentScale = ContentScale.None,
         filterQuality = FilterQuality.High,
     )
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center,
-    ) {
+    Box(modifier = modifier) {
         when (painterState) {
             is AsyncImagePainter.State.Empty -> {
                 // Do nothing
             }
             is AsyncImagePainter.State.Loading -> {
+                if (enableImageStateBackground) {
+                    SketchesImageStateBackground(modifier = Modifier.matchParentSize())
+                }
                 if (enableLoadingIndicator) {
-                    SketchesLoadingStateIcon()
+                    SketchesLoadingStateIcon(modifier = Modifier.align(Alignment.Center))
                 }
             }
             is AsyncImagePainter.State.Error -> {
+                if (enableImageStateBackground) {
+                    SketchesImageStateBackground(modifier = Modifier.matchParentSize())
+                }
                 if (enableErrorIndicator) {
-                    SketchesErrorStateIcon()
+                    SketchesErrorStateIcon(modifier = Modifier.align(Alignment.Center))
                 }
             }
             is AsyncImagePainter.State.Success -> {
@@ -204,6 +217,18 @@ fun SketchesZoomableAsyncImage(
             }
         }
     }
+}
+
+@Composable
+private fun SketchesImageStateBackground(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .background(
+                color = MaterialTheme.colorScheme.onBackground
+                    .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                shape = RectangleShape,
+            ),
+    )
 }
 
 @Composable

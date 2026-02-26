@@ -47,7 +47,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -316,9 +315,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
             ),
             modifier = Modifier.matchParentSize(),
             contentScale = ContentScale.Crop,
-            filterQuality = FilterQuality.Low,
-            enableLoadingIndicator = true,
-            enableErrorIndicator = true,
+            enableLoadingIndicator = false,
         )
         if (fileSelectedUpdated) {
             Box(

@@ -80,7 +80,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -454,6 +453,7 @@ private fun ImagePage(
         contentDescription = stringResource(R.string.image),
         onTap = onPageTap,
         modifier = modifier,
+        enableImageStateBackground = false,
         enableLoadingIndicator = false,
         enableErrorIndicator = true,
     )
@@ -598,8 +598,8 @@ private fun MediaBar(
                     ),
                     modifier = Modifier.matchParentSize(),
                     contentScale = ContentScale.Crop,
-                    filterQuality = FilterQuality.Low,
-                    enableLoadingIndicator = true,
+                    enableImageStateBackground = true,
+                    enableLoadingIndicator = false,
                     enableErrorIndicator = true,
                 )
                 if (file.mediaType == MediaType.Video) {
