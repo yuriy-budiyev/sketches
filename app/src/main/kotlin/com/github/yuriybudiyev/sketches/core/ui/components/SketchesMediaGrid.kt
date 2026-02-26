@@ -315,7 +315,9 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
             ),
             modifier = Modifier.matchParentSize(),
             contentScale = ContentScale.Crop,
+            enableImageStateBackground = true,
             enableLoadingIndicator = false,
+            enableErrorIndicator = true,
         )
         if (fileSelectedUpdated) {
             Box(
