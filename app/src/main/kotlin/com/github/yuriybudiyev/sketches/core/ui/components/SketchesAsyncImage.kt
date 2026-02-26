@@ -220,6 +220,7 @@ fun SketchesZoomableAsyncImage(
 }
 
 @Composable
+@NonRestartableComposable
 private fun SketchesImageStateBackground(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
