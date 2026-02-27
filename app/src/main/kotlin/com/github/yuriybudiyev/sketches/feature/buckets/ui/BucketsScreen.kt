@@ -422,7 +422,7 @@ private fun BucketsScreenLayout(
                                     .copy(alpha = SketchesColors.UiAlphaLowTransparency)
                             } else {
                                 MaterialTheme.colorScheme.onBackground
-                                    .copy(alpha = SketchesColors.UiAlphaHighTransparency)
+                                    .copy(alpha = SketchesColors.UiAlphaMidTransparency)
                             },
                             shape = MaterialTheme.shapes.extraSmall,
                         )
@@ -441,7 +441,7 @@ private fun BucketsScreenLayout(
                                 .matchParentSize()
                                 .background(
                                     color = MaterialTheme.colorScheme.background
-                                        .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                                        .copy(alpha = SketchesColors.UiAlphaMidTransparency),
                                 ),
                         )
                         Icon(

@@ -608,7 +608,7 @@ private fun MediaBar(
                             .matchParentSize()
                             .background(
                                 color = MaterialTheme.colorScheme.background
-                                    .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                                    .copy(alpha = SketchesColors.UiAlphaMidTransparency),
                             ),
                     )
                 }

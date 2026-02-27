@@ -52,5 +52,6 @@ object SketchesColors {
     }
 
     const val UiAlphaLowTransparency = 0.85f
-    const val UiAlphaHighTransparency = 0.35f
+    const val UiAlphaMidTransparency = 0.35f
+    const val UiAlphaHighTransparency = 0.15f
 }
