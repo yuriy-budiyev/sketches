@@ -97,7 +97,15 @@ fun SketchesAsyncImage(
         contentScale = contentScale,
         filterQuality = filterQuality,
     )
-    Box(modifier = modifier.then(sizeResolver)) {
+    Box(
+        modifier = Modifier
+            .semantics {
+                this.contentDescription = contentDescription
+                this.role = Role.Image
+            }
+            .then(modifier)
+            .then(sizeResolver),
+    ) {
         when (painterState) {
             is AsyncImagePainter.State.Empty -> {
                 // Do nothing
@@ -121,10 +129,6 @@ fun SketchesAsyncImage(
             is AsyncImagePainter.State.Success -> {
                 Box(
                     modifier = Modifier
-                        .semantics {
-                            this.contentDescription = contentDescription
-                            this.role = Role.Image
-                        }
                         .matchParentSize()
                         .clipToBounds()
                         .paint(
@@ -169,7 +173,14 @@ fun SketchesZoomableAsyncImage(
         contentScale = ContentScale.None,
         filterQuality = FilterQuality.High,
     )
-    Box(modifier = modifier) {
+    Box(
+        modifier = Modifier
+            .semantics {
+                this.contentDescription = contentDescription
+                this.role = Role.Image
+            }
+            .then(modifier),
+    ) {
         when (painterState) {
             is AsyncImagePainter.State.Empty -> {
                 // Do nothing
@@ -192,12 +203,7 @@ fun SketchesZoomableAsyncImage(
             }
             is AsyncImagePainter.State.Success -> {
                 SketchesZoomableBox(
-                    modifier = modifier
-                        .semantics(mergeDescendants = true) {
-                            this.contentDescription = contentDescription
-                            this.role = Role.Image
-                        }
-                        .matchParentSize(),
+                    modifier = Modifier.matchParentSize(),
                     onTap = onTap,
                 ) {
                     Box(

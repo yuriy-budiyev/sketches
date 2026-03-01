@@ -422,7 +422,7 @@ private fun BucketsScreenLayout(
                                     .copy(alpha = SketchesColors.UiAlphaLowTransparency)
                             } else {
                                 MaterialTheme.colorScheme.onBackground
-                                    .copy(alpha = SketchesColors.UiAlphaMidTransparency)
+                                    .copy(alpha = SketchesColors.UiAlphaHighTransparency)
                             },
                             shape = MaterialTheme.shapes.extraSmall,
                         )
