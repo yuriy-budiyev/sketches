@@ -158,6 +158,7 @@ fun SketchesZoomableAsyncImage(
         uri,
     ) {
         ImageRequest.Builder(context)
+            .videoFramePercent(0.1)
             .size(Size.ORIGINAL)
             .data(uri)
             .build()
