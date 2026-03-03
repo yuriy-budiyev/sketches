@@ -33,7 +33,6 @@ import com.github.yuriybudiyev.sketches.core.dagger.getValue
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
-import com.github.yuriybudiyev.sketches.core.flow.WhileSubscribedUi
 import com.github.yuriybudiyev.sketches.core.platform.collections.CollectionsCompat
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -89,7 +88,7 @@ class ImagesScreenViewModel @Inject constructor(
             emit(UiState.Error(e))
         }.stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribedUi(),
+            started = SharingStarted.Lazily,
             initialValue = UiState.Loading,
         )
 

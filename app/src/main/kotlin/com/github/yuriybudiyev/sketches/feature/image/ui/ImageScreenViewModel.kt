@@ -34,7 +34,6 @@ import com.github.yuriybudiyev.sketches.core.dagger.getValue
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
-import com.github.yuriybudiyev.sketches.core.flow.WhileSubscribedUi
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageNavRoute
 import dagger.assisted.Assisted
@@ -91,7 +90,7 @@ class ImageScreenViewModel @AssistedInject constructor(
             emit(UiState.Error(e))
         }.stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribedUi(),
+            started = SharingStarted.Lazily,
             initialValue = UiState.Loading,
         )
 
