@@ -26,6 +26,9 @@ package com.github.yuriybudiyev.sketches.core.platform.log
 
 import android.util.Log
 
+/**
+ * Send a debug log [message] with [SketchesDebug] tag and, optionally, log the [throwable].
+ */
 @Suppress("unused")
 fun logDebug(
     message: Any?,
@@ -33,16 +36,16 @@ fun logDebug(
 ) {
     if (throwable != null) {
         Log.d(
-            LogTag,
+            SketchesDebug,
             message.toString(),
             throwable,
         )
     } else {
         Log.d(
-            LogTag,
+            SketchesDebug,
             message.toString(),
         )
     }
 }
 
-private const val LogTag: String = "SketchesDebug"
+private const val SketchesDebug: String = "SketchesDebug"
