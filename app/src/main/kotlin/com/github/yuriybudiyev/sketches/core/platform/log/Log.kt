@@ -27,21 +27,22 @@ package com.github.yuriybudiyev.sketches.core.platform.log
 import android.util.Log
 
 @Suppress("unused")
-fun log(
+fun logDebug(
     message: Any?,
     throwable: Throwable? = null,
-): Boolean =
+) {
     if (throwable != null) {
         Log.d(
             LogTag,
             message.toString(),
             throwable,
-        ) > 0
+        )
     } else {
         Log.d(
             LogTag,
             message.toString(),
-        ) > 0
+        )
     }
+}
 
 private const val LogTag: String = "SketchesDebug"
