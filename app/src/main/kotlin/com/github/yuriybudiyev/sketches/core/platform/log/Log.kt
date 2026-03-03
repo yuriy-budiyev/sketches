@@ -34,16 +34,16 @@ fun logDebug(
     message: Any?,
     throwable: Throwable? = null,
 ) {
-    if (throwable != null) {
+    if (throwable == null) {
         Log.d(
             SketchesDebug,
             message.toString(),
-            throwable,
         )
     } else {
         Log.d(
             SketchesDebug,
             message.toString(),
+            throwable,
         )
     }
 }
