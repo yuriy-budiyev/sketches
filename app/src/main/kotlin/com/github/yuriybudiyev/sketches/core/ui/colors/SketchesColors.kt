@@ -25,10 +25,11 @@
 package com.github.yuriybudiyev.sketches.core.ui.colors
 
 import androidx.compose.ui.graphics.Color
+import com.github.yuriybudiyev.sketches.BuildConfig
 
 object SketchesColors {
 
-    val Primary = Color(0xFF6B69D6)
+    val Primary = if (BuildConfig.DEBUG) Color(0xFFFF8C00) else Color(0xFF6B69D6)
     val OnPrimary = Color(0xFFFFFFFF)
 
     object Light {
