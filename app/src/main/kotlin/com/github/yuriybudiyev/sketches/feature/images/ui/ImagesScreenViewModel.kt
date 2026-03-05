@@ -96,7 +96,7 @@ class ImagesScreenViewModel @Inject constructor(
             val files = withContext(ioDispatcher) { getMediaFiles() }
             if (files.isNotEmpty()) {
                 val groups = withContext(defaultDispatcher) {
-                    files.groupBy { file -> YearMonth.from(file.dateAdded)!! }
+                    files.groupBy { file -> YearMonth.from(file.dateAdded) }
                 }
                 emit(
                     UiState.Images(
