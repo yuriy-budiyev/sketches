@@ -9,7 +9,7 @@ plugins {
 
 buildscript {
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${libs.versions.kotlin.asProvider().get()}")
-        classpath("com.google.devtools.ksp:symbol-processing-gradle-plugin:${libs.versions.kotlin.ksp.get()}")
+        classpath(libs.kotlin.plugin)
+        classpath(libs.kotlin.ksp.plugin)
     }
 }
