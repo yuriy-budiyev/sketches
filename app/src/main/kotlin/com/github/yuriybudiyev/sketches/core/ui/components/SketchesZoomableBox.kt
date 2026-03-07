@@ -76,7 +76,7 @@ fun SketchesZoomableBox(
         from = 1.0,
         fromInclusive = true,
     )
-    maxRelativeZoom: Float = 10f,
+    maxRelativeZoom: Float = 20f,
     @FloatRange(
         from = 0.0,
         fromInclusive = true,
