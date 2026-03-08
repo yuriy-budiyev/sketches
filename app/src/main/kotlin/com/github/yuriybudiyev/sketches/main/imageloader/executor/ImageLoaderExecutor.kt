@@ -31,9 +31,10 @@ import java.util.concurrent.Future
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.atomic.AtomicLong
+import kotlin.math.ceil
 
 class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
-    Runtime.getRuntime().availableProcessors() * 2,
+    ceil(Runtime.getRuntime().availableProcessors() * 1.5).toInt(),
     ImageLoaderThreadFactory(),
     AbortPolicy(),
 ) {
