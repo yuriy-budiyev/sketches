@@ -66,7 +66,6 @@ import androidx.compose.ui.util.fastForEach
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.absoluteValue
-import kotlin.math.max
 import kotlin.math.min
 
 @Composable
@@ -78,16 +77,24 @@ fun SketchesZoomableBox(
         fromInclusive = true,
     )
     maxRelativeZoom: Float = 10f,
+    @FloatRange(
+        from = 1.0,
+        fromInclusive = true,
+    )
+    doubleTapRelativeZoom: Float = 2.5f,
     content: @Composable SketchesZoomableBoxScope.() -> Unit,
 ) {
     require(maxRelativeZoom >= 1f) {
         "maxRelativeZoom can't be lower than 1.0"
     }
+    require(doubleTapRelativeZoom in 0f..maxRelativeZoom) {
+        "doubleTapRelativeZoom should be in 0.0 to maxRelativeZoom range"
+    }
     val coroutineScope = rememberCoroutineScope()
     val onTapUpdated by rememberUpdatedState(onTap)
+    val doubleTapRelativeZoomUpdated by rememberUpdatedState(doubleTapRelativeZoom)
     var containerSize by remember { mutableStateOf(Size.Zero) }
     var contentSize by remember { mutableStateOf(Size.Zero) }
-    var fillScale by remember { mutableFloatStateOf(0f) }
     var minScale by remember { mutableFloatStateOf(0f) }
     var maxScale by remember { mutableFloatStateOf(0f) }
     val scale = remember { Animatable(0f) }
@@ -100,10 +107,6 @@ fun SketchesZoomableBox(
                 val fitScaleWidth = containerSize.width / contentSize.width
                 val fitScaleHeight = containerSize.height / contentSize.height
                 val fitScale = min(
-                    fitScaleWidth,
-                    fitScaleHeight,
-                )
-                fillScale = max(
                     fitScaleWidth,
                     fitScaleHeight,
                 )
@@ -203,10 +206,7 @@ fun SketchesZoomableBox(
                             val newOffsetX: Float
                             val newOffsetY: Float
                             if (scale.value == minScale) {
-                                newScale = min(
-                                    fillScale,
-                                    maxScale,
-                                )
+                                newScale = minScale * doubleTapRelativeZoomUpdated
                                 val scaleFactor = newScale / scale.value
                                 val scaledContentWidth = contentSize.width * newScale
                                 val scaledContentHeight = contentSize.height * newScale
