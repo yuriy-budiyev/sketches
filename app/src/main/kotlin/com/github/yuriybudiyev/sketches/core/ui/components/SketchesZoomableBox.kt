@@ -203,7 +203,10 @@ fun SketchesZoomableBox(
                             val newOffsetX: Float
                             val newOffsetY: Float
                             if (scale.value == minScale) {
-                                newScale = fillScale
+                                newScale = min(
+                                    fillScale,
+                                    maxScale,
+                                )
                                 val scaleFactor = newScale / scale.value
                                 val scaledContentWidth = contentSize.width * newScale
                                 val scaledContentHeight = contentSize.height * newScale
