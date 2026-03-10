@@ -63,7 +63,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -432,7 +431,6 @@ private fun BucketsScreenLayout(
                         uri = bucketUpdated.coverUri,
                         contentDescription = stringResource(R.string.bucket_cover),
                         modifier = Modifier.matchParentSize(),
-                        contentScale = ContentScale.Crop,
                         enableLoadingIndicator = false,
                     )
                     if (bucketSelectedUpdated) {

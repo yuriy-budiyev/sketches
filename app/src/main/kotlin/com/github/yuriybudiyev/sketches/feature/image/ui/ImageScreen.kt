@@ -80,7 +80,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -597,7 +596,6 @@ private fun MediaBar(
                         },
                     ),
                     modifier = Modifier.matchParentSize(),
-                    contentScale = ContentScale.Crop,
                     enableNotLoadedBackground = true,
                     enableLoadingIndicator = false,
                     enableErrorIndicator = true,

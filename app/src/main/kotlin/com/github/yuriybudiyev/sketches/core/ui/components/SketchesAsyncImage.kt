@@ -67,8 +67,6 @@ fun SketchesAsyncImage(
     uri: Uri,
     contentDescription: String,
     modifier: Modifier = Modifier,
-    contentScale: ContentScale = ContentScale.Fit,
-    filterQuality: FilterQuality = FilterQuality.Low,
     enableNotLoadedBackground: Boolean = true,
     enableLoadingIndicator: Boolean = true,
     enableErrorIndicator: Boolean = true,
@@ -94,8 +92,8 @@ fun SketchesAsyncImage(
         onState = { state ->
             painterState = state
         },
-        contentScale = contentScale,
-        filterQuality = filterQuality,
+        contentScale = ContentScale.Crop,
+        filterQuality = FilterQuality.Low,
     )
     Box(
         modifier = Modifier
@@ -134,8 +132,8 @@ fun SketchesAsyncImage(
                         .matchParentSize()
                         .clipToBounds()
                         .paint(
-                            painter,
-                            contentScale = contentScale,
+                            painter = painter,
+                            contentScale = ContentScale.Crop,
                             alignment = Alignment.Center,
                         ),
                 )
@@ -219,7 +217,7 @@ fun SketchesZoomableAsyncImage(
                             )
                             .zoomable()
                             .paint(
-                                painter,
+                                painter = painter,
                                 contentScale = ContentScale.None,
                                 alignment = Alignment.Center,
                             ),
