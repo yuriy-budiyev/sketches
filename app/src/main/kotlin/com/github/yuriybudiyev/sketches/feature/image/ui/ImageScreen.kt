@@ -98,11 +98,11 @@ import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaR
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesThumbnailAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.mediaplayer.SketchesMediaPlayer
@@ -452,7 +452,6 @@ private fun ImagePage(
         contentDescription = stringResource(R.string.image),
         onTap = onPageTap,
         modifier = modifier,
-        enableNotLoadedBackground = false,
         enableLoadingIndicator = false,
         enableErrorIndicator = true,
     )
@@ -587,7 +586,7 @@ private fun MediaBar(
                         }
                     },
             ) {
-                SketchesAsyncImage(
+                SketchesThumbnailAsyncImage(
                     uri = file.uri,
                     contentDescription = stringResource(
                         id = when (file.mediaType) {

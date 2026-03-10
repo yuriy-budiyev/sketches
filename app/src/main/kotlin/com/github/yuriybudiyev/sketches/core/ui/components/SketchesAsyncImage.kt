@@ -63,7 +63,7 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 
 @Composable
-fun SketchesAsyncImage(
+fun SketchesThumbnailAsyncImage(
     uri: Uri,
     contentDescription: String,
     modifier: Modifier = Modifier,
@@ -148,7 +148,6 @@ fun SketchesZoomableAsyncImage(
     contentDescription: String,
     modifier: Modifier = Modifier,
     onTap: (() -> Unit)? = null,
-    enableNotLoadedBackground: Boolean = true,
     enableLoadingIndicator: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
@@ -184,22 +183,14 @@ fun SketchesZoomableAsyncImage(
     ) {
         when (painterState) {
             is AsyncImagePainter.State.Empty -> {
-                if (enableNotLoadedBackground) {
-                    SketchesNotSuccessStateBackground(modifier = Modifier.matchParentSize())
-                }
+                // Do nothing
             }
             is AsyncImagePainter.State.Loading -> {
-                if (enableNotLoadedBackground) {
-                    SketchesNotSuccessStateBackground(modifier = Modifier.matchParentSize())
-                }
                 if (enableLoadingIndicator) {
                     SketchesLoadingStateIcon(modifier = Modifier.align(Alignment.Center))
                 }
             }
             is AsyncImagePainter.State.Error -> {
-                if (enableNotLoadedBackground) {
-                    SketchesNotSuccessStateBackground(modifier = Modifier.matchParentSize())
-                }
                 if (enableErrorIndicator) {
                     SketchesErrorStateIcon(modifier = Modifier.align(Alignment.Center))
                 }
