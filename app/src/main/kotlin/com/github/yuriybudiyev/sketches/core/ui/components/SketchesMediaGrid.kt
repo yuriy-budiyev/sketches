@@ -315,7 +315,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
             ),
             modifier = Modifier.matchParentSize(),
             contentScale = ContentScale.Crop,
-            enableImageStateBackground = true,
+            enableNotLoadedBackground = true,
             enableLoadingIndicator = false,
             enableErrorIndicator = true,
         )

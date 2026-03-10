@@ -69,7 +69,7 @@ fun SketchesAsyncImage(
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Fit,
     filterQuality: FilterQuality = FilterQuality.Low,
-    enableImageStateBackground: Boolean = true,
+    enableNotLoadedBackground: Boolean = true,
     enableLoadingIndicator: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
@@ -108,19 +108,21 @@ fun SketchesAsyncImage(
     ) {
         when (painterState) {
             is AsyncImagePainter.State.Empty -> {
-                // Do nothing
+                if (enableNotLoadedBackground) {
+                    SketchesNotSuccessStateBackground(modifier = Modifier.matchParentSize())
+                }
             }
             is AsyncImagePainter.State.Loading -> {
-                if (enableImageStateBackground) {
-                    SketchesImageStateBackground(modifier = Modifier.matchParentSize())
+                if (enableNotLoadedBackground) {
+                    SketchesNotSuccessStateBackground(modifier = Modifier.matchParentSize())
                 }
                 if (enableLoadingIndicator) {
                     SketchesLoadingStateIcon(modifier = Modifier.align(Alignment.Center))
                 }
             }
             is AsyncImagePainter.State.Error -> {
-                if (enableImageStateBackground) {
-                    SketchesImageStateBackground(modifier = Modifier.matchParentSize())
+                if (enableNotLoadedBackground) {
+                    SketchesNotSuccessStateBackground(modifier = Modifier.matchParentSize())
                 }
                 if (enableErrorIndicator) {
                     SketchesErrorStateIcon(modifier = Modifier.align(Alignment.Center))
@@ -148,7 +150,7 @@ fun SketchesZoomableAsyncImage(
     contentDescription: String,
     modifier: Modifier = Modifier,
     onTap: (() -> Unit)? = null,
-    enableImageStateBackground: Boolean = true,
+    enableNotLoadedBackground: Boolean = true,
     enableLoadingIndicator: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
@@ -184,19 +186,21 @@ fun SketchesZoomableAsyncImage(
     ) {
         when (painterState) {
             is AsyncImagePainter.State.Empty -> {
-                // Do nothing
+                if (enableNotLoadedBackground) {
+                    SketchesNotSuccessStateBackground(modifier = Modifier.matchParentSize())
+                }
             }
             is AsyncImagePainter.State.Loading -> {
-                if (enableImageStateBackground) {
-                    SketchesImageStateBackground(modifier = Modifier.matchParentSize())
+                if (enableNotLoadedBackground) {
+                    SketchesNotSuccessStateBackground(modifier = Modifier.matchParentSize())
                 }
                 if (enableLoadingIndicator) {
                     SketchesLoadingStateIcon(modifier = Modifier.align(Alignment.Center))
                 }
             }
             is AsyncImagePainter.State.Error -> {
-                if (enableImageStateBackground) {
-                    SketchesImageStateBackground(modifier = Modifier.matchParentSize())
+                if (enableNotLoadedBackground) {
+                    SketchesNotSuccessStateBackground(modifier = Modifier.matchParentSize())
                 }
                 if (enableErrorIndicator) {
                     SketchesErrorStateIcon(modifier = Modifier.align(Alignment.Center))
@@ -228,7 +232,7 @@ fun SketchesZoomableAsyncImage(
 
 @Composable
 @NonRestartableComposable
-private fun SketchesImageStateBackground(modifier: Modifier = Modifier) {
+private fun SketchesNotSuccessStateBackground(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .background(

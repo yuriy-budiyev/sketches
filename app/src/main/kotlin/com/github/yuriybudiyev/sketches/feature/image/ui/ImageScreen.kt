@@ -453,7 +453,7 @@ private fun ImagePage(
         contentDescription = stringResource(R.string.image),
         onTap = onPageTap,
         modifier = modifier,
-        enableImageStateBackground = false,
+        enableNotLoadedBackground = false,
         enableLoadingIndicator = false,
         enableErrorIndicator = true,
     )
@@ -598,7 +598,7 @@ private fun MediaBar(
                     ),
                     modifier = Modifier.matchParentSize(),
                     contentScale = ContentScale.Crop,
-                    enableImageStateBackground = true,
+                    enableNotLoadedBackground = true,
                     enableLoadingIndicator = false,
                     enableErrorIndicator = true,
                 )
