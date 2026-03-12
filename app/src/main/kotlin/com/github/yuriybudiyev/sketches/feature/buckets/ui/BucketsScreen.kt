@@ -431,7 +431,6 @@ private fun BucketsScreenLayout(
                         uri = bucketUpdated.coverUri,
                         contentDescription = stringResource(R.string.bucket_cover),
                         modifier = Modifier.matchParentSize(),
-                        enableLoadingIndicator = false,
                     )
                     if (bucketSelectedUpdated) {
                         Box(

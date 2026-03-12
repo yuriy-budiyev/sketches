@@ -313,9 +313,6 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                 },
             ),
             modifier = Modifier.matchParentSize(),
-            enableNotLoadedBackground = true,
-            enableLoadingIndicator = false,
-            enableErrorIndicator = true,
         )
         if (fileSelectedUpdated) {
             Box(

@@ -452,8 +452,6 @@ private fun ImagePage(
         contentDescription = stringResource(R.string.image),
         onTap = onPageTap,
         modifier = modifier,
-        enableLoadingIndicator = false,
-        enableErrorIndicator = true,
     )
 }
 
@@ -595,9 +593,6 @@ private fun MediaBar(
                         },
                     ),
                     modifier = Modifier.matchParentSize(),
-                    enableNotLoadedBackground = true,
-                    enableLoadingIndicator = false,
-                    enableErrorIndicator = true,
                 )
                 if (position == currentIndexUpdated) {
                     Box(
