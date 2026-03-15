@@ -112,6 +112,7 @@ fun SketchesThumbnailAsyncImage(
         } else {
             Box(
                 modifier = modifier
+                    .matchParentSize()
                     .background(
                         color = MaterialTheme.colorScheme.onBackground
                             .copy(alpha = SketchesColors.UiAlphaHighTransparency),
