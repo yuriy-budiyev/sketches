@@ -24,20 +24,38 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.dimens
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.ProvidedValue
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-object SketchesDimens {
+data class SketchesDimens(
+    val material3AppBarHeight: Dp = 64.dp,
+    val bottomBarHeight: Dp = material3AppBarHeight,
+    val lazyGridOverlayTop: Dp = material3AppBarHeight,
+    val lazyGridOverlayBottom: Dp = bottomBarHeight,
+    val lazyGridItemSize: Dp = 104.dp,
+    val lazyGridItemSpacing: Dp = 4.dp,
+    val mediaGridIconPadding: Dp = 4.dp,
+    val mediaBarItemSize: Dp = 56.dp,
+    val mediaItemBorderThickness: Dp = 1.dp,
+    val mediaBarItemSpacing: Dp = 4.dp,
+    val mediaBarVideoIconPadding: Dp = 2.dp,
+    val asyncImageStateIconSize: Dp = 48.dp,
+) {
 
-    val Material3AppBarHeight = 64.dp
-    val BottomBarHeight = Material3AppBarHeight
-    val LazyGridOverlayTop = Material3AppBarHeight
-    val LazyGridOverlayBottom = BottomBarHeight
-    val LazyGridItemSize = 104.dp
-    val LazyGridItemSpacing = 4.dp
-    val MediaGridIconPadding = 4.dp
-    val AsyncImageStateIconSize = 48.dp
-    val MediaBarItemSize = 56.dp
-    val MediaItemBorderThickness = 1.dp
-    val MediaBarItemSpacing = 4.dp
-    val MediaBarVideoIconPadding = 2.dp
+    companion object {
+
+        @get:Composable
+        val current: SketchesDimens
+            get() = LocalSketchesDimens.current
+
+        fun providesDefault(): ProvidedValue<SketchesDimens> =
+            LocalSketchesDimens.provides(SketchesDimens())
+    }
 }
+
+private val LocalSketchesDimens: ProvidableCompositionLocal<SketchesDimens> =
+    staticCompositionLocalOf { error("CompositionLocal LocalSketchesDimens not present") }

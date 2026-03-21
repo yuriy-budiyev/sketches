@@ -79,30 +79,30 @@ fun SketchesLazyGrid(
         .asPaddingValues()
     val contentPaddingStart = contentPaddings
         .calculateStartPadding(layoutDirection)
-        .coerceAtLeast(SketchesDimens.LazyGridItemSpacing)
+        .coerceAtLeast(SketchesDimens.current.lazyGridItemSpacing)
     val contentPaddingTop = contentPaddings
         .calculateTopPadding()
         .plus(
             if (overlayTop) {
-                SketchesDimens.LazyGridOverlayTop
+                SketchesDimens.current.lazyGridOverlayTop
             } else {
-                SketchesDimens.LazyGridItemSpacing
+                SketchesDimens.current.lazyGridItemSpacing
             },
         )
     val contentPaddingEnd = contentPaddings
         .calculateEndPadding(layoutDirection)
-        .coerceAtLeast(SketchesDimens.LazyGridItemSpacing)
+        .coerceAtLeast(SketchesDimens.current.lazyGridItemSpacing)
     val contentPaddingBottom = contentPaddings
         .calculateBottomPadding()
         .plus(
             if (overlayBottom) {
-                SketchesDimens.LazyGridOverlayBottom
+                SketchesDimens.current.lazyGridOverlayBottom
             } else {
-                SketchesDimens.LazyGridItemSpacing
+                SketchesDimens.current.lazyGridItemSpacing
             },
         )
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = SketchesDimens.LazyGridItemSize),
+        columns = GridCells.Adaptive(minSize = SketchesDimens.current.lazyGridItemSize),
         modifier = modifier,
         state = state,
         contentPadding = PaddingValues(
@@ -111,8 +111,8 @@ fun SketchesLazyGrid(
             end = contentPaddingEnd,
             bottom = contentPaddingBottom,
         ),
-        horizontalArrangement = Arrangement.spacedBy(space = SketchesDimens.LazyGridItemSpacing),
-        verticalArrangement = Arrangement.spacedBy(space = SketchesDimens.LazyGridItemSpacing),
+        horizontalArrangement = Arrangement.spacedBy(space = SketchesDimens.current.lazyGridItemSpacing),
+        verticalArrangement = Arrangement.spacedBy(space = SketchesDimens.current.lazyGridItemSpacing),
         content = content,
     )
 }

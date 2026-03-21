@@ -415,7 +415,7 @@ private fun BucketsScreenLayout(
                         .fillMaxWidth()
                         .aspectRatio(ratio = 1f)
                         .border(
-                            width = SketchesDimens.MediaItemBorderThickness,
+                            width = SketchesDimens.current.mediaItemBorderThickness,
                             color = if (bucketSelectedUpdated) {
                                 MaterialTheme.colorScheme.onBackground
                                     .copy(alpha = SketchesColors.UiAlphaLowTransparency)
@@ -447,7 +447,7 @@ private fun BucketsScreenLayout(
                             tint = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier
                                 .align(alignment = Alignment.TopStart)
-                                .padding(all = SketchesDimens.MediaGridIconPadding)
+                                .padding(all = SketchesDimens.current.mediaGridIconPadding)
                                 .background(
                                     color = MaterialTheme.colorScheme.background
                                         .copy(alpha = SketchesColors.UiAlphaLowTransparency),

@@ -288,7 +288,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
             .animateItem()
             .aspectRatio(ratio = 1f)
             .border(
-                width = SketchesDimens.MediaItemBorderThickness,
+                width = SketchesDimens.current.mediaItemBorderThickness,
                 color = if (fileSelectedUpdated) {
                     MaterialTheme.colorScheme.onBackground
                         .copy(alpha = SketchesColors.UiAlphaLowTransparency)
@@ -329,7 +329,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                 tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .align(alignment = Alignment.TopStart)
-                    .padding(all = SketchesDimens.MediaGridIconPadding)
+                    .padding(all = SketchesDimens.current.mediaGridIconPadding)
                     .background(
                         color = MaterialTheme.colorScheme.background
                             .copy(alpha = SketchesColors.UiAlphaLowTransparency),
@@ -344,7 +344,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                 tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .align(alignment = Alignment.BottomStart)
-                    .padding(all = SketchesDimens.MediaGridIconPadding)
+                    .padding(all = SketchesDimens.current.mediaGridIconPadding)
                     .background(
                         color = MaterialTheme.colorScheme.background
                             .copy(alpha = SketchesColors.UiAlphaLowTransparency),

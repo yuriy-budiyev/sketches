@@ -124,7 +124,7 @@ fun SketchesThumbnailAsyncImage(
                     painter = painterResource(R.drawable.ic_image_error),
                     contentDescription = contentDescription,
                     modifier = Modifier
-                        .size(SketchesDimens.AsyncImageStateIconSize)
+                        .size(SketchesDimens.current.asyncImageStateIconSize)
                         .align(Alignment.Center),
                     tint = MaterialTheme.colorScheme.onBackground,
                 )
@@ -195,7 +195,7 @@ fun SketchesZoomableAsyncImage(
                 painter = painterResource(R.drawable.ic_image_error),
                 contentDescription = contentDescription,
                 modifier = Modifier
-                    .size(SketchesDimens.AsyncImageStateIconSize)
+                    .size(SketchesDimens.current.asyncImageStateIconSize)
                     .align(Alignment.Center),
                 tint = MaterialTheme.colorScheme.onBackground,
             )

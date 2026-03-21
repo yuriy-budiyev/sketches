@@ -263,7 +263,7 @@ private fun ImageScreenLayout(
             controllerVisible = systemBarsControllerUpdated.isSystemBarsVisible,
             controllerStartPadding = controllerPaddings.calculateStartPadding(layoutDirection),
             controllerEndPadding = controllerPaddings.calculateEndPadding(layoutDirection),
-            controllerBottomPadding = contentPaddingBottom + SketchesDimens.BottomBarHeight,
+            controllerBottomPadding = contentPaddingBottom + SketchesDimens.current.bottomBarHeight,
             modifier = Modifier
                 .matchParentSize()
                 .padding(
@@ -296,7 +296,7 @@ private fun ImageScreenLayout(
                         color = MaterialTheme.colorScheme.background
                             .copy(alpha = SketchesColors.UiAlphaLowTransparency),
                     )
-                    .height(SketchesDimens.BottomBarHeight)
+                    .height(SketchesDimens.current.bottomBarHeight)
                     .fillMaxWidth(),
             )
         }
@@ -547,9 +547,9 @@ private fun MediaBar(
     LazyRow(
         state = state,
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = SketchesDimens.MediaBarItemSpacing),
+        contentPadding = PaddingValues(horizontal = SketchesDimens.current.mediaBarItemSpacing),
         horizontalArrangement = Arrangement.spacedBy(
-            space = SketchesDimens.MediaBarItemSpacing,
+            space = SketchesDimens.current.mediaBarItemSpacing,
             alignment = Alignment.CenterHorizontally,
         ),
         verticalAlignment = Alignment.CenterVertically,
@@ -562,9 +562,9 @@ private fun MediaBar(
             val file = itemsUpdated[position]
             Box(
                 modifier = Modifier
-                    .size(size = SketchesDimens.MediaBarItemSize)
+                    .size(size = SketchesDimens.current.mediaBarItemSize)
                     .border(
-                        width = SketchesDimens.MediaItemBorderThickness,
+                        width = SketchesDimens.current.mediaItemBorderThickness,
                         color = if (position == currentIndexUpdated) {
                             MaterialTheme.colorScheme.onBackground
                                 .copy(alpha = SketchesColors.UiAlphaLowTransparency)
@@ -611,7 +611,7 @@ private fun MediaBar(
                         tint = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier
                             .align(alignment = Alignment.BottomStart)
-                            .padding(all = SketchesDimens.MediaBarVideoIconPadding)
+                            .padding(all = SketchesDimens.current.mediaBarVideoIconPadding)
                             .background(
                                 color = MaterialTheme.colorScheme.background
                                     .copy(alpha = SketchesColors.UiAlphaLowTransparency),

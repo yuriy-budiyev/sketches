@@ -300,7 +300,7 @@ fun SketchesNavRoot(
                 exit = fadeOut(),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(SketchesDimens.Material3AppBarHeight),
+                    .height(SketchesDimens.current.material3AppBarHeight),
             ) {
                 Row(
                     modifier = Modifier
