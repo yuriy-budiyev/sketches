@@ -111,6 +111,12 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
             window.colorMode = ActivityInfo.COLOR_MODE_HDR
             window.desiredHdrHeadroom = 1.5f
         }
+        ContextCompat.registerReceiver(
+            this,
+            shareReceiver,
+            IntentFilter(ChooserCallbackResendAction),
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
         setContent {
             CompositionLocalProvider(
                 LocalSystemBarsController.provides(this),
@@ -122,12 +128,6 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
                 }
             }
         }
-        ContextCompat.registerReceiver(
-            this,
-            shareReceiver,
-            IntentFilter(ChooserCallbackResendAction),
-            ContextCompat.RECEIVER_NOT_EXPORTED,
-        )
     }
 
     override fun onDestroy() {
