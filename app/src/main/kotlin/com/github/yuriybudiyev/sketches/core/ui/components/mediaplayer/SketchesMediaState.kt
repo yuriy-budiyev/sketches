@@ -70,7 +70,6 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 @Composable
-@OptIn(UnstableApi::class)
 fun rememberSketchesMediaState(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): SketchesMediaState {
@@ -168,22 +167,25 @@ sealed interface SketchesMediaState {
 }
 
 @Stable
-@OptIn(UnstableApi::class)
 private class SketchesMediaStateImpl @RememberInComposition constructor(
     context: Context,
     override val coroutineScope: CoroutineScope,
 ): SketchesMediaState, Player.Listener, RememberObserver {
 
-    private val player: Player = ExoPlayer
-        .Builder(context)
-        .setLoadControl(
-            DefaultLoadControl
-                .Builder()
-                .setTargetBufferBytes((context.getMaxMemory() / 8L).toInt())
-                .build(),
-        )
-        .setMediaSourceFactory(ProgressiveMediaSource.Factory(DefaultDataSource.Factory(context)))
-        .build()
+    @OptIn(UnstableApi::class)
+    private fun createPlayer(context: Context): Player =
+        ExoPlayer
+            .Builder(context)
+            .setLoadControl(
+                DefaultLoadControl
+                    .Builder()
+                    .setTargetBufferBytes((context.getMaxMemory() / 8L).toInt())
+                    .build(),
+            )
+            .setMediaSourceFactory(ProgressiveMediaSource.Factory(DefaultDataSource.Factory(context)))
+            .build()
+
+    private val player: Player = createPlayer(context)
 
     override var isLoading: Boolean by mutableStateOf(player.isLoading)
         private set
@@ -565,7 +567,6 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
     }
 }
 
-@UnstableApi
 private class SketchesMediaStateImplSaver(
     private val context: Context,
     private val coroutineScope: CoroutineScope,
