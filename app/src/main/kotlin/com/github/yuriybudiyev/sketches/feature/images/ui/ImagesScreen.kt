@@ -132,13 +132,14 @@ fun ImagesScreen(
         },
     )
     DisposableEffect(shareManagerUpdated) {
-        shareManagerUpdated.registerOnSharedListener(ShareAction) {
+        val shareManager = shareManagerUpdated
+        shareManager.registerOnSharedListener(ShareAction) {
             coroutineScope.launch {
                 selectedFiles.clear()
             }
         }
         onDispose {
-            shareManagerUpdated.unregisterOnSharedListener(ShareAction)
+            shareManager.unregisterOnSharedListener(ShareAction)
         }
     }
     LaunchedEffect(Unit) {

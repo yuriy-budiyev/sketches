@@ -144,14 +144,15 @@ fun BucketScreen(
             }
         },
     )
-    DisposableEffect(Unit) {
-        shareManagerUpdated.registerOnSharedListener(ShareAction) {
+    DisposableEffect(shareManagerUpdated) {
+        val shareManager = shareManagerUpdated
+        shareManager.registerOnSharedListener(ShareAction) {
             coroutineScope.launch {
                 selectedFiles.clear()
             }
         }
         onDispose {
-            shareManagerUpdated.unregisterOnSharedListener(ShareAction)
+            shareManager.unregisterOnSharedListener(ShareAction)
         }
     }
     LaunchedEffect(Unit) {
