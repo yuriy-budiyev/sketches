@@ -166,7 +166,7 @@ fun SketchesGroupingMediaGrid(
                 ChronoField.MONTH_OF_YEAR,
                 TextStyle.FULL_STANDALONE,
             )
-            .toFormatter(Locale.getDefault())!!
+            .toFormatter(Locale.getDefault())
     }
     val dateFormatterMonthYear = remember {
         DateTimeFormatterBuilder()
@@ -179,7 +179,7 @@ fun SketchesGroupingMediaGrid(
                 ChronoField.YEAR,
                 TextStyle.FULL_STANDALONE,
             )
-            .toFormatter(Locale.getDefault())!!
+            .toFormatter(Locale.getDefault())
     }
     SketchesLazyGrid(
         modifier = modifier,
@@ -197,9 +197,9 @@ fun SketchesGroupingMediaGrid(
                 span = { GridItemSpan(maxLineSpan) },
             ) {
                 val text = if (nowDate.year == month.year) {
-                    dateFormatterMonth.format(month)!!
+                    dateFormatterMonth.format(month)
                 } else {
-                    dateFormatterMonthYear.format(month)!!
+                    dateFormatterMonthYear.format(month)
                 }
                 Text(
                     text = text.capitalizeFirstChar(),
