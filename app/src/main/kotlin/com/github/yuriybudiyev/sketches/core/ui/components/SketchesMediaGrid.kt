@@ -166,7 +166,7 @@ fun SketchesGroupingMediaGrid(
                 ChronoField.MONTH_OF_YEAR,
                 TextStyle.FULL_STANDALONE,
             )
-            .toFormatter(Locale.getDefault())
+            .toFormatter(Locale.getDefault())!!
     }
     val dateFormatterMonthYear = remember {
         DateTimeFormatterBuilder()
@@ -179,7 +179,7 @@ fun SketchesGroupingMediaGrid(
                 ChronoField.YEAR,
                 TextStyle.FULL_STANDALONE,
             )
-            .toFormatter(Locale.getDefault())
+            .toFormatter(Locale.getDefault())!!
     }
     SketchesLazyGrid(
         modifier = modifier,
