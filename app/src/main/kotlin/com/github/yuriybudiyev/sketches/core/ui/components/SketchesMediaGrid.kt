@@ -197,9 +197,9 @@ fun SketchesGroupingMediaGrid(
                 span = { GridItemSpan(maxLineSpan) },
             ) {
                 val text = if (nowDate.year == month.year) {
-                    month.format(dateFormatterMonth)
+                    dateFormatterMonth.format(month)!!
                 } else {
-                    month.format(dateFormatterMonthYear)
+                    dateFormatterMonthYear.format(month)!!
                 }
                 Text(
                     text = text.capitalizeFirstChar(),
