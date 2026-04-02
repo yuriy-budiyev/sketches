@@ -53,6 +53,7 @@ import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsContro
 import com.github.yuriybudiyev.sketches.core.platform.bars.SystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.ShareManager
+import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalSketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
 import com.github.yuriybudiyev.sketches.main.ui.SketchesApp
@@ -119,9 +120,9 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
         )
         setContent {
             CompositionLocalProvider(
+                LocalSketchesDimens.provides(SketchesDimens()),
                 LocalSystemBarsController.provides(this),
                 LocalShareManager.provides(this),
-                SketchesDimens.providesDefault(),
             ) {
                 SketchesTheme {
                     SketchesApp()

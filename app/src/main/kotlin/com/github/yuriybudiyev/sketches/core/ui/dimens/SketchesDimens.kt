@@ -24,9 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.dimens
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -44,18 +42,7 @@ data class SketchesDimens(
     val mediaBarItemSpacing: Dp = 4.dp,
     val mediaBarVideoIconPadding: Dp = 2.dp,
     val asyncImageStateIconSize: Dp = 48.dp,
-) {
+)
 
-    companion object {
-
-        @get:Composable
-        val current: SketchesDimens
-            get() = LocalSketchesDimens.current
-
-        fun providesDefault(): ProvidedValue<SketchesDimens> =
-            LocalSketchesDimens.provides(SketchesDimens())
-    }
-}
-
-private val LocalSketchesDimens: ProvidableCompositionLocal<SketchesDimens> =
+val LocalSketchesDimens: ProvidableCompositionLocal<SketchesDimens> =
     staticCompositionLocalOf { error("CompositionLocal LocalSketchesDimens not present") }

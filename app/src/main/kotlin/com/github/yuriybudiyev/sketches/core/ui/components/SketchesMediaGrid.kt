@@ -58,7 +58,7 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
-import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
+import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalSketchesDimens
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 import java.time.YearMonth
@@ -288,7 +288,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
             .animateItem()
             .aspectRatio(ratio = 1f)
             .border(
-                width = SketchesDimens.current.mediaItemBorderThickness,
+                width = LocalSketchesDimens.current.mediaItemBorderThickness,
                 color = if (fileSelectedUpdated) {
                     MaterialTheme.colorScheme.onBackground
                         .copy(alpha = SketchesColors.UiAlphaLowTransparency)
@@ -329,7 +329,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                 tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .align(alignment = Alignment.TopStart)
-                    .padding(all = SketchesDimens.current.mediaGridIconPadding)
+                    .padding(all = LocalSketchesDimens.current.mediaGridIconPadding)
                     .background(
                         color = MaterialTheme.colorScheme.background
                             .copy(alpha = SketchesColors.UiAlphaLowTransparency),
@@ -344,7 +344,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                 tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier
                     .align(alignment = Alignment.BottomStart)
-                    .padding(all = SketchesDimens.current.mediaGridIconPadding)
+                    .padding(all = LocalSketchesDimens.current.mediaGridIconPadding)
                     .background(
                         color = MaterialTheme.colorScheme.background
                             .copy(alpha = SketchesColors.UiAlphaLowTransparency),

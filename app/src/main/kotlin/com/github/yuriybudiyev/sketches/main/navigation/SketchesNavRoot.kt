@@ -97,7 +97,7 @@ import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsContro
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateListSaver
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
-import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
+import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalSketchesDimens
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.registerBucketNavRoute
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
@@ -300,7 +300,7 @@ fun SketchesNavRoot(
                 exit = fadeOut(),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(SketchesDimens.current.material3AppBarHeight),
+                    .height(LocalSketchesDimens.current.material3AppBarHeight),
             ) {
                 Row(
                     modifier = Modifier

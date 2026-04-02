@@ -107,7 +107,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.mediaplayer.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.components.mediaplayer.rememberSketchesMediaState
-import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
+import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalSketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemCentered
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
@@ -263,7 +263,7 @@ private fun ImageScreenLayout(
             controllerVisible = systemBarsControllerUpdated.isSystemBarsVisible,
             controllerStartPadding = controllerPaddings.calculateStartPadding(layoutDirection),
             controllerEndPadding = controllerPaddings.calculateEndPadding(layoutDirection),
-            controllerBottomPadding = contentPaddingBottom + SketchesDimens.current.bottomBarHeight,
+            controllerBottomPadding = contentPaddingBottom + LocalSketchesDimens.current.bottomBarHeight,
             modifier = Modifier
                 .matchParentSize()
                 .padding(
@@ -296,7 +296,7 @@ private fun ImageScreenLayout(
                         color = MaterialTheme.colorScheme.background
                             .copy(alpha = SketchesColors.UiAlphaLowTransparency),
                     )
-                    .height(SketchesDimens.current.bottomBarHeight)
+                    .height(LocalSketchesDimens.current.bottomBarHeight)
                     .fillMaxWidth(),
             )
         }
@@ -547,9 +547,9 @@ private fun MediaBar(
     LazyRow(
         state = state,
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = SketchesDimens.current.mediaBarItemSpacing),
+        contentPadding = PaddingValues(horizontal = LocalSketchesDimens.current.mediaBarItemSpacing),
         horizontalArrangement = Arrangement.spacedBy(
-            space = SketchesDimens.current.mediaBarItemSpacing,
+            space = LocalSketchesDimens.current.mediaBarItemSpacing,
             alignment = Alignment.CenterHorizontally,
         ),
         verticalAlignment = Alignment.CenterVertically,
@@ -562,9 +562,9 @@ private fun MediaBar(
             val file = itemsUpdated[position]
             Box(
                 modifier = Modifier
-                    .size(size = SketchesDimens.current.mediaBarItemSize)
+                    .size(size = LocalSketchesDimens.current.mediaBarItemSize)
                     .border(
-                        width = SketchesDimens.current.mediaItemBorderThickness,
+                        width = LocalSketchesDimens.current.mediaItemBorderThickness,
                         color = if (position == currentIndexUpdated) {
                             MaterialTheme.colorScheme.onBackground
                                 .copy(alpha = SketchesColors.UiAlphaLowTransparency)
@@ -611,7 +611,7 @@ private fun MediaBar(
                         tint = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier
                             .align(alignment = Alignment.BottomStart)
-                            .padding(all = SketchesDimens.current.mediaBarVideoIconPadding)
+                            .padding(all = LocalSketchesDimens.current.mediaBarVideoIconPadding)
                             .background(
                                 color = MaterialTheme.colorScheme.background
                                     .copy(alpha = SketchesColors.UiAlphaLowTransparency),

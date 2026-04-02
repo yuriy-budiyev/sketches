@@ -57,7 +57,7 @@ import coil3.size.Size
 import coil3.video.videoFramePercent
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
-import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
+import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalSketchesDimens
 
 @Composable
 fun SketchesThumbnailAsyncImage(
@@ -124,7 +124,7 @@ fun SketchesThumbnailAsyncImage(
                     painter = painterResource(R.drawable.ic_image_error),
                     contentDescription = contentDescription,
                     modifier = Modifier
-                        .size(SketchesDimens.current.asyncImageStateIconSize)
+                        .size(LocalSketchesDimens.current.asyncImageStateIconSize)
                         .align(Alignment.Center),
                     tint = MaterialTheme.colorScheme.onBackground,
                 )
@@ -195,7 +195,7 @@ fun SketchesZoomableAsyncImage(
                 painter = painterResource(R.drawable.ic_image_error),
                 contentDescription = contentDescription,
                 modifier = Modifier
-                    .size(SketchesDimens.current.asyncImageStateIconSize)
+                    .size(LocalSketchesDimens.current.asyncImageStateIconSize)
                     .align(Alignment.Center),
                 tint = MaterialTheme.colorScheme.onBackground,
             )
