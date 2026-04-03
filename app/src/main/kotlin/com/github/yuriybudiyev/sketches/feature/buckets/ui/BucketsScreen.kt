@@ -373,6 +373,9 @@ private fun BucketsScreenLayout(
     val bucketsUpdated by rememberUpdatedState(buckets)
     val selectedBucketsUpdated by rememberUpdatedState(selectedBuckets)
     val onBucketClickUpdated by rememberUpdatedState(onBucketClick)
+    val colorScheme = MaterialTheme.colorScheme
+    val shapes = MaterialTheme.shapes
+    val dimens = LocalDimens.current
     SketchesLazyGrid(
         modifier = modifier,
         state = state,
@@ -388,7 +391,7 @@ private fun BucketsScreenLayout(
             Column(
                 modifier = Modifier
                     .animateItem()
-                    .clip(shape = MaterialTheme.shapes.extraSmall)
+                    .clip(shape = shapes.extraSmall)
                     .combinedClickable(
                         onLongClick = {
                             if (selectedBucketsUpdated.isEmpty()) {
@@ -416,17 +419,17 @@ private fun BucketsScreenLayout(
                         .fillMaxWidth()
                         .aspectRatio(ratio = 1f)
                         .border(
-                            width = LocalDimens.current.mediaItemBorderThickness,
+                            width = dimens.mediaItemBorderThickness,
                             color = if (bucketSelectedUpdated) {
-                                MaterialTheme.colorScheme.onBackground
+                                colorScheme.onBackground
                                     .copy(alpha = SketchesColors.UiAlphaLowTransparency)
                             } else {
-                                MaterialTheme.colorScheme.onBackground
+                                colorScheme.onBackground
                                     .copy(alpha = SketchesColors.UiAlphaHighTransparency)
                             },
-                            shape = MaterialTheme.shapes.extraSmall,
+                            shape = shapes.extraSmall,
                         )
-                        .clip(shape = MaterialTheme.shapes.extraSmall),
+                        .clip(shape = shapes.extraSmall),
                 ) {
                     SketchesThumbnailAsyncImage(
                         uri = bucketUpdated.coverUri,
@@ -438,19 +441,19 @@ private fun BucketsScreenLayout(
                             modifier = Modifier
                                 .matchParentSize()
                                 .background(
-                                    color = MaterialTheme.colorScheme.background
+                                    color = colorScheme.background
                                         .copy(alpha = SketchesColors.UiAlphaMidTransparency),
                                 ),
                         )
                         Icon(
                             painter = painterResource(R.drawable.ic_media_selected),
                             contentDescription = stringResource(R.string.selected),
-                            tint = MaterialTheme.colorScheme.onBackground,
+                            tint = colorScheme.onBackground,
                             modifier = Modifier
                                 .align(alignment = Alignment.TopStart)
-                                .padding(all = LocalDimens.current.mediaGridIconPadding)
+                                .padding(all = dimens.mediaGridIconPadding)
                                 .background(
-                                    color = MaterialTheme.colorScheme.background
+                                    color = colorScheme.background
                                         .copy(alpha = SketchesColors.UiAlphaLowTransparency),
                                     shape = CircleShape,
                                 ),
@@ -465,7 +468,7 @@ private fun BucketsScreenLayout(
                         end = 4.dp,
                         bottom = 0.dp,
                     ),
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = colorScheme.onBackground,
                     fontSize = 16.sp,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
@@ -478,7 +481,7 @@ private fun BucketsScreenLayout(
                         end = 4.dp,
                         bottom = 4.dp,
                     ),
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = colorScheme.onBackground,
                     fontSize = 14.sp,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
