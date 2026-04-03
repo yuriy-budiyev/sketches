@@ -93,7 +93,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndica
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesThumbnailAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
-import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalSketchesDimens
+import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -416,7 +416,7 @@ private fun BucketsScreenLayout(
                         .fillMaxWidth()
                         .aspectRatio(ratio = 1f)
                         .border(
-                            width = LocalSketchesDimens.current.mediaItemBorderThickness,
+                            width = LocalDimens.current.mediaItemBorderThickness,
                             color = if (bucketSelectedUpdated) {
                                 MaterialTheme.colorScheme.onBackground
                                     .copy(alpha = SketchesColors.UiAlphaLowTransparency)
@@ -448,7 +448,7 @@ private fun BucketsScreenLayout(
                             tint = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier
                                 .align(alignment = Alignment.TopStart)
-                                .padding(all = LocalSketchesDimens.current.mediaGridIconPadding)
+                                .padding(all = LocalDimens.current.mediaGridIconPadding)
                                 .background(
                                     color = MaterialTheme.colorScheme.background
                                         .copy(alpha = SketchesColors.UiAlphaLowTransparency),

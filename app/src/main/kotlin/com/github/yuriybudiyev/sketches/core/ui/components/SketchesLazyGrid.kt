@@ -47,7 +47,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.coerceAtLeast
-import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalSketchesDimens
+import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
@@ -77,32 +77,33 @@ fun SketchesLazyGrid(
         .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
         .union(WindowInsets.waterfall.only(WindowInsetsSides.Horizontal))
         .asPaddingValues()
+    val dimens = LocalDimens.current
     val contentPaddingStart = contentPaddings
         .calculateStartPadding(layoutDirection)
-        .coerceAtLeast(LocalSketchesDimens.current.lazyGridItemSpacing)
+        .coerceAtLeast(dimens.lazyGridItemSpacing)
     val contentPaddingTop = contentPaddings
         .calculateTopPadding()
         .plus(
             if (overlayTop) {
-                LocalSketchesDimens.current.lazyGridOverlayTop
+                dimens.lazyGridOverlayTop
             } else {
-                LocalSketchesDimens.current.lazyGridItemSpacing
+                dimens.lazyGridItemSpacing
             },
         )
     val contentPaddingEnd = contentPaddings
         .calculateEndPadding(layoutDirection)
-        .coerceAtLeast(LocalSketchesDimens.current.lazyGridItemSpacing)
+        .coerceAtLeast(dimens.lazyGridItemSpacing)
     val contentPaddingBottom = contentPaddings
         .calculateBottomPadding()
         .plus(
             if (overlayBottom) {
-                LocalSketchesDimens.current.lazyGridOverlayBottom
+                dimens.lazyGridOverlayBottom
             } else {
-                LocalSketchesDimens.current.lazyGridItemSpacing
+                dimens.lazyGridItemSpacing
             },
         )
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = LocalSketchesDimens.current.lazyGridItemSize),
+        columns = GridCells.Adaptive(minSize = dimens.lazyGridItemSize),
         modifier = modifier,
         state = state,
         contentPadding = PaddingValues(
@@ -111,8 +112,8 @@ fun SketchesLazyGrid(
             end = contentPaddingEnd,
             bottom = contentPaddingBottom,
         ),
-        horizontalArrangement = Arrangement.spacedBy(space = LocalSketchesDimens.current.lazyGridItemSpacing),
-        verticalArrangement = Arrangement.spacedBy(space = LocalSketchesDimens.current.lazyGridItemSpacing),
+        horizontalArrangement = Arrangement.spacedBy(space = dimens.lazyGridItemSpacing),
+        verticalArrangement = Arrangement.spacedBy(space = dimens.lazyGridItemSpacing),
         content = content,
     )
 }

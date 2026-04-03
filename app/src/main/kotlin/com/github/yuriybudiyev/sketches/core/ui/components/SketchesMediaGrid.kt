@@ -58,7 +58,7 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
-import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalSketchesDimens
+import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 import java.time.YearMonth
@@ -181,6 +181,7 @@ fun SketchesGroupingMediaGrid(
             )
             .toFormatter(Locale.getDefault())
     }
+    val colorScheme = MaterialTheme.colorScheme
     SketchesLazyGrid(
         modifier = modifier,
         state = state,
@@ -206,7 +207,7 @@ fun SketchesGroupingMediaGrid(
                     modifier = Modifier
                         .animateItem()
                         .background(
-                            color = MaterialTheme.colorScheme.background,
+                            color = colorScheme.background,
                             shape = RectangleShape,
                         )
                         .padding(
@@ -215,7 +216,7 @@ fun SketchesGroupingMediaGrid(
                             end = 4.dp,
                             bottom = 0.dp,
                         ),
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = colorScheme.onBackground,
                     fontSize = 16.sp,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
@@ -283,22 +284,25 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
 ) {
     val fileUpdated by rememberUpdatedState(file)
     val fileSelectedUpdated by rememberUpdatedState(fileSelected)
+    val colorScheme = MaterialTheme.colorScheme
+    val shapes = MaterialTheme.shapes
+    val dimens = LocalDimens.current
     Box(
         modifier = Modifier
             .animateItem()
             .aspectRatio(ratio = 1f)
             .border(
-                width = LocalSketchesDimens.current.mediaItemBorderThickness,
+                width = dimens.mediaItemBorderThickness,
                 color = if (fileSelectedUpdated) {
-                    MaterialTheme.colorScheme.onBackground
+                    colorScheme.onBackground
                         .copy(alpha = SketchesColors.UiAlphaLowTransparency)
                 } else {
-                    MaterialTheme.colorScheme.onBackground
+                    colorScheme.onBackground
                         .copy(alpha = SketchesColors.UiAlphaHighTransparency)
                 },
-                shape = MaterialTheme.shapes.extraSmall,
+                shape = shapes.extraSmall,
             )
-            .clip(shape = MaterialTheme.shapes.extraSmall)
+            .clip(shape = shapes.extraSmall)
             .combinedClickable(
                 onLongClick = onLongClick,
                 onClick = onClick,
@@ -319,19 +323,19 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                 modifier = Modifier
                     .matchParentSize()
                     .background(
-                        color = MaterialTheme.colorScheme.background
+                        color = colorScheme.background
                             .copy(alpha = SketchesColors.UiAlphaMidTransparency),
                     ),
             )
             Icon(
                 painter = painterResource(R.drawable.ic_media_selected),
                 contentDescription = stringResource(R.string.selected),
-                tint = MaterialTheme.colorScheme.onBackground,
+                tint = colorScheme.onBackground,
                 modifier = Modifier
                     .align(alignment = Alignment.TopStart)
-                    .padding(all = LocalSketchesDimens.current.mediaGridIconPadding)
+                    .padding(all = dimens.mediaGridIconPadding)
                     .background(
-                        color = MaterialTheme.colorScheme.background
+                        color = colorScheme.background
                             .copy(alpha = SketchesColors.UiAlphaLowTransparency),
                         shape = CircleShape,
                     ),
@@ -341,12 +345,12 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
             Icon(
                 painter = painterResource(R.drawable.ic_video),
                 contentDescription = stringResource(R.string.video),
-                tint = MaterialTheme.colorScheme.onBackground,
+                tint = colorScheme.onBackground,
                 modifier = Modifier
                     .align(alignment = Alignment.BottomStart)
-                    .padding(all = LocalSketchesDimens.current.mediaGridIconPadding)
+                    .padding(all = dimens.mediaGridIconPadding)
                     .background(
-                        color = MaterialTheme.colorScheme.background
+                        color = colorScheme.background
                             .copy(alpha = SketchesColors.UiAlphaLowTransparency),
                         shape = CircleShape,
                     ),

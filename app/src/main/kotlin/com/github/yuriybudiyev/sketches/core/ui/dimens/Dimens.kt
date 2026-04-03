@@ -24,12 +24,14 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.dimens
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-data class SketchesDimens(
+@Immutable
+class Dimens(
     val material3AppBarHeight: Dp = 64.dp,
     val bottomBarHeight: Dp = material3AppBarHeight,
     val lazyGridOverlayTop: Dp = material3AppBarHeight,
@@ -44,5 +46,5 @@ data class SketchesDimens(
     val asyncImageStateIconSize: Dp = 48.dp,
 )
 
-val LocalSketchesDimens: ProvidableCompositionLocal<SketchesDimens> =
+val LocalDimens: ProvidableCompositionLocal<Dimens> =
     staticCompositionLocalOf { error("CompositionLocal LocalSketchesDimens not present") }
