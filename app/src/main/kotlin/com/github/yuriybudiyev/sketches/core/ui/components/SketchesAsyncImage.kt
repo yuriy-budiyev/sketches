@@ -110,11 +110,12 @@ fun SketchesThumbnailAsyncImage(
                     ),
             )
         } else {
+            val colorScheme = MaterialTheme.colorScheme
             Box(
                 modifier = modifier
                     .matchParentSize()
                     .background(
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = colorScheme.onBackground
                             .copy(alpha = SketchesColors.UiAlphaHighTransparency),
                         shape = RectangleShape,
                     ),
@@ -126,7 +127,7 @@ fun SketchesThumbnailAsyncImage(
                     modifier = Modifier
                         .size(LocalDimens.current.asyncImageStateIconSize)
                         .align(Alignment.Center),
-                    tint = MaterialTheme.colorScheme.onBackground,
+                    tint = colorScheme.onBackground,
                 )
             }
         }
