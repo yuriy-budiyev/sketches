@@ -47,4 +47,4 @@ class Dimens(
 )
 
 val LocalDimens: ProvidableCompositionLocal<Dimens> =
-    staticCompositionLocalOf { error("CompositionLocal LocalSketchesDimens not present") }
+    staticCompositionLocalOf { error("CompositionLocal LocalDimens not present") }
