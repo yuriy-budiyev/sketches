@@ -12,20 +12,20 @@ plugins {
 android {
     namespace = "com.github.yuriybudiyev.sketches"
 
-    buildToolsVersion = "36.1.0"
+    buildToolsVersion = "37.0.0"
 
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
+        version = release(37) {
+            minorApiLevel = 0
         }
     }
 
     defaultConfig {
         applicationId = "com.github.yuriybudiyev.sketches"
         minSdk = 23
-        targetSdk = 36
-        versionCode = 49
-        versionName = "1.0.50"
+        targetSdk = 37
+        versionCode = 50
+        versionName = "1.0.51"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
