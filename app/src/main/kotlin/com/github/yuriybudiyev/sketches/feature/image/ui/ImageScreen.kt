@@ -233,6 +233,7 @@ private fun ImageScreenLayout(
             }
         }
     }
+    val dimens = LocalDimens.current
     Box(modifier = modifier) {
         val layoutDirection = LocalLayoutDirection.current
         var contentInsets = WindowInsets.navigationBars
@@ -263,7 +264,7 @@ private fun ImageScreenLayout(
             controllerVisible = systemBarsControllerUpdated.isSystemBarsVisible,
             controllerStartPadding = controllerPaddings.calculateStartPadding(layoutDirection),
             controllerEndPadding = controllerPaddings.calculateEndPadding(layoutDirection),
-            controllerBottomPadding = contentPaddingBottom + LocalDimens.current.bottomBarHeight,
+            controllerBottomPadding = contentPaddingBottom + dimens.bottomBarHeight,
             modifier = Modifier
                 .matchParentSize()
                 .padding(
@@ -296,7 +297,7 @@ private fun ImageScreenLayout(
                         color = MaterialTheme.colorScheme.background
                             .copy(alpha = SketchesColors.UiAlphaLowTransparency),
                     )
-                    .height(LocalDimens.current.bottomBarHeight)
+                    .height(dimens.bottomBarHeight)
                     .fillMaxWidth(),
             )
         }
@@ -544,12 +545,15 @@ private fun MediaBar(
     val currentIndexUpdated by rememberUpdatedState(currentIndex)
     val itemsUpdated by rememberUpdatedState(items)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
+    val colorScheme = MaterialTheme.colorScheme
+    val shapes = MaterialTheme.shapes
+    val dimens = LocalDimens.current
     LazyRow(
         state = state,
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = LocalDimens.current.mediaBarItemSpacing),
+        contentPadding = PaddingValues(horizontal = dimens.mediaBarItemSpacing),
         horizontalArrangement = Arrangement.spacedBy(
-            space = LocalDimens.current.mediaBarItemSpacing,
+            space = dimens.mediaBarItemSpacing,
             alignment = Alignment.CenterHorizontally,
         ),
         verticalAlignment = Alignment.CenterVertically,
@@ -562,19 +566,19 @@ private fun MediaBar(
             val file = itemsUpdated[position]
             Box(
                 modifier = Modifier
-                    .size(size = LocalDimens.current.mediaBarItemSize)
+                    .size(size = dimens.mediaBarItemSize)
                     .border(
-                        width = LocalDimens.current.mediaItemBorderThickness,
+                        width = dimens.mediaItemBorderThickness,
                         color = if (position == currentIndexUpdated) {
-                            MaterialTheme.colorScheme.onBackground
+                            colorScheme.onBackground
                                 .copy(alpha = SketchesColors.UiAlphaLowTransparency)
                         } else {
-                            MaterialTheme.colorScheme.onBackground
+                            colorScheme.onBackground
                                 .copy(alpha = SketchesColors.UiAlphaHighTransparency)
                         },
-                        shape = MaterialTheme.shapes.extraSmall,
+                        shape = shapes.extraSmall,
                     )
-                    .clip(shape = MaterialTheme.shapes.extraSmall)
+                    .clip(shape = shapes.extraSmall)
                     .clickable {
                         coroutineScope.launch {
                             onItemClickUpdated(
@@ -599,7 +603,7 @@ private fun MediaBar(
                         modifier = Modifier
                             .matchParentSize()
                             .background(
-                                color = MaterialTheme.colorScheme.background
+                                color = colorScheme.background
                                     .copy(alpha = SketchesColors.UiAlphaMidTransparency),
                             ),
                     )
@@ -608,12 +612,12 @@ private fun MediaBar(
                     Icon(
                         painter = painterResource(R.drawable.ic_video),
                         contentDescription = stringResource(R.string.video),
-                        tint = MaterialTheme.colorScheme.onBackground,
+                        tint = colorScheme.onBackground,
                         modifier = Modifier
                             .align(alignment = Alignment.BottomStart)
-                            .padding(all = LocalDimens.current.mediaBarVideoIconPadding)
+                            .padding(all = dimens.mediaBarVideoIconPadding)
                             .background(
-                                color = MaterialTheme.colorScheme.background
+                                color = colorScheme.background
                                     .copy(alpha = SketchesColors.UiAlphaLowTransparency),
                                 shape = CircleShape,
                             ),
