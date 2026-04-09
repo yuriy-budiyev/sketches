@@ -231,29 +231,30 @@ fun SketchesNavRoot(
         entryDecorators = listOf(navEntryDecorator),
         entryProvider = navEntryProvider,
     )
-    val sceneState = rememberSceneState(
-        entries = navEntries,
-        sceneStrategy = SinglePaneSceneStrategy(),
-        onBack = popNavBackStack,
-    )
-    val currentScene = sceneState.currentScene
-    val currentInfo = SceneInfo(currentScene)
-    val previousSceneInfos = sceneState.previousScenes.map { scene -> SceneInfo(scene) }
-    val navEventState = rememberNavigationEventState(
-        currentInfo = currentInfo,
-        backInfo = previousSceneInfos,
-    )
-    NavigationBackHandler(
-        state = navEventState,
-        isBackEnabled = currentScene.previousEntries.isNotEmpty(),
-        onBackCompleted = {
-            repeat(navEntries.size - currentScene.previousEntries.size) { popNavBackStack() }
-        },
-    )
-    val navResultStore = rememberNavResultStore()
-    val rootNavBarController = rememberRootNavBarController()
-    Box(modifier = modifier) {
-        SharedTransitionScope { transitionModifier ->
+    SharedTransitionScope { transitionModifier ->
+        val sceneState = rememberSceneState(
+            entries = navEntries,
+            sceneStrategies = listOf(SinglePaneSceneStrategy()),
+            sharedTransitionScope = this@SharedTransitionScope,
+            onBack = popNavBackStack,
+        )
+        val currentScene = sceneState.currentScene
+        val currentInfo = SceneInfo(currentScene)
+        val previousSceneInfos = sceneState.previousScenes.map { scene -> SceneInfo(scene) }
+        val navEventState = rememberNavigationEventState(
+            currentInfo = currentInfo,
+            backInfo = previousSceneInfos,
+        )
+        NavigationBackHandler(
+            state = navEventState,
+            isBackEnabled = currentScene.previousEntries.isNotEmpty(),
+            onBackCompleted = {
+                repeat(navEntries.size - currentScene.previousEntries.size) { popNavBackStack() }
+            },
+        )
+        val navResultStore = rememberNavResultStore()
+        val rootNavBarController = rememberRootNavBarController()
+        Box(modifier = modifier.then(transitionModifier)) {
             CompositionLocalProvider(
                 LocalNavResultStore.provides(navResultStore),
                 LocalRootNavBarController.provides(rootNavBarController),
@@ -262,9 +263,7 @@ fun SketchesNavRoot(
                 NavDisplay(
                     sceneState = sceneState,
                     navigationEventState = navEventState,
-                    modifier = Modifier
-                        .matchParentSize()
-                        .then(transitionModifier),
+                    modifier = Modifier.matchParentSize(),
                     transitionSpec = {
                         ContentTransform(
                             fadeIn(),
@@ -288,87 +287,87 @@ fun SketchesNavRoot(
                     },
                 )
             }
-        }
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .fillMaxWidth(),
-        ) {
-            AnimatedVisibility(
-                visible = currentRouteIsRoot && rootNavBarController.isRootNavBarVisible,
-                enter = fadeIn(),
-                exit = fadeOut(),
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(LocalDimens.current.material3AppBarHeight),
+                    .align(Alignment.BottomStart)
+                    .fillMaxWidth(),
             ) {
-                Row(
+                AnimatedVisibility(
+                    visible = currentRouteIsRoot && rootNavBarController.isRootNavBarVisible,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
                     modifier = Modifier
-                        .background(
-                            MaterialTheme.colorScheme.background
-                                .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                            RectangleShape,
-                        )
-                        .fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
+                        .fillMaxWidth()
+                        .height(LocalDimens.current.material3AppBarHeight),
                 ) {
-                    val topRootRoute = navBackStack.findClosestRoot()
-                    for (route in rootRoutes) {
-                        val selected = route == topRootRoute
-                        NavigationBarItem(
-                            selected = selected,
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                                unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-                                indicatorColor = MaterialTheme.colorScheme.primary,
-                            ),
-                            onClick = {
-                                if (route == topRootRoute) {
-                                    rootNavBarController.dispatchOnClick(route)
-                                } else {
-                                    if (route == initialRoute) {
-                                        navBackStack.clear()
+                    Row(
+                        modifier = Modifier
+                            .background(
+                                MaterialTheme.colorScheme.background
+                                    .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                                RectangleShape,
+                            )
+                            .fillMaxSize(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                    ) {
+                        val topRootRoute = navBackStack.findClosestRoot()
+                        for (route in rootRoutes) {
+                            val selected = route == topRootRoute
+                            NavigationBarItem(
+                                selected = selected,
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
+                                    unselectedIconColor = MaterialTheme.colorScheme.onBackground,
+                                    indicatorColor = MaterialTheme.colorScheme.primary,
+                                ),
+                                onClick = {
+                                    if (route == topRootRoute) {
+                                        rootNavBarController.dispatchOnClick(route)
+                                    } else {
+                                        if (route == initialRoute) {
+                                            navBackStack.clear()
+                                        }
+                                        pushNavBackStack(route)
                                     }
-                                    pushNavBackStack(route)
-                                }
-                            },
-                            icon = {
-                                Icon(
-                                    painter = painterResource(
-                                        if (selected) {
-                                            route.selectedIconRes
-                                        } else {
-                                            route.unselectedIconRes
-                                        },
-                                    ),
-                                    contentDescription = stringResource(route.titleRes),
-                                )
-                            },
-                        )
+                                },
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(
+                                            if (selected) {
+                                                route.selectedIconRes
+                                            } else {
+                                                route.unselectedIconRes
+                                            },
+                                        ),
+                                        contentDescription = stringResource(route.titleRes),
+                                    )
+                                },
+                            )
+                        }
                     }
                 }
-            }
-            AnimatedVisibility(
-                visible = LocalSystemBarsController.current.isSystemBarsVisible,
-                enter = fadeIn(),
-                exit = fadeOut(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(
-                        WindowInsets.navigationBars
-                            .asPaddingValues()
-                            .calculateBottomPadding(),
-                    ),
-            ) {
-                Box(
+                AnimatedVisibility(
+                    visible = LocalSystemBarsController.current.isSystemBarsVisible,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
                     modifier = Modifier
-                        .background(
-                            MaterialTheme.colorScheme.background
-                                .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                            RectangleShape,
-                        )
-                        .fillMaxSize(),
-                )
+                        .fillMaxWidth()
+                        .height(
+                            WindowInsets.navigationBars
+                                .asPaddingValues()
+                                .calculateBottomPadding(),
+                        ),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                MaterialTheme.colorScheme.background
+                                    .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                                RectangleShape,
+                            )
+                            .fillMaxSize(),
+                    )
+                }
             }
         }
     }
