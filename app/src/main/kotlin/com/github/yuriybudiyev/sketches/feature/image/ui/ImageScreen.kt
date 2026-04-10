@@ -27,6 +27,7 @@ package com.github.yuriybudiyev.sketches.feature.image.ui
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
+import android.os.Parcelable
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -66,6 +67,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
@@ -111,6 +113,7 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemCentered
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 
 @Composable
 fun ImageRoute(viewModel: ImageScreenViewModel) {
@@ -560,8 +563,7 @@ private fun MediaBar(
     ) {
         items(
             count = itemsUpdated.size,
-            key = { position -> itemsUpdated[position].id },
-            contentType = { position -> itemsUpdated[position].mediaType },
+            key = { position -> MediaBarItemKey(itemsUpdated[position].id) },
         ) { position ->
             val file = itemsUpdated[position]
             Box(
@@ -627,3 +629,7 @@ private fun MediaBar(
         }
     }
 }
+
+@Immutable
+@Parcelize
+private data class MediaBarItemKey(val fileId: Long): Parcelable
