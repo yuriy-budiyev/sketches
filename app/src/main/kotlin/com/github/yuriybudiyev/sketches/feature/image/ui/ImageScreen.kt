@@ -563,7 +563,7 @@ private fun MediaBar(
     ) {
         items(
             count = itemsUpdated.size,
-            key = { position -> MediaBarItemKey(itemsUpdated[position].id) },
+            key = { position -> MediaBarKey(itemsUpdated[position].id) },
         ) { position ->
             val file = itemsUpdated[position]
             Box(
@@ -632,4 +632,4 @@ private fun MediaBar(
 
 @Immutable
 @Parcelize
-private data class MediaBarItemKey(val fileId: Long): Parcelable
+private data class MediaBarKey(val fileId: Long): Parcelable
