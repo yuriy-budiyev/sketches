@@ -26,9 +26,7 @@ package com.github.yuriybudiyev.sketches.core.consumable
 
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
-import javax.annotation.concurrent.ThreadSafe
 
-@ThreadSafe
 class Consumable<T> private constructor(value: T) {
 
     val isConsumed: Boolean
