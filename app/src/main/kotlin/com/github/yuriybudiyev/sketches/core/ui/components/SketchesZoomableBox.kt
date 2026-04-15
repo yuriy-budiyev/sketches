@@ -87,8 +87,8 @@ fun SketchesZoomableBox(
     require(maxRelativeZoom >= 1f) {
         "maxRelativeZoom can't be lower than 1.0"
     }
-    require(doubleTapRelativeZoom in 0f..maxRelativeZoom) {
-        "doubleTapRelativeZoom should be in 0.0 to maxRelativeZoom range"
+    require(doubleTapRelativeZoom in 1f..maxRelativeZoom) {
+        "doubleTapRelativeZoom should be in 1.0 to maxRelativeZoom range"
     }
     val coroutineScope = rememberCoroutineScope()
     val onTapUpdated by rememberUpdatedState(onTap)
