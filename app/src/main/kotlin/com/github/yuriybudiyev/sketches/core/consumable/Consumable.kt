@@ -27,13 +27,21 @@ package com.github.yuriybudiyev.sketches.core.consumable
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import javax.annotation.concurrent.ThreadSafe
-import kotlin.concurrent.withLock
 
 @ThreadSafe
 class Consumable<T> private constructor(value: T) {
 
     val isConsumed: Boolean
-        get() = consumeLock.withLock { valueInternal === Consumed }
+        get() {
+            val consumed: Boolean
+            consumeLock.lock()
+            try {
+                consumed = valueInternal === Consumed
+            } finally {
+                consumeLock.unlock()
+            }
+            return consumed
+        }
 
     @Suppress("UNCHECKED_CAST")
     fun consume(): T? {
