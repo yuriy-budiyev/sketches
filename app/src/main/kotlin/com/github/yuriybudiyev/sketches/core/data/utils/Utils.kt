@@ -29,8 +29,8 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
 @JvmName("filterFilesByIds")
 fun Collection<MediaStoreFile>.filterByIds(ids: Collection<Long>): List<MediaStoreFile> =
-    filterTo(ArrayList(ids.size)) { file -> ids.contains(file.id) }
+    filterTo(ArrayList(size.coerceAtMost(ids.size))) { file -> ids.contains(file.id) }
 
 @JvmName("filterBucketsByIds")
 fun Collection<MediaStoreBucket>.filterByIds(ids: Collection<Long>): List<MediaStoreBucket> =
-    filterTo(ArrayList(ids.size)) { file -> ids.contains(file.id) }
+    filterTo(ArrayList(size.coerceAtMost(ids.size))) { file -> ids.contains(file.id) }
