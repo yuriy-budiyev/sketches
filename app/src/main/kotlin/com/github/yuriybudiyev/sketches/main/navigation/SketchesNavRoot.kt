@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.main.navigation
 
+import android.os.Parcelable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SharedTransitionScope
@@ -106,6 +107,7 @@ import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageNavRoute
 import com.github.yuriybudiyev.sketches.feature.image.navigation.registerImageNavRoute
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
 import com.github.yuriybudiyev.sketches.feature.images.navigation.registerImagesNavRoute
+import kotlinx.parcelize.Parcelize
 
 @Composable
 fun SketchesNavRoot(
@@ -436,14 +438,17 @@ private class RootNavBarControllerImpl: RootNavBarController {
     private val listeners: HashMap<RootNavRoute, () -> Unit> = HashMap()
 }
 
-private class RootNavBarControllerImplSaver: Saver<RootNavBarControllerImpl, Boolean> {
+private class RootNavBarControllerImplSaver: Saver<RootNavBarControllerImpl, RootNavBarConfig> {
 
-    override fun SaverScope.save(value: RootNavBarControllerImpl): Boolean =
-        value.isRootNavBarVisible
+    override fun SaverScope.save(value: RootNavBarControllerImpl): RootNavBarConfig =
+        RootNavBarConfig(isVisible = value.isRootNavBarVisible)
 
-    override fun restore(value: Boolean): RootNavBarControllerImpl {
+    override fun restore(value: RootNavBarConfig): RootNavBarControllerImpl {
         val controller = RootNavBarControllerImpl()
-        controller.isRootNavBarVisible = value
+        controller.isRootNavBarVisible = value.isVisible
         return controller
     }
 }
+
+@Parcelize
+private data class RootNavBarConfig(val isVisible: Boolean): Parcelable
