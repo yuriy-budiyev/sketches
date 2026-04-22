@@ -26,8 +26,7 @@ package com.github.yuriybudiyev.sketches.core.ui.components.mediaplayer
 
 import android.content.Context
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
+import android.os.Parcelable
 import android.view.Surface
 import android.view.SurfaceView
 import android.view.TextureView
@@ -65,6 +64,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -570,53 +570,28 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
 private class SketchesMediaStateImplSaver(
     private val context: Context,
     private val coroutineScope: CoroutineScope,
-): Saver<SketchesMediaStateImpl, Bundle> {
+): Saver<SketchesMediaStateImpl, SketchesMediaStateConfig> {
 
-    override fun restore(value: Bundle): SketchesMediaStateImpl =
+    override fun restore(value: SketchesMediaStateConfig): SketchesMediaStateImpl =
         SketchesMediaStateImpl(
             context,
             coroutineScope,
         ).apply {
-            val volumeEnabled = value.getBoolean(
-                Keys.VolumeEnabled,
-                false,
-            )
-            val repeatEnabled = value.getBoolean(
-                Keys.RepeatEnabled,
-                false,
-            )
-            val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                value.getParcelable(
-                    Keys.Uri,
-                    Uri::class.java,
-                )
-            } else {
-                @Suppress("DEPRECATION")
-                value.getParcelable(Keys.Uri)
-            }
-            if (uri != null) {
-                val playing = value.getBoolean(
-                    Keys.Playing,
-                    false,
-                )
-                val position = value.getLong(
-                    Keys.Position,
-                    0L,
-                )
+            if (value.uri != null) {
                 open(
-                    uri = uri,
-                    position = position,
-                    playWhenReady = playing,
-                    volumeEnabled = volumeEnabled,
-                    repeatEnabled = repeatEnabled,
+                    uri = value.uri,
+                    position = value.position,
+                    playWhenReady = value.isPlaying,
+                    volumeEnabled = value.isVolumeEnabled,
+                    repeatEnabled = value.isRepeatEnabled,
                 )
             } else {
-                if (volumeEnabled) {
+                if (value.isVolumeEnabled) {
                     enableVolume()
                 } else {
                     disableVolume()
                 }
-                if (repeatEnabled) {
+                if (value.isRepeatEnabled) {
                     enableRepeat()
                 } else {
                     disableRepeat()
@@ -624,39 +599,24 @@ private class SketchesMediaStateImplSaver(
             }
         }
 
-    override fun SaverScope.save(value: SketchesMediaStateImpl): Bundle =
-        Bundle().apply {
-            putBoolean(
-                Keys.Playing,
-                value.isPlaying,
-            )
-            putBoolean(
-                Keys.VolumeEnabled,
-                value.isVolumeEnabled,
-            )
-            putBoolean(
-                Keys.RepeatEnabled,
-                value.isRepeatEnabled,
-            )
-            putLong(
-                Keys.Position,
-                value.position,
-            )
-            putParcelable(
-                Keys.Uri,
-                value.uri,
-            )
-        }
-
-    private object Keys {
-
-        const val Playing: String = "playing"
-        const val VolumeEnabled: String = "volume_enabled"
-        const val RepeatEnabled: String = "repeat_enabled"
-        const val Position: String = "position"
-        const val Uri: String = "uri"
-    }
+    override fun SaverScope.save(value: SketchesMediaStateImpl): SketchesMediaStateConfig =
+        SketchesMediaStateConfig(
+            isPlaying = value.isPlaying,
+            isVolumeEnabled = value.isVolumeEnabled,
+            isRepeatEnabled = value.isRepeatEnabled,
+            position = value.position,
+            uri = value.uri,
+        )
 }
+
+@Parcelize
+private data class SketchesMediaStateConfig(
+    val isPlaying: Boolean,
+    val isVolumeEnabled: Boolean,
+    val isRepeatEnabled: Boolean,
+    val position: Long,
+    val uri: Uri?,
+): Parcelable
 
 @kotlin.OptIn(ExperimentalContracts::class)
 private inline fun Player.withCheck(
