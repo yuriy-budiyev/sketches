@@ -77,7 +77,7 @@ fun rememberSketchesMediaState(
     return rememberSaveable(
         appContext,
         coroutineScope,
-        saver = SketchesMediaStateImplSaver(
+        saver = SketchesMediaStateSaver(
             appContext,
             coroutineScope,
         ),
@@ -567,7 +567,7 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
     }
 }
 
-private class SketchesMediaStateImplSaver(
+private class SketchesMediaStateSaver(
     private val context: Context,
     private val coroutineScope: CoroutineScope,
 ): Saver<SketchesMediaStateImpl, SketchesMediaStateConfig> {
