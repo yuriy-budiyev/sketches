@@ -92,11 +92,10 @@ class MediaStoreRepositoryImpl @Inject constructor(
                         ),
                         mediaType = mediaType,
                         mimeType = c.getStringOrNull(mimeTypeColumn) ?: mediaType.mimeType,
-                        uri = ContentUris
-                            .withAppendedId(
-                                contentUri,
-                                id,
-                            ),
+                        uri = ContentUris.withAppendedId(
+                            contentUri,
+                            id,
+                        ),
                     ),
                 )
             }
@@ -171,11 +170,10 @@ class MediaStoreRepositoryImpl @Inject constructor(
                     BucketInfo(
                         id = bucketId,
                         name = c.getStringOrNull(bucketNameColumn) ?: id.toString(),
-                        coverUri = ContentUris
-                            .withAppendedId(
-                                contentUri,
-                                id,
-                            ),
+                        coverUri = ContentUris.withAppendedId(
+                            contentUri,
+                            id,
+                        ),
                         coverDateAdded = dateAdded,
                         size = 0,
                     )
@@ -183,11 +181,10 @@ class MediaStoreRepositoryImpl @Inject constructor(
                 bucketInfo.size++
                 if (bucketInfo.coverDateAdded < dateAdded) {
                     bucketInfo.coverDateAdded = dateAdded
-                    bucketInfo.coverUri = ContentUris
-                        .withAppendedId(
-                            contentUri,
-                            id,
-                        )
+                    bucketInfo.coverUri = ContentUris.withAppendedId(
+                        contentUri,
+                        id,
+                    )
                 }
             }
         }
