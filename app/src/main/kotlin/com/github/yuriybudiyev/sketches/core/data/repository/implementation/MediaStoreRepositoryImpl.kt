@@ -28,6 +28,7 @@ import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
+import androidx.collection.MutableLongObjectMap
 import androidx.core.database.getStringOrNull
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
@@ -138,7 +139,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
 
     private fun collectBucketsInfo(
         mediaType: MediaType,
-        destination: MutableMap<Long, BucketInfo>,
+        destination: MutableLongObjectMap<BucketInfo>,
     ) {
         val contentUri = mediaType.contentUri
         val cursor = context.contentResolver.query(
@@ -191,7 +192,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getBuckets(): List<MediaStoreBucket> {
-        val bucketsInfo = LinkedHashMap<Long, BucketInfo>()
+        val bucketsInfo = MutableLongObjectMap<BucketInfo>()
         collectBucketsInfo(
             mediaType = MediaType.Image,
             destination = bucketsInfo,
@@ -201,13 +202,15 @@ class MediaStoreRepositoryImpl @Inject constructor(
             destination = bucketsInfo,
         )
         val buckets = ArrayList<MediaStoreBucket>(bucketsInfo.size)
-        bucketsInfo.values.mapTo(buckets) { info ->
-            MediaStoreBucket(
-                id = info.id,
-                name = info.name,
-                size = info.size,
-                coverUri = info.coverUri,
-                coverDateAdded = info.coverDateAdded,
+        bucketsInfo.forEachValue { info ->
+            buckets.add(
+                MediaStoreBucket(
+                    id = info.id,
+                    name = info.name,
+                    size = info.size,
+                    coverUri = info.coverUri,
+                    coverDateAdded = info.coverDateAdded,
+                ),
             )
         }
         buckets.sortByDescending { bucket -> bucket.coverDateAdded }
