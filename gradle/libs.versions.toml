@@ -1,7 +1,7 @@
 [versions]
 agp = "9.2.0"
 kotlin = "2.3.21"
-kotlin-coroutines = "1.10.2"
+kotlin-coroutines = "1.11.0-rc01"
 kotlin-serialization = "1.11.0"
 kotlin-ksp = "2.3.6"
 android-tools-desugar = "2.1.5"
