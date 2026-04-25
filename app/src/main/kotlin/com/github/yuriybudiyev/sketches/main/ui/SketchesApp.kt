@@ -30,16 +30,19 @@ import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +51,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -76,54 +80,60 @@ fun SketchesApp() {
         mediaAccess = appContextUpdated.checkMediaAccess()
         onRequestMediaAccess.isEnabled = mediaAccess == MediaAccess.UserSelected
     }
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-    ) {
-        when (mediaAccess) {
-            MediaAccess.Full, MediaAccess.UserSelected -> {
-                SketchesNavRoot(
-                    modifier = Modifier.fillMaxSize(),
-                    onRequestMediaAccess = onRequestMediaAccess,
-                )
-            }
-            MediaAccess.None -> {
-                val settingsLauncher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.StartActivityForResult(),
-                    onResult = {},
-                )
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    SketchesMessage(
-                        text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            stringResource(R.string.no_images_permission)
-                        } else {
-                            stringResource(R.string.no_storage_permission)
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    SketchesOutlinedButton(
-                        text = stringResource(R.string.open_settings),
-                        onClick = {
-                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            intent.data = Uri.fromParts(
-                                "package",
-                                appContextUpdated.packageName,
-                                null,
-                            )
-                            settingsLauncher.launch(intent)
-                        },
+    val colorScheme = MaterialTheme.colorScheme
+    CompositionLocalProvider(LocalContentColor.provides(colorScheme.onSurface)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    color = colorScheme.surface,
+                    shape = RectangleShape,
+                ),
+        ) {
+            when (mediaAccess) {
+                MediaAccess.Full, MediaAccess.UserSelected -> {
+                    SketchesNavRoot(
+                        modifier = Modifier.matchParentSize(),
+                        onRequestMediaAccess = onRequestMediaAccess,
                     )
                 }
-                LaunchedEffect(Unit) {
-                    mediaAccessLauncher.requestMediaAccess()
+                MediaAccess.None -> {
+                    val settingsLauncher = rememberLauncherForActivityResult(
+                        contract = ActivityResultContracts.StartActivityForResult(),
+                        onResult = {},
+                    )
+                    Column(
+                        modifier = Modifier.matchParentSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        SketchesMessage(
+                            text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                stringResource(R.string.no_images_permission)
+                            } else {
+                                stringResource(R.string.no_storage_permission)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        SketchesOutlinedButton(
+                            text = stringResource(R.string.open_settings),
+                            onClick = {
+                                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                intent.data = Uri.fromParts(
+                                    "package",
+                                    appContextUpdated.packageName,
+                                    null,
+                                )
+                                settingsLauncher.launch(intent)
+                            },
+                        )
+                    }
+                    LaunchedEffect(Unit) {
+                        mediaAccessLauncher.requestMediaAccess()
+                    }
                 }
             }
         }
