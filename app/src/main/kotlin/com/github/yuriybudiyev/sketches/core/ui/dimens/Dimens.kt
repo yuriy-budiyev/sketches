@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Immutable
-class Dimens(
+data class Dimens(
     val material3AppBarHeight: Dp = 64.dp,
     val bottomBarHeight: Dp = material3AppBarHeight,
     val lazyGridOverlayTop: Dp = material3AppBarHeight,
