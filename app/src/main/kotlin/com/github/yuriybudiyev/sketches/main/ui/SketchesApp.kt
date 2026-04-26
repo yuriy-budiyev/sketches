@@ -91,6 +91,7 @@ fun SketchesApp() {
                     shape = RectangleShape,
                 )
                 .clipToBounds(),
+            propagateMinConstraints = true,
         ) {
             when (mediaAccess) {
                 MediaAccess.Full, MediaAccess.UserSelected -> {
