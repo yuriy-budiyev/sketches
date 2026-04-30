@@ -29,6 +29,8 @@ import android.os.Build
 import coil3.ImageLoader
 import coil3.gif.AnimatedImageDecoder
 import coil3.gif.GifDecoder
+import coil3.gif.MovieDrawable
+import coil3.gif.repeatCount
 import coil3.memory.MemoryCache
 import coil3.serviceLoaderEnabled
 import coil3.svg.SvgDecoder
@@ -74,5 +76,6 @@ object ImageLoaderModule {
                 add(SvgDecoder.Factory())
                 add(VideoFrameDecoder.Factory())
             }
+            .repeatCount(MovieDrawable.REPEAT_INFINITE)
             .build()
 }
