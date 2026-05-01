@@ -24,6 +24,10 @@
 
 package com.github.yuriybudiyev.sketches.core.collections
 
+/**
+ * Returns first element that is instance of [T] from this collection,
+ * or `null` if there are no elements of type [T].
+ */
 inline fun <reified T: Any> List<*>.lastInstanceOfOrNull(): T? {
     val iterator = listIterator(size)
     while (iterator.hasPrevious()) {
