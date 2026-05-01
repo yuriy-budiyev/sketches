@@ -87,6 +87,7 @@ import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.compose.LocalSavedStateRegistryOwner
+import com.github.yuriybudiyev.sketches.core.collections.lastInstanceOfOrNull
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavSharedTransitionScope
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
@@ -312,7 +313,7 @@ fun SketchesNavRoot(
                             .fillMaxSize(),
                         horizontalArrangement = Arrangement.SpaceEvenly,
                     ) {
-                        val topRootRoute = navBackStack.findClosestRoot()
+                        val topRootRoute = navBackStack.lastInstanceOfOrNull<RootNavRoute>()
                         for (route in rootRoutes) {
                             val selected = route == topRootRoute
                             NavigationBarItem(
@@ -373,17 +374,6 @@ fun SketchesNavRoot(
             }
         }
     }
-}
-
-private fun List<NavRoute>.findClosestRoot(): RootNavRoute? {
-    val iterator = listIterator(size)
-    while (iterator.hasPrevious()) {
-        val route = iterator.previous()
-        if (route is RootNavRoute) {
-            return route
-        }
-    }
-    return null
 }
 
 private class ViewModelStoreViewModel: ViewModel() {
