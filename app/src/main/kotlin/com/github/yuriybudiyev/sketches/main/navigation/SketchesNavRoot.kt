@@ -122,12 +122,11 @@ fun SketchesNavRoot(
         )
     }
     val initialRoute = remember { rootRoutes.first() }
-    val navBackStack =
-        rememberSaveable(saver = SnapshotStateListSaver()) {
-            SnapshotStateList<NavRoute>().apply {
-                add(initialRoute)
-            }
+    val navBackStack = rememberSaveable(saver = SnapshotStateListSaver()) {
+        SnapshotStateList<NavRoute>().apply {
+            add(initialRoute)
         }
+    }
     val currentRouteIsRoot by remember {
         derivedStateOf {
             navBackStack.lastOrNull() is RootNavRoute
