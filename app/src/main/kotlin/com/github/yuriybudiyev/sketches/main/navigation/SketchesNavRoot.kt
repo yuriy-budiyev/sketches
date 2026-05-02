@@ -234,6 +234,7 @@ fun SketchesNavRoot(
         entryDecorators = listOf(navEntryDecorator),
         entryProvider = navEntryProvider,
     )
+    val colorScheme = MaterialTheme.colorScheme
     SharedTransitionScope { transitionModifier ->
         val sceneState = rememberSceneState(
             entries = navEntries,
@@ -269,22 +270,22 @@ fun SketchesNavRoot(
                     modifier = Modifier.matchParentSize(),
                     transitionSpec = {
                         ContentTransform(
-                            fadeIn(),
-                            fadeOut(),
+                            targetContentEnter = fadeIn(),
+                            initialContentExit = fadeOut(),
                             sizeTransform = null,
                         )
                     },
                     popTransitionSpec = {
                         ContentTransform(
-                            fadeIn(),
-                            fadeOut(),
+                            targetContentEnter = fadeIn(),
+                            initialContentExit = fadeOut(),
                             sizeTransform = null,
                         )
                     },
                     predictivePopTransitionSpec = {
                         ContentTransform(
-                            fadeIn(),
-                            fadeOut(),
+                            targetContentEnter = fadeIn(),
+                            initialContentExit = fadeOut(),
                             sizeTransform = null,
                         )
                     },
@@ -306,9 +307,9 @@ fun SketchesNavRoot(
                     Row(
                         modifier = Modifier
                             .background(
-                                MaterialTheme.colorScheme.background
+                                color = colorScheme.background
                                     .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                                RectangleShape,
+                                shape = RectangleShape,
                             )
                             .fillMaxSize(),
                         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -319,9 +320,9 @@ fun SketchesNavRoot(
                             NavigationBarItem(
                                 selected = selected,
                                 colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = MaterialTheme.colorScheme.onPrimary,
-                                    unselectedIconColor = MaterialTheme.colorScheme.onBackground,
-                                    indicatorColor = MaterialTheme.colorScheme.primary,
+                                    selectedIconColor = colorScheme.onPrimary,
+                                    unselectedIconColor = colorScheme.onBackground,
+                                    indicatorColor = colorScheme.primary,
                                 ),
                                 onClick = {
                                     if (route == topRootRoute) {
@@ -364,9 +365,9 @@ fun SketchesNavRoot(
                     Box(
                         modifier = Modifier
                             .background(
-                                MaterialTheme.colorScheme.background
+                                color = colorScheme.background
                                     .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                                RectangleShape,
+                                shape = RectangleShape,
                             )
                             .fillMaxSize(),
                     )
