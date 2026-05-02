@@ -174,10 +174,9 @@ fun SketchesNavRoot(
         }
     }
     val saveableStateHolder = rememberSaveableStateHolder()
-    val viewModelStoreOwner =
-        checkNotNull(LocalViewModelStoreOwner.current) {
-            "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
-        }
+    val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+        "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+    }
     val navEntryDecorator = remember(viewModelStoreOwner) {
         val viewModelStoreViewModelProvider = ViewModelProvider.create(
             store = viewModelStoreOwner.viewModelStore,
