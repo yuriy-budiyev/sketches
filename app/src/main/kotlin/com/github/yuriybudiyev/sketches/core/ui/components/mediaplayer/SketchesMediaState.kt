@@ -179,7 +179,11 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
             .setLoadControl(
                 DefaultLoadControl
                     .Builder()
-                    .setTargetBufferBytes((context.getMaxMemory() / 8L).toInt())
+                    .setTargetBufferBytes(
+                        (context.getMaxMemory() / 6L)
+                            .coerceAtMost(8388608L)
+                            .toInt(),
+                    )
                     .build(),
             )
             .setMediaSourceFactory(ProgressiveMediaSource.Factory(DefaultDataSource.Factory(context)))
