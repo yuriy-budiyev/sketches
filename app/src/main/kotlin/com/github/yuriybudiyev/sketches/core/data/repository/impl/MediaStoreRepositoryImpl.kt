@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.repository.implementation
+package com.github.yuriybudiyev.sketches.core.data.repository.impl
 
 import android.content.ContentUris
 import android.content.Context

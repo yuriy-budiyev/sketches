@@ -49,7 +49,7 @@ class SketchesInstrumentedTest {
             } else {
                 "com.github.yuriybudiyev.sketches"
             },
-            appContext.packageName
+            appContext.packageName,
         )
     }
 }

@@ -25,7 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.data.repository.di
 
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
-import com.github.yuriybudiyev.sketches.core.data.repository.implementation.MediaStoreRepositoryImpl
+import com.github.yuriybudiyev.sketches.core.data.repository.impl.MediaStoreRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
