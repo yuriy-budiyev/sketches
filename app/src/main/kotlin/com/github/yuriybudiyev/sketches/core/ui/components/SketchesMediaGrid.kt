@@ -320,8 +320,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
             ),
             modifier = Modifier
                 .navSharedBounds(file.uri.toString())
-                .matchParentSize()
-                .clip(shape = shapes.extraSmall),
+                .matchParentSize(),
         )
         if (fileSelectedUpdated) {
             Box(
