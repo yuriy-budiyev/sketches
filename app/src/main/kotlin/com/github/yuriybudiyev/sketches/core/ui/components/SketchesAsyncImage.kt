@@ -56,6 +56,7 @@ import coil3.request.ImageRequest
 import coil3.size.Size
 import coil3.video.videoFramePercent
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.navigation.navSharedBounds
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
@@ -179,6 +180,7 @@ fun SketchesZoomableAsyncImage(
             ) {
                 Box(
                     modifier = Modifier
+                        .navSharedBounds(uri.toString())
                         .wrapContentSize(
                             align = Alignment.Center,
                             unbounded = true,

@@ -27,6 +27,8 @@ package com.github.yuriybudiyev.sketches.main.navigation
 import android.os.Parcelable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -269,20 +271,20 @@ fun SketchesNavRoot(
                     transitionSpec = {
                         ContentTransform(
                             targetContentEnter = fadeIn(),
-                            initialContentExit = fadeOut(),
+                            initialContentExit = ExitTransition.None,
                             sizeTransform = null,
                         )
                     },
                     popTransitionSpec = {
                         ContentTransform(
-                            targetContentEnter = fadeIn(),
+                            targetContentEnter = EnterTransition.None,
                             initialContentExit = fadeOut(),
                             sizeTransform = null,
                         )
                     },
                     predictivePopTransitionSpec = {
                         ContentTransform(
-                            targetContentEnter = fadeIn(),
+                            targetContentEnter = EnterTransition.None,
                             initialContentExit = fadeOut(),
                             sizeTransform = null,
                         )
@@ -372,6 +374,7 @@ fun SketchesNavRoot(
                 }
             }
         }
+
     }
 }
 

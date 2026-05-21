@@ -71,8 +71,8 @@ fun SketchesMediaPlayer(
     controllerStartPadding: Dp = 0.dp,
     controllerEndPadding: Dp = 0.dp,
     controllerBottomPadding: Dp = 0.dp,
-    backgroundColor: Color = MaterialTheme.colorScheme.background,
-    controlsBackgroundColor: Color = backgroundColor
+    backgroundColor: Color = Color.Transparent,
+    controlsBackgroundColor: Color = MaterialTheme.colorScheme.background
         .copy(alpha = SketchesColors.UiAlphaLowTransparency),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
     enableImagePlaceholder: Boolean = true,

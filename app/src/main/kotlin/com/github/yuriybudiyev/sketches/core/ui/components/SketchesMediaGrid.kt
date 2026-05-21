@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.navigation.navSharedBounds
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
@@ -121,7 +122,7 @@ fun SketchesMediaGrid(
             val fileUpdated by rememberUpdatedState(filesUpdated[index])
             SketchesMediaGridItem(
                 file = fileUpdated,
-                selectedFilesUpdated.contains(fileUpdated.id),
+                fileSelected = selectedFilesUpdated.contains(fileUpdated.id),
                 onLongClick = {
                     if (selectedFilesUpdated.isEmpty()) {
                         selectedFilesUpdated.add(fileUpdated.id)
@@ -230,7 +231,7 @@ fun SketchesGroupingMediaGrid(
                 val fileUpdated by rememberUpdatedState(files[index])
                 SketchesMediaGridItem(
                     file = fileUpdated,
-                    selectedFilesUpdated.contains(fileUpdated.id),
+                    fileSelected = selectedFilesUpdated.contains(fileUpdated.id),
                     onLongClick = {
                         if (selectedFilesUpdated.isEmpty()) {
                             selectedFilesUpdated.add(fileUpdated.id)
@@ -281,6 +282,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
     fileSelected: Boolean,
     onLongClick: () -> Unit,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val fileUpdated by rememberUpdatedState(file)
     val fileSelectedUpdated by rememberUpdatedState(fileSelected)
@@ -288,7 +290,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
     val shapes = MaterialTheme.shapes
     val dimens = LocalDimens.current
     Box(
-        modifier = Modifier
+        modifier = modifier
             .animateItem()
             .aspectRatio(ratio = 1f)
             .border(
@@ -316,7 +318,10 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                     MediaType.Video -> R.string.video
                 },
             ),
-            modifier = Modifier.matchParentSize(),
+            modifier = Modifier
+                .navSharedBounds(file.uri.toString())
+                .matchParentSize()
+                .clip(shape = shapes.extraSmall),
         )
         if (fileSelectedUpdated) {
             Box(
