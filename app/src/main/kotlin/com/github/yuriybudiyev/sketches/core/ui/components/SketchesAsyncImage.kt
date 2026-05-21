@@ -170,6 +170,7 @@ fun SketchesZoomableAsyncImage(
                 this.contentDescription = contentDescription
                 this.role = Role.Image
             }
+            .navSharedBounds(uri.toString())
             .then(modifier),
         contentAlignment = Alignment.Center,
     ) {
@@ -180,7 +181,6 @@ fun SketchesZoomableAsyncImage(
             ) {
                 Box(
                     modifier = Modifier
-                        .navSharedBounds(uri.toString())
                         .wrapContentSize(
                             align = Alignment.Center,
                             unbounded = true,

@@ -81,7 +81,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -549,7 +550,6 @@ private fun MediaBar(
     val itemsUpdated by rememberUpdatedState(items)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
     val colorScheme = MaterialTheme.colorScheme
-    val shapes = MaterialTheme.shapes
     val dimens = LocalDimens.current
     LazyRow(
         state = state,
@@ -578,9 +578,9 @@ private fun MediaBar(
                             colorScheme.onBackground
                                 .copy(alpha = SketchesColors.UiAlphaHighTransparency)
                         },
-                        shape = shapes.extraSmall,
+                        shape = RectangleShape,
                     )
-                    .clip(shape = shapes.extraSmall)
+                    .clipToBounds()
                     .clickable {
                         coroutineScope.launch {
                             onItemClickUpdated(

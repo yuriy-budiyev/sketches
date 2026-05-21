@@ -46,7 +46,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -128,21 +128,20 @@ fun SketchesMediaGrid(
                         selectedFilesUpdated.add(fileUpdated.id)
                     }
                 },
-                onClick = {
-                    if (selectedFilesUpdated.isNotEmpty()) {
-                        if (selectedFilesUpdated.contains(fileUpdated.id)) {
-                            selectedFilesUpdated.remove(fileUpdated.id)
-                        } else {
-                            selectedFilesUpdated.add(fileUpdated.id)
-                        }
+            ) {
+                if (selectedFilesUpdated.isNotEmpty()) {
+                    if (selectedFilesUpdated.contains(fileUpdated.id)) {
+                        selectedFilesUpdated.remove(fileUpdated.id)
                     } else {
-                        onItemClickUpdated(
-                            index,
-                            fileUpdated,
-                        )
+                        selectedFilesUpdated.add(fileUpdated.id)
                     }
-                },
-            )
+                } else {
+                    onItemClickUpdated(
+                        index,
+                        fileUpdated,
+                    )
+                }
+            }
         }
     }
 }
@@ -206,7 +205,6 @@ fun SketchesGroupingMediaGrid(
                 Text(
                     text = text.capitalizeFirstChar(),
                     modifier = Modifier
-                        .animateItem()
                         .background(
                             color = colorScheme.background,
                             shape = RectangleShape,
@@ -237,21 +235,20 @@ fun SketchesGroupingMediaGrid(
                             selectedFilesUpdated.add(fileUpdated.id)
                         }
                     },
-                    onClick = {
-                        if (selectedFilesUpdated.isNotEmpty()) {
-                            if (selectedFilesUpdated.contains(fileUpdated.id)) {
-                                selectedFilesUpdated.remove(fileUpdated.id)
-                            } else {
-                                selectedFilesUpdated.add(fileUpdated.id)
-                            }
+                ) {
+                    if (selectedFilesUpdated.isNotEmpty()) {
+                        if (selectedFilesUpdated.contains(fileUpdated.id)) {
+                            selectedFilesUpdated.remove(fileUpdated.id)
                         } else {
-                            onItemClickUpdated(
-                                index,
-                                fileUpdated,
-                            )
+                            selectedFilesUpdated.add(fileUpdated.id)
                         }
-                    },
-                )
+                    } else {
+                        onItemClickUpdated(
+                            index,
+                            fileUpdated,
+                        )
+                    }
+                }
             }
         }
     }
@@ -282,16 +279,14 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
     fileSelected: Boolean,
     onLongClick: () -> Unit,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     val fileUpdated by rememberUpdatedState(file)
     val fileSelectedUpdated by rememberUpdatedState(fileSelected)
     val colorScheme = MaterialTheme.colorScheme
-    val shapes = MaterialTheme.shapes
     val dimens = LocalDimens.current
     Box(
-        modifier = modifier
-            .animateItem()
+        modifier = Modifier
+            .navSharedBounds(file.uri.toString())
             .aspectRatio(ratio = 1f)
             .border(
                 width = dimens.mediaItemBorderThickness,
@@ -302,9 +297,9 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                     colorScheme.onBackground
                         .copy(alpha = SketchesColors.UiAlphaHighTransparency)
                 },
-                shape = shapes.extraSmall,
+                shape = RectangleShape,
             )
-            .clip(shape = shapes.extraSmall)
+            .clipToBounds()
             .combinedClickable(
                 onLongClick = onLongClick,
                 onClick = onClick,
@@ -318,9 +313,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                     MediaType.Video -> R.string.video
                 },
             ),
-            modifier = Modifier
-                .navSharedBounds(file.uri.toString())
-                .matchParentSize(),
+            modifier = Modifier.matchParentSize(),
         )
         if (fileSelectedUpdated) {
             Box(

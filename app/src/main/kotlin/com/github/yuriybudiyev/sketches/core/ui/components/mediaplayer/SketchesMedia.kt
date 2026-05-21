@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.navigation.navSharedBounds
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
@@ -71,8 +72,8 @@ fun SketchesMediaPlayer(
     controllerStartPadding: Dp = 0.dp,
     controllerEndPadding: Dp = 0.dp,
     controllerBottomPadding: Dp = 0.dp,
-    backgroundColor: Color = Color.Transparent,
-    controlsBackgroundColor: Color = MaterialTheme.colorScheme.background
+    backgroundColor: Color = MaterialTheme.colorScheme.background,
+    controlsBackgroundColor: Color = backgroundColor
         .copy(alpha = SketchesColors.UiAlphaLowTransparency),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
     enableImagePlaceholder: Boolean = true,
@@ -85,7 +86,9 @@ fun SketchesMediaPlayer(
     Box(modifier = modifier) {
         SketchesMediaDisplay(
             state = state,
-            modifier = Modifier.matchParentSize(),
+            modifier = Modifier
+                .navSharedBounds(state.uri.toString())
+                .matchParentSize(),
             onTap = onDisplayTap,
             backgroundColor = backgroundColor,
             indicatorColor = controlsColor,

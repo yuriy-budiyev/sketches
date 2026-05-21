@@ -62,7 +62,8 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -374,7 +375,6 @@ private fun BucketsScreenLayout(
     val selectedBucketsUpdated by rememberUpdatedState(selectedBuckets)
     val onBucketClickUpdated by rememberUpdatedState(onBucketClick)
     val colorScheme = MaterialTheme.colorScheme
-    val shapes = MaterialTheme.shapes
     val dimens = LocalDimens.current
     SketchesLazyGrid(
         modifier = modifier,
@@ -390,8 +390,7 @@ private fun BucketsScreenLayout(
             val bucketSelectedUpdated by rememberUpdatedState(selectedBucketsUpdated.contains(bucketUpdated.id))
             Column(
                 modifier = Modifier
-                    .animateItem()
-                    .clip(shape = shapes.extraSmall)
+                    .clipToBounds()
                     .combinedClickable(
                         onLongClick = {
                             if (selectedBucketsUpdated.isEmpty()) {
@@ -427,9 +426,9 @@ private fun BucketsScreenLayout(
                                 colorScheme.onBackground
                                     .copy(alpha = SketchesColors.UiAlphaHighTransparency)
                             },
-                            shape = shapes.extraSmall,
+                            shape = RectangleShape,
                         )
-                        .clip(shape = shapes.extraSmall),
+                        .clipToBounds(),
                 ) {
                     SketchesThumbnailAsyncImage(
                         uri = bucketUpdated.coverUri,
