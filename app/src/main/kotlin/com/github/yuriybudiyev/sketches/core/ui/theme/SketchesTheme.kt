@@ -38,33 +38,29 @@ import com.github.yuriybudiyev.sketches.core.ui.typography.SketchesTypography
 fun SketchesTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = if (isSystemInDarkTheme()) {
-            SketchesDarkColorScheme
+            darkColorScheme(
+                primary = SketchesColors.Dark.Primary,
+                onPrimary = SketchesColors.Dark.OnPrimary,
+                background = SketchesColors.Dark.Background,
+                onBackground = SketchesColors.Dark.OnBackground,
+                surface = SketchesColors.Dark.Surface,
+                onSurface = SketchesColors.Dark.OnSurface,
+                onSurfaceVariant = SketchesColors.Dark.OnSurfaceVariant,
+                surfaceContainerHigh = SketchesColors.Dark.SurfaceContainerHigh,
+            )
         } else {
-            SketchesLightColorScheme
+            lightColorScheme(
+                primary = SketchesColors.Light.Primary,
+                onPrimary = SketchesColors.Light.OnPrimary,
+                background = SketchesColors.Light.Background,
+                onBackground = SketchesColors.Light.OnBackground,
+                surface = SketchesColors.Light.Surface,
+                onSurface = SketchesColors.Light.OnSurface,
+                onSurfaceVariant = SketchesColors.Light.OnSurfaceVariant,
+                surfaceContainerHigh = SketchesColors.Light.SurfaceContainerHigh,
+            )
         },
         typography = SketchesTypography,
         content = content,
     )
 }
-
-private val SketchesLightColorScheme = lightColorScheme(
-    primary = SketchesColors.Light.Primary,
-    onPrimary = SketchesColors.Light.OnPrimary,
-    background = SketchesColors.Light.Background,
-    onBackground = SketchesColors.Light.OnBackground,
-    surface = SketchesColors.Light.Surface,
-    onSurface = SketchesColors.Light.OnSurface,
-    onSurfaceVariant = SketchesColors.Light.OnSurfaceVariant,
-    surfaceContainerHigh = SketchesColors.Light.SurfaceContainerHigh,
-)
-
-private val SketchesDarkColorScheme = darkColorScheme(
-    primary = SketchesColors.Dark.Primary,
-    onPrimary = SketchesColors.Dark.OnPrimary,
-    background = SketchesColors.Dark.Background,
-    onBackground = SketchesColors.Dark.OnBackground,
-    surface = SketchesColors.Dark.Surface,
-    onSurface = SketchesColors.Dark.OnSurface,
-    onSurfaceVariant = SketchesColors.Dark.OnSurfaceVariant,
-    surfaceContainerHigh = SketchesColors.Dark.SurfaceContainerHigh,
-)
