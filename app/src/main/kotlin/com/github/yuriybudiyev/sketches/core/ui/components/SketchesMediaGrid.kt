@@ -286,6 +286,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
     val dimens = LocalDimens.current
     Box(
         modifier = Modifier
+            .animateItem()
             .navSharedBounds(file.uri.toString())
             .aspectRatio(ratio = 1f)
             .border(

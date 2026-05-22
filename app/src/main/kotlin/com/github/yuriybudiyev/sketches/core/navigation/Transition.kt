@@ -25,8 +25,6 @@
 package com.github.yuriybudiyev.sketches.core.navigation
 
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
@@ -39,8 +37,6 @@ fun Modifier.navSharedBounds(key: String): Modifier =
         sharedBounds(
             sharedContentState = rememberSharedContentState(key),
             animatedVisibilityScope = LocalNavAnimatedContentScope.current,
-            enter = fadeIn(),
-            exit = fadeOut(),
             renderInOverlayDuringTransition = false,
         )
     }

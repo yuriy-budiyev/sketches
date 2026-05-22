@@ -568,6 +568,7 @@ private fun MediaBar(
             val file = itemsUpdated[position]
             Box(
                 modifier = Modifier
+                    .animateItem()
                     .size(size = dimens.mediaBarItemSize)
                     .border(
                         width = dimens.mediaItemBorderThickness,
