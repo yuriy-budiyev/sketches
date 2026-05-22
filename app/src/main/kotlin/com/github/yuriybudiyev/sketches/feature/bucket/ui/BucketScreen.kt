@@ -67,10 +67,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -200,10 +203,11 @@ fun BucketScreen(
             }
         }
     }
+    val colorScheme = MaterialTheme.colorScheme
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.background),
+            .background(color = colorScheme.background),
     ) {
         when (uiState) {
             is BucketScreenViewModel.UiState.Empty -> {
@@ -263,7 +267,7 @@ fun BucketScreen(
             } else {
                 bucketName
             },
-            backgroundColor = MaterialTheme.colorScheme.background
+            backgroundColor = colorScheme.background
                 .copy(alpha = SketchesColors.UiAlphaLowTransparency),
         ) {
             if (selectedFiles.isNotEmpty()) {
@@ -338,29 +342,44 @@ fun BucketScreen(
             exit = fadeOut(),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(contentInsets.asPaddingValues())
-                .padding(16.dp),
+                .padding(contentInsets.asPaddingValues()),
         ) {
-            FloatingActionButton(
-                shape = CircleShape,
-                elevation = FloatingActionButtonDefaults.elevation(
-                    defaultElevation = 0.dp,
-                    pressedElevation = 0.dp,
-                    focusedElevation = 0.dp,
-                    hoveredElevation = 0.dp,
-                ),
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                onClick = {
-                    coroutineScope.launch {
-                        mediaGridState.animateScrollToItem(0)
-                    }
-                },
+            Box(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .dropShadow(
+                        CircleShape,
+                        Shadow(
+                            radius = 4.dp,
+                            spread = 0.dp,
+                            offset = DpOffset.Zero,
+                            color = colorScheme.onBackground
+                                .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                        ),
+                    ),
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_scroll_to_start),
-                    contentDescription = stringResource(R.string.scroll_to_start),
-                )
+                FloatingActionButton(
+                    modifier = Modifier.align(Alignment.Center),
+                    shape = CircleShape,
+                    elevation = FloatingActionButtonDefaults.elevation(
+                        defaultElevation = 0.dp,
+                        pressedElevation = 0.dp,
+                        focusedElevation = 0.dp,
+                        hoveredElevation = 0.dp,
+                    ),
+                    containerColor = colorScheme.primary,
+                    contentColor = colorScheme.onPrimary,
+                    onClick = {
+                        coroutineScope.launch {
+                            mediaGridState.animateScrollToItem(0)
+                        }
+                    },
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_scroll_to_start),
+                        contentDescription = stringResource(R.string.scroll_to_start),
+                    )
+                }
             }
         }
         if (deleteDialogVisible) {

@@ -320,9 +320,9 @@ fun SketchesNavRoot(
                             NavigationBarItem(
                                 selected = selected,
                                 colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = colorScheme.onPrimary,
+                                    selectedIconColor = colorScheme.primary,
                                     unselectedIconColor = colorScheme.onBackground,
-                                    indicatorColor = colorScheme.primary,
+                                    indicatorColor = colorScheme.onPrimary,
                                 ),
                                 onClick = {
                                     if (route == topRootRoute) {
