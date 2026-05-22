@@ -180,8 +180,8 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
                 DefaultLoadControl
                     .Builder()
                     .setTargetBufferBytes(
-                        (context.getMaxMemory() / 6L)
-                            .coerceAtMost(8388608L)
+                        (context.getMaxMemory() / 8L)
+                            .coerceAtMost(16777216L)
                             .toInt(),
                     )
                     .build(),

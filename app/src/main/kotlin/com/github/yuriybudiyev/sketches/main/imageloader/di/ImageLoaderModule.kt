@@ -62,7 +62,7 @@ object ImageLoaderModule {
             .memoryCache(
                 MemoryCache
                     .Builder()
-                    .maxSizeBytes(context.getMaxMemory() * 2L / 3L)
+                    .maxSizeBytes(context.getMaxMemory() / 2L)
                     .strongReferencesEnabled(true)
                     .weakReferencesEnabled(false)
                     .build(),
