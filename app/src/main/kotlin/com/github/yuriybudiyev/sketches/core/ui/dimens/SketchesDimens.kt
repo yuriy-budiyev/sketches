@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Immutable
-data class Dimens(
+data class SketchesDimens(
     val material3AppBarHeight: Dp = 64.dp,
     val bottomBarHeight: Dp = material3AppBarHeight,
     val lazyGridOverlayTop: Dp = material3AppBarHeight,
@@ -46,5 +46,5 @@ data class Dimens(
     val asyncImageStateIconSize: Dp = 48.dp,
 )
 
-val LocalDimens: ProvidableCompositionLocal<Dimens> =
+val LocalDimens: ProvidableCompositionLocal<SketchesDimens> =
     staticCompositionLocalOf { error("CompositionLocal LocalDimens not present") }
