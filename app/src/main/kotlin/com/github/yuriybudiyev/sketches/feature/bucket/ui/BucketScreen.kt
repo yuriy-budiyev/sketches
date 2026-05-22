@@ -348,12 +348,12 @@ fun BucketScreen(
                 modifier = Modifier
                     .padding(24.dp)
                     .dropShadow(
-                        CircleShape,
-                        Shadow(
+                        shape = CircleShape,
+                        shadow = Shadow(
                             radius = 4.dp,
                             spread = 0.dp,
                             offset = DpOffset.Zero,
-                            color = colorScheme.onBackground
+                            color = SketchesColors.Light.OnBackground
                                 .copy(alpha = SketchesColors.UiAlphaLowTransparency),
                         ),
                     ),
@@ -367,8 +367,8 @@ fun BucketScreen(
                         focusedElevation = 0.dp,
                         hoveredElevation = 0.dp,
                     ),
-                    containerColor = colorScheme.primary,
-                    contentColor = colorScheme.onPrimary,
+                    containerColor = SketchesColors.Light.Primary,
+                    contentColor = SketchesColors.Light.OnPrimary,
                     onClick = {
                         coroutineScope.launch {
                             mediaGridState.animateScrollToItem(0)
