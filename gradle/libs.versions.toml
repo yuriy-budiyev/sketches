@@ -1,6 +1,6 @@
 [versions]
 agp = "9.2.1"
-kotlin = "2.4.0-RC"
+kotlin = "2.3.21"
 kotlin-coroutines = "1.11.0"
 kotlin-serialization = "1.11.0"
 kotlin-ksp = "2.3.8"

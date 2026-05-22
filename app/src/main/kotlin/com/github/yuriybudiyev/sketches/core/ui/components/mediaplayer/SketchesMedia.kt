@@ -69,6 +69,7 @@ fun SketchesMediaPlayer(
     onDisplayTap: () -> Unit,
     controllerVisible: Boolean,
     modifier: Modifier = Modifier,
+    useNavSharedBounds: Boolean = false,
     controllerStartPadding: Dp = 0.dp,
     controllerEndPadding: Dp = 0.dp,
     controllerBottomPadding: Dp = 0.dp,
@@ -80,6 +81,7 @@ fun SketchesMediaPlayer(
     enableErrorIndicator: Boolean = true,
 ) {
     val controllerVisibleUpdated by rememberUpdatedState(controllerVisible)
+    val useNavSharedBoundsUpdated by rememberUpdatedState(useNavSharedBounds)
     val controllerStartPaddingUpdated by rememberUpdatedState(controllerStartPadding)
     val controllerEndPaddingUpdated by rememberUpdatedState(controllerEndPadding)
     val controllerBottomPaddingUpdated by rememberUpdatedState(controllerBottomPadding)
@@ -87,7 +89,13 @@ fun SketchesMediaPlayer(
         SketchesMediaDisplay(
             state = state,
             modifier = Modifier
-                .navSharedBounds(state.uri.toString())
+                .let { modifier ->
+                    if (useNavSharedBoundsUpdated) {
+                        modifier.navSharedBounds(state.uri.toString())
+                    } else {
+                        modifier
+                    }
+                }
                 .matchParentSize(),
             onTap = onDisplayTap,
             backgroundColor = backgroundColor,
