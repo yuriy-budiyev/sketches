@@ -53,6 +53,7 @@ import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest
+import coil3.request.crossfade
 import coil3.size.Size
 import coil3.video.videoFramePercent
 import com.github.yuriybudiyev.sketches.R
@@ -75,6 +76,7 @@ fun SketchesThumbnailAsyncImage(
         ImageRequest.Builder(context)
             .videoFramePercent(0.1)
             .size(sizeResolver)
+            .crossfade(true)
             .data(uri)
             .build()
     }
@@ -89,12 +91,18 @@ fun SketchesThumbnailAsyncImage(
         contentScale = ContentScale.Crop,
         filterQuality = FilterQuality.Low,
     )
+    val colorScheme = MaterialTheme.colorScheme
     Box(
         modifier = Modifier
             .semantics {
                 this.contentDescription = contentDescription
                 this.role = Role.Image
             }
+            .background(
+                color = colorScheme.onBackground
+                    .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                shape = RectangleShape,
+            )
             .then(modifier)
             .then(sizeResolver),
     ) {
@@ -109,27 +117,15 @@ fun SketchesThumbnailAsyncImage(
                         alignment = Alignment.Center,
                     ),
             )
-        } else {
-            val colorScheme = MaterialTheme.colorScheme
-            Box(
-                modifier = modifier
-                    .matchParentSize()
-                    .background(
-                        color = colorScheme.onBackground
-                            .copy(alpha = SketchesColors.UiAlphaHighTransparency),
-                        shape = RectangleShape,
-                    ),
+        } else if (painterState is AsyncImagePainter.State.Error) {
+            Icon(
+                painter = painterResource(R.drawable.ic_image_error),
+                contentDescription = contentDescription,
+                modifier = Modifier
+                    .size(LocalDimens.current.asyncImageStateIconSize)
+                    .align(Alignment.Center),
+                tint = colorScheme.onBackground,
             )
-            if (painterState is AsyncImagePainter.State.Error) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_image_error),
-                    contentDescription = contentDescription,
-                    modifier = Modifier
-                        .size(LocalDimens.current.asyncImageStateIconSize)
-                        .align(Alignment.Center),
-                    tint = colorScheme.onBackground,
-                )
-            }
         }
     }
 }
