@@ -28,10 +28,10 @@ import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +52,7 @@ import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
+import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.size.Size
@@ -61,9 +62,55 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
 @Composable
-fun SketchesThumbnailAsyncImage(
+@NonRestartableComposable
+fun SketchesBucketThumbnailAsyncImage(
     uri: Uri,
     contentDescription: String,
+    modifier: Modifier = Modifier,
+) {
+    SketchesThumbnailAsyncImage(
+        uri = uri,
+        contentDescription = contentDescription,
+        memoryKeyPrefix = "bucket_thumbnail_",
+        modifier = modifier,
+    )
+}
+
+@Composable
+@NonRestartableComposable
+fun SketchesMediaBarThumbnailAsyncImage(
+    uri: Uri,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+) {
+    SketchesThumbnailAsyncImage(
+        uri = uri,
+        contentDescription = contentDescription,
+        memoryKeyPrefix = "media_bar_thumbnail_",
+        modifier = modifier,
+    )
+}
+
+@Composable
+@NonRestartableComposable
+fun SketchesMediaGridThumbnailAsyncImage(
+    uri: Uri,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+) {
+    SketchesThumbnailAsyncImage(
+        uri = uri,
+        contentDescription = contentDescription,
+        memoryKeyPrefix = "media_grid_thumbnail_",
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun SketchesThumbnailAsyncImage(
+    uri: Uri,
+    contentDescription: String,
+    memoryKeyPrefix: String,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalPlatformContext.current
@@ -78,6 +125,7 @@ fun SketchesThumbnailAsyncImage(
             .size(sizeResolver)
             .crossfade(true)
             .data(uri)
+            .memoryCacheKey(MemoryCache.Key("$memoryKeyPrefix$uri"))
             .build()
     }
     var painterState by remember {
@@ -146,6 +194,8 @@ fun SketchesZoomableAsyncImage(
             .videoFramePercent(0.1)
             .size(Size.ORIGINAL)
             .data(uri)
+            .memoryCacheKey(MemoryCache.Key("original_$uri"))
+            .placeholderMemoryCacheKey(MemoryCache.Key("media_grid_thumbnail_$uri"))
             .build()
     }
     var painterState by remember {
@@ -168,34 +218,36 @@ fun SketchesZoomableAsyncImage(
             .then(modifier),
         contentAlignment = Alignment.Center,
     ) {
-        if (painterState is AsyncImagePainter.State.Success) {
-            SketchesZoomableBox(
-                modifier = Modifier.matchParentSize(),
-                onTap = onTap,
-            ) {
-                Box(
+        when (painterState) {
+            is AsyncImagePainter.State.Empty,
+            is AsyncImagePainter.State.Loading,
+            is AsyncImagePainter.State.Success -> {
+                SketchesZoomableBox(
+                    modifier = Modifier.matchParentSize(),
+                    onTap = onTap,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .zoomable()
+                            .paint(
+                                painter = painter,
+                                contentScale = ContentScale.Fit,
+                                alignment = Alignment.Center,
+                            ),
+                    )
+                }
+            }
+            is AsyncImagePainter.State.Error -> {
+                Icon(
+                    painter = painterResource(R.drawable.ic_image_error),
+                    contentDescription = contentDescription,
                     modifier = Modifier
-                        .wrapContentSize(
-                            align = Alignment.Center,
-                            unbounded = true,
-                        )
-                        .zoomable()
-                        .paint(
-                            painter = painter,
-                            contentScale = ContentScale.None,
-                            alignment = Alignment.Center,
-                        ),
+                        .size(LocalDimens.current.asyncImageStateIconSize)
+                        .align(Alignment.Center),
+                    tint = MaterialTheme.colorScheme.onBackground,
                 )
             }
-        } else if (painterState is AsyncImagePainter.State.Error) {
-            Icon(
-                painter = painterResource(R.drawable.ic_image_error),
-                contentDescription = contentDescription,
-                modifier = Modifier
-                    .size(LocalDimens.current.asyncImageStateIconSize)
-                    .align(Alignment.Center),
-                tint = MaterialTheme.colorScheme.onBackground,
-            )
         }
     }
 }

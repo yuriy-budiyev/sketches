@@ -306,7 +306,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                 onClick = onClick,
             ),
     ) {
-        SketchesThumbnailAsyncImage(
+        SketchesMediaGridThumbnailAsyncImage(
             uri = fileUpdated.uri,
             contentDescription = stringResource(
                 id = when (fileUpdated.mediaType) {

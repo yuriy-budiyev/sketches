@@ -106,7 +106,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessa
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesThumbnailAsyncImage
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaBarThumbnailAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.mediaplayer.SketchesMediaPlayer
@@ -615,7 +615,7 @@ private fun MediaBar(
                         }
                     },
             ) {
-                SketchesThumbnailAsyncImage(
+                SketchesMediaBarThumbnailAsyncImage(
                     uri = file.uri,
                     contentDescription = stringResource(
                         id = when (file.mediaType) {
