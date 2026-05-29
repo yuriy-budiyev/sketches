@@ -49,7 +49,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -86,13 +88,14 @@ import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateListSaver
 import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateSetSaver
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesBucketThumbnailAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesThumbnailAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.components.buildSketchesMediaGridMemoryCacheKey
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
@@ -493,3 +496,22 @@ private fun BucketsScreenLayout(
 
 private const val ShareAction: String =
     "com.github.yuriybudiyev.sketches.feature.buckets.ui.ShareAction"
+
+@Composable
+@NonRestartableComposable
+private fun SketchesBucketThumbnailAsyncImage(
+    uri: Uri,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+) {
+    SketchesThumbnailAsyncImage(
+        uri = uri,
+        contentDescription = contentDescription,
+        memoryCacheKey = buildSketchesBucketMemoryCacheKey(uri),
+        modifier = modifier,
+    )
+}
+
+@Stable
+fun buildSketchesBucketMemoryCacheKey(uri: Uri): String =
+    buildSketchesMediaGridMemoryCacheKey(uri)

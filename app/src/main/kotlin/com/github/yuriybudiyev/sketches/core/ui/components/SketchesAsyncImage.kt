@@ -31,7 +31,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,56 +61,11 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
 @Composable
-@NonRestartableComposable
-fun SketchesBucketThumbnailAsyncImage(
+fun SketchesThumbnailAsyncImage(
     uri: Uri,
     contentDescription: String,
     modifier: Modifier = Modifier,
-) {
-    SketchesThumbnailAsyncImage(
-        uri = uri,
-        contentDescription = contentDescription,
-        memoryKeyPrefix = "bucket_thumbnail_",
-        modifier = modifier,
-    )
-}
-
-@Composable
-@NonRestartableComposable
-fun SketchesMediaBarThumbnailAsyncImage(
-    uri: Uri,
-    contentDescription: String,
-    modifier: Modifier = Modifier,
-) {
-    SketchesThumbnailAsyncImage(
-        uri = uri,
-        contentDescription = contentDescription,
-        memoryKeyPrefix = "media_bar_thumbnail_",
-        modifier = modifier,
-    )
-}
-
-@Composable
-@NonRestartableComposable
-fun SketchesMediaGridThumbnailAsyncImage(
-    uri: Uri,
-    contentDescription: String,
-    modifier: Modifier = Modifier,
-) {
-    SketchesThumbnailAsyncImage(
-        uri = uri,
-        contentDescription = contentDescription,
-        memoryKeyPrefix = "media_grid_thumbnail_",
-        modifier = modifier,
-    )
-}
-
-@Composable
-private fun SketchesThumbnailAsyncImage(
-    uri: Uri,
-    contentDescription: String,
-    memoryKeyPrefix: String,
-    modifier: Modifier = Modifier,
+    memoryCacheKey: String = uri.toString(),
 ) {
     val context = LocalPlatformContext.current
     val sizeResolver = rememberConstraintsSizeResolver()
@@ -119,13 +73,14 @@ private fun SketchesThumbnailAsyncImage(
         context,
         sizeResolver,
         uri,
+        memoryCacheKey,
     ) {
         ImageRequest.Builder(context)
             .videoFramePercent(0.1)
             .size(sizeResolver)
             .crossfade(true)
             .data(uri)
-            .memoryCacheKey(MemoryCache.Key("$memoryKeyPrefix$uri"))
+            .memoryCacheKey(MemoryCache.Key(memoryCacheKey))
             .build()
     }
     var painterState by remember {
@@ -183,19 +138,35 @@ fun SketchesZoomableAsyncImage(
     uri: Uri,
     contentDescription: String,
     modifier: Modifier = Modifier,
+    memoryCacheKey: String? = null,
+    placeholderMemoryCacheKey: String? = null,
     onTap: (() -> Unit)? = null,
 ) {
     val context = LocalPlatformContext.current
     val request = remember(
         context,
         uri,
+        memoryCacheKey,
+        placeholderMemoryCacheKey,
     ) {
         ImageRequest.Builder(context)
             .videoFramePercent(0.1)
             .size(Size.ORIGINAL)
             .data(uri)
-            .memoryCacheKey(MemoryCache.Key("original_$uri"))
-            .placeholderMemoryCacheKey(MemoryCache.Key("media_grid_thumbnail_$uri"))
+            .let { builder ->
+                if (memoryCacheKey != null) {
+                    builder.memoryCacheKey(memoryCacheKey)
+                } else {
+                    builder
+                }
+            }
+            .let { builder ->
+                if (placeholderMemoryCacheKey != null) {
+                    builder.placeholderMemoryCacheKey(MemoryCache.Key(placeholderMemoryCacheKey))
+                } else {
+                    builder
+                }
+            }
             .build()
     }
     var painterState by remember {

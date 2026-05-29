@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import android.net.Uri
 import android.os.Parcelable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -40,6 +41,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -356,3 +359,22 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
         }
     }
 }
+
+@Composable
+@NonRestartableComposable
+private fun SketchesMediaGridThumbnailAsyncImage(
+    uri: Uri,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+) {
+    SketchesThumbnailAsyncImage(
+        uri = uri,
+        contentDescription = contentDescription,
+        memoryCacheKey = buildSketchesMediaGridMemoryCacheKey(uri),
+        modifier = modifier,
+    )
+}
+
+@Stable
+fun buildSketchesMediaGridMemoryCacheKey(uri: Uri): String =
+    "media_grid_$uri"
