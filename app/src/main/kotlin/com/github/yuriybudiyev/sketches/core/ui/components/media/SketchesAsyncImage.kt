@@ -87,9 +87,9 @@ fun SketchesThumbnailAsyncImage(
             .videoFrameMicros(0L)
             .videoFrameOption(MediaMetadataRetriever.OPTION_CLOSEST)
             .memoryCacheKey(SketchesMemoryCacheKeys.thumbnail(uri))
-            .crossfade(true)
-            .size(size)
             .data(uri)
+            .size(size)
+            .crossfade(true)
             .build()
     }
     var painterState by remember {
@@ -179,9 +179,9 @@ fun SketchesMemoryCachedImage(
 fun SketchesZoomableAsyncImage(
     uri: Uri,
     contentDescription: String,
+    memoryCacheKey: MemoryCache.Key,
+    placeholderMemoryCacheKey: MemoryCache.Key,
     modifier: Modifier = Modifier,
-    memoryCacheKey: MemoryCache.Key? = null,
-    placeholderMemoryCacheKey: MemoryCache.Key? = null,
     onTap: (() -> Unit)? = null,
 ) {
     val context = LocalPlatformContext.current
@@ -191,25 +191,14 @@ fun SketchesZoomableAsyncImage(
         memoryCacheKey,
         placeholderMemoryCacheKey,
     ) {
-        ImageRequest.Builder(context)
+        ImageRequest
+            .Builder(context)
             .videoFrameMicros(0L)
             .videoFrameOption(MediaMetadataRetriever.OPTION_CLOSEST)
-            .size(Size.ORIGINAL)
+            .placeholderMemoryCacheKey(placeholderMemoryCacheKey)
+            .memoryCacheKey(memoryCacheKey)
             .data(uri)
-            .let { builder ->
-                if (memoryCacheKey != null) {
-                    builder.memoryCacheKey(memoryCacheKey)
-                } else {
-                    builder
-                }
-            }
-            .let { builder ->
-                if (placeholderMemoryCacheKey != null) {
-                    builder.placeholderMemoryCacheKey(placeholderMemoryCacheKey)
-                } else {
-                    builder
-                }
-            }
+            .size(Size.ORIGINAL)
             .build()
     }
     var painterState by remember {

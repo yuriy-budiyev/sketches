@@ -25,31 +25,38 @@
 package com.github.yuriybudiyev.sketches.core.ui.components.media.cache
 
 import android.net.Uri
+import androidx.compose.runtime.Stable
 import coil3.memory.MemoryCache
 
 object SketchesMemoryCacheKeys {
 
+    @Stable
     fun thumbnail(uri: Uri): MemoryCache.Key =
         MemoryCache.Key(
             key = uri.toString(),
-            extras = buildMap {
-                put(
-                    key = Extra.Purpose,
-                    value = Purpose.Thumbnail,
-                )
-            },
+            extras = thumbNailExtras,
         )
 
+    @Stable
     fun preview(uri: Uri): MemoryCache.Key =
         MemoryCache.Key(
             key = uri.toString(),
-            extras = buildMap {
-                put(
-                    key = Extra.Purpose,
-                    value = Purpose.Preview,
-                )
-            },
+            extras = previewExtras,
         )
+
+    private val thumbNailExtras: Map<String, String> = buildMap {
+        put(
+            key = Extra.Purpose,
+            value = Purpose.Thumbnail,
+        )
+    }
+
+    private val previewExtras: Map<String, String> = buildMap {
+        put(
+            key = Extra.Purpose,
+            value = Purpose.Preview,
+        )
+    }
 
     private object Extra {
 
