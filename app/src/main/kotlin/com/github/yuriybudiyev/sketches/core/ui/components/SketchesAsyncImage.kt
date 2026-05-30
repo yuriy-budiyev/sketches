@@ -209,9 +209,7 @@ fun SketchesZoomableAsyncImage(
             }
             .let { builder ->
                 if (placeholderMemoryCacheKey != null) {
-                    builder
-                        .placeholderMemoryCacheKey(MemoryCache.Key(placeholderMemoryCacheKey))
-                        .crossfade(true)
+                    builder.placeholderMemoryCacheKey(MemoryCache.Key(placeholderMemoryCacheKey))
                 } else {
                     builder
                 }
