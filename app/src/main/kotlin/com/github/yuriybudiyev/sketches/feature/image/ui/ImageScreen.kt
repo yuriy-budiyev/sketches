@@ -546,6 +546,7 @@ private fun VideoPage(
         useNavSharedBounds = displayedPage,
         enableImagePlaceholder = false,
         enableErrorIndicator = true,
+        placeholderMemoryCacheKey = SketchesImageKeys.gallery(fileUri),
     )
 }
 

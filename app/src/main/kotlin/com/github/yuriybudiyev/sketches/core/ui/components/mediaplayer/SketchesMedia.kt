@@ -50,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -59,10 +60,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.navSharedBounds
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMemoryCachedImage
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
-import com.github.yuriybudiyev.sketches.core.ui.images.SketchesImageKeys
 import kotlinx.coroutines.launch
 import kotlin.math.roundToLong
 
@@ -82,6 +82,7 @@ fun SketchesMediaPlayer(
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
     enableImagePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,
+    placeholderMemoryCacheKey: String? = null,
 ) {
     val controllerVisibleUpdated by rememberUpdatedState(controllerVisible)
     val useNavSharedBoundsUpdated by rememberUpdatedState(useNavSharedBounds)
@@ -105,6 +106,7 @@ fun SketchesMediaPlayer(
             indicatorColor = controlsColor,
             enableImagePlaceholder = enableImagePlaceholder,
             enableErrorIndicator = enableErrorIndicator,
+            placeholderMemoryCacheKey = placeholderMemoryCacheKey,
         )
         AnimatedVisibility(
             visible = controllerVisibleUpdated,
@@ -146,6 +148,7 @@ fun SketchesMediaDisplay(
     indicatorColor: Color = MaterialTheme.colorScheme.onBackground,
     enableImagePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,
+    placeholderMemoryCacheKey: String? = null,
 ) {
     Box(modifier = modifier) {
         SketchesZoomableBox(
@@ -204,20 +207,20 @@ fun SketchesMediaDisplay(
                 }
             }
         }
-        val showPreview by remember {
-            derivedStateOf {
-                var showPreview = true
-                if (state.isPlaybackReady) {
-                    showPreview = false
+        if (placeholderMemoryCacheKey != null) {
+            val showPlaceholder by remember {
+                derivedStateOf {
+                    var showPlaceholder = true
+                    if (state.isPlaybackReady) {
+                        showPlaceholder = false
+                    }
+                    showPlaceholder && !state.isPlaybackError
                 }
-                showPreview
             }
-        }
-        if (showPreview) {
-            val uri = state.uri
-            if (uri != null) {
+            if (showPlaceholder) {
                 SketchesMemoryCachedImage(
-                    memoryCacheKey = SketchesImageKeys.gallery(uri),
+                    memoryCacheKey = placeholderMemoryCacheKey,
+                    filterQuality = FilterQuality.Low,
                     modifier = Modifier
                         .matchParentSize()
                         .background(

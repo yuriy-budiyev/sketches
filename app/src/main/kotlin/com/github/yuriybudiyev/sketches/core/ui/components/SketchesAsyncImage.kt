@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -58,7 +59,8 @@ import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import coil3.size.Size
-import coil3.video.videoFramePercent
+import coil3.video.videoFrameMicros
+import coil3.video.videoFrameOption
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
@@ -79,7 +81,8 @@ fun SketchesThumbnailAsyncImage(
         memoryCacheKey,
     ) {
         ImageRequest.Builder(context)
-            .videoFramePercent(0.1)
+            .videoFrameMicros(0L)
+            .videoFrameOption(MediaMetadataRetriever.OPTION_CLOSEST)
             .size(sizeResolver)
             .crossfade(true)
             .data(uri)
@@ -146,21 +149,30 @@ fun SketchesThumbnailAsyncImage(
 fun SketchesMemoryCachedImage(
     memoryCacheKey: String,
     modifier: Modifier = Modifier,
+    filterQuality: FilterQuality = FilterQuality.Low,
 ) {
     val context = LocalPlatformContext.current
-    val image = remember(memoryCacheKey) {
-        context.imageLoader.memoryCache?.get(MemoryCache.Key(memoryCacheKey))?.image
+    val painter = remember(
+        context,
+        memoryCacheKey,
+    ) {
+        context
+            .imageLoader
+            .memoryCache
+            ?.get(MemoryCache.Key(memoryCacheKey))
+            ?.image
+            ?.asPainter(
+                context = context,
+                filterQuality = filterQuality,
+            )
     }
-    if (image == null) {
+    if (painter == null) {
         return
     }
     Box(
         modifier = modifier
             .paint(
-                image.asPainter(
-                    context = context,
-                    filterQuality = FilterQuality.Low,
-                ),
+                painter = painter,
                 alignment = Alignment.Center,
                 contentScale = ContentScale.Fit,
             ),
@@ -184,7 +196,8 @@ fun SketchesZoomableAsyncImage(
         placeholderMemoryCacheKey,
     ) {
         ImageRequest.Builder(context)
-            .videoFramePercent(0.1)
+            .videoFrameMicros(0L)
+            .videoFrameOption(MediaMetadataRetriever.OPTION_CLOSEST)
             .size(Size.ORIGINAL)
             .data(uri)
             .let { builder ->
@@ -196,7 +209,9 @@ fun SketchesZoomableAsyncImage(
             }
             .let { builder ->
                 if (placeholderMemoryCacheKey != null) {
-                    builder.placeholderMemoryCacheKey(MemoryCache.Key(placeholderMemoryCacheKey))
+                    builder
+                        .placeholderMemoryCacheKey(MemoryCache.Key(placeholderMemoryCacheKey))
+                        .crossfade(true)
                 } else {
                     builder
                 }
