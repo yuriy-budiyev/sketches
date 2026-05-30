@@ -27,6 +27,7 @@ package com.github.yuriybudiyev.sketches.core.ui.components
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -205,7 +206,17 @@ fun SketchesZoomableAsyncImage(
                 ) {
                     Box(
                         modifier = Modifier
-                            .matchParentSize()
+                            .let { modifier ->
+                                val size = painterState.painter?.intrinsicSize
+                                if (size != null) {
+                                    modifier.aspectRatio(
+                                        ratio = size.width / size.height,
+                                        matchHeightConstraintsFirst = false,
+                                    )
+                                } else {
+                                    modifier
+                                }
+                            }
                             .zoomable()
                             .paint(
                                 painter = painter,
