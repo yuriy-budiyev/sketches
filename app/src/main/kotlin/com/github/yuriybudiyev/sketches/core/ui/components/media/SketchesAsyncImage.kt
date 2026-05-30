@@ -75,7 +75,7 @@ fun SketchesThumbnailAsyncImage(
 ) {
     val context = LocalPlatformContext.current
     val size = with(LocalDensity.current) {
-        LocalDimens.current.lazyGridItemSize.roundToPx()
+        LocalDimens.current.maxThumbnailSize.roundToPx()
     }
     val request = remember(
         context,
