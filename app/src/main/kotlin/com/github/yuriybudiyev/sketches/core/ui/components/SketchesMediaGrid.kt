@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
-import android.net.Uri
 import android.os.Parcelable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -41,8 +40,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.NonRestartableComposable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -63,6 +60,7 @@ import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.images.SketchesImageKeys
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 import java.time.YearMonth
@@ -309,8 +307,9 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                 onClick = onClick,
             ),
     ) {
-        SketchesMediaGridThumbnailAsyncImage(
-            uri = fileUpdated.uri,
+        val fileUri = fileUpdated.uri
+        SketchesThumbnailAsyncImage(
+            uri = fileUri,
             contentDescription = stringResource(
                 id = when (fileUpdated.mediaType) {
                     MediaType.Image -> R.string.image
@@ -318,6 +317,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                 },
             ),
             modifier = Modifier.matchParentSize(),
+            memoryCacheKey = SketchesImageKeys.gallery(fileUri),
         )
         if (fileSelectedUpdated) {
             Box(
@@ -359,22 +359,3 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
         }
     }
 }
-
-@Composable
-@NonRestartableComposable
-private fun SketchesMediaGridThumbnailAsyncImage(
-    uri: Uri,
-    contentDescription: String,
-    modifier: Modifier = Modifier,
-) {
-    SketchesThumbnailAsyncImage(
-        uri = uri,
-        contentDescription = contentDescription,
-        memoryCacheKey = buildSketchesMediaGridMemoryCacheKey(uri),
-        modifier = modifier,
-    )
-}
-
-@Stable
-fun buildSketchesMediaGridMemoryCacheKey(uri: Uri): String =
-    "media_grid_$uri"

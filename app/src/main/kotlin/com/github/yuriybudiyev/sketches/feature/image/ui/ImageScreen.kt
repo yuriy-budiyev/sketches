@@ -70,7 +70,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.NonRestartableComposable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -110,10 +109,10 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndica
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesThumbnailAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableAsyncImage
-import com.github.yuriybudiyev.sketches.core.ui.components.buildSketchesMediaGridMemoryCacheKey
 import com.github.yuriybudiyev.sketches.core.ui.components.mediaplayer.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.components.mediaplayer.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.images.SketchesImageKeys
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemCentered
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
@@ -469,8 +468,8 @@ private fun ImagePage(
     SketchesZoomableAsyncImage(
         uri = fileUri,
         contentDescription = stringResource(R.string.image),
-        memoryCacheKey = buildSketchesPreviewMemoryCacheKey(fileUri),
-        placeholderMemoryCacheKey = buildSketchesMediaGridMemoryCacheKey(fileUri),
+        memoryCacheKey = SketchesImageKeys.preview(fileUri),
+        placeholderMemoryCacheKey = SketchesImageKeys.gallery(fileUri),
         onTap = onPageTap,
         modifier = Modifier
             .let { modifier ->
@@ -619,8 +618,9 @@ private fun MediaBar(
                         }
                     },
             ) {
-                SketchesMediaBarThumbnailAsyncImage(
-                    uri = file.uri,
+                val fileUri = file.uri
+                SketchesThumbnailAsyncImage(
+                    uri = fileUri,
                     contentDescription = stringResource(
                         id = when (file.mediaType) {
                             MediaType.Image -> R.string.image
@@ -628,6 +628,7 @@ private fun MediaBar(
                         },
                     ),
                     modifier = Modifier.matchParentSize(),
+                    memoryCacheKey = SketchesImageKeys.previewThumbnail(fileUri),
                 )
                 if (position == currentIndexUpdated) {
                     Box(
@@ -658,29 +659,6 @@ private fun MediaBar(
         }
     }
 }
-
-@Composable
-@NonRestartableComposable
-private fun SketchesMediaBarThumbnailAsyncImage(
-    uri: Uri,
-    contentDescription: String,
-    modifier: Modifier = Modifier,
-) {
-    SketchesThumbnailAsyncImage(
-        uri = uri,
-        contentDescription = contentDescription,
-        memoryCacheKey = buildSketchesMediaBarMemoryCacheKey(uri),
-        modifier = modifier,
-    )
-}
-
-@Stable
-fun buildSketchesMediaBarMemoryCacheKey(uri: Uri): String =
-    "media_bar_$uri"
-
-@Stable
-fun buildSketchesPreviewMemoryCacheKey(uri: Uri): String =
-    "preview_$uri"
 
 @Immutable
 @Parcelize
