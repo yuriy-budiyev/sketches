@@ -162,16 +162,19 @@ fun SketchesMemoryCachedImage(
                 filterQuality = filterQuality,
             )
     }
-    if (painter == null) {
-        return
-    }
     Box(
         modifier = modifier
-            .paint(
-                painter = painter,
-                alignment = Alignment.Center,
-                contentScale = ContentScale.Fit,
-            ),
+            .let { modifier ->
+                if (painter != null) {
+                    modifier.paint(
+                        painter = painter,
+                        alignment = Alignment.Center,
+                        contentScale = ContentScale.Fit,
+                    )
+                } else {
+                    modifier
+                }
+            },
     )
 }
 
