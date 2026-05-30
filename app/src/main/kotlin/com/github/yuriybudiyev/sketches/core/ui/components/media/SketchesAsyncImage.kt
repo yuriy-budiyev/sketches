@@ -66,7 +66,6 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import kotlin.math.ceil
 
 @Composable
 fun SketchesThumbnailAsyncImage(
@@ -76,7 +75,7 @@ fun SketchesThumbnailAsyncImage(
 ) {
     val context = LocalPlatformContext.current
     val size = with(LocalDensity.current) {
-        ceil(LocalDimens.current.lazyGridItemSize.toPx().toDouble()).toInt()
+        LocalDimens.current.lazyGridItemSize.roundToPx()
     }
     val request = remember(
         context,
@@ -145,7 +144,6 @@ fun SketchesThumbnailAsyncImage(
 fun SketchesMemoryCachedImage(
     memoryCacheKey: MemoryCache.Key,
     modifier: Modifier = Modifier,
-    filterQuality: FilterQuality = FilterQuality.Low,
 ) {
     val context = LocalPlatformContext.current
     val painter = remember(
@@ -159,7 +157,7 @@ fun SketchesMemoryCachedImage(
             ?.image
             ?.asPainter(
                 context = context,
-                filterQuality = filterQuality,
+                filterQuality = FilterQuality.Low,
             )
     }
     Box(
