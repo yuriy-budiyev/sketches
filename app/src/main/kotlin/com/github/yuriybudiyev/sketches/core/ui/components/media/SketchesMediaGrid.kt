@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.components
+package com.github.yuriybudiyev.sketches.core.ui.components.media
 
 import android.os.Parcelable
 import androidx.compose.foundation.background
@@ -60,7 +60,6 @@ import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.images.SketchesImageKeys
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 import java.time.YearMonth
@@ -102,14 +101,14 @@ fun SketchesMediaGrid(
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
-    state: LazyGridState = rememberSketchesLazyGridState(),
+    state: LazyGridState = _root_ide_package_.com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState(),
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
     val filesUpdated by rememberUpdatedState(files)
     val selectedFilesUpdated by rememberUpdatedState(selectedFiles)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
-    SketchesLazyGrid(
+    _root_ide_package_.com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid(
         modifier = modifier,
         state = state,
         overlayTop = overlayTop,
@@ -153,7 +152,7 @@ fun SketchesGroupingMediaGrid(
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
-    state: LazyGridState = rememberSketchesLazyGridState(),
+    state: LazyGridState = _root_ide_package_.com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState(),
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
@@ -183,7 +182,7 @@ fun SketchesGroupingMediaGrid(
             .toFormatter(Locale.getDefault())
     }
     val colorScheme = MaterialTheme.colorScheme
-    SketchesLazyGrid(
+    _root_ide_package_.com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid(
         modifier = modifier,
         state = state,
         overlayTop = overlayTop,
@@ -317,7 +316,6 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                 },
             ),
             modifier = Modifier.matchParentSize(),
-            memoryCacheKey = SketchesImageKeys.gallery(fileUri),
         )
         if (fileSelectedUpdated) {
             Box(

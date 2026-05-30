@@ -74,11 +74,11 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionB
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesGroupingMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
-import com.github.yuriybudiyev.sketches.core.ui.components.calculateMediaIndexWithGroups
+import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesGroupingMediaGrid
+import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
+import com.github.yuriybudiyev.sketches.core.ui.components.media.calculateMediaIndexWithGroups
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemClosestEdge
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult

@@ -64,7 +64,7 @@ object ImageLoaderModule {
                     .Builder()
                     .maxSizeBytes(context.getMaxMemory() / 2L)
                     .strongReferencesEnabled(true)
-                    .weakReferencesEnabled(false)
+                    .weakReferencesEnabled(true)
                     .build(),
             )
             .components {

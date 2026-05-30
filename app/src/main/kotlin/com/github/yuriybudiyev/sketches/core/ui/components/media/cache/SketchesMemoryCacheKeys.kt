@@ -21,18 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.github.yuriybudiyev.sketches.core.ui.images
+
+package com.github.yuriybudiyev.sketches.core.ui.components.media.cache
 
 import android.net.Uri
+import coil3.memory.MemoryCache
+import java.util.Collections
 
-object SketchesImageKeys {
+object SketchesMemoryCacheKeys {
 
-    fun gallery(uri: Uri): String =
-        "gallery_$uri"
+    fun thumbnail(uri: Uri): MemoryCache.Key =
+        MemoryCache.Key(
+            uri.toString(),
+            Collections.singletonMap(
+                "destination",
+                "thumbnail",
+            ),
+        )
 
-    fun preview(uri: Uri): String =
-        "preview_$uri"
-
-    fun previewThumbnail(uri: Uri): String =
-        "pre_thu_$uri"
+    fun preview(uri: Uri): MemoryCache.Key =
+        MemoryCache.Key(
+            uri.toString(),
+            Collections.singletonMap(
+                "destination",
+                "preview",
+            ),
+        )
 }

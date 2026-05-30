@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.components.mediaplayer
+package com.github.yuriybudiyev.sketches.core.ui.components.media.player
 
 import android.view.TextureView
 import androidx.compose.animation.AnimatedVisibility
@@ -57,12 +57,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import coil3.memory.MemoryCache
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.navSharedBounds
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMemoryCachedImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
+import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMemoryCachedImage
 import kotlinx.coroutines.launch
 import kotlin.math.roundToLong
 
@@ -82,7 +83,7 @@ fun SketchesMediaPlayer(
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
     enableImagePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,
-    placeholderMemoryCacheKey: String? = null,
+    placeholderMemoryCacheKey: MemoryCache.Key? = null,
 ) {
     val controllerVisibleUpdated by rememberUpdatedState(controllerVisible)
     val useNavSharedBoundsUpdated by rememberUpdatedState(useNavSharedBounds)
@@ -148,7 +149,7 @@ fun SketchesMediaDisplay(
     indicatorColor: Color = MaterialTheme.colorScheme.onBackground,
     enableImagePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,
-    placeholderMemoryCacheKey: String? = null,
+    placeholderMemoryCacheKey: MemoryCache.Key? = null,
 ) {
     Box(modifier = modifier) {
         SketchesZoomableBox(

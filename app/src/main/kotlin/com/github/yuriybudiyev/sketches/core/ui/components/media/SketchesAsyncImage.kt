@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.components
+package com.github.yuriybudiyev.sketches.core.ui.components.media
 
 import android.media.MediaMetadataRetriever
 import android.net.Uri
@@ -44,6 +44,7 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -53,7 +54,6 @@ import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
 import coil3.compose.asPainter
 import coil3.compose.rememberAsyncImagePainter
-import coil3.compose.rememberConstraintsSizeResolver
 import coil3.imageLoader
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
@@ -63,36 +63,33 @@ import coil3.video.videoFrameMicros
 import coil3.video.videoFrameOption
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
+import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import kotlin.math.ceil
 
 @Composable
 fun SketchesThumbnailAsyncImage(
     uri: Uri,
     contentDescription: String,
     modifier: Modifier = Modifier,
-    memoryCacheKey: String? = null,
 ) {
     val context = LocalPlatformContext.current
-    val sizeResolver = rememberConstraintsSizeResolver()
+    val size = with(LocalDensity.current) {
+        ceil(LocalDimens.current.lazyGridItemSize.toPx().toDouble()).toInt()
+    }
     val request = remember(
         context,
-        sizeResolver,
+        size,
         uri,
-        memoryCacheKey,
     ) {
         ImageRequest.Builder(context)
             .videoFrameMicros(0L)
             .videoFrameOption(MediaMetadataRetriever.OPTION_CLOSEST)
-            .size(sizeResolver)
+            .memoryCacheKey(SketchesMemoryCacheKeys.thumbnail(uri))
             .crossfade(true)
+            .size(size)
             .data(uri)
-            .let { builder ->
-                if (memoryCacheKey != null) {
-                    builder.memoryCacheKey(MemoryCache.Key(memoryCacheKey))
-                } else {
-                    builder
-                }
-            }
             .build()
     }
     var painterState by remember {
@@ -118,8 +115,7 @@ fun SketchesThumbnailAsyncImage(
                     .copy(alpha = SketchesColors.UiAlphaHighTransparency),
                 shape = RectangleShape,
             )
-            .then(modifier)
-            .then(sizeResolver),
+            .then(modifier),
     ) {
         if (painterState is AsyncImagePainter.State.Success) {
             Box(
@@ -147,7 +143,7 @@ fun SketchesThumbnailAsyncImage(
 
 @Composable
 fun SketchesMemoryCachedImage(
-    memoryCacheKey: String,
+    memoryCacheKey: MemoryCache.Key,
     modifier: Modifier = Modifier,
     filterQuality: FilterQuality = FilterQuality.Low,
 ) {
@@ -159,7 +155,7 @@ fun SketchesMemoryCachedImage(
         context
             .imageLoader
             .memoryCache
-            ?.get(MemoryCache.Key(memoryCacheKey))
+            ?.get(memoryCacheKey)
             ?.image
             ?.asPainter(
                 context = context,
@@ -184,8 +180,8 @@ fun SketchesZoomableAsyncImage(
     uri: Uri,
     contentDescription: String,
     modifier: Modifier = Modifier,
-    memoryCacheKey: String? = null,
-    placeholderMemoryCacheKey: String? = null,
+    memoryCacheKey: MemoryCache.Key? = null,
+    placeholderMemoryCacheKey: MemoryCache.Key? = null,
     onTap: (() -> Unit)? = null,
 ) {
     val context = LocalPlatformContext.current
@@ -202,14 +198,14 @@ fun SketchesZoomableAsyncImage(
             .data(uri)
             .let { builder ->
                 if (memoryCacheKey != null) {
-                    builder.memoryCacheKey(MemoryCache.Key(memoryCacheKey))
+                    builder.memoryCacheKey(memoryCacheKey)
                 } else {
                     builder
                 }
             }
             .let { builder ->
                 if (placeholderMemoryCacheKey != null) {
-                    builder.placeholderMemoryCacheKey(MemoryCache.Key(placeholderMemoryCacheKey))
+                    builder.placeholderMemoryCacheKey(placeholderMemoryCacheKey)
                 } else {
                     builder
                 }

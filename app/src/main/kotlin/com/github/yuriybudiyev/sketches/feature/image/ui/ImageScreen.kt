@@ -106,13 +106,13 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessa
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesThumbnailAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableAsyncImage
-import com.github.yuriybudiyev.sketches.core.ui.components.mediaplayer.SketchesMediaPlayer
-import com.github.yuriybudiyev.sketches.core.ui.components.mediaplayer.rememberSketchesMediaState
+import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
+import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesZoomableAsyncImage
+import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
+import com.github.yuriybudiyev.sketches.core.ui.components.media.player.SketchesMediaPlayer
+import com.github.yuriybudiyev.sketches.core.ui.components.media.player.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.images.SketchesImageKeys
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemCentered
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
@@ -468,8 +468,8 @@ private fun ImagePage(
     SketchesZoomableAsyncImage(
         uri = fileUri,
         contentDescription = stringResource(R.string.image),
-        memoryCacheKey = SketchesImageKeys.preview(fileUri),
-        placeholderMemoryCacheKey = SketchesImageKeys.gallery(fileUri),
+        memoryCacheKey = SketchesMemoryCacheKeys.preview(fileUri),
+        placeholderMemoryCacheKey = SketchesMemoryCacheKeys.thumbnail(fileUri),
         onTap = onPageTap,
         modifier = Modifier
             .let { modifier ->
@@ -546,7 +546,7 @@ private fun VideoPage(
         useNavSharedBounds = displayedPage,
         enableImagePlaceholder = false,
         enableErrorIndicator = true,
-        placeholderMemoryCacheKey = SketchesImageKeys.gallery(fileUri),
+        placeholderMemoryCacheKey = SketchesMemoryCacheKeys.thumbnail(fileUri),
     )
 }
 
@@ -629,7 +629,6 @@ private fun MediaBar(
                         },
                     ),
                     modifier = Modifier.matchParentSize(),
-                    memoryCacheKey = SketchesImageKeys.previewThumbnail(fileUri),
                 )
                 if (position == currentIndexUpdated) {
                     Box(

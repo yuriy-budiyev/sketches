@@ -95,9 +95,9 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessa
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGrid
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGrid
+import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemClosestEdge
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
