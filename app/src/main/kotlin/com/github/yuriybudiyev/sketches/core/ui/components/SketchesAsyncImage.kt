@@ -65,7 +65,7 @@ fun SketchesThumbnailAsyncImage(
     uri: Uri,
     contentDescription: String,
     modifier: Modifier = Modifier,
-    memoryCacheKey: String = uri.toString(),
+    memoryCacheKey: String? = null,
 ) {
     val context = LocalPlatformContext.current
     val sizeResolver = rememberConstraintsSizeResolver()
@@ -80,7 +80,13 @@ fun SketchesThumbnailAsyncImage(
             .size(sizeResolver)
             .crossfade(true)
             .data(uri)
-            .memoryCacheKey(MemoryCache.Key(memoryCacheKey))
+            .let { builder ->
+                if (memoryCacheKey != null) {
+                    builder.memoryCacheKey(MemoryCache.Key(memoryCacheKey))
+                } else {
+                    builder
+                }
+            }
             .build()
     }
     var painterState by remember {
@@ -155,7 +161,7 @@ fun SketchesZoomableAsyncImage(
             .data(uri)
             .let { builder ->
                 if (memoryCacheKey != null) {
-                    builder.memoryCacheKey(memoryCacheKey)
+                    builder.memoryCacheKey(MemoryCache.Key(memoryCacheKey))
                 } else {
                     builder
                 }
