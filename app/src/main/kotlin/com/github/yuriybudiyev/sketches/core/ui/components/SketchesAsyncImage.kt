@@ -50,8 +50,10 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
+import coil3.compose.asPainter
 import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
+import coil3.imageLoader
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -138,6 +140,31 @@ fun SketchesThumbnailAsyncImage(
             )
         }
     }
+}
+
+@Composable
+fun SketchesMemoryCachedImage(
+    memoryCacheKey: String,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalPlatformContext.current
+    val image = remember(memoryCacheKey) {
+        context.imageLoader.memoryCache?.get(MemoryCache.Key(memoryCacheKey))?.image
+    }
+    if (image == null) {
+        return
+    }
+    Box(
+        modifier = modifier
+            .paint(
+                image.asPainter(
+                    context = context,
+                    filterQuality = FilterQuality.Low,
+                ),
+                alignment = Alignment.Center,
+                contentScale = ContentScale.Fit,
+            ),
+    )
 }
 
 @Composable

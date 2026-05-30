@@ -40,6 +40,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,7 +60,9 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.navigation.navSharedBounds
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMemoryCachedImage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
+import com.github.yuriybudiyev.sketches.core.ui.images.SketchesImageKeys
 import kotlinx.coroutines.launch
 import kotlin.math.roundToLong
 
@@ -168,7 +171,7 @@ fun SketchesMediaDisplay(
                 onRelease = { view -> state.clearVideoView(view) },
             )
         }
-        if (!state.isVideoVisible) {
+        if (!state.isVideoSizeInitialized) {
             Box(
                 modifier = Modifier
                     .matchParentSize()
@@ -199,6 +202,29 @@ fun SketchesMediaDisplay(
                         tint = indicatorColor,
                     )
                 }
+            }
+        }
+        val showPreview by remember {
+            derivedStateOf {
+                var showPreview = true
+                if (state.isPlaybackReady) {
+                    showPreview = false
+                }
+                showPreview
+            }
+        }
+        if (showPreview) {
+            val uri = state.uri
+            if (uri != null) {
+                SketchesMemoryCachedImage(
+                    memoryCacheKey = SketchesImageKeys.gallery(uri),
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(
+                            color = backgroundColor,
+                            shape = RectangleShape,
+                        ),
+                )
             }
         }
     }

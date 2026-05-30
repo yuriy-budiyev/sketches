@@ -94,6 +94,8 @@ sealed interface SketchesMediaState {
 
     val coroutineScope: CoroutineScope
 
+    val isPlaybackReady: Boolean
+
     val isLoading: Boolean
 
     val isPlaying: Boolean
@@ -118,7 +120,7 @@ sealed interface SketchesMediaState {
 
     fun disableRepeat()
 
-    val isVideoVisible: Boolean
+    val isVideoSizeInitialized: Boolean
 
     @get:FloatRange(
         from = 0.0,
@@ -190,6 +192,16 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
             .build()
 
     private val player: Player = createPlayer(context)
+
+    private fun isPlaybackReadyInternal(playbackState: Int = player.playbackState): Boolean =
+        playbackState == Player.STATE_READY || playbackState == Player.STATE_ENDED
+
+    override var isPlaybackReady: Boolean by mutableStateOf(isPlaybackReadyInternal())
+        private set
+
+    override fun onPlaybackStateChanged(playbackState: Int) {
+        isPlaybackReady = isPlaybackReadyInternal(playbackState)
+    }
 
     override var isLoading: Boolean by mutableStateOf(player.isLoading)
         private set
@@ -300,10 +312,10 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
         }
     }
 
-    private fun isVideoVisibleInternal(videoSize: VideoSize = player.videoSize): Boolean =
+    private fun isVideoSizeInitializedInternal(videoSize: VideoSize = player.videoSize): Boolean =
         videoSize.width > 0 && videoSize.height > 0
 
-    override var isVideoVisible: Boolean by mutableStateOf(isVideoVisibleInternal())
+    override var isVideoSizeInitialized: Boolean by mutableStateOf(isVideoSizeInitializedInternal())
         private set
 
     @FloatRange(
@@ -333,7 +345,7 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
 
     override fun onVideoSizeChanged(videoSize: VideoSize) {
         this.displayAspectRatio = displayAspectRatioInternal(videoSize)
-        this.isVideoVisible = isVideoVisibleInternal(videoSize)
+        this.isVideoSizeInitialized = isVideoSizeInitializedInternal(videoSize)
     }
 
     override fun setVideoView(view: SurfaceView) {
