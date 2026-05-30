@@ -26,25 +26,39 @@ package com.github.yuriybudiyev.sketches.core.ui.components.media.cache
 
 import android.net.Uri
 import coil3.memory.MemoryCache
-import java.util.Collections
 
 object SketchesMemoryCacheKeys {
 
     fun thumbnail(uri: Uri): MemoryCache.Key =
         MemoryCache.Key(
-            uri.toString(),
-            Collections.singletonMap(
-                "destination",
-                "thumbnail",
-            ),
+            key = uri.toString(),
+            extras = buildMap {
+                put(
+                    key = Extra.Purpose,
+                    value = Purpose.Thumbnail,
+                )
+            },
         )
 
     fun preview(uri: Uri): MemoryCache.Key =
         MemoryCache.Key(
-            uri.toString(),
-            Collections.singletonMap(
-                "destination",
-                "preview",
-            ),
+            key = uri.toString(),
+            extras = buildMap {
+                put(
+                    key = Extra.Purpose,
+                    value = Purpose.Preview,
+                )
+            },
         )
+
+    private object Extra {
+
+        const val Purpose = "purpose"
+    }
+
+    private object Purpose {
+
+        const val Thumbnail = "thumbnail"
+        const val Preview = "preview"
+    }
 }
