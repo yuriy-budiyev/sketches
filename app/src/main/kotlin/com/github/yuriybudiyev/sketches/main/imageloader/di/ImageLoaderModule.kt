@@ -69,7 +69,7 @@ object ImageLoaderModule {
             .Builder()
             .cleanupCoroutineContext(imageLoaderDispatcher)
             .directory(context.cacheDir.resolve("thumbnails").absolutePath.toPath())
-            .maxSizeBytes(536870912L)
+            .maxSizeBytes(1073741824L)
             .build()
         return ImageLoader
             .Builder(context)
@@ -78,7 +78,12 @@ object ImageLoaderModule {
             .memoryCache(memoryCache)
             .diskCache(diskCache)
             .components {
-                add(LocalThumbnailDiskCache(diskCache))
+                add(
+                    LocalThumbnailDiskCache(
+                        memoryCache = memoryCache,
+                        diskCache = diskCache,
+                    ),
+                )
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     add(AnimatedImageDecoder.Factory())
                 } else {

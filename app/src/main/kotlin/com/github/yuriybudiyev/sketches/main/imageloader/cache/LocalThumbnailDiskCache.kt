@@ -32,17 +32,20 @@ import coil3.asImage
 import coil3.decode.DataSource
 import coil3.disk.DiskCache
 import coil3.intercept.Interceptor
+import coil3.memory.MemoryCache
 import coil3.request.ImageResult
 import coil3.request.SuccessResult
 import coil3.size.Dimension
 import coil3.toBitmap
-import com.github.yuriybudiyev.sketches.core.platform.log.logDebug
 import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
 import java.io.ByteArrayOutputStream
 import kotlin.io.path.inputStream
 import kotlin.io.path.outputStream
 
-class LocalThumbnailDiskCache(private val diskCache: DiskCache): Interceptor {
+class LocalThumbnailDiskCache(
+    private val memoryCache: MemoryCache,
+    private val diskCache: DiskCache,
+): Interceptor {
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val request = chain.request
@@ -58,7 +61,6 @@ class LocalThumbnailDiskCache(private val diskCache: DiskCache): Interceptor {
         val widthDimension = size.width as? Dimension.Pixels ?: return chain.proceed()
         val heightDimension = size.height as? Dimension.Pixels ?: return chain.proceed()
         val cacheKey = "thumbnail_${data}_size_${widthDimension.px}x${heightDimension.px}"
-        logDebug(cacheKey)
         diskCache.openSnapshot(cacheKey)?.use { snapshot ->
             val bitmap = snapshot.data
                 .toNioPath()
@@ -66,10 +68,26 @@ class LocalThumbnailDiskCache(private val diskCache: DiskCache): Interceptor {
                 .buffered(bufferSize())
                 .use { inputStream -> BitmapFactory.decodeStream(inputStream) }
             if (bitmap != null) {
+                val image = bitmap.asImage(shareable = true)
+                val memoryCacheKey = request.memoryCacheKey?.let { memoryCacheKey ->
+                    val key = MemoryCache.Key(
+                        memoryCacheKey,
+                        request.memoryCacheKeyExtras,
+                    )
+                    memoryCache[key] = MemoryCache.Value(image)
+                    return@let key
+                }
                 return SuccessResult(
-                    image = bitmap.asImage(shareable = true),
+                    image = image,
                     request = request,
                     dataSource = DataSource.DISK,
+                    memoryCacheKey = memoryCacheKey,
+                    diskCacheKey = cacheKey,
+                    isSampled = false,
+                    isPlaceholderCached = request
+                        .placeholderMemoryCacheKey
+                        ?.let { key -> memoryCache[key] != null }
+                        ?: false,
                 )
             }
         }
