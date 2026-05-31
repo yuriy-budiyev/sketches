@@ -44,7 +44,6 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -54,6 +53,7 @@ import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
 import coil3.compose.asPainter
 import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.rememberConstraintsSizeResolver
 import coil3.imageLoader
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
@@ -62,34 +62,31 @@ import coil3.size.Size
 import coil3.video.videoFrameMicros
 import coil3.video.videoFrameOption
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.math.ceil
-import com.github.yuriybudiyev.sketches.core.math.closestOdd
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
-import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
 @Composable
 fun SketchesThumbnailAsyncImage(
     uri: Uri,
+    memoryCacheKey: MemoryCache.Key,
     contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalPlatformContext.current
-    val size = with(LocalDensity.current) {
-        LocalDimens.current.maxThumbnailSize.toPx().toDouble().ceil().toInt().closestOdd()
-    }
+    val sizeResolver = rememberConstraintsSizeResolver()
     val request = remember(
-        context,
-        size,
         uri,
+        memoryCacheKey,
+        context,
+        sizeResolver,
     ) {
         ImageRequest.Builder(context)
             .videoFrameMicros(0L)
             .videoFrameOption(MediaMetadataRetriever.OPTION_CLOSEST)
-            .memoryCacheKey(SketchesMemoryCacheKeys.thumbnail(uri))
+            .memoryCacheKey(memoryCacheKey)
             .data(uri)
-            .size(size)
+            .size(sizeResolver)
             .crossfade(true)
             .build()
     }
@@ -116,7 +113,8 @@ fun SketchesThumbnailAsyncImage(
                     .copy(alpha = SketchesColors.UiAlphaHighTransparency),
                 shape = RectangleShape,
             )
-            .then(modifier),
+            .then(modifier)
+            .then(sizeResolver),
     ) {
         if (painterState is AsyncImagePainter.State.Success) {
             Box(
@@ -149,8 +147,8 @@ fun SketchesMemoryCachedImage(
 ) {
     val context = LocalPlatformContext.current
     val painter = remember(
-        context,
         memoryCacheKey,
+        context,
     ) {
         context
             .imageLoader
@@ -189,10 +187,10 @@ fun SketchesZoomableAsyncImage(
 ) {
     val context = LocalPlatformContext.current
     val request = remember(
-        context,
         uri,
         memoryCacheKey,
         placeholderMemoryCacheKey,
+        context,
     ) {
         ImageRequest
             .Builder(context)

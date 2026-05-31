@@ -44,6 +44,13 @@ object SketchesMemoryCacheKeys {
             extras = previewExtras,
         )
 
+    @Stable
+    fun mediaBar(uri: Uri): MemoryCache.Key =
+        MemoryCache.Key(
+            key = uri.toString(),
+            extras = mediaBarExtras,
+        )
+
     private val thumbnailExtras: Map<String, String> = buildMap {
         put(
             key = Extra.Purpose,
@@ -58,6 +65,13 @@ object SketchesMemoryCacheKeys {
         )
     }
 
+    private val mediaBarExtras: Map<String, String> = buildMap {
+        put(
+            key = Extra.Purpose,
+            value = Purpose.MediaBar,
+        )
+    }
+
     private object Extra {
 
         const val Purpose = "purpose"
@@ -67,5 +81,6 @@ object SketchesMemoryCacheKeys {
 
         const val Thumbnail = "thumbnail"
         const val Preview = "preview"
+        const val MediaBar = "media_bar"
     }
 }

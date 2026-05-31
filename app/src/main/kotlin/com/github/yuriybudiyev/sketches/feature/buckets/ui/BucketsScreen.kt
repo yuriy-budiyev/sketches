@@ -93,6 +93,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
+import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
@@ -431,8 +432,10 @@ private fun BucketsScreenLayout(
                         )
                         .clipToBounds(),
                 ) {
+                    val coverUri = bucketUpdated.coverUri
                     SketchesThumbnailAsyncImage(
-                        uri = bucketUpdated.coverUri,
+                        uri = coverUri,
+                        memoryCacheKey = SketchesMemoryCacheKeys.thumbnail(coverUri),
                         contentDescription = stringResource(R.string.bucket_cover),
                         modifier = Modifier.matchParentSize(),
                     )

@@ -59,6 +59,7 @@ import com.github.yuriybudiyev.sketches.core.navigation.navSharedBounds
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
@@ -309,6 +310,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
         val fileUri = fileUpdated.uri
         SketchesThumbnailAsyncImage(
             uri = fileUri,
+            memoryCacheKey = SketchesMemoryCacheKeys.thumbnail(fileUri),
             contentDescription = stringResource(
                 id = when (fileUpdated.mediaType) {
                     MediaType.Image -> R.string.image

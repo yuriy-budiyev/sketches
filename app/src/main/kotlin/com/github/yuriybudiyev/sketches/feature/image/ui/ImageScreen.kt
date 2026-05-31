@@ -622,6 +622,7 @@ private fun MediaBar(
                 val fileUri = file.uri
                 SketchesThumbnailAsyncImage(
                     uri = fileUri,
+                    memoryCacheKey = SketchesMemoryCacheKeys.mediaBar(fileUri),
                     contentDescription = stringResource(
                         id = when (file.mediaType) {
                             MediaType.Image -> R.string.image
