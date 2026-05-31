@@ -34,7 +34,7 @@ object SketchesMemoryCacheKeys {
     fun thumbnail(uri: Uri): MemoryCache.Key =
         MemoryCache.Key(
             key = uri.toString(),
-            extras = thumbNailExtras,
+            extras = thumbnailExtras,
         )
 
     @Stable
@@ -44,7 +44,7 @@ object SketchesMemoryCacheKeys {
             extras = previewExtras,
         )
 
-    private val thumbNailExtras: Map<String, String> = buildMap {
+    private val thumbnailExtras: Map<String, String> = buildMap {
         put(
             key = Extra.Purpose,
             value = Purpose.Thumbnail,
