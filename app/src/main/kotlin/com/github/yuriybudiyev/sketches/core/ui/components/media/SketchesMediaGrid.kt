@@ -59,7 +59,9 @@ import com.github.yuriybudiyev.sketches.core.navigation.navSharedBounds
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
+import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
@@ -102,14 +104,14 @@ fun SketchesMediaGrid(
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
-    state: LazyGridState = _root_ide_package_.com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState(),
+    state: LazyGridState = rememberSketchesLazyGridState(),
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
     val filesUpdated by rememberUpdatedState(files)
     val selectedFilesUpdated by rememberUpdatedState(selectedFiles)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
-    _root_ide_package_.com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid(
+    SketchesLazyGrid(
         modifier = modifier,
         state = state,
         overlayTop = overlayTop,
@@ -153,7 +155,7 @@ fun SketchesGroupingMediaGrid(
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
-    state: LazyGridState = _root_ide_package_.com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState(),
+    state: LazyGridState = rememberSketchesLazyGridState(),
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
@@ -183,7 +185,7 @@ fun SketchesGroupingMediaGrid(
             .toFormatter(Locale.getDefault())
     }
     val colorScheme = MaterialTheme.colorScheme
-    _root_ide_package_.com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid(
+    SketchesLazyGrid(
         modifier = modifier,
         state = state,
         overlayTop = overlayTop,
