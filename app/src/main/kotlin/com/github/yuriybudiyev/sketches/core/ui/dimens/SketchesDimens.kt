@@ -38,7 +38,7 @@ data class SketchesDimens(
     val lazyGridOverlayBottom: Dp = bottomBarHeight,
     val lazyGridItemSize: Dp = 108.dp,
     val lazyGridItemSpacing: Dp = 1.dp,
-    val maxThumbnailSize: Dp = 144.dp,
+    val thumbnailSize: Dp = 128.dp,
     val mediaGridIconPadding: Dp = 4.dp,
     val mediaBarItemSize: Dp = 56.dp,
     val mediaItemBorderThickness: Dp = 1.dp,

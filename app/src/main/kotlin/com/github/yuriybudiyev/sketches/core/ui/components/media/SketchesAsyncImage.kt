@@ -75,7 +75,7 @@ fun SketchesThumbnailAsyncImage(
 ) {
     val context = LocalPlatformContext.current
     val size = with(LocalDensity.current) {
-        LocalDimens.current.maxThumbnailSize.roundToPx()
+        LocalDimens.current.thumbnailSize.roundToPx()
     }
     val request = remember(
         context,
