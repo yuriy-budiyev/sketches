@@ -62,6 +62,8 @@ import coil3.size.Size
 import coil3.video.videoFrameMicros
 import coil3.video.videoFrameOption
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.math.ceil
+import com.github.yuriybudiyev.sketches.core.math.closestOdd
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
@@ -75,7 +77,7 @@ fun SketchesThumbnailAsyncImage(
 ) {
     val context = LocalPlatformContext.current
     val size = with(LocalDensity.current) {
-        LocalDimens.current.thumbnailSize.roundToPx()
+        LocalDimens.current.maxThumbnailSize.toPx().toDouble().ceil().toInt().closestOdd()
     }
     val request = remember(
         context,

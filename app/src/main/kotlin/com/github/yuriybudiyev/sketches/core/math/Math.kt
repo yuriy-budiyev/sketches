@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Yuriy Budiyev
+ * Copyright (c) 2026 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,30 +22,16 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.dimens
+package com.github.yuriybudiyev.sketches.core.math
 
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import kotlin.math.ceil
 
-@Immutable
-data class SketchesDimens(
-    val material3AppBarHeight: Dp = 64.dp,
-    val bottomBarHeight: Dp = material3AppBarHeight,
-    val lazyGridOverlayTop: Dp = material3AppBarHeight,
-    val lazyGridOverlayBottom: Dp = bottomBarHeight,
-    val lazyGridItemSize: Dp = 108.dp,
-    val lazyGridItemSpacing: Dp = 1.dp,
-    val maxThumbnailSize: Dp = 144.dp,
-    val mediaGridIconPadding: Dp = 4.dp,
-    val mediaBarItemSize: Dp = 56.dp,
-    val mediaItemBorderThickness: Dp = 1.dp,
-    val mediaBarItemSpacing: Dp = 1.dp,
-    val mediaBarVideoIconPadding: Dp = 2.dp,
-    val asyncImageStateIconSize: Dp = 48.dp,
-)
+fun Double.ceil(): Double =
+    ceil(this)
 
-val LocalDimens: ProvidableCompositionLocal<SketchesDimens> =
-    staticCompositionLocalOf { error("CompositionLocal LocalDimens not present") }
+fun Int.closestOdd(): Int =
+    if (this % 2 != 0) {
+        this + 1
+    } else {
+        this
+    }
