@@ -27,6 +27,7 @@ package com.github.yuriybudiyev.sketches.main.imageloader.di
 import android.content.Context
 import android.os.Build
 import coil3.ImageLoader
+import coil3.disk.DiskCache
 import coil3.gif.AnimatedImageDecoder
 import coil3.gif.GifDecoder
 import coil3.gif.MovieDrawable
@@ -36,6 +37,7 @@ import coil3.serviceLoaderEnabled
 import coil3.svg.SvgDecoder
 import coil3.video.VideoFrameDecoder
 import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
+import com.github.yuriybudiyev.sketches.main.imageloader.cache.LocalThumbnailDiskCache
 import com.github.yuriybudiyev.sketches.main.imageloader.executor.ImageLoaderExecutor
 import dagger.Module
 import dagger.Provides
@@ -43,6 +45,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.asCoroutineDispatcher
+import okio.Path.Companion.toPath
 import javax.inject.Singleton
 
 @Module
@@ -54,20 +57,28 @@ object ImageLoaderModule {
     fun provideImageLoader(
         @ApplicationContext
         context: Context,
-    ): ImageLoader =
-        ImageLoader
+    ): ImageLoader {
+        val imageLoaderDispatcher = ImageLoaderExecutor().asCoroutineDispatcher()
+        val memoryCache = MemoryCache
+            .Builder()
+            .maxSizeBytes(context.getMaxMemory() / 2L)
+            .strongReferencesEnabled(true)
+            .weakReferencesEnabled(true)
+            .build()
+        val diskCache = DiskCache
+            .Builder()
+            .cleanupCoroutineContext(imageLoaderDispatcher)
+            .directory(context.cacheDir.resolve("thumbnails").absolutePath.toPath())
+            .maxSizeBytes(536870912L)
+            .build()
+        return ImageLoader
             .Builder(context)
             .serviceLoaderEnabled(false)
-            .coroutineContext(ImageLoaderExecutor().asCoroutineDispatcher())
-            .memoryCache(
-                MemoryCache
-                    .Builder()
-                    .maxSizeBytes(context.getMaxMemory() / 2L)
-                    .strongReferencesEnabled(true)
-                    .weakReferencesEnabled(true)
-                    .build(),
-            )
+            .coroutineContext(imageLoaderDispatcher)
+            .memoryCache(memoryCache)
+            .diskCache(diskCache)
             .components {
+                add(LocalThumbnailDiskCache(diskCache))
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     add(AnimatedImageDecoder.Factory())
                 } else {
@@ -78,4 +89,5 @@ object ImageLoaderModule {
             }
             .repeatCount(MovieDrawable.REPEAT_INFINITE)
             .build()
+    }
 }

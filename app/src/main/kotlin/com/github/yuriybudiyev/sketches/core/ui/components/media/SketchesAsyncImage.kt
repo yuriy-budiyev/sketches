@@ -57,7 +57,6 @@ import coil3.compose.rememberConstraintsSizeResolver
 import coil3.imageLoader
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
-import coil3.request.crossfade
 import coil3.size.Size
 import coil3.video.videoFrameMicros
 import coil3.video.videoFrameOption
@@ -87,7 +86,6 @@ fun SketchesThumbnailAsyncImage(
             .memoryCacheKey(memoryCacheKey)
             .data(uri)
             .size(sizeResolver)
-            .crossfade(true)
             .build()
     }
     var painterState by remember {

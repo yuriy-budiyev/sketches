@@ -38,49 +38,68 @@ object SketchesMemoryCacheKeys {
         )
 
     @Stable
-    fun preview(uri: Uri): MemoryCache.Key =
-        MemoryCache.Key(
-            key = uri.toString(),
-            extras = previewExtras,
-        )
-
-    @Stable
     fun mediaBar(uri: Uri): MemoryCache.Key =
         MemoryCache.Key(
             key = uri.toString(),
             extras = mediaBarExtras,
         )
 
+    @Stable
+    fun preview(uri: Uri): MemoryCache.Key =
+        MemoryCache.Key(
+            key = uri.toString(),
+            extras = previewExtras,
+        )
+
     private val thumbnailExtras: Map<String, String> = buildMap {
         put(
-            key = Extra.Purpose,
+            key = Extras.Purpose,
             value = Purpose.Thumbnail,
         )
-    }
-
-    private val previewExtras: Map<String, String> = buildMap {
         put(
-            key = Extra.Purpose,
-            value = Purpose.Preview,
+            key = Extras.LocalDiskCache,
+            value = LocalDiskCache.Allow,
         )
     }
 
     private val mediaBarExtras: Map<String, String> = buildMap {
         put(
-            key = Extra.Purpose,
+            key = Extras.Purpose,
             value = Purpose.MediaBar,
+        )
+        put(
+            key = Extras.LocalDiskCache,
+            value = LocalDiskCache.Allow,
         )
     }
 
-    private object Extra {
-
-        const val Purpose = "purpose"
+    private val previewExtras: Map<String, String> = buildMap {
+        put(
+            key = Extras.Purpose,
+            value = Purpose.Preview,
+        )
+        put(
+            key = Extras.LocalDiskCache,
+            value = LocalDiskCache.Disallow,
+        )
     }
 
-    private object Purpose {
+    object Extras {
+
+        const val Purpose = "purpose"
+        const val LocalDiskCache = "local_disk_cache"
+    }
+
+    object Purpose {
 
         const val Thumbnail = "thumbnail"
         const val Preview = "preview"
         const val MediaBar = "media_bar"
+    }
+
+    object LocalDiskCache {
+
+        const val Allow = "allow"
+        const val Disallow = "disallow"
     }
 }
