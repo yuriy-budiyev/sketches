@@ -100,7 +100,8 @@ class LocalThumbnailDiskCache(
                     snapshot.data
                         .toNioPath()
                         .outputStream()
-                        .buffered(bufferSize()).use { outputStream ->
+                        .buffered(bufferSize())
+                        .use { outputStream ->
                             bitmap.compress(
                                 Bitmap.CompressFormat.PNG,
                                 100,
