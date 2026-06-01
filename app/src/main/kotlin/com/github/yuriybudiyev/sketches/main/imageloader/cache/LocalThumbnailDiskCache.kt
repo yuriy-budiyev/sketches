@@ -38,7 +38,6 @@ import coil3.request.SuccessResult
 import coil3.size.Dimension
 import coil3.toBitmap
 import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
-import java.io.ByteArrayOutputStream
 import kotlin.io.path.inputStream
 import kotlin.io.path.outputStream
 
@@ -98,18 +97,15 @@ class LocalThumbnailDiskCache(
                 .openEditor(cacheKey)
                 ?.commitAndOpenSnapshot()
                 ?.use { snapshot ->
-                    val compressedBytesStream = ByteArrayOutputStream()
-                    bitmap.compress(
-                        Bitmap.CompressFormat.PNG,
-                        100,
-                        compressedBytesStream,
-                    )
-                    val compressedBytes = compressedBytesStream.toByteArray()
                     snapshot.data
                         .toNioPath()
                         .outputStream()
                         .buffered(bufferSize()).use { outputStream ->
-                            outputStream.write(compressedBytes)
+                            bitmap.compress(
+                                Bitmap.CompressFormat.PNG,
+                                100,
+                                outputStream,
+                            )
                         }
                 }
         }
