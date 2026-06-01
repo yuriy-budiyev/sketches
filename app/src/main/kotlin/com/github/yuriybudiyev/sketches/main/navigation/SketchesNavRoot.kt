@@ -290,7 +290,6 @@ fun SketchesNavRoot(
                         )
                     },
                 )
-
                 Column(
                     modifier = Modifier
                         .align(Alignment.BottomStart)

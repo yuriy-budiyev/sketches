@@ -41,12 +41,6 @@ fun Modifier.navSharedBounds(key: String): Modifier =
         )
     }
 
-@Composable
-fun Modifier.navRenderInSharedTransitionScopeOverlay(): Modifier =
-    with(LocalNavSharedTransitionScope.current) {
-        renderInSharedTransitionScopeOverlay()
-    }
-
 val LocalNavSharedTransitionScope: ProvidableCompositionLocal<SharedTransitionScope> =
     compositionLocalOf {
         throw IllegalStateException(
