@@ -290,91 +290,91 @@ fun SketchesNavRoot(
                         )
                     },
                 )
-            }
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .fillMaxWidth(),
-            ) {
-                AnimatedVisibility(
-                    visible = currentRouteIsRoot && rootNavBarController.isRootNavBarVisible,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
+
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(LocalDimens.current.material3AppBarHeight),
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth(),
                 ) {
-                    Row(
+                    AnimatedVisibility(
+                        visible = currentRouteIsRoot && rootNavBarController.isRootNavBarVisible,
+                        enter = fadeIn(),
+                        exit = fadeOut(),
                         modifier = Modifier
-                            .background(
-                                color = colorScheme.background
-                                    .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                                shape = RectangleShape,
-                            )
-                            .fillMaxSize(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
+                            .fillMaxWidth()
+                            .height(LocalDimens.current.material3AppBarHeight),
                     ) {
-                        val topRootRoute = navBackStack.lastInstanceOfOrNull<RootNavRoute>()
-                        for (route in rootRoutes) {
-                            val selected = route == topRootRoute
-                            NavigationBarItem(
-                                selected = selected,
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = colorScheme.primary,
-                                    unselectedIconColor = colorScheme.onBackground,
-                                    indicatorColor = colorScheme.onPrimary,
-                                ),
-                                onClick = {
-                                    if (route == topRootRoute) {
-                                        rootNavBarController.dispatchOnClick(route)
-                                    } else {
-                                        if (route == initialRoute) {
-                                            navBackStack.clear()
+                        Row(
+                            modifier = Modifier
+                                .background(
+                                    color = colorScheme.background
+                                        .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                                    shape = RectangleShape,
+                                )
+                                .fillMaxSize(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                        ) {
+                            val topRootRoute = navBackStack.lastInstanceOfOrNull<RootNavRoute>()
+                            for (route in rootRoutes) {
+                                val selected = route == topRootRoute
+                                NavigationBarItem(
+                                    selected = selected,
+                                    colors = NavigationBarItemDefaults.colors(
+                                        selectedIconColor = colorScheme.primary,
+                                        unselectedIconColor = colorScheme.onBackground,
+                                        indicatorColor = colorScheme.onPrimary,
+                                    ),
+                                    onClick = {
+                                        if (route == topRootRoute) {
+                                            rootNavBarController.dispatchOnClick(route)
+                                        } else {
+                                            if (route == initialRoute) {
+                                                navBackStack.clear()
+                                            }
+                                            pushNavBackStack(route)
                                         }
-                                        pushNavBackStack(route)
-                                    }
-                                },
-                                icon = {
-                                    Icon(
-                                        painter = painterResource(
-                                            if (selected) {
-                                                route.selectedIconRes
-                                            } else {
-                                                route.unselectedIconRes
-                                            },
-                                        ),
-                                        contentDescription = stringResource(route.titleRes),
-                                    )
-                                },
-                            )
+                                    },
+                                    icon = {
+                                        Icon(
+                                            painter = painterResource(
+                                                if (selected) {
+                                                    route.selectedIconRes
+                                                } else {
+                                                    route.unselectedIconRes
+                                                },
+                                            ),
+                                            contentDescription = stringResource(route.titleRes),
+                                        )
+                                    },
+                                )
+                            }
                         }
                     }
-                }
-                AnimatedVisibility(
-                    visible = LocalSystemBarsController.current.isSystemBarsVisible,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(
-                            WindowInsets.navigationBars
-                                .asPaddingValues()
-                                .calculateBottomPadding(),
-                        ),
-                ) {
-                    Box(
+                    AnimatedVisibility(
+                        visible = LocalSystemBarsController.current.isSystemBarsVisible,
+                        enter = fadeIn(),
+                        exit = fadeOut(),
                         modifier = Modifier
-                            .background(
-                                color = colorScheme.background
-                                    .copy(alpha = SketchesColors.UiAlphaLowTransparency),
-                                shape = RectangleShape,
-                            )
-                            .fillMaxSize(),
-                    )
+                            .fillMaxWidth()
+                            .height(
+                                WindowInsets.navigationBars
+                                    .asPaddingValues()
+                                    .calculateBottomPadding(),
+                            ),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = colorScheme.background
+                                        .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                                    shape = RectangleShape,
+                                )
+                                .fillMaxSize(),
+                        )
+                    }
                 }
             }
         }
-
     }
 }
 
