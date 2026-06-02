@@ -24,11 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.math
 
-import kotlin.math.ceil
-
-fun Double.ceil(): Double =
-    ceil(this)
-
 fun Int.closestOdd(): Int =
     if (this % 2 != 0) {
         this + 1
