@@ -48,7 +48,10 @@ class LocalThumbnailDiskCache(
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val request = chain.request
-        if (request.memoryCacheKeyExtras[SketchesMemoryCacheKeys.Extras.LocalDiskCache] != SketchesMemoryCacheKeys.LocalDiskCache.Allow) {
+        if (
+            request.memoryCacheKeyExtras[SketchesMemoryCacheKeys.Extras.LocalDiskCache]
+            != SketchesMemoryCacheKeys.LocalDiskCache.Allow
+        ) {
             return chain.proceed()
         }
         val data = request.data as? Uri ?: return chain.proceed()
@@ -82,7 +85,7 @@ class LocalThumbnailDiskCache(
                     dataSource = DataSource.DISK,
                     memoryCacheKey = memoryCacheKey,
                     diskCacheKey = cacheKey,
-                    isSampled = false,
+                    isSampled = true,
                     isPlaceholderCached = request
                         .placeholderMemoryCacheKey
                         ?.let { key -> memoryCache[key] != null }
@@ -109,6 +112,10 @@ class LocalThumbnailDiskCache(
                             )
                         }
                 }
+            return result.copy(
+                image = bitmap.asImage(shareable = true),
+                diskCacheKey = cacheKey,
+            )
         }
         return result
     }
