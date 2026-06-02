@@ -64,7 +64,7 @@ class LocalThumbnailDiskCache(
             val bitmap = snapshot.data
                 .toNioPath()
                 .inputStream()
-                .buffered(bufferSize())
+                .buffered(bufferSize)
                 .use { inputStream -> BitmapFactory.decodeStream(inputStream) }
             if (bitmap != null) {
                 val image = bitmap.asImage(shareable = true)
@@ -100,7 +100,7 @@ class LocalThumbnailDiskCache(
                     snapshot.data
                         .toNioPath()
                         .outputStream()
-                        .buffered(bufferSize())
+                        .buffered(bufferSize)
                         .use { outputStream ->
                             bitmap.compress(
                                 Bitmap.CompressFormat.PNG,
@@ -113,7 +113,7 @@ class LocalThumbnailDiskCache(
         return result
     }
 
-    private fun bufferSize(): Int =
+    private val bufferSize: Int =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             16384
         } else {
