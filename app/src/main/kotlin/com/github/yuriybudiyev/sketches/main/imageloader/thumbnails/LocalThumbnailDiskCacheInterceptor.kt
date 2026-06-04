@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.main.imageloader.cache
+package com.github.yuriybudiyev.sketches.main.imageloader.thumbnails
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -41,7 +41,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesM
 import kotlin.io.path.inputStream
 import kotlin.io.path.outputStream
 
-class LocalThumbnailDiskCache(
+class LocalThumbnailDiskCacheInterceptor(
     private val memoryCache: MemoryCache,
     private val diskCache: DiskCache,
 ): Interceptor {
