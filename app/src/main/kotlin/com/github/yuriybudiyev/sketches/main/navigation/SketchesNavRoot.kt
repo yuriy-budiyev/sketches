@@ -89,7 +89,6 @@ import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.compose.LocalSavedStateRegistryOwner
-import com.github.yuriybudiyev.sketches.core.collections.lastInstanceOfOrNull
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavSharedTransitionScope
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
@@ -313,7 +312,8 @@ fun SketchesNavRoot(
                                 .fillMaxSize(),
                             horizontalArrangement = Arrangement.SpaceEvenly,
                         ) {
-                            val topRootRoute = navBackStack.lastInstanceOfOrNull<RootNavRoute>()
+                            val topRootRoute =
+                                navBackStack.lastOrNull { route -> route is RootNavRoute }
                             for (route in rootRoutes) {
                                 val selected = route == topRootRoute
                                 NavigationBarItem(
