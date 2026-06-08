@@ -25,13 +25,15 @@
 package com.github.yuriybudiyev.sketches.core.ui.colors
 
 import androidx.compose.ui.graphics.Color
+import com.github.yuriybudiyev.sketches.BuildConfig
 
 object SketchesColors {
 
+    val Primary = if (BuildConfig.DEBUG) Color(0xFFFF8C00) else Color(0xFF6B69D6)
+    val OnPrimary = Color(0xFFFFFFFF)
+
     object Light {
 
-        val Primary = Color(0xFFFFFFFF)
-        val OnPrimary = Color(0xFF000000)
         val Background = Color(0xFFFFFFFF)
         val OnBackground = Color(0xFF000000)
         val Surface = Color(0xFFFFFFFF)
@@ -42,8 +44,6 @@ object SketchesColors {
 
     object Dark {
 
-        val Primary = Color(0xFF000000)
-        val OnPrimary = Color(0xFFFFFFFF)
         val Background = Color(0xFF000000)
         val OnBackground = Color(0xFFFFFFFF)
         val Surface = Color(0xFF000000)
