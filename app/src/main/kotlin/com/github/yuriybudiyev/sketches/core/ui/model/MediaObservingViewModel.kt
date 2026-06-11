@@ -86,7 +86,7 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
     private inner class MediaObserver: ContentObserver(Handler(Looper.getMainLooper())) {
 
         override fun onChange(selfChange: Boolean) {
-            lastCallbackJob?.cancel()
+            delayedCallbackJob?.cancel()
             val currentCallTime = System.nanoTime()
             if (currentCallTime - lastCallTime > 1000000000L) {
                 lastCallTime = currentCallTime
@@ -94,14 +94,14 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
                     onMediaChanged()
                 }
             } else {
-                lastCallbackJob = viewModelScope.launch {
+                delayedCallbackJob = viewModelScope.launch {
                     delay(timeMillis = 1000L)
                     onMediaChanged()
                 }
             }
         }
 
-        private var lastCallbackJob: Job? = null
+        private var delayedCallbackJob: Job? = null
         private var lastCallTime: Long = 0L
     }
 }
