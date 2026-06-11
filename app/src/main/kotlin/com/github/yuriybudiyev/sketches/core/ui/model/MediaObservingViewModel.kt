@@ -89,10 +89,10 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
             lastCallbackJob?.cancel()
             val currentCallTime = System.nanoTime()
             if (currentCallTime - lastCallTime > 1000000000L) {
+                lastCallTime = currentCallTime
                 viewModelScope.launch {
                     onMediaChanged()
                 }
-                lastCallTime = currentCallTime
             } else {
                 lastCallbackJob = viewModelScope.launch {
                     delay(timeMillis = 1000L)
