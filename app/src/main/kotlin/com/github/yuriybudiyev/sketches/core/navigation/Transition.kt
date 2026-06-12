@@ -25,21 +25,8 @@
 package com.github.yuriybudiyev.sketches.core.navigation
 
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.ui.Modifier
-import androidx.navigation3.ui.LocalNavAnimatedContentScope
-
-@Composable
-fun Modifier.navSharedBounds(key: String): Modifier =
-    with(LocalNavSharedTransitionScope.current) {
-        sharedBounds(
-            sharedContentState = rememberSharedContentState(key),
-            animatedVisibilityScope = LocalNavAnimatedContentScope.current,
-            renderInOverlayDuringTransition = false,
-        )
-    }
 
 val LocalNavSharedTransitionScope: ProvidableCompositionLocal<SharedTransitionScope> =
     compositionLocalOf {

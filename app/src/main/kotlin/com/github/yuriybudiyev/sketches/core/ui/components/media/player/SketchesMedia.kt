@@ -58,7 +58,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil3.memory.MemoryCache
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.navigation.navSharedBounds
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
@@ -72,7 +71,6 @@ fun SketchesMediaPlayer(
     onDisplayTap: () -> Unit,
     controllerVisible: Boolean,
     modifier: Modifier = Modifier,
-    useNavSharedBounds: Boolean = false,
     controllerStartPadding: Dp = 0.dp,
     controllerEndPadding: Dp = 0.dp,
     controllerBottomPadding: Dp = 0.dp,
@@ -85,22 +83,13 @@ fun SketchesMediaPlayer(
     placeholderMemoryCacheKey: MemoryCache.Key? = null,
 ) {
     val controllerVisibleUpdated by rememberUpdatedState(controllerVisible)
-    val useNavSharedBoundsUpdated by rememberUpdatedState(useNavSharedBounds)
     val controllerStartPaddingUpdated by rememberUpdatedState(controllerStartPadding)
     val controllerEndPaddingUpdated by rememberUpdatedState(controllerEndPadding)
     val controllerBottomPaddingUpdated by rememberUpdatedState(controllerBottomPadding)
     Box(modifier = modifier) {
         SketchesMediaDisplay(
             state = state,
-            modifier = Modifier
-                .let { modifier ->
-                    if (useNavSharedBoundsUpdated) {
-                        modifier.navSharedBounds(state.uri.toString())
-                    } else {
-                        modifier
-                    }
-                }
-                .matchParentSize(),
+            modifier = Modifier.matchParentSize(),
             onTap = onDisplayTap,
             backgroundColor = backgroundColor,
             indicatorColor = controlsColor,

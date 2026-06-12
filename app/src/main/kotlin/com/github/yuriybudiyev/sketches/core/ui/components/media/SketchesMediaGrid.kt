@@ -55,7 +55,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.navigation.navSharedBounds
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
@@ -290,7 +289,6 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
     Box(
         modifier = Modifier
             .animateItem()
-            .navSharedBounds(file.uri.toString())
             .aspectRatio(ratio = 1f)
             .border(
                 width = dimens.mediaItemBorderThickness,

@@ -95,7 +95,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
-import com.github.yuriybudiyev.sketches.core.navigation.navSharedBounds
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
@@ -471,15 +470,7 @@ private fun ImagePage(
         memoryCacheKey = SketchesMemoryCacheKeys.preview(fileUri),
         placeholderMemoryCacheKey = SketchesMemoryCacheKeys.thumbnail(fileUri),
         onTap = onPageTap,
-        modifier = Modifier
-            .let { modifier ->
-                if (displayedPage) {
-                    modifier.navSharedBounds(fileUri.toString())
-                } else {
-                    modifier
-                }
-            }
-            .then(modifier),
+        modifier = modifier,
     )
 }
 
@@ -504,11 +495,9 @@ private fun VideoPage(
             mediaState.release()
         }
     }
-    var displayedPage by remember { mutableStateOf(state.currentPage == number) }
     LaunchedEffect(state) {
         snapshotFlow { state.currentPage }.collect { currentPage ->
             if (currentPage == numberUpdated) {
-                displayedPage = true
                 mediaState.coroutineScope.launch {
                     if (mediaState.isVolumeEnabled) {
                         mediaState.disableVolume()
@@ -518,7 +507,6 @@ private fun VideoPage(
                     }
                 }
             } else {
-                displayedPage = false
                 mediaState.coroutineScope.launch {
                     if (mediaState.isPlaying) {
                         mediaState.pause()
@@ -543,7 +531,6 @@ private fun VideoPage(
         controllerEndPadding = controllerEndPadding,
         controllerBottomPadding = controllerBottomPadding,
         modifier = modifier,
-        useNavSharedBounds = displayedPage,
         enableImagePlaceholder = false,
         enableErrorIndicator = true,
         placeholderMemoryCacheKey = SketchesMemoryCacheKeys.thumbnail(fileUri),
