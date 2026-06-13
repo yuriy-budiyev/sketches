@@ -468,7 +468,6 @@ private fun ImagePage(
         uri = fileUri,
         contentDescription = stringResource(R.string.image),
         memoryCacheKey = SketchesMemoryCacheKeys.preview(fileUri),
-        placeholderMemoryCacheKey = SketchesMemoryCacheKeys.thumbnail(fileUri),
         onTap = onPageTap,
         modifier = modifier,
     )
@@ -533,7 +532,6 @@ private fun VideoPage(
         modifier = modifier,
         enableImagePlaceholder = false,
         enableErrorIndicator = true,
-        placeholderMemoryCacheKey = SketchesMemoryCacheKeys.thumbnail(fileUri),
     )
 }
 

@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components.media
 
-import android.media.MediaMetadataRetriever
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -51,15 +50,12 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
-import coil3.compose.asPainter
 import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
-import coil3.imageLoader
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.size.Size
-import coil3.video.videoFrameMicros
-import coil3.video.videoFrameOption
+import coil3.video.videoFramePercent
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
@@ -81,8 +77,7 @@ fun SketchesThumbnailAsyncImage(
         sizeResolver,
     ) {
         ImageRequest.Builder(context)
-            .videoFrameMicros(0L)
-            .videoFrameOption(MediaMetadataRetriever.OPTION_CLOSEST)
+            .videoFramePercent(0.1)
             .memoryCacheKey(memoryCacheKey)
             .data(uri)
             .size(sizeResolver)
@@ -139,47 +134,10 @@ fun SketchesThumbnailAsyncImage(
 }
 
 @Composable
-fun SketchesMemoryCachedImage(
-    memoryCacheKey: MemoryCache.Key,
-    modifier: Modifier = Modifier,
-) {
-    val context = LocalPlatformContext.current
-    val painter = remember(
-        memoryCacheKey,
-        context,
-    ) {
-        context
-            .imageLoader
-            .memoryCache
-            ?.get(memoryCacheKey)
-            ?.image
-            ?.asPainter(
-                context = context,
-                filterQuality = FilterQuality.Low,
-            )
-    }
-    Box(
-        modifier = modifier
-            .let { modifier ->
-                if (painter != null) {
-                    modifier.paint(
-                        painter = painter,
-                        alignment = Alignment.Center,
-                        contentScale = ContentScale.Fit,
-                    )
-                } else {
-                    modifier
-                }
-            },
-    )
-}
-
-@Composable
 fun SketchesZoomableAsyncImage(
     uri: Uri,
     contentDescription: String,
     memoryCacheKey: MemoryCache.Key,
-    placeholderMemoryCacheKey: MemoryCache.Key,
     modifier: Modifier = Modifier,
     onTap: (() -> Unit)? = null,
 ) {
@@ -187,14 +145,11 @@ fun SketchesZoomableAsyncImage(
     val request = remember(
         uri,
         memoryCacheKey,
-        placeholderMemoryCacheKey,
         context,
     ) {
         ImageRequest
             .Builder(context)
-            .videoFrameMicros(0L)
-            .videoFrameOption(MediaMetadataRetriever.OPTION_CLOSEST)
-            .placeholderMemoryCacheKey(placeholderMemoryCacheKey)
+            .videoFramePercent(0.1)
             .memoryCacheKey(memoryCacheKey)
             .data(uri)
             .size(Size.ORIGINAL)
