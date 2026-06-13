@@ -59,7 +59,7 @@ class LocalThumbnailDiskCacheInterceptor(
         val size = chain.size
         val widthDimension = size.width as? Dimension.Pixels ?: return chain.proceed()
         val heightDimension = size.height as? Dimension.Pixels ?: return chain.proceed()
-        val cacheKey = "${data}/${widthDimension.px}/${heightDimension.px}"
+        val cacheKey = "${data}/s/${widthDimension.px}x${heightDimension.px}"
         diskCache.openSnapshot(cacheKey)?.use { snapshot ->
             val bitmap = snapshot.data
                 .toNioPath()
