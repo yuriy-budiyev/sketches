@@ -175,46 +175,41 @@ fun SketchesZoomableAsyncImage(
             .then(modifier),
         contentAlignment = Alignment.Center,
     ) {
-        when (painterState) {
-            is AsyncImagePainter.State.Empty,
-            is AsyncImagePainter.State.Loading,
-            is AsyncImagePainter.State.Success -> {
-                SketchesZoomableBox(
-                    modifier = Modifier.matchParentSize(),
-                    onTap = onTap,
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .let { modifier ->
-                                val size = painterState.painter?.intrinsicSize
-                                if (size != null) {
-                                    modifier.aspectRatio(
-                                        ratio = size.width / size.height,
-                                        matchHeightConstraintsFirst = false,
-                                    )
-                                } else {
-                                    modifier
-                                }
-                            }
-                            .zoomable()
-                            .paint(
-                                painter = painter,
-                                contentScale = ContentScale.Fit,
-                                alignment = Alignment.Center,
-                            ),
-                    )
-                }
-            }
-            is AsyncImagePainter.State.Error -> {
-                Icon(
-                    painter = painterResource(R.drawable.ic_image_error),
-                    contentDescription = contentDescription,
+        if (painterState is AsyncImagePainter.State.Success) {
+            SketchesZoomableBox(
+                modifier = Modifier.matchParentSize(),
+                onTap = onTap,
+            ) {
+                Box(
                     modifier = Modifier
-                        .size(LocalDimens.current.asyncImageStateIconSize)
-                        .align(Alignment.Center),
-                    tint = MaterialTheme.colorScheme.onBackground,
+                        .let { modifier ->
+                            val size = painterState.painter?.intrinsicSize
+                            if (size != null) {
+                                modifier.aspectRatio(
+                                    ratio = size.width / size.height,
+                                    matchHeightConstraintsFirst = false,
+                                )
+                            } else {
+                                modifier
+                            }
+                        }
+                        .zoomable()
+                        .paint(
+                            painter = painter,
+                            contentScale = ContentScale.Fit,
+                            alignment = Alignment.Center,
+                        ),
                 )
             }
+        } else if (painterState is AsyncImagePainter.State.Error) {
+            Icon(
+                painter = painterResource(R.drawable.ic_image_error),
+                contentDescription = contentDescription,
+                modifier = Modifier
+                    .size(LocalDimens.current.asyncImageStateIconSize)
+                    .align(Alignment.Center),
+                tint = MaterialTheme.colorScheme.onBackground,
+            )
         }
     }
 }
