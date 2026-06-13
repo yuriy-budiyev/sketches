@@ -101,5 +101,8 @@ object SketchesMemoryCacheKeys {
 
         const val Allow = "allow"
         const val Disallow = "disallow"
+
+        fun checkAllow(extras: Map<String, String>): Boolean =
+            extras[Extras.LocalDiskCache] == Allow
     }
 }

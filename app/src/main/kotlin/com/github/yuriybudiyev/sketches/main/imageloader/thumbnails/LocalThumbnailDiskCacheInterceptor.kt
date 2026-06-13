@@ -48,10 +48,7 @@ class LocalThumbnailDiskCacheInterceptor(
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val request = chain.request
-        if (
-            request.memoryCacheKeyExtras[SketchesMemoryCacheKeys.Extras.LocalDiskCache]
-            != SketchesMemoryCacheKeys.LocalDiskCache.Allow
-        ) {
+        if (!SketchesMemoryCacheKeys.LocalDiskCache.checkAllow(request.memoryCacheKeyExtras)) {
             return chain.proceed()
         }
         val data = request.data as? Uri ?: return chain.proceed()
@@ -62,7 +59,7 @@ class LocalThumbnailDiskCacheInterceptor(
         val size = chain.size
         val widthDimension = size.width as? Dimension.Pixels ?: return chain.proceed()
         val heightDimension = size.height as? Dimension.Pixels ?: return chain.proceed()
-        val cacheKey = "thumbnail_${data}_size_${widthDimension.px}x${heightDimension.px}"
+        val cacheKey = "${data}/${widthDimension.px}/${heightDimension.px}"
         diskCache.openSnapshot(cacheKey)?.use { snapshot ->
             val bitmap = snapshot.data
                 .toNioPath()
