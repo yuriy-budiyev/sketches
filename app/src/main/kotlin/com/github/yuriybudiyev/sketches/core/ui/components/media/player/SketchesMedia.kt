@@ -146,11 +146,11 @@ fun SketchesMediaDisplay(
             val displayAspectRatio = state.displayAspectRatio
             AndroidView(
                 modifier = Modifier
+                    .zoomable()
                     .aspectRatio(
                         ratio = displayAspectRatio,
                         matchHeightConstraintsFirst = displayAspectRatio < 1f,
-                    )
-                    .zoomable(),
+                    ),
                 factory = { context -> TextureView(context) },
                 update = { view -> state.setVideoView(view) },
                 onReset = { view -> state.clearVideoView(view) },

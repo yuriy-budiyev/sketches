@@ -180,20 +180,14 @@ fun SketchesZoomableAsyncImage(
                 modifier = Modifier.matchParentSize(),
                 onTap = onTap,
             ) {
+                val size = painter.intrinsicSize
                 Box(
                     modifier = Modifier
-                        .let { modifier ->
-                            val size = painterState.painter?.intrinsicSize
-                            if (size != null) {
-                                modifier.aspectRatio(
-                                    ratio = size.width / size.height,
-                                    matchHeightConstraintsFirst = false,
-                                )
-                            } else {
-                                modifier
-                            }
-                        }
                         .zoomable()
+                        .aspectRatio(
+                            ratio = size.width / size.height,
+                            matchHeightConstraintsFirst = false,
+                        )
                         .paint(
                             painter = painter,
                             contentScale = ContentScale.Fit,
