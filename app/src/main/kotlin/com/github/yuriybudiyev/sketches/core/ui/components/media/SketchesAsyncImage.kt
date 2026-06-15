@@ -59,6 +59,7 @@ import coil3.video.videoFramePercent
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
+import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
 @Composable
@@ -134,23 +135,22 @@ fun SketchesThumbnailAsyncImage(
 }
 
 @Composable
-fun SketchesZoomableAsyncImage(
+fun SketchesPreviewAsyncImage(
     uri: Uri,
     contentDescription: String,
-    memoryCacheKey: MemoryCache.Key,
     modifier: Modifier = Modifier,
     onTap: (() -> Unit)? = null,
 ) {
     val context = LocalPlatformContext.current
     val request = remember(
         uri,
-        memoryCacheKey,
         context,
     ) {
         ImageRequest
             .Builder(context)
             .videoFramePercent(0.1)
-            .memoryCacheKey(memoryCacheKey)
+            .placeholderMemoryCacheKey(SketchesMemoryCacheKeys.thumbnail(uri))
+            .memoryCacheKey(SketchesMemoryCacheKeys.preview(uri))
             .data(uri)
             .size(Size.ORIGINAL)
             .build()
@@ -175,35 +175,42 @@ fun SketchesZoomableAsyncImage(
             .then(modifier),
         contentAlignment = Alignment.Center,
     ) {
-        if (painterState is AsyncImagePainter.State.Success) {
-            SketchesZoomableBox(
-                modifier = Modifier.matchParentSize(),
-                onTap = onTap,
-            ) {
-                val size = painter.intrinsicSize
-                Box(
+        when (painterState) {
+            is AsyncImagePainter.State.Empty -> {
+                // Do nothing
+            }
+            is AsyncImagePainter.State.Loading,
+            is AsyncImagePainter.State.Success -> {
+                SketchesZoomableBox(
+                    modifier = Modifier.matchParentSize(),
+                    onTap = onTap,
+                ) {
+                    val size = painter.intrinsicSize
+                    Box(
+                        modifier = Modifier
+                            .zoomable()
+                            .aspectRatio(
+                                ratio = size.width / size.height,
+                                matchHeightConstraintsFirst = false,
+                            )
+                            .paint(
+                                painter = painter,
+                                contentScale = ContentScale.Fit,
+                                alignment = Alignment.Center,
+                            ),
+                    )
+                }
+            }
+            is AsyncImagePainter.State.Error -> {
+                Icon(
+                    painter = painterResource(R.drawable.ic_image_error),
+                    contentDescription = contentDescription,
                     modifier = Modifier
-                        .zoomable()
-                        .aspectRatio(
-                            ratio = size.width / size.height,
-                            matchHeightConstraintsFirst = false,
-                        )
-                        .paint(
-                            painter = painter,
-                            contentScale = ContentScale.Fit,
-                            alignment = Alignment.Center,
-                        ),
+                        .size(LocalDimens.current.asyncImageStateIconSize)
+                        .align(Alignment.Center),
+                    tint = MaterialTheme.colorScheme.onBackground,
                 )
             }
-        } else if (painterState is AsyncImagePainter.State.Error) {
-            Icon(
-                painter = painterResource(R.drawable.ic_image_error),
-                contentDescription = contentDescription,
-                modifier = Modifier
-                    .size(LocalDimens.current.asyncImageStateIconSize)
-                    .align(Alignment.Center),
-                tint = MaterialTheme.colorScheme.onBackground,
-            )
         }
     }
 }

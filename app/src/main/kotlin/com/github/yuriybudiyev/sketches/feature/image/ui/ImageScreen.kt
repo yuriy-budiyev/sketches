@@ -106,8 +106,8 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirm
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesPreviewAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
-import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesZoomableAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.rememberSketchesMediaState
@@ -464,10 +464,9 @@ private fun ImagePage(
             displayedPage = currentPage == numberUpdated
         }
     }
-    SketchesZoomableAsyncImage(
+    SketchesPreviewAsyncImage(
         uri = fileUri,
         contentDescription = stringResource(R.string.image),
-        memoryCacheKey = SketchesMemoryCacheKeys.preview(fileUri),
         onTap = onPageTap,
         modifier = modifier,
     )
