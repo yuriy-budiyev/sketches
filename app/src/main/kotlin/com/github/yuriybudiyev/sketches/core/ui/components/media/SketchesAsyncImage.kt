@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
@@ -54,7 +55,6 @@ import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
-import coil3.size.Size
 import coil3.video.videoFramePercent
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
@@ -152,7 +152,7 @@ fun SketchesPreviewAsyncImage(
             .placeholderMemoryCacheKey(SketchesMemoryCacheKeys.thumbnail(uri))
             .memoryCacheKey(SketchesMemoryCacheKeys.preview(uri))
             .data(uri)
-            .size(Size.ORIGINAL)
+            .size(coil3.size.Size.ORIGINAL)
             .build()
     }
     var painterState by remember {
@@ -186,19 +186,21 @@ fun SketchesPreviewAsyncImage(
                     onTap = onTap,
                 ) {
                     val size = painter.intrinsicSize
-                    Box(
-                        modifier = Modifier
-                            .zoomable()
-                            .aspectRatio(
-                                ratio = size.width / size.height,
-                                matchHeightConstraintsFirst = false,
-                            )
-                            .paint(
-                                painter = painter,
-                                contentScale = ContentScale.Fit,
-                                alignment = Alignment.Center,
-                            ),
-                    )
+                    if (size != Size.Zero && size != Size.Unspecified) {
+                        Box(
+                            modifier = Modifier
+                                .zoomable()
+                                .aspectRatio(
+                                    ratio = size.width / size.height,
+                                    matchHeightConstraintsFirst = false,
+                                )
+                                .paint(
+                                    painter = painter,
+                                    contentScale = ContentScale.Fit,
+                                    alignment = Alignment.Center,
+                                ),
+                        )
+                    }
                 }
             }
             is AsyncImagePainter.State.Error -> {
