@@ -152,6 +152,7 @@ fun SketchesPreviewAsyncImage(
                 return@placeholder memoryCache[SketchesMemoryCacheKeys.thumbnail(uri)]?.image
                     ?: memoryCache[SketchesMemoryCacheKeys.mediaBar(uri)]?.image
             }
+            .placeholderMemoryCacheKey(SketchesMemoryCacheKeys.thumbnail(uri))
             .memoryCacheKey(SketchesMemoryCacheKeys.preview(uri))
             .data(uri)
             .size(coil3.size.Size.ORIGINAL)
