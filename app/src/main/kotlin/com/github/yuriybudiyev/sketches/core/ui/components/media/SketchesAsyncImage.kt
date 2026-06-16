@@ -148,9 +148,7 @@ fun SketchesPreviewAsyncImage(
         ImageRequest
             .Builder(context)
             .placeholder {
-                val memoryCache = context.imageLoader.memoryCache ?: return@placeholder null
-                return@placeholder memoryCache[SketchesMemoryCacheKeys.thumbnail(uri)]?.image
-                    ?: memoryCache[SketchesMemoryCacheKeys.mediaBar(uri)]?.image
+                context.imageLoader.memoryCache?.get(SketchesMemoryCacheKeys.mediaBar(uri))?.image
             }
             .placeholderMemoryCacheKey(SketchesMemoryCacheKeys.thumbnail(uri))
             .memoryCacheKey(SketchesMemoryCacheKeys.preview(uri))
