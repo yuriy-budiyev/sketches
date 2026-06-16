@@ -55,7 +55,6 @@ import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
-import coil3.video.videoFramePercent
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
@@ -78,7 +77,6 @@ fun SketchesThumbnailAsyncImage(
         sizeResolver,
     ) {
         ImageRequest.Builder(context)
-            .videoFramePercent(0.1)
             .memoryCacheKey(memoryCacheKey)
             .data(uri)
             .size(sizeResolver)
@@ -148,7 +146,6 @@ fun SketchesPreviewAsyncImage(
     ) {
         ImageRequest
             .Builder(context)
-            .videoFramePercent(0.1)
             .placeholderMemoryCacheKey(SketchesMemoryCacheKeys.thumbnail(uri))
             .memoryCacheKey(SketchesMemoryCacheKeys.preview(uri))
             .data(uri)

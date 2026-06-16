@@ -48,13 +48,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import coil3.compose.asPainter
+import coil3.imageLoader
+import coil3.memory.MemoryCache
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
@@ -75,7 +82,8 @@ fun SketchesMediaPlayer(
     controlsBackgroundColor: Color = backgroundColor
         .copy(alpha = SketchesColors.UiAlphaLowTransparency),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
-    enableImagePlaceholder: Boolean = true,
+    enablePlaceholder: Boolean = true,
+    placeholderMemoryCacheKey: MemoryCache.Key? = null,
     enableErrorIndicator: Boolean = true,
 ) {
     val controllerVisibleUpdated by rememberUpdatedState(controllerVisible)
@@ -89,7 +97,8 @@ fun SketchesMediaPlayer(
             onTap = onDisplayTap,
             backgroundColor = backgroundColor,
             indicatorColor = controlsColor,
-            enableImagePlaceholder = enableImagePlaceholder,
+            enableImagePlaceholder = enablePlaceholder,
+            placeholderMemoryCacheKey = placeholderMemoryCacheKey,
             enableErrorIndicator = enableErrorIndicator,
         )
         AnimatedVisibility(
@@ -131,6 +140,7 @@ fun SketchesMediaDisplay(
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     indicatorColor: Color = MaterialTheme.colorScheme.onBackground,
     enableImagePlaceholder: Boolean = true,
+    placeholderMemoryCacheKey: MemoryCache.Key? = null,
     enableErrorIndicator: Boolean = true,
 ) {
     Box(modifier = modifier) {
@@ -179,17 +189,60 @@ fun SketchesMediaDisplay(
                 }
             } else {
                 if (enableImagePlaceholder) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_image_loading),
-                        contentDescription = stringResource(R.string.image),
-                        modifier = Modifier
-                            .size(48.dp)
-                            .align(Alignment.Center),
-                        tint = indicatorColor,
-                    )
+                    if (placeholderMemoryCacheKey != null) {
+                        val context = LocalContext.current
+                        val painter = remember(
+                            context,
+                            placeholderMemoryCacheKey,
+                        ) {
+                            context
+                                .imageLoader
+                                .memoryCache
+                                ?.get(placeholderMemoryCacheKey)
+                                ?.image
+                                ?.asPainter(
+                                    context = context,
+                                    filterQuality = FilterQuality.High,
+                                )
+                        }
+                        if (painter != null) {
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .paint(
+                                        painter = painter,
+                                        alignment = Alignment.Center,
+                                        contentScale = ContentScale.Fit,
+                                    ),
+                            )
+                        }
+                    } else {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_image_loading),
+                            contentDescription = stringResource(R.string.image),
+                            modifier = Modifier
+                                .size(48.dp)
+                                .align(Alignment.Center),
+                            tint = indicatorColor,
+                        )
+                    }
                 }
             }
         }
+        /*val uri = state.uri
+        val showPlaceholder by remember {
+            derivedStateOf {
+                var showPlaceholder = true
+                if (state.isPlaybackReady) {
+                    showPlaceholder = false
+                }
+                showPlaceholder && !state.isPlaybackError
+            }
+        }
+        if (uri != null && showPlaceholder)
+        val context = LocalContext.current
+
+        context.imageLoader.memoryCache?.get(SketchesMemoryCacheKeys.thumbnail(state.uri!!))*/
     }
 }
 

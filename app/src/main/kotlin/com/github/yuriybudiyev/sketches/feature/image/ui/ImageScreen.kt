@@ -529,7 +529,8 @@ private fun VideoPage(
         controllerEndPadding = controllerEndPadding,
         controllerBottomPadding = controllerBottomPadding,
         modifier = modifier,
-        enableImagePlaceholder = false,
+        enablePlaceholder = true,
+        placeholderMemoryCacheKey = SketchesMemoryCacheKeys.thumbnail(fileUri),
         enableErrorIndicator = true,
     )
 }
