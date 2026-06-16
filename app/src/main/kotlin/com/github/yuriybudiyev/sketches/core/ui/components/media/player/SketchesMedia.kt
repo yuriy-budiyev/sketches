@@ -198,6 +198,7 @@ fun SketchesMediaDisplay(
                         val painter = remember(
                             context,
                             placeholderMemoryCacheKey,
+                            placeholderMemoryCacheFallback,
                         ) {
                             val memoryCache =
                                 context.imageLoader.memoryCache ?: return@remember null
