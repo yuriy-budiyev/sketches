@@ -97,7 +97,7 @@ fun SketchesMediaPlayer(
             onTap = onDisplayTap,
             backgroundColor = backgroundColor,
             indicatorColor = controlsColor,
-            enableImagePlaceholder = enablePlaceholder,
+            enablePlaceholder = enablePlaceholder,
             placeholderMemoryCacheKey = placeholderMemoryCacheKey,
             enableErrorIndicator = enableErrorIndicator,
         )
@@ -139,7 +139,7 @@ fun SketchesMediaDisplay(
     onTap: (() -> Unit)? = null,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     indicatorColor: Color = MaterialTheme.colorScheme.onBackground,
-    enableImagePlaceholder: Boolean = true,
+    enablePlaceholder: Boolean = true,
     placeholderMemoryCacheKey: MemoryCache.Key? = null,
     enableErrorIndicator: Boolean = true,
 ) {
@@ -188,7 +188,7 @@ fun SketchesMediaDisplay(
                     )
                 }
             } else {
-                if (enableImagePlaceholder) {
+                if (enablePlaceholder) {
                     if (placeholderMemoryCacheKey != null) {
                         val context = LocalContext.current
                         val painter = remember(
