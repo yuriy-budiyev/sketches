@@ -59,6 +59,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import coil3.Image
 import coil3.compose.asPainter
 import coil3.imageLoader
 import coil3.memory.MemoryCache
@@ -84,6 +85,7 @@ fun SketchesMediaPlayer(
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
     enablePlaceholder: Boolean = true,
     placeholderMemoryCacheKey: MemoryCache.Key? = null,
+    placeholderMemoryCacheFallback: MemoryCache.Key? = null,
     enableErrorIndicator: Boolean = true,
 ) {
     val controllerVisibleUpdated by rememberUpdatedState(controllerVisible)
@@ -99,6 +101,7 @@ fun SketchesMediaPlayer(
             indicatorColor = controlsColor,
             enablePlaceholder = enablePlaceholder,
             placeholderMemoryCacheKey = placeholderMemoryCacheKey,
+            placeholderMemoryCacheFallback = placeholderMemoryCacheFallback,
             enableErrorIndicator = enableErrorIndicator,
         )
         AnimatedVisibility(
@@ -141,6 +144,7 @@ fun SketchesMediaDisplay(
     indicatorColor: Color = MaterialTheme.colorScheme.onBackground,
     enablePlaceholder: Boolean = true,
     placeholderMemoryCacheKey: MemoryCache.Key? = null,
+    placeholderMemoryCacheFallback: MemoryCache.Key? = null,
     enableErrorIndicator: Boolean = true,
 ) {
     Box(modifier = modifier) {
@@ -189,21 +193,25 @@ fun SketchesMediaDisplay(
                 }
             } else {
                 if (enablePlaceholder) {
-                    if (placeholderMemoryCacheKey != null) {
+                    if (placeholderMemoryCacheKey != null || placeholderMemoryCacheFallback != null) {
                         val context = LocalContext.current
                         val painter = remember(
                             context,
                             placeholderMemoryCacheKey,
                         ) {
-                            context
-                                .imageLoader
-                                .memoryCache
-                                ?.get(placeholderMemoryCacheKey)
-                                ?.image
-                                ?.asPainter(
-                                    context = context,
-                                    filterQuality = FilterQuality.High,
-                                )
+                            val memoryCache =
+                                context.imageLoader.memoryCache ?: return@remember null
+                            var image: Image? = null
+                            if (placeholderMemoryCacheKey != null) {
+                                image = memoryCache[placeholderMemoryCacheKey]?.image
+                            }
+                            if (image == null && placeholderMemoryCacheFallback != null) {
+                                image = memoryCache[placeholderMemoryCacheFallback]?.image
+                            }
+                            return@remember image?.asPainter(
+                                context = context,
+                                filterQuality = FilterQuality.High,
+                            )
                         }
                         if (painter != null) {
                             Box(

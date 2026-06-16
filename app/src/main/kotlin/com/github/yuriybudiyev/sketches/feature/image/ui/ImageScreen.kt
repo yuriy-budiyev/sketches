@@ -531,6 +531,7 @@ private fun VideoPage(
         modifier = modifier,
         enablePlaceholder = true,
         placeholderMemoryCacheKey = SketchesMemoryCacheKeys.thumbnail(fileUri),
+        placeholderMemoryCacheFallback = SketchesMemoryCacheKeys.mediaBar(fileUri),
         enableErrorIndicator = true,
     )
 }

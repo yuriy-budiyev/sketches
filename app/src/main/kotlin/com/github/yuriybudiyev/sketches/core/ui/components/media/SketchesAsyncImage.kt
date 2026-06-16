@@ -53,6 +53,7 @@ import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
+import coil3.imageLoader
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import com.github.yuriybudiyev.sketches.R
@@ -146,7 +147,11 @@ fun SketchesPreviewAsyncImage(
     ) {
         ImageRequest
             .Builder(context)
-            .placeholderMemoryCacheKey(SketchesMemoryCacheKeys.thumbnail(uri))
+            .placeholder {
+                val memoryCache = context.imageLoader.memoryCache ?: return@placeholder null
+                return@placeholder memoryCache[SketchesMemoryCacheKeys.thumbnail(uri)]?.image
+                    ?: memoryCache[SketchesMemoryCacheKeys.mediaBar(uri)]?.image
+            }
             .memoryCacheKey(SketchesMemoryCacheKeys.preview(uri))
             .data(uri)
             .size(coil3.size.Size.ORIGINAL)
