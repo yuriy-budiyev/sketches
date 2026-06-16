@@ -229,20 +229,6 @@ fun SketchesMediaDisplay(
                 }
             }
         }
-        /*val uri = state.uri
-        val showPlaceholder by remember {
-            derivedStateOf {
-                var showPlaceholder = true
-                if (state.isPlaybackReady) {
-                    showPlaceholder = false
-                }
-                showPlaceholder && !state.isPlaybackError
-            }
-        }
-        if (uri != null && showPlaceholder)
-        val context = LocalContext.current
-
-        context.imageLoader.memoryCache?.get(SketchesMemoryCacheKeys.thumbnail(state.uri!!))*/
     }
 }
 
