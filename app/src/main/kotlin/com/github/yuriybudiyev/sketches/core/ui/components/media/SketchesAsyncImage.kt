@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Size
@@ -49,6 +50,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
@@ -176,7 +178,7 @@ fun SketchesPreviewAsyncImage(
             .then(modifier),
         contentAlignment = Alignment.Center,
     ) {
-        when (painterState) {
+        when (val state = painterState) {
             is AsyncImagePainter.State.Empty -> {
                 // Do nothing
             }
@@ -194,13 +196,24 @@ fun SketchesPreviewAsyncImage(
                                 .aspectRatio(
                                     ratio = size.width / size.height,
                                     matchHeightConstraintsFirst = false,
-                                )
-                                .paint(
-                                    painter = painter,
-                                    contentScale = ContentScale.Fit,
-                                    alignment = Alignment.Center,
-                                ),
-                        )
+                                ).let { modifier ->
+                                    if (state is AsyncImagePainter.State.Loading) {
+                                        modifier.blur(radius = 16.dp)
+                                    } else {
+                                        modifier
+                                    }
+                                },
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .paint(
+                                        painter = painter,
+                                        contentScale = ContentScale.Fit,
+                                        alignment = Alignment.Center,
+                                    ),
+                            )
+                        }
                     }
                 }
             }
