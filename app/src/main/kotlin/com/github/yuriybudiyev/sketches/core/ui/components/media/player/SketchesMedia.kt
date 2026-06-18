@@ -47,8 +47,10 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
@@ -215,15 +217,29 @@ fun SketchesMediaDisplay(
                             )
                         }
                         if (painter != null) {
-                            Box(
-                                modifier = Modifier
-                                    .matchParentSize()
-                                    .paint(
-                                        painter = painter,
-                                        alignment = Alignment.Center,
-                                        contentScale = ContentScale.Fit,
-                                    ),
-                            )
+                            val size = painter.intrinsicSize
+                            if (size != Size.Zero && size != Size.Unspecified) {
+                                val ratio = size.width / size.height
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .aspectRatio(
+                                            ratio = ratio,
+                                            matchHeightConstraintsFirst = ratio < 1f,
+                                        )
+                                        .blur(radius = 16.dp),
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .matchParentSize()
+                                            .paint(
+                                                painter = painter,
+                                                alignment = Alignment.Center,
+                                                contentScale = ContentScale.Fit,
+                                            ),
+                                    )
+                                }
+                            }
                         }
                     } else {
                         Icon(

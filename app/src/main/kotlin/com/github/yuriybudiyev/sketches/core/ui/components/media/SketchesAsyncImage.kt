@@ -190,12 +190,13 @@ fun SketchesPreviewAsyncImage(
                 ) {
                     val size = painter.intrinsicSize
                     if (size != Size.Zero && size != Size.Unspecified) {
+                        val ratio = size.width / size.height
                         Box(
                             modifier = Modifier
                                 .zoomable()
                                 .aspectRatio(
-                                    ratio = size.width / size.height,
-                                    matchHeightConstraintsFirst = false,
+                                    ratio = ratio,
+                                    matchHeightConstraintsFirst = ratio < 1f,
                                 ).let { modifier ->
                                     if (state is AsyncImagePainter.State.Loading) {
                                         modifier.blur(radius = 16.dp)
