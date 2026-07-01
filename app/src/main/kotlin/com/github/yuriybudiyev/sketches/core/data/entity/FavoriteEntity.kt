@@ -37,7 +37,4 @@ data class FavoriteEntity(
 
     @ColumnInfo(name = "is_favorite")
     val isFavorite: Boolean,
-
-    @ColumnInfo(name = "comment")
-    val comment: String,
 )
