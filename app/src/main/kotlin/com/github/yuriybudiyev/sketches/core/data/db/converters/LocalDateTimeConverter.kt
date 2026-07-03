@@ -22,23 +22,23 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.entity
+package com.github.yuriybudiyev.sketches.core.data.db.converters
 
-import androidx.room3.ColumnInfo
-import androidx.room3.Entity
-import androidx.room3.PrimaryKey
+import androidx.room3.ColumnTypeConverter
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 
-@Entity(tableName = "favorites")
-data class FavoriteEntity(
+object LocalDateTimeConverter {
 
-    @PrimaryKey(autoGenerate = false)
-    @ColumnInfo(name = "media_id")
-    val mediaId: Long,
+    @ColumnTypeConverter
+    fun convertLocalDateTimeToTimestamp(value: LocalDateTime): Long =
+        value.toEpochSecond(ZoneOffset.UTC)
 
-    @ColumnInfo(name = "is_favorite")
-    val isFavorite: Boolean,
-
-    @ColumnInfo(name = "date_modified")
-    val dateModified: LocalDateTime,
-)
+    @ColumnTypeConverter
+    fun convertTimestampToLocalDateTime(value: Long): LocalDateTime =
+        LocalDateTime.ofEpochSecond(
+            value,
+            0,
+            ZoneOffset.UTC,
+        )
+}
