@@ -46,7 +46,7 @@ import javax.inject.Singleton
 @Singleton
 class MediaStoreRepositoryImpl @Inject constructor(
     @param:ApplicationContext
-    private val context: Context,
+    private val appContext: Context,
 ): MediaStoreRepository {
 
     private fun collectFiles(
@@ -54,7 +54,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         bucketId: Long?,
     ): List<MediaStoreFile> {
         val contentUri = mediaType.contentUri
-        val cursor = context.contentResolver.query(
+        val cursor = appContext.contentResolver.query(
             contentUri,
             arrayOf(
                 MediaStore.MediaColumns._ID,
@@ -107,7 +107,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteContent(uris: Collection<Uri>): Boolean {
-        val contentResolver = context.contentResolver
+        val contentResolver = appContext.contentResolver
         var count = 0
         for (uri in uris) {
             count += contentResolver.delete(
@@ -144,7 +144,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         destination: MutableLongObjectMap<BucketInfo>,
     ) {
         val contentUri = mediaType.contentUri
-        val cursor = context.contentResolver.query(
+        val cursor = appContext.contentResolver.query(
             contentUri,
             arrayOf(
                 MediaStore.MediaColumns._ID,
@@ -221,8 +221,8 @@ class MediaStoreRepositoryImpl @Inject constructor(
 
     private val database: SketchesDatabase =
         Room.databaseBuilder<SketchesDatabase>(
-            context,
-            "sketches",
+            context = appContext,
+            name = "sketches",
         ).build()
 
     private data class BucketInfo(
