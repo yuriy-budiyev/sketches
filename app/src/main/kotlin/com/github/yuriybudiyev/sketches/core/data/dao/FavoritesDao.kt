@@ -38,7 +38,7 @@ interface FavoritesDao {
     suspend fun getAll(): List<FavoriteEntity>
 
     @Query("SELECT * FROM favorites WHERE media_id=:mediaId LIMIT 1")
-    suspend fun getByMediaId(mediaId: Long): FavoriteEntity
+    suspend fun getByMediaId(mediaId: Long): FavoriteEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun add(favorite: FavoriteEntity)
