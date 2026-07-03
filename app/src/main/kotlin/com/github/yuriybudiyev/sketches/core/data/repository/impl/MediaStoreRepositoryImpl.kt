@@ -30,6 +30,8 @@ import android.net.Uri
 import android.provider.MediaStore
 import androidx.collection.MutableLongObjectMap
 import androidx.core.database.getStringOrNull
+import androidx.room3.Room
+import com.github.yuriybudiyev.sketches.core.data.db.SketchesDatabase
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
@@ -216,6 +218,12 @@ class MediaStoreRepositoryImpl @Inject constructor(
         buckets.sortByDescending { bucket -> bucket.coverDateAdded }
         return buckets
     }
+
+    private val database: SketchesDatabase =
+        Room.databaseBuilder<SketchesDatabase>(
+            context,
+            "sketches",
+        ).build()
 
     private data class BucketInfo(
         val id: Long,

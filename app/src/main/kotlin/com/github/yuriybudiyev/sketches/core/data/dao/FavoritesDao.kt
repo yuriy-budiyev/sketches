@@ -26,22 +26,21 @@ package com.github.yuriybudiyev.sketches.core.data.dao
 
 import androidx.room3.Dao
 import androidx.room3.Delete
-import androidx.room3.Insert
-import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
+import androidx.room3.Upsert
 import com.github.yuriybudiyev.sketches.core.data.entity.FavoriteEntity
 
 @Dao
 interface FavoritesDao {
 
-    @Query("SELECT * FROM favorites")
+    @Query("SELECT * FROM favorites ORDER BY date_modified DESC")
     suspend fun getAll(): List<FavoriteEntity>
 
     @Query("SELECT * FROM favorites WHERE media_id=:mediaId LIMIT 1")
     suspend fun getByMediaId(mediaId: Long): FavoriteEntity?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun add(favorite: FavoriteEntity)
+    @Upsert
+    suspend fun upsert(favorite: FavoriteEntity)
 
     @Delete
     suspend fun delete(favorite: FavoriteEntity)
