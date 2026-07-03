@@ -22,19 +22,27 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.entity
+package com.github.yuriybudiyev.sketches.core.data.dao
 
-import androidx.room3.ColumnInfo
-import androidx.room3.Entity
-import androidx.room3.PrimaryKey
+import androidx.room3.Dao
+import androidx.room3.Delete
+import androidx.room3.Insert
+import androidx.room3.OnConflictStrategy
+import androidx.room3.Query
+import com.github.yuriybudiyev.sketches.core.data.entity.FavoriteEntity
 
-@Entity(tableName = "favorites")
-data class FavoriteEntity(
+@Dao
+interface FavoritesDao {
 
-    @PrimaryKey(autoGenerate = false)
-    @ColumnInfo(name = "media_id")
-    val mediaId: Long,
+    @Query("SELECT * FROM favorites")
+    suspend fun getAll(): List<FavoriteEntity>
 
-    @ColumnInfo(name = "is_favorite")
-    val isFavorite: Boolean,
-)
+    @Query("SELECT * FROM favorites WHERE media_id=:mediaId LIMIT 1")
+    suspend fun getByMediaId(mediaId: Long): FavoriteEntity
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun add(favorite: FavoriteEntity)
+
+    @Delete
+    suspend fun delete(favorite: FavoriteEntity)
+}

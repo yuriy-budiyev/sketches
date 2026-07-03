@@ -22,19 +22,18 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.entity
+package com.github.yuriybudiyev.sketches.core.data.db
 
-import androidx.room3.ColumnInfo
-import androidx.room3.Entity
-import androidx.room3.PrimaryKey
+import androidx.room3.Database
+import androidx.room3.RoomDatabase
+import com.github.yuriybudiyev.sketches.core.data.dao.FavoritesDao
+import com.github.yuriybudiyev.sketches.core.data.entity.FavoriteEntity
 
-@Entity(tableName = "favorites")
-data class FavoriteEntity(
-
-    @PrimaryKey(autoGenerate = false)
-    @ColumnInfo(name = "media_id")
-    val mediaId: Long,
-
-    @ColumnInfo(name = "is_favorite")
-    val isFavorite: Boolean,
+@Database(
+    entities = [FavoriteEntity::class],
+    version = 1,
 )
+abstract class SketchesDatabase: RoomDatabase() {
+
+    abstract fun favoritesDao(): FavoritesDao
+}
