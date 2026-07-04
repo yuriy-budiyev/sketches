@@ -27,16 +27,16 @@ package com.github.yuriybudiyev.sketches.core.data.db
 import androidx.room3.ColumnTypeConverters
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
-import com.github.yuriybudiyev.sketches.core.data.dao.FavoritesDao
+import com.github.yuriybudiyev.sketches.core.data.dao.BookmarksDao
 import com.github.yuriybudiyev.sketches.core.data.db.converters.LocalDateTimeConverter
-import com.github.yuriybudiyev.sketches.core.data.entity.FavoriteEntity
+import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
 
 @Database(
-    entities = [FavoriteEntity::class],
+    entities = [BookmarkEntity::class],
     version = 1,
 )
 @ColumnTypeConverters(LocalDateTimeConverter::class)
 abstract class SketchesDatabase: RoomDatabase() {
 
-    abstract fun favoritesDao(): FavoritesDao
+    abstract fun bookmarksDao(): BookmarksDao
 }

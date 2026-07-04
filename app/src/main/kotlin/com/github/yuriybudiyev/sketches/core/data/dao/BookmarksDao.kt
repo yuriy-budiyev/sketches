@@ -22,23 +22,26 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.entity
+package com.github.yuriybudiyev.sketches.core.data.dao
 
-import androidx.room3.ColumnInfo
-import androidx.room3.Entity
-import androidx.room3.PrimaryKey
-import java.time.LocalDateTime
+import androidx.room3.Dao
+import androidx.room3.Delete
+import androidx.room3.Query
+import androidx.room3.Upsert
+import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
 
-@Entity(tableName = "favorites")
-data class FavoriteEntity(
+@Dao
+interface BookmarksDao {
 
-    @PrimaryKey(autoGenerate = false)
-    @ColumnInfo(name = "media_id")
-    val mediaId: Long,
+    @Query("SELECT * FROM bookmarks ORDER BY date_added DESC")
+    suspend fun getAll(): List<BookmarkEntity>
 
-    @ColumnInfo(name = "is_favorite")
-    val isFavorite: Boolean,
+    @Query("SELECT * FROM bookmarks WHERE media_id=:mediaId LIMIT 1")
+    suspend fun getByMediaId(mediaId: Long): BookmarkEntity?
 
-    @ColumnInfo(name = "date_modified")
-    val dateModified: LocalDateTime,
-)
+    @Upsert
+    suspend fun upsert(value: BookmarkEntity)
+
+    @Delete
+    suspend fun delete(value: BookmarkEntity)
+}
