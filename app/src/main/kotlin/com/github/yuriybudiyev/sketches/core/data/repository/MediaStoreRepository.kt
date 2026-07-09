@@ -35,4 +35,8 @@ interface MediaStoreRepository {
     suspend fun getFiles(bucketId: Long? = null): List<MediaStoreFile>
 
     suspend fun getBuckets(): List<MediaStoreBucket>
+
+    suspend fun addBookmark(mediaId: Long)
+
+    suspend fun removeBookmark(mediaId: Long)
 }

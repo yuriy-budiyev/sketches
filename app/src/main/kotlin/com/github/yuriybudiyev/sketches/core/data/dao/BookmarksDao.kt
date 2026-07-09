@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.core.data.dao
 
 import androidx.room3.Dao
-import androidx.room3.Delete
 import androidx.room3.Query
 import androidx.room3.Upsert
 import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
@@ -42,6 +41,6 @@ interface BookmarksDao {
     @Upsert
     suspend fun upsert(value: BookmarkEntity)
 
-    @Delete
-    suspend fun delete(value: BookmarkEntity)
+    @Query("DELETE FROM bookmarks WHERE media_id=:mediaId")
+    suspend fun delete(mediaId: Long)
 }

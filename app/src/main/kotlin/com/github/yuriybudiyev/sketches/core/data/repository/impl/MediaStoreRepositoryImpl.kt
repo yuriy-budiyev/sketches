@@ -32,6 +32,7 @@ import androidx.collection.MutableLongObjectMap
 import androidx.core.database.getStringOrNull
 import androidx.room3.Room
 import com.github.yuriybudiyev.sketches.core.data.db.SketchesDatabase
+import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
@@ -217,6 +218,19 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
         buckets.sortByDescending { bucket -> bucket.coverDateAdded }
         return buckets
+    }
+
+    override suspend fun addBookmark(mediaId: Long) {
+        database.bookmarksDao().upsert(
+            BookmarkEntity(
+                mediaId = mediaId,
+                dateAdded = LocalDateTime.now(),
+            ),
+        )
+    }
+
+    override suspend fun removeBookmark(mediaId: Long) {
+        database.bookmarksDao().delete(mediaId)
     }
 
     private val database: SketchesDatabase =
