@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.data.repository
 
 import android.net.Uri
+import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
@@ -39,4 +40,6 @@ interface MediaStoreRepository {
     suspend fun addBookmark(mediaId: Long)
 
     suspend fun removeBookmark(mediaId: Long)
+
+    suspend fun getBookmarks(): List<Bookmark>
 }

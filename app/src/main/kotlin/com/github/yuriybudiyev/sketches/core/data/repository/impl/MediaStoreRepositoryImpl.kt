@@ -33,6 +33,7 @@ import androidx.core.database.getStringOrNull
 import androidx.room3.Room
 import com.github.yuriybudiyev.sketches.core.data.db.SketchesDatabase
 import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
+import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
@@ -231,6 +232,19 @@ class MediaStoreRepositoryImpl @Inject constructor(
 
     override suspend fun removeBookmark(mediaId: Long) {
         database.bookmarksDao().delete(mediaId)
+    }
+
+    override suspend fun getBookmarks(): List<Bookmark> {
+        val entities = database.bookmarksDao().getAll()
+        if (entities.isEmpty()) {
+            return emptyList()
+        }
+        return entities.mapTo(ArrayList(entities.size)) { entity ->
+            Bookmark(
+                mediaId = entity.mediaId,
+                dateAdded = entity.dateAdded,
+            )
+        }
     }
 
     private val database: SketchesDatabase =

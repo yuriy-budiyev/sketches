@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2026 Yuriy Budiyev
+ * Copyright (c) 2024 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,22 +22,13 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.dao
+package com.github.yuriybudiyev.sketches.core.data.model
 
-import androidx.room3.Dao
-import androidx.room3.Query
-import androidx.room3.Upsert
-import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
+import androidx.compose.runtime.Immutable
+import java.time.LocalDateTime
 
-@Dao
-interface BookmarksDao {
-
-    @Query("SELECT * FROM bookmarks ORDER BY date_added DESC")
-    suspend fun getAll(): List<BookmarkEntity>
-
-    @Upsert
-    suspend fun upsert(value: BookmarkEntity)
-
-    @Query("DELETE FROM bookmarks WHERE media_id=:mediaId")
-    suspend fun delete(mediaId: Long)
-}
+@Immutable
+data class Bookmark(
+    val mediaId: Long,
+    val dateAdded: LocalDateTime,
+)
