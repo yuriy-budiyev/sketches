@@ -85,6 +85,10 @@ kotlin {
     }
 }
 
+room3 {
+    schemaDirectory(project.layout.projectDirectory.dir("schemas"))
+}
+
 dependencies {
     coreLibraryDesugaring(libs.android.tools.desugar)
     implementation(libs.bundles.kotlin)
@@ -121,8 +125,4 @@ dependencies {
     androidTestImplementation(libs.bundles.androidx.test)
     androidTestImplementation(libs.androidx.compose.ui.test.junit)
     androidTestImplementation(libs.hilt.test)
-}
-
-room3 {
-    schemaDirectory(project.layout.projectDirectory.dir("schemas"))
 }
