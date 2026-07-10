@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Yuriy Budiyev
+ * Copyright (c) 2026 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,24 +22,16 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.repository
+package com.github.yuriybudiyev.sketches.core.domain
 
-import android.net.Uri
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import dagger.Reusable
+import javax.inject.Inject
 
-interface MediaStoreRepository {
+@Reusable
+class GetBookmarksUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    suspend fun deleteContent(uris: Collection<Uri>): Boolean
-
-    suspend fun getFiles(bucketId: Long? = null): List<MediaStoreFile>
-
-    suspend fun getBuckets(): List<MediaStoreBucket>
-
-    suspend fun createBookmark(mediaId: Long)
-
-    suspend fun deleteBookmark(mediaId: Long)
-
-    suspend fun getBookmarks(): List<Bookmark>
+    suspend operator fun invoke(): List<Bookmark> =
+        repository.getBookmarks()
 }

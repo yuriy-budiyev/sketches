@@ -221,7 +221,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         return buckets
     }
 
-    override suspend fun addBookmark(mediaId: Long) {
+    override suspend fun createBookmark(mediaId: Long) {
         database.bookmarksDao().upsert(
             BookmarkEntity(
                 mediaId = mediaId,
@@ -230,7 +230,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun removeBookmark(mediaId: Long) {
+    override suspend fun deleteBookmark(mediaId: Long) {
         database.bookmarksDao().delete(mediaId)
     }
 
