@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 Yuriy Budiyev
+ * Copyright (c) 2026 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,14 @@
 
 package com.github.yuriybudiyev.sketches.core.domain
 
-import android.net.Uri
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.Reusable
 import javax.inject.Inject
 
 @Reusable
-class DeleteContentUseCase @Inject constructor(private val repository: MediaStoreRepository) {
+class CreateBookmarkUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    suspend operator fun invoke(uris: Collection<Uri>) {
-        repository.deleteContent(uris)
+    suspend operator fun invoke(mediaId: Long) {
+        repository.createBookmark(mediaId)
     }
 }
