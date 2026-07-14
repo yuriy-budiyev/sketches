@@ -24,12 +24,18 @@
 
 package com.github.yuriybudiyev.sketches.feature.bookmarks.ui
 
-import androidx.compose.runtime.Composable
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import android.content.Context
+import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-@Composable
-fun BookmarksRoute(
-    viewModel: BookmarksScreenViewModel,
-    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
-) {
+@HiltViewModel
+class BookmarksScreenViewModel @Inject constructor(
+    @ApplicationContext
+    context: Context,
+): MediaObservingViewModel(context) {
+
+    override fun onMediaChanged() {
+    }
 }
