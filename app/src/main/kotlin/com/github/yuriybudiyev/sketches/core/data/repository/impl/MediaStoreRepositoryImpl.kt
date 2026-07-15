@@ -39,6 +39,9 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.mapLatest
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -232,18 +235,16 @@ class MediaStoreRepositoryImpl @Inject constructor(
         database.bookmarksDao().delete(mediaId)
     }
 
-    override suspend fun getBookmarks(): List<Bookmark> {
-        val entities = database.bookmarksDao().getAll()
-        if (entities.isEmpty()) {
-            return emptyList()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override suspend fun getBookmarks(): Flow<List<Bookmark>> =
+        database.bookmarksDao().getAll().mapLatest { entities ->
+            entities.mapTo(ArrayList(entities.size)) { entity ->
+                Bookmark(
+                    mediaId = entity.mediaId,
+                    dateAdded = entity.dateAdded,
+                )
+            }
         }
-        return entities.mapTo(ArrayList(entities.size)) { entity ->
-            Bookmark(
-                mediaId = entity.mediaId,
-                dateAdded = entity.dateAdded,
-            )
-        }
-    }
 
     private val database: SketchesDatabase =
         Room.databaseBuilder<SketchesDatabase>(

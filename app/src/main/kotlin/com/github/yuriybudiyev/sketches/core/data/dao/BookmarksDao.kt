@@ -28,12 +28,13 @@ import androidx.room3.Dao
 import androidx.room3.Query
 import androidx.room3.Upsert
 import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BookmarksDao {
 
     @Query("SELECT * FROM bookmarks ORDER BY date_added DESC")
-    suspend fun getAll(): List<BookmarkEntity>
+    fun getAll(): Flow<List<BookmarkEntity>>
 
     @Upsert
     suspend fun upsert(value: BookmarkEntity)

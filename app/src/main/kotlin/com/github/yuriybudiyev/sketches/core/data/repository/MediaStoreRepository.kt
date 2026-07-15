@@ -28,6 +28,7 @@ import android.net.Uri
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import kotlinx.coroutines.flow.Flow
 
 interface MediaStoreRepository {
 
@@ -41,5 +42,5 @@ interface MediaStoreRepository {
 
     suspend fun deleteBookmark(mediaId: Long)
 
-    suspend fun getBookmarks(): List<Bookmark>
+    suspend fun getBookmarks(): Flow<List<Bookmark>>
 }

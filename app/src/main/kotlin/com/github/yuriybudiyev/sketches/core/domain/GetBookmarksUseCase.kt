@@ -27,11 +27,12 @@ package com.github.yuriybudiyev.sketches.core.domain
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.Reusable
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 @Reusable
 class GetBookmarksUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    suspend operator fun invoke(): List<Bookmark> =
+    suspend operator fun invoke(): Flow<List<Bookmark>> =
         repository.getBookmarks()
 }
