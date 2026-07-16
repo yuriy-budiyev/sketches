@@ -42,5 +42,5 @@ interface MediaStoreRepository {
 
     suspend fun deleteBookmark(mediaId: Long)
 
-    suspend fun getBookmarks(): Flow<List<Bookmark>>
+    suspend fun getBookmarks(): Flow<Map<Long, Bookmark>>
 }

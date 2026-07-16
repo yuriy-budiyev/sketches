@@ -27,6 +27,7 @@ package com.github.yuriybudiyev.sketches.core.data.repository.impl
 import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import androidx.collection.MutableLongObjectMap
 import androidx.core.database.getStringOrNull
@@ -236,14 +237,24 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun getBookmarks(): Flow<List<Bookmark>> =
+    override suspend fun getBookmarks(): Flow<Map<Long, Bookmark>> =
         database.bookmarksDao().getAll().mapLatest { entities ->
-            entities.mapTo(ArrayList(entities.size)) { entity ->
-                Bookmark(
-                    mediaId = entity.mediaId,
-                    dateAdded = entity.dateAdded,
-                )
-            }
+            entities
+                .asSequence()
+                .map { entity ->
+                    Bookmark(
+                        mediaId = entity.mediaId,
+                        dateAdded = entity.dateAdded,
+                    )
+                }.associateByTo(
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                        HashMap.newHashMap(entities.size)
+                    } else {
+                        HashMap()
+                    },
+                ) { bookmark ->
+                    bookmark.mediaId
+                }
         }
 
     private val database: SketchesDatabase =

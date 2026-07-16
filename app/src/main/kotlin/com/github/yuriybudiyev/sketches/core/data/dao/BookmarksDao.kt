@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface BookmarksDao {
 
-    @Query("SELECT * FROM bookmarks ORDER BY date_added DESC")
+    @Query("SELECT * FROM bookmarks")
     fun getAll(): Flow<List<BookmarkEntity>>
 
     @Upsert
