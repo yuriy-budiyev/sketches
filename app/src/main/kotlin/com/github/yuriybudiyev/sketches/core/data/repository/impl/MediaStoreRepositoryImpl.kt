@@ -251,9 +251,9 @@ class MediaStoreRepositoryImpl @Inject constructor(
                         )
                     }.associateByTo(
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                            HashMap.newHashMap(entities.size)
+                            LinkedHashMap.newLinkedHashMap(entities.size)
                         } else {
-                            HashMap()
+                            LinkedHashMap()
                         },
                     ) { bookmark ->
                         bookmark.mediaId
