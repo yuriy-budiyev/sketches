@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Yuriy Budiyev
+ * Copyright (c) 2026 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +22,31 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.repository.di
+package com.github.yuriybudiyev.sketches.core.data.db
 
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
-import com.github.yuriybudiyev.sketches.core.data.repository.impl.MediaStoreRepositoryImpl
-import dagger.Binds
+import android.content.Context
+import androidx.room3.Room
+import com.github.yuriybudiyev.sketches.core.data.dao.BookmarksDao
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface MediaStoreRepositoryBinderModule {
+object SketchesDatabaseModule {
 
-    @Binds
-    fun bindMediaStoreRepositoryImplToMediaStoreRepository(
-        repositoryImpl: MediaStoreRepositoryImpl,
-    ): MediaStoreRepository
+    @Provides
+    @Singleton
+    fun provideSketchesDatabase(@ApplicationContext context: Context): SketchesDatabase =
+        Room.databaseBuilder<SketchesDatabase>(
+            context = context,
+            name = "sketches",
+        ).build()
+
+    @Provides
+    fun provideBookmarksDao(database: SketchesDatabase): BookmarksDao =
+        database.bookmarksDao()
 }

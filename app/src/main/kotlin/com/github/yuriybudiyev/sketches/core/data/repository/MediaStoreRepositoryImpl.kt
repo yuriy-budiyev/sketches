@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Yuriy Budiyev
+ * Copyright (c) 2026 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.repository.impl
+package com.github.yuriybudiyev.sketches.core.data.repository
 
 import android.content.ContentUris
 import android.content.Context
@@ -31,13 +31,11 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.collection.MutableLongObjectMap
 import androidx.core.database.getStringOrNull
-import androidx.room3.Room
-import com.github.yuriybudiyev.sketches.core.data.db.SketchesDatabase
+import com.github.yuriybudiyev.sketches.core.data.dao.BookmarksDao
 import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -52,7 +50,8 @@ import javax.inject.Singleton
 @Singleton
 class MediaStoreRepositoryImpl @Inject constructor(
     @param:ApplicationContext
-    private val appContext: Context,
+    private val context: Context,
+    private val bookmarksDao: BookmarksDao,
 ): MediaStoreRepository {
 
     private fun collectFiles(
@@ -60,7 +59,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         bucketId: Long?,
     ): List<MediaStoreFile> {
         val contentUri = mediaType.contentUri
-        val cursor = appContext.contentResolver.query(
+        val cursor = context.contentResolver.query(
             contentUri,
             arrayOf(
                 MediaStore.MediaColumns._ID,
@@ -113,7 +112,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteContent(uris: Collection<Uri>) {
-        val contentResolver = appContext.contentResolver
+        val contentResolver = context.contentResolver
         for (uri in uris) {
             contentResolver.delete(
                 uri,
@@ -148,7 +147,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         destination: MutableLongObjectMap<BucketInfo>,
     ) {
         val contentUri = mediaType.contentUri
-        val cursor = appContext.contentResolver.query(
+        val cursor = context.contentResolver.query(
             contentUri,
             arrayOf(
                 MediaStore.MediaColumns._ID,
@@ -224,7 +223,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     override suspend fun createBookmark(mediaId: Long) {
-        database.bookmarksDao().upsert(
+        bookmarksDao.upsert(
             BookmarkEntity(
                 mediaId = mediaId,
                 dateAdded = LocalDateTime.now(),
@@ -233,12 +232,12 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteBookmark(mediaId: Long) {
-        database.bookmarksDao().delete(mediaId)
+        bookmarksDao.delete(mediaId)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getBookmarks(): Flow<Map<Long, Bookmark>> =
-        database.bookmarksDao().getAll().mapLatest { entities ->
+        bookmarksDao.getAll().mapLatest { entities ->
             entities.asSequence().map { entity ->
                 Bookmark(
                     mediaId = entity.mediaId,
@@ -254,12 +253,6 @@ class MediaStoreRepositoryImpl @Inject constructor(
                 bookmark.mediaId
             }
         }
-
-    private val database: SketchesDatabase =
-        Room.databaseBuilder<SketchesDatabase>(
-            context = appContext,
-            name = "sketches",
-        ).build()
 
     private data class BucketInfo(
         val id: Long,
