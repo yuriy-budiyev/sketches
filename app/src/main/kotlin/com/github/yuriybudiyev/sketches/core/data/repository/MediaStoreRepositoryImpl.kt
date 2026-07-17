@@ -238,20 +238,23 @@ class MediaStoreRepositoryImpl @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun getBookmarks(): Flow<Map<Long, Bookmark>> =
         bookmarksDao.getAll().mapLatest { entities ->
-            entities.asSequence().map { entity ->
-                Bookmark(
+            val size = entities.size
+            if (size == 0) {
+                return@mapLatest emptyMap()
+            }
+            val bookmarks: MutableMap<Long, Bookmark> =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                    LinkedHashMap.newLinkedHashMap(size)
+                } else {
+                    LinkedHashMap()
+                }
+            for (entity in entities) {
+                bookmarks[entity.mediaId] = Bookmark(
                     mediaId = entity.mediaId,
                     dateAdded = entity.dateAdded,
                 )
-            }.associateByTo(
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                    LinkedHashMap.newLinkedHashMap(entities.size)
-                } else {
-                    LinkedHashMap()
-                },
-            ) { bookmark ->
-                bookmark.mediaId
             }
+            return@mapLatest bookmarks
         }
 
     private data class BucketInfo(
