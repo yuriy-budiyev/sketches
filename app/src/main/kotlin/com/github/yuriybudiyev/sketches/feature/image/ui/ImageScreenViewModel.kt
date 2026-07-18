@@ -32,7 +32,10 @@ import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.dagger.LazyProvider
 import com.github.yuriybudiyev.sketches.core.dagger.getValue
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.domain.CreateBookmarkUseCase
+import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarkUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageNavRoute
@@ -65,11 +68,17 @@ class ImageScreenViewModel @AssistedInject constructor(
     ioDispatcherProvider: LazyProvider<CoroutineDispatcher>,
     getMediaFilesProvider: LazyProvider<GetMediaFilesUseCase>,
     deleteMediaFilesProvider: LazyProvider<DeleteMediaFilesUseCase>,
+    createBookmarkProvider: LazyProvider<CreateBookmarkUseCase>,
+    deleteBookmarkProvider: LazyProvider<DeleteBookmarkUseCase>,
+    getBookmarksProvider: LazyProvider<GetBookmarksUseCase>,
 ): MediaObservingViewModel(context) {
 
     private val ioDispatcher: CoroutineDispatcher by ioDispatcherProvider
     private val getMediaFiles: GetMediaFilesUseCase by getMediaFilesProvider
     private val deleteMediaFiles: DeleteMediaFilesUseCase by deleteMediaFilesProvider
+    private val createBookmark: CreateBookmarkUseCase by createBookmarkProvider
+    private val deleteBookmark: DeleteBookmarkUseCase by deleteBookmarkProvider
+    private val getBookmarks: GetBookmarksUseCase by getBookmarksProvider
 
     private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
 
