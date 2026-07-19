@@ -169,7 +169,7 @@ fun ImageScreen(
             is ImageScreenViewModel.UiState.Image -> {
                 ImageScreenLayout(
                     index = uiState.index,
-                    files = uiState.files,
+                    items = uiState.items,
                     onChange = onChange,
                     onDelete = onDelete,
                     modifier = Modifier.matchParentSize(),
@@ -188,7 +188,7 @@ fun ImageScreen(
 @Composable
 private fun ImageScreenLayout(
     index: Int,
-    files: List<MediaStoreFile>,
+    items: List<MediaItem>,
     onChange: (index: Int, file: MediaStoreFile) -> Unit,
     onDelete: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
@@ -196,11 +196,11 @@ private fun ImageScreenLayout(
     var currentIndex by remember { mutableIntStateOf(index) }
     val contextUpdated by rememberUpdatedState(LocalContext.current)
     val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
-    val filesUpdated by rememberUpdatedState(files)
+    val itemsUpdated by rememberUpdatedState(items)
     val onChangeUpdated by rememberUpdatedState(onChange)
     val onDeleteUpdated by rememberUpdatedState(onDelete)
     val coroutineScope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(currentIndex) { filesUpdated.size }
+    val pagerState = rememberPagerState(currentIndex) { itemsUpdated.size }
     val barState = rememberMediaBarState(currentIndex)
     val systemBarsControllerUpdated by rememberUpdatedState(LocalSystemBarsController.current)
     val deleteRequestLauncher = rememberLauncherForActivityResult(
@@ -216,7 +216,7 @@ private fun ImageScreenLayout(
             currentIndex = page
             onChangeUpdated(
                 page,
-                filesUpdated[page],
+                itemsUpdated[page].file,
             )
             coroutineScope.launch {
                 barState.scrollToItemCentered(
@@ -256,7 +256,7 @@ private fun ImageScreenLayout(
             .asPaddingValues()
         MediaPager(
             state = pagerState,
-            files = filesUpdated,
+            items = itemsUpdated,
             onPageTap = {
                 coroutineScope.launch {
                     if (systemBarsControllerUpdated.isSystemBarsVisible) {
@@ -286,7 +286,7 @@ private fun ImageScreenLayout(
             MediaBar(
                 currentIndex = currentIndex,
                 state = barState,
-                items = filesUpdated,
+                items = itemsUpdated,
                 onItemClick = { index, _ ->
                     coroutineScope.launch {
                         pagerState.animateScrollToPage(index)
@@ -314,7 +314,7 @@ private fun ImageScreenLayout(
         ) {
             SketchesTopAppBar(
                 modifier = Modifier.fillMaxWidth(),
-                text = filesUpdated[currentIndex].displayName,
+                text = itemsUpdated[currentIndex].file.displayName,
                 backgroundColor = MaterialTheme.colorScheme.background
                     .copy(alpha = SketchesColors.UiAlphaLowTransparency),
             ) {
@@ -326,7 +326,7 @@ private fun ImageScreenLayout(
                             coroutineScope.launch {
                                 deleteRequestLauncher.launchDeleteMediaRequest(
                                     contextUpdated,
-                                    listOf(filesUpdated[currentIndex].uri),
+                                    listOf(itemsUpdated[currentIndex].file.uri),
                                 )
                             }
                         } else {
@@ -340,7 +340,7 @@ private fun ImageScreenLayout(
                     description = shareDescription,
                     onClick = {
                         coroutineScope.launch {
-                            val file = filesUpdated[currentIndex]
+                            val file = itemsUpdated[currentIndex].file
                             shareManagerUpdated.startChooserActivity(
                                 file.uri,
                                 file.mimeType,
@@ -358,7 +358,7 @@ private fun ImageScreenLayout(
                     coroutineScope.launch {
                         onDeleteUpdated(
                             currentIndex,
-                            filesUpdated[currentIndex],
+                            itemsUpdated[currentIndex].file,
                         )
                     }
                 },
@@ -373,7 +373,7 @@ private fun ImageScreenLayout(
 @Composable
 private fun MediaPager(
     state: PagerState,
-    files: List<MediaStoreFile>,
+    items: List<MediaItem>,
     onPageTap: () -> Unit,
     controllerVisible: Boolean,
     controllerStartPadding: Dp,
@@ -381,7 +381,7 @@ private fun MediaPager(
     controllerBottomPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
-    val filesUpdated by rememberUpdatedState(files)
+    val itemsUpdated by rememberUpdatedState(items)
     val onPageTapUpdated by rememberUpdatedState(onPageTap)
     val controllerVisibleUpdated by rememberUpdatedState(controllerVisible)
     val controllerStartPaddingUpdated by rememberUpdatedState(controllerStartPadding)
@@ -389,10 +389,10 @@ private fun MediaPager(
     val controllerBottomPaddingUpdated by rememberUpdatedState(controllerBottomPadding)
     HorizontalPager(
         state = state,
-        key = { page -> filesUpdated[page].id },
+        key = { page -> itemsUpdated[page].file.id },
         modifier = modifier,
     ) { page ->
-        val file = filesUpdated[page]
+        val file = itemsUpdated[page].file
         MediaPage(
             state = state,
             number = page,
@@ -555,7 +555,7 @@ private fun rememberMediaBarState(
 private fun MediaBar(
     currentIndex: Int,
     state: LazyListState,
-    items: List<MediaStoreFile>,
+    items: List<MediaItem>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -577,9 +577,9 @@ private fun MediaBar(
     ) {
         items(
             count = itemsUpdated.size,
-            key = { position -> MediaBarKey(itemsUpdated[position].id) },
+            key = { position -> MediaBarKey(itemsUpdated[position].file.id) },
         ) { position ->
-            val file = itemsUpdated[position]
+            val file = itemsUpdated[position].file
             Box(
                 modifier = Modifier
                     .animateItem()

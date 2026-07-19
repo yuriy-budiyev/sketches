@@ -236,7 +236,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override suspend fun getBookmarks(): Flow<Map<Long, Bookmark>> =
+    override fun getBookmarks(): Flow<Map<Long, Bookmark>> =
         bookmarksDao.getAll().mapLatest { entities ->
             val size = entities.size
             if (size == 0) {

@@ -31,6 +31,7 @@ import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.dagger.LazyProvider
 import com.github.yuriybudiyev.sketches.core.dagger.getValue
+import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.CreateBookmarkUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarkUseCase
@@ -47,11 +48,13 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -81,6 +84,7 @@ class ImageScreenViewModel @AssistedInject constructor(
     private val getBookmarks: GetBookmarksUseCase by getBookmarksProvider
 
     private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
+    private val bookmarks: Flow<Map<Long, Bookmark>> = getBookmarks()
 
     val uiState: StateFlow<UiState> =
         flow<UiState> {
@@ -95,6 +99,13 @@ class ImageScreenViewModel @AssistedInject constructor(
                     }
                 }
             }
+        }.combineTransform(bookmarks) { state, bookmarks ->
+            if (state is UiState.Image) {
+                for (item in state.items) {
+                    item.isMarked = bookmarks.containsKey(item.file.id)
+                }
+            }
+            emit(state)
         }.catch { e ->
             emit(UiState.Error(e))
         }.stateIn(
@@ -113,14 +124,16 @@ class ImageScreenViewModel @AssistedInject constructor(
             return
         }
         try {
-            val files = withContext(ioDispatcher) { getMediaFiles(bucketId) }
-            val filesSize = files.size
+            val items = withContext(ioDispatcher) {
+                getMediaFiles(bucketId).map { file -> MediaItem(file) }
+            }
+            val filesSize = items.size
             if (filesSize > 0) {
-                if (fileIndex < filesSize && files[fileIndex].id == fileId) {
+                if (fileIndex < filesSize && items[fileIndex].file.id == fileId) {
                     emit(
                         UiState.Image(
                             index = fileIndex,
-                            files = files,
+                            items = items,
                         ),
                     )
                 } else {
@@ -129,14 +142,14 @@ class ImageScreenViewModel @AssistedInject constructor(
                     var actualIndex = fileIndex
                     while (backwardIndex > -1 || forwardIndex < filesSize) {
                         if (backwardIndex > -1) {
-                            if (files[backwardIndex].id == fileId) {
+                            if (items[backwardIndex].file.id == fileId) {
                                 actualIndex = backwardIndex
                                 break
                             }
                             backwardIndex--
                         }
                         if (forwardIndex < filesSize) {
-                            if (files[forwardIndex].id == fileId) {
+                            if (items[forwardIndex].file.id == fileId) {
                                 actualIndex = forwardIndex
                                 break
                             }
@@ -144,7 +157,7 @@ class ImageScreenViewModel @AssistedInject constructor(
                         }
                     }
                     val removedFiles = (uiState.value as? UiState.Image)?.let { state ->
-                        state.files.size - filesSize
+                        state.items.size - filesSize
                     } ?: 0
                     emit(
                         UiState.Image(
@@ -156,7 +169,7 @@ class ImageScreenViewModel @AssistedInject constructor(
                                     filesSize - 1,
                                 )
                             },
-                            files = files,
+                            items = items,
                         ),
                     )
                 }
@@ -232,7 +245,7 @@ class ImageScreenViewModel @AssistedInject constructor(
 
         data class Image(
             val index: Int,
-            val files: List<MediaStoreFile>,
+            val items: List<MediaItem>,
         ): UiState
 
         data class Error(val thrown: Throwable): UiState

@@ -33,6 +33,6 @@ import javax.inject.Inject
 @Reusable
 class GetBookmarksUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    suspend operator fun invoke(): Flow<Map<Long, Bookmark>> =
+    operator fun invoke(): Flow<Map<Long, Bookmark>> =
         repository.getBookmarks()
 }
