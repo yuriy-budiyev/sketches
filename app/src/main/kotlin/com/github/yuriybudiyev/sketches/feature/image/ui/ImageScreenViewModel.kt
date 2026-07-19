@@ -29,8 +29,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
-import com.github.yuriybudiyev.sketches.core.dagger.LazyProvider
-import com.github.yuriybudiyev.sketches.core.dagger.getValue
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.CreateBookmarkUseCase
@@ -68,20 +66,13 @@ class ImageScreenViewModel @AssistedInject constructor(
     @Assisted
     route: ImageNavRoute,
     @Dispatcher(Dispatchers.IO)
-    ioDispatcherProvider: LazyProvider<CoroutineDispatcher>,
-    getMediaFilesProvider: LazyProvider<GetMediaFilesUseCase>,
-    deleteMediaFilesProvider: LazyProvider<DeleteMediaFilesUseCase>,
-    createBookmarkProvider: LazyProvider<CreateBookmarkUseCase>,
-    deleteBookmarkProvider: LazyProvider<DeleteBookmarkUseCase>,
-    getBookmarksProvider: LazyProvider<GetBookmarksUseCase>,
+    private val ioDispatcher: CoroutineDispatcher,
+    private val getMediaFiles: GetMediaFilesUseCase,
+    private val deleteMediaFiles: DeleteMediaFilesUseCase,
+    private val createBookmark: CreateBookmarkUseCase,
+    private val deleteBookmark: DeleteBookmarkUseCase,
+    getBookmarks: GetBookmarksUseCase,
 ): MediaObservingViewModel(context) {
-
-    private val ioDispatcher: CoroutineDispatcher by ioDispatcherProvider
-    private val getMediaFiles: GetMediaFilesUseCase by getMediaFilesProvider
-    private val deleteMediaFiles: DeleteMediaFilesUseCase by deleteMediaFilesProvider
-    private val createBookmark: CreateBookmarkUseCase by createBookmarkProvider
-    private val deleteBookmark: DeleteBookmarkUseCase by deleteBookmarkProvider
-    private val getBookmarks: GetBookmarksUseCase by getBookmarksProvider
 
     private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
     private val bookmarks: Flow<Map<Long, Bookmark>> = getBookmarks()
