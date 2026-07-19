@@ -28,8 +28,6 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
-import com.github.yuriybudiyev.sketches.core.dagger.LazyProvider
-import com.github.yuriybudiyev.sketches.core.dagger.getValue
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
@@ -56,17 +54,12 @@ class ImagesScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
     @Dispatcher(Dispatchers.Default)
-    defaultDispatcherProvider: LazyProvider<CoroutineDispatcher>,
+    private val defaultDispatcher: CoroutineDispatcher,
     @Dispatcher(Dispatchers.IO)
-    ioDispatcherProvider: LazyProvider<CoroutineDispatcher>,
-    getMediaFilesProvider: LazyProvider<GetMediaFilesUseCase>,
-    deleteMediaFilesProvider: LazyProvider<DeleteMediaFilesUseCase>,
+    private val ioDispatcher: CoroutineDispatcher,
+    private val getMediaFiles: GetMediaFilesUseCase,
+    private val deleteMediaFiles: DeleteMediaFilesUseCase,
 ): MediaObservingViewModel(context) {
-
-    private val defaultDispatcher: CoroutineDispatcher by defaultDispatcherProvider
-    private val ioDispatcher: CoroutineDispatcher by ioDispatcherProvider
-    private val getMediaFiles: GetMediaFilesUseCase by getMediaFilesProvider
-    private val deleteMediaFiles: DeleteMediaFilesUseCase by deleteMediaFilesProvider
 
     private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
 

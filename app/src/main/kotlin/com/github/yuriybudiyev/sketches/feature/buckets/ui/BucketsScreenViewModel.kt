@@ -30,8 +30,6 @@ import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.consumable.Consumable
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
-import com.github.yuriybudiyev.sketches.core.dagger.LazyProvider
-import com.github.yuriybudiyev.sketches.core.dagger.getValue
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteContentUseCase
@@ -59,16 +57,11 @@ class BucketsScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
     @Dispatcher(Dispatchers.IO)
-    ioDispatcherProvider: LazyProvider<CoroutineDispatcher>,
-    getMediaBucketsProvider: LazyProvider<GetMediaBucketsUseCase>,
-    getBucketsContentProvider: LazyProvider<GetBucketsContentUseCase>,
-    deleteContentProvider: LazyProvider<DeleteContentUseCase>,
+    private val ioDispatcher: CoroutineDispatcher,
+    private val getMediaBuckets: GetMediaBucketsUseCase,
+    private val getBucketsContent: GetBucketsContentUseCase,
+    private val deleteContent: DeleteContentUseCase,
 ): MediaObservingViewModel(context) {
-
-    private val ioDispatcher: CoroutineDispatcher by ioDispatcherProvider
-    private val getMediaBuckets: GetMediaBucketsUseCase by getMediaBucketsProvider
-    private val getBucketsContent: GetBucketsContentUseCase by getBucketsContentProvider
-    private val deleteContent: DeleteContentUseCase by deleteContentProvider
 
     private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
 
