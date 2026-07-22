@@ -34,9 +34,7 @@ import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -107,34 +105,20 @@ class ImagesScreenViewModel @Inject constructor(
         }
     }
 
-    private var deleteMediaJob: Job? = null
-
     fun deleteMedia(files: Collection<MediaStoreFile>) {
-        deleteMediaJob?.cancel()
-        deleteMediaJob = viewModelScope.launch {
+        viewModelScope.launch {
             try {
                 withContext(ioDispatcher) {
                     deleteMediaFiles(files)
                 }
-            } catch (_: CancellationException) {
-                // Do nothing
             } catch (e: Exception) {
                 uiAction.emit(UiAction.ShowError(e))
             }
         }
     }
 
-    private var onMediaChangedJob: Job? = null
-
-    override fun onMediaChanged() {
-        onMediaChangedJob?.cancel()
-        onMediaChangedJob = viewModelScope.launch {
-            try {
-                uiAction.emit(UiAction.UpdateMedia)
-            } catch (_: CancellationException) {
-                // Do nothing
-            }
-        }
+    override suspend fun onMediaChanged() {
+        uiAction.emit(UiAction.UpdateMedia)
     }
 
     sealed interface UiState {

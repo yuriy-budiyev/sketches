@@ -36,22 +36,33 @@ import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 abstract class MediaObservingViewModel(context: Context): ViewModel() {
 
+    /**
+     * Called when MediaStore images or videos updated.
+     *
+     * Runs in [viewModelScope].
+     */
     @MainThread
-    protected abstract fun onMediaChanged()
+    protected abstract suspend fun onMediaChanged()
 
     fun updateMediaAccess() {
         val current = mediaAccess
         val updated = appContext.checkMediaAccess()
         mediaAccess = updated
         if (current != updated || updated == MediaAccess.UserSelected) {
-            viewModelScope.launch {
-                onMediaChanged()
+            onMediaChangedJob?.cancel()
+            onMediaChangedJob = viewModelScope.launch {
+                try {
+                    onMediaChanged()
+                } catch (_: CancellationException) {
+                    // Do nothing
+                }
             }
         }
     }
@@ -67,6 +78,8 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
     private var mediaAccess: MediaAccess = appContext.checkMediaAccess()
 
     private val mediaObserver: ContentObserver = MediaObserver()
+
+    private var onMediaChangedJob: Job? = null
 
     init {
         with(appContext.contentResolver) {

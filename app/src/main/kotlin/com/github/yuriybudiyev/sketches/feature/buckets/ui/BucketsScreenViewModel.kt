@@ -147,29 +147,15 @@ class BucketsScreenViewModel @Inject constructor(
         }
     }
 
-    private var startSharingBucketsJob: Job? = null
-
     fun startSharingBuckets(buckets: Collection<MediaStoreBucket>) {
-        startSharingBucketsJob?.cancel()
-        startSharingBucketsJob = viewModelScope.launch {
-            try {
-                uiAction.emit(UiAction.StartSharingBuckets(buckets))
-            } catch (_: CancellationException) {
-                // Do nothing
-            }
+        viewModelScope.launch {
+            uiAction.emit(UiAction.StartSharingBuckets(buckets))
         }
     }
 
-    private var startDeletingBucketsJob: Job? = null
-
     fun startDeletingBuckets(buckets: Collection<MediaStoreBucket>) {
-        startDeletingBucketsJob?.cancel()
-        startDeletingBucketsJob = viewModelScope.launch {
-            try {
-                uiAction.emit(UiAction.StartDeletingBuckets(buckets))
-            } catch (_: CancellationException) {
-                // Do nothing
-            }
+        viewModelScope.launch {
+            uiAction.emit(UiAction.StartDeletingBuckets(buckets))
         }
     }
 
@@ -190,17 +176,8 @@ class BucketsScreenViewModel @Inject constructor(
         }
     }
 
-    private var onMediaChangedJob: Job? = null
-
-    override fun onMediaChanged() {
-        onMediaChangedJob?.cancel()
-        onMediaChangedJob = viewModelScope.launch {
-            try {
-                uiAction.emit(UiAction.UpdateBuckets)
-            } catch (_: CancellationException) {
-                // Do nothing
-            }
-        }
+    override suspend fun onMediaChanged() {
+        uiAction.emit(UiAction.UpdateBuckets)
     }
 
     sealed interface UiState {

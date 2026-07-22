@@ -121,17 +121,8 @@ class BucketScreenViewModel @AssistedInject constructor(
         }
     }
 
-    private var onMediaChangedJob: Job? = null
-
-    override fun onMediaChanged() {
-        onMediaChangedJob?.cancel()
-        onMediaChangedJob = viewModelScope.launch {
-            try {
-                uiAction.emit(UiAction.UpdateMedia)
-            } catch (_: CancellationException) {
-                // Do nothing
-            }
-        }
+    override suspend fun onMediaChanged() {
+        uiAction.emit(UiAction.UpdateMedia)
     }
 
     sealed interface UiState {
