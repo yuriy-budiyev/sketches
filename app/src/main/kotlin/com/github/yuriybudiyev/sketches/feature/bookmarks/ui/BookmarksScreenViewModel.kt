@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.feature.bookmarks.ui
 
 import android.content.Context
+import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -34,8 +35,12 @@ import javax.inject.Inject
 class BookmarksScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
+    getBookmarks: GetBookmarksUseCase,
+
 ): MediaObservingViewModel(context) {
 
     override suspend fun onMediaChanged() {
     }
+
+
 }

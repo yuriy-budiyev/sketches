@@ -28,6 +28,7 @@ import android.content.Context
 import android.database.ContentObserver
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
 import androidx.annotation.CallSuper
 import androidx.annotation.MainThread
 import androidx.lifecycle.ViewModel
@@ -43,7 +44,7 @@ import kotlinx.coroutines.launch
 abstract class MediaObservingViewModel(context: Context): ViewModel() {
 
     /**
-     * Called when MediaStore images or videos updated.
+     * Called when [MediaStore] images or videos updated.
      *
      * Runs in [viewModelScope].
      */

@@ -34,4 +34,17 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 class MediaItem(val file: MediaStoreFile) {
 
     var isMarked: Boolean by mutableStateOf(false)
+
+    override fun hashCode(): Int =
+        file.hashCode() * 31 + isMarked.hashCode()
+
+    override fun equals(other: Any?): Boolean =
+        when {
+            other === this -> true
+            other is MediaItem -> other.file == this.file && other.isMarked == this.isMarked
+            else -> false
+        }
+
+    override fun toString(): String =
+        "MediaItem(file=$file, isMarked=$isMarked)"
 }
