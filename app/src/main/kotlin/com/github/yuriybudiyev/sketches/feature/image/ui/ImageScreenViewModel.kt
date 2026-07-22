@@ -90,7 +90,7 @@ class ImageScreenViewModel @AssistedInject constructor(
                 }
             }
         }.combineTransform(bookmarks) { state, bookmarks ->
-            if (state is UiState.Image) {
+            if (state is UiState.Image && bookmarks.isNotEmpty()) {
                 for (item in state.items) {
                     item.isMarked = bookmarks.containsKey(item.file.id)
                 }
