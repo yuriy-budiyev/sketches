@@ -40,7 +40,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -159,11 +158,8 @@ class BucketsScreenViewModel @Inject constructor(
         }
     }
 
-    private var deleteMediaJob: Job? = null
-
     fun deleteMedia(uris: Collection<Uri>) {
-        deleteMediaJob?.cancel()
-        deleteMediaJob = viewModelScope.launch {
+        viewModelScope.launch {
             try {
                 withContext(ioDispatcher) {
                     deleteContent(uris)

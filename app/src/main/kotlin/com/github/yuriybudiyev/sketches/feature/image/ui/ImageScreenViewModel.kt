@@ -43,6 +43,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -178,6 +179,8 @@ class ImageScreenViewModel @AssistedInject constructor(
                 withContext(ioDispatcher) {
                     deleteMediaFiles(files)
                 }
+            } catch (_: CancellationException) {
+                // Do nothing
             } catch (e: Exception) {
                 uiAction.emit(UiAction.ShowError(e))
             }

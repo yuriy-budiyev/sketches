@@ -34,6 +34,7 @@ import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -111,6 +112,8 @@ class ImagesScreenViewModel @Inject constructor(
                 withContext(ioDispatcher) {
                     deleteMediaFiles(files)
                 }
+            } catch (_: CancellationException) {
+                // Do nothing
             } catch (e: Exception) {
                 uiAction.emit(UiAction.ShowError(e))
             }
