@@ -107,8 +107,8 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
                 }
             } else {
                 onMediaChangedJob = viewModelScope.launch {
-                    delay(timeMillis = 1000L)
                     try {
+                        delay(timeMillis = 1000L)
                         onMediaChanged()
                     } catch (_: CancellationException) {
                         // Do nothing
