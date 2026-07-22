@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.model
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.database.ContentObserver
 import android.os.Handler
@@ -72,13 +71,9 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
         appContext.contentResolver.unregisterContentObserver(mediaObserver)
     }
 
-    @SuppressLint("StaticFieldLeak")
     private val appContext: Context = context.applicationContext
-
     private var mediaAccess: MediaAccess = appContext.checkMediaAccess()
-
     private val mediaObserver: ContentObserver = MediaObserver()
-
     private var onMediaChangedJob: Job? = null
 
     init {
@@ -99,22 +94,29 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
     private inner class MediaObserver: ContentObserver(Handler(Looper.getMainLooper())) {
 
         override fun onChange(selfChange: Boolean) {
-            delayedCallbackJob?.cancel()
+            onMediaChangedJob?.cancel()
             val currentCallTime = System.nanoTime()
             if (currentCallTime - lastCallTime > 1000000000L) {
                 lastCallTime = currentCallTime
-                viewModelScope.launch {
-                    onMediaChanged()
+                onMediaChangedJob = viewModelScope.launch {
+                    try {
+                        onMediaChanged()
+                    } catch (_: CancellationException) {
+                        // Do nothing
+                    }
                 }
             } else {
-                delayedCallbackJob = viewModelScope.launch {
+                onMediaChangedJob = viewModelScope.launch {
                     delay(timeMillis = 1000L)
-                    onMediaChanged()
+                    try {
+                        onMediaChanged()
+                    } catch (_: CancellationException) {
+                        // Do nothing
+                    }
                 }
             }
         }
 
-        private var delayedCallbackJob: Job? = null
         private var lastCallTime: Long = 0L
     }
 }
