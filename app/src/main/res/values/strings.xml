@@ -31,4 +31,6 @@
     <string name="select_none">Clear selection</string>
     <string name="scroll_to_start">Scroll to start</string>
     <string name="bookmarks">Bookmarks</string>
+    <string name="create_bookmark">Add bookmark</string>
+    <string name="delete_bookmark">Remove bookmark</string>
 </resources>

@@ -142,6 +142,12 @@ fun ImageRoute(viewModel: ImageScreenViewModel) {
         onDelete = { _, file ->
             viewModel.deleteMedia(listOf(file))
         },
+        onCreateBookmark = { mediaId ->
+            viewModel.createBookmark(mediaId)
+        },
+        onDeleteBookmark = { mediaId ->
+            viewModel.deleteBookmark(mediaId)
+        },
     )
 }
 
@@ -150,6 +156,8 @@ fun ImageScreen(
     uiState: ImageScreenViewModel.UiState,
     onChange: (index: Int, file: MediaStoreFile) -> Unit,
     onDelete: (index: Int, file: MediaStoreFile) -> Unit,
+    onCreateBookmark: (mediaId: Long) -> Unit,
+    onDeleteBookmark: (mediaId: Long) -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -172,6 +180,8 @@ fun ImageScreen(
                     items = uiState.items,
                     onChange = onChange,
                     onDelete = onDelete,
+                    onCreateBookmark = onCreateBookmark,
+                    onDeleteBookmark = onDeleteBookmark,
                     modifier = Modifier.matchParentSize(),
                 )
             }
@@ -191,6 +201,8 @@ private fun ImageScreenLayout(
     items: List<MediaItem>,
     onChange: (index: Int, file: MediaStoreFile) -> Unit,
     onDelete: (index: Int, file: MediaStoreFile) -> Unit,
+    onCreateBookmark: (mediaId: Long) -> Unit,
+    onDeleteBookmark: (mediaId: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var currentIndex by remember { mutableIntStateOf(index) }
@@ -199,6 +211,8 @@ private fun ImageScreenLayout(
     val itemsUpdated by rememberUpdatedState(items)
     val onChangeUpdated by rememberUpdatedState(onChange)
     val onDeleteUpdated by rememberUpdatedState(onDelete)
+    val onCreateBookmarkUpdated by rememberUpdatedState(onCreateBookmark)
+    val onDeleteBookmarkUpdated by rememberUpdatedState(onDeleteBookmark)
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState(currentIndex) { itemsUpdated.size }
     val barState = rememberMediaBarState(currentIndex)
@@ -318,6 +332,29 @@ private fun ImageScreenLayout(
                 backgroundColor = MaterialTheme.colorScheme.background
                     .copy(alpha = SketchesColors.UiAlphaLowTransparency),
             ) {
+                SketchesAppBarActionButton(
+                    iconRes =
+                        if (itemsUpdated[currentIndex].isMarked) {
+                            R.drawable.ic_bookmark_delete
+                        } else {
+                            R.drawable.ic_bookmark_create
+                        },
+                    description = stringResource(
+                        if (itemsUpdated[currentIndex].isMarked) {
+                            R.string.delete_bookmark
+                        } else {
+                            R.string.create_bookmark
+                        },
+                    ),
+                    onClick = {
+                        val item = itemsUpdated[currentIndex]
+                        if (item.isMarked) {
+                            onDeleteBookmarkUpdated(item.file.id)
+                        } else {
+                            onCreateBookmarkUpdated(item.file.id)
+                        }
+                    },
+                )
                 SketchesAppBarActionButton(
                     iconRes = R.drawable.ic_delete,
                     description = stringResource(R.string.delete_image),

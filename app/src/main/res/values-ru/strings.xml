@@ -31,4 +31,6 @@
     <string name="select_none">Снять выделение</string>
     <string name="scroll_to_start">Прокрутить в начало</string>
     <string name="bookmarks">Закладки</string>
+    <string name="create_bookmark">Добавить закладку</string>
+    <string name="delete_bookmark">Убрать закладку</string>
 </resources>
