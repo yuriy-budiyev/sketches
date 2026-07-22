@@ -22,29 +22,30 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.feature.image.ui
+package com.github.yuriybudiyev.sketches.feature.bookmarks.ui
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
 @Stable
 class MediaItem(val file: MediaStoreFile) {
 
-    var isMarked: Boolean by mutableStateOf(false)
+    var bookmark: Bookmark? by mutableStateOf(null)
 
     override fun hashCode(): Int =
-        file.hashCode() xor isMarked.hashCode()
+        file.hashCode() xor bookmark.hashCode()
 
     override fun equals(other: Any?): Boolean =
         when {
             other === this -> true
-            other is MediaItem -> other.file == this.file && other.isMarked == this.isMarked
+            other is MediaItem -> other.file == this.file && other.bookmark == this.bookmark
             else -> false
         }
 
     override fun toString(): String =
-        "MediaItem(file=$file, isMarked=$isMarked)"
+        "MediaItem(file=$file, bookmark=$bookmark)"
 }
