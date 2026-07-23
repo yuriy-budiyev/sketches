@@ -46,7 +46,7 @@ import kotlinx.coroutines.launch
 abstract class MediaObservingViewModel(context: Context): ViewModel() {
 
     /**
-     * Application context
+     * Application [Context].
      */
     protected val appContext: Context = context.applicationContext
 
