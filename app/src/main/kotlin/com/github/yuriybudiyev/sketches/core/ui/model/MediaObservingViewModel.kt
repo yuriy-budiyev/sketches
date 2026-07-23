@@ -26,8 +26,10 @@ package com.github.yuriybudiyev.sketches.core.ui.model
 
 import android.content.Context
 import android.database.ContentObserver
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.provider.MediaStore
 import androidx.annotation.CallSuper
 import androidx.annotation.MainThread
@@ -94,10 +96,13 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
 
     private inner class MediaObserver: ContentObserver(Handler(Looper.getMainLooper())) {
 
-        override fun onChange(selfChange: Boolean) {
+        override fun onChange(
+            selfChange: Boolean,
+            uri: Uri?,
+        ) {
             onMediaChangedJob?.cancel()
-            val currentCallTime = System.nanoTime()
-            if (currentCallTime - lastCallTime > 1000000000L) {
+            val currentCallTime = SystemClock.uptimeMillis()
+            if (currentCallTime - lastCallTime > 1000L) {
                 lastCallTime = currentCallTime
                 onMediaChangedJob = viewModelScope.launch {
                     try {
@@ -118,6 +123,6 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
             }
         }
 
-        private var lastCallTime: Long = 0L
+        private var lastCallTime: Long = SystemClock.uptimeMillis()
     }
 }
