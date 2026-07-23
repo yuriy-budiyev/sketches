@@ -29,7 +29,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
-import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.CreateBookmarkUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarkUseCase
@@ -45,7 +44,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -74,7 +72,6 @@ class ImageScreenViewModel @AssistedInject constructor(
 ): MediaObservingViewModel(context) {
 
     private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
-    private val bookmarks: Flow<Map<Long, Bookmark>> = getBookmarks()
 
     val uiState: StateFlow<UiState> =
         flow<UiState> {
@@ -89,7 +86,7 @@ class ImageScreenViewModel @AssistedInject constructor(
                     }
                 }
             }
-        }.combineTransform(bookmarks) { state, bookmarks ->
+        }.combineTransform(getBookmarks()) { state, bookmarks ->
             if (state is UiState.Image && bookmarks.isNotEmpty()) {
                 for (item in state.items) {
                     item.isMarked = bookmarks.containsKey(item.file.id)
