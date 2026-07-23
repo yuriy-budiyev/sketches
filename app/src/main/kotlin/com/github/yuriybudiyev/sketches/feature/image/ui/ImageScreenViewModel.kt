@@ -74,7 +74,7 @@ class ImageScreenViewModel @AssistedInject constructor(
 ): MediaObservingViewModel(context) {
 
     private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
-    private val bookmarks: Flow<Map<Long, Bookmark>> by lazy { getBookmarks() }
+    private val bookmarks: Flow<Map<Long, Bookmark>> = getBookmarks()
 
     val uiState: StateFlow<UiState> =
         flow<UiState> {
