@@ -46,6 +46,11 @@ import kotlinx.coroutines.launch
 abstract class MediaObservingViewModel(context: Context): ViewModel() {
 
     /**
+     * Application context
+     */
+    protected val appContext: Context = context.applicationContext
+
+    /**
      * Called when [MediaStore] images or videos updated.
      *
      * Runs in [viewModelScope].
@@ -74,7 +79,6 @@ abstract class MediaObservingViewModel(context: Context): ViewModel() {
         appContext.contentResolver.unregisterContentObserver(mediaObserver)
     }
 
-    private val appContext: Context = context.applicationContext
     private var mediaAccess: MediaAccess = appContext.checkMediaAccess()
     private val mediaObserver: ContentObserver = MediaObserver()
     private var onMediaChangedJob: Job? = null
