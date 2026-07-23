@@ -36,11 +36,8 @@ class BookmarksScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
     getBookmarks: GetBookmarksUseCase,
-
 ): MediaObservingViewModel(context) {
 
     override suspend fun onMediaChanged() {
     }
-
-
 }
