@@ -25,7 +25,7 @@
 package com.github.yuriybudiyev.sketches.main.imageloader.executor
 
 import android.os.Process
-import com.github.yuriybudiyev.sketches.core.math.closestOdd
+import com.github.yuriybudiyev.sketches.core.math.closestEven
 import java.util.concurrent.CancellationException
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicLong
 import kotlin.math.ceil
 
 class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
-    ceil(Runtime.getRuntime().availableProcessors() * 1.5).toInt().closestOdd(),
+    ceil(Runtime.getRuntime().availableProcessors() * 1.5).toInt().closestEven(),
     ImageLoaderThreadFactory(),
     AbortPolicy(),
 ) {

@@ -24,7 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.math
 
-fun Int.closestOdd(): Int =
+fun Int.closestEven(): Int =
     if (this % 2 != 0) {
         this + 1
     } else {
