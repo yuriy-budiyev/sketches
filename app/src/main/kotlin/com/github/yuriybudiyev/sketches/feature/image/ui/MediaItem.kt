@@ -30,6 +30,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
+//TODO: Bad
 @Stable
 class MediaItem(val file: MediaStoreFile) {
 
