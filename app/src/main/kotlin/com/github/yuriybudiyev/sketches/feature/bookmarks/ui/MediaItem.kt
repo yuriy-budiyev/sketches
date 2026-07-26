@@ -38,12 +38,12 @@ class MediaItem(val file: MediaStoreFile) {
     var bookmark: Bookmark? by mutableStateOf(null)
 
     override fun hashCode(): Int =
-        file.hashCode()
+        file.hashCode() xor bookmark.hashCode()
 
     override fun equals(other: Any?): Boolean =
         when {
             other === this -> true
-            other is MediaItem -> other.file == this.file
+            other is MediaItem -> other.file == this.file && other.bookmark == this.bookmark
             else -> false
         }
 

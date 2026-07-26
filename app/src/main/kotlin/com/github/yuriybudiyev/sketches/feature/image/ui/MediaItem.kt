@@ -37,12 +37,12 @@ class MediaItem(val file: MediaStoreFile) {
     var isMarked: Boolean by mutableStateOf(false)
 
     override fun hashCode(): Int =
-        file.hashCode()
+        file.hashCode() xor isMarked.hashCode()
 
     override fun equals(other: Any?): Boolean =
         when {
             other === this -> true
-            other is MediaItem -> other.file == this.file
+            other is MediaItem -> other.file == this.file && other.isMarked == this.isMarked
             else -> false
         }
 
