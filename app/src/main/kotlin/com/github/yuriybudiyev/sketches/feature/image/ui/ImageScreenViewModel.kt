@@ -85,7 +85,7 @@ class ImageScreenViewModel @AssistedInject constructor(
             }
         }.combineTransform(getBookmarks()) { state, bookmarks ->
             if (state is IntermediateState.Files) {
-                emitItemsWithIndex(
+                checkIndexAndEmitItems(
                     when (mode) {
                         Mode.Images -> {
                             state.files.map { file ->
@@ -151,7 +151,7 @@ class ImageScreenViewModel @AssistedInject constructor(
         }
     }
 
-    private suspend fun FlowCollector<IntermediateState>.emitItemsWithIndex(
+    private suspend fun FlowCollector<IntermediateState>.checkIndexAndEmitItems(
         items: List<ImageItem>,
         fileIndex: Int = currentFileIndex,
         fileId: Long? = currentFileId,
