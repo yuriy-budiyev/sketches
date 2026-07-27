@@ -24,29 +24,12 @@
 
 package com.github.yuriybudiyev.sketches.feature.bookmarks.ui
 
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.Immutable
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
-//TODO: Bad
-@Stable
-class MediaItem(val file: MediaStoreFile) {
-
-    var bookmark: Bookmark? by mutableStateOf(null)
-
-    override fun hashCode(): Int =
-        file.hashCode() xor bookmark.hashCode()
-
-    override fun equals(other: Any?): Boolean =
-        when {
-            other === this -> true
-            other is MediaItem -> other.file == this.file && other.bookmark == this.bookmark
-            else -> false
-        }
-
-    override fun toString(): String =
-        "MediaItem(file=$file, bookmark=$bookmark)"
-}
+@Immutable
+class MediaItem(
+    val file: MediaStoreFile,
+    val bookmark: Bookmark?,
+)

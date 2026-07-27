@@ -24,28 +24,11 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.Immutable
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
-//TODO: Bad
-@Stable
-class MediaItem(val file: MediaStoreFile) {
-
-    var isMarked: Boolean by mutableStateOf(false)
-
-    override fun hashCode(): Int =
-        file.hashCode() xor isMarked.hashCode()
-
-    override fun equals(other: Any?): Boolean =
-        when {
-            other === this -> true
-            other is MediaItem -> other.file == this.file && other.isMarked == this.isMarked
-            else -> false
-        }
-
-    override fun toString(): String =
-        "MediaItem(file=$file, isMarked=$isMarked)"
-}
+@Immutable
+class MediaItem(
+    val file: MediaStoreFile,
+    val isMarked: Boolean,
+)
