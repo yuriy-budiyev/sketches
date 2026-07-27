@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.navigation
 
+import android.os.Parcelable
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.EntryProviderScope
 import com.github.yuriybudiyev.sketches.core.navigation.NavResult
@@ -34,11 +35,30 @@ import com.github.yuriybudiyev.sketches.feature.image.ui.ImageScreenViewModel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class ImageNavRoute(
-    val imageIndex: Int,
-    val imageId: Long,
-    val bucketId: Long?,
-): NavRoute
+data class ImageNavRoute(val data: Data): NavRoute {
+
+    sealed interface Data: Parcelable {
+
+        @Parcelize
+        data class Images(
+            val imageIndex: Int,
+            val imageId: Long,
+        ): Data
+
+        @Parcelize
+        data class Bookmarks(
+            val imageIndex: Int,
+            val imageId: Long,
+        ): Data
+
+        @Parcelize
+        data class Bucket(
+            val imageIndex: Int,
+            val imageId: Long,
+            val bucketId: Long,
+        ): Data
+    }
+}
 
 @Parcelize
 data class ImageScreenNavResult(

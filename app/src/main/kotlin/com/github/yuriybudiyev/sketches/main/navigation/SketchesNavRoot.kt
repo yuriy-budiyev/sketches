@@ -139,9 +139,10 @@ fun SketchesNavRoot(
                 onImageClick = { index, file ->
                     pushNavBackStack(
                         ImageNavRoute(
-                            imageIndex = index,
-                            imageId = file.id,
-                            bucketId = null,
+                            data = ImageNavRoute.Data.Images(
+                                imageIndex = index,
+                                imageId = file.id,
+                            ),
                         ),
                     )
                 },
@@ -161,9 +162,11 @@ fun SketchesNavRoot(
                 onImageClick = { index, file ->
                     pushNavBackStack(
                         ImageNavRoute(
-                            imageIndex = index,
-                            imageId = file.id,
-                            bucketId = file.bucketId,
+                            data = ImageNavRoute.Data.Bucket(
+                                imageIndex = index,
+                                imageId = file.id,
+                                bucketId = file.bucketId,
+                            ),
                         ),
                     )
                 },

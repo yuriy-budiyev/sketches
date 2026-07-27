@@ -232,12 +232,31 @@ class ImageScreenViewModel @AssistedInject constructor(
     var currentFileId: Long
         private set
 
-    private var currentBucketId: Long?
+    private val currentBucketId: Long?
+    private val mode: Mode
 
     init {
-        currentFileIndex = savedStateHandle[Keys.CurrentFileIndex] ?: route.imageIndex
-        currentFileId = savedStateHandle[Keys.CurrentFileId] ?: route.imageId
-        currentBucketId = route.bucketId
+        when (val data = route.data) {
+            is ImageNavRoute.Data.Images -> {
+                currentFileIndex = savedStateHandle[Keys.CurrentFileIndex] ?: data.imageIndex
+                currentFileId = savedStateHandle[Keys.CurrentFileId] ?: data.imageId
+                currentBucketId = null
+                mode = Mode.Images
+            }
+            is ImageNavRoute.Data.Bookmarks -> {
+                //TODO
+                currentFileIndex = savedStateHandle[Keys.CurrentFileIndex] ?: data.imageIndex
+                currentFileId = savedStateHandle[Keys.CurrentFileId] ?: data.imageId
+                currentBucketId = null
+                mode = Mode.Bookmarks
+            }
+            is ImageNavRoute.Data.Bucket -> {
+                currentFileIndex = savedStateHandle[Keys.CurrentFileIndex] ?: data.imageIndex
+                currentFileId = savedStateHandle[Keys.CurrentFileId] ?: data.imageId
+                currentBucketId = data.bucketId
+                mode = Mode.Images
+            }
+        }
     }
 
     sealed interface UiState {
@@ -271,6 +290,12 @@ class ImageScreenViewModel @AssistedInject constructor(
         data object UpdateMedia: UiAction
 
         data class ShowError(val thrown: Throwable): UiAction
+    }
+
+    private enum class Mode {
+
+        Images,
+        Bookmarks,
     }
 
     @AssistedFactory
