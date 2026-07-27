@@ -25,23 +25,39 @@
 package com.github.yuriybudiyev.sketches.feature.bookmarks.ui
 
 import android.content.Context
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class BookmarksScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
+    @Dispatcher(Dispatchers.IO)
+    private val ioDispatcher: CoroutineDispatcher,
     private val getMediaFiles: GetMediaFilesUseCase,
     getBookmarks: GetBookmarksUseCase,
 ): MediaObservingViewModel(context) {
 
     override suspend fun onMediaChanged() {
+    }
+
+    private suspend fun FlowCollector<IntermediateState>.updateFiles() {
+        val files = withContext(ioDispatcher) { getMediaFiles() }
+        if (files.isNotEmpty()) {
+            emit(IntermediateState.Files(files))
+        } else {
+            emit(IntermediateState.Empty)
+        }
     }
 
     sealed interface UiState {
@@ -62,5 +78,10 @@ class BookmarksScreenViewModel @Inject constructor(
         data class Items(val items: List<BookmarkItem>): IntermediateState
 
         data object Empty: IntermediateState
+    }
+
+    private sealed interface UiAction {
+
+        data object UpdateMedia: UiAction
     }
 }
