@@ -100,7 +100,7 @@ class ImageScreenViewModel @AssistedInject constructor(
                             if (files.isEmpty()) {
                                 emptyList()
                             } else {
-                                state.files.asSequence()
+                                files.asSequence()
                                     .filter { file -> bookmarks.containsKey(file.id) }
                                     .mapTo(ArrayList(bookmarks.size)) { file ->
                                         ImageItem(
