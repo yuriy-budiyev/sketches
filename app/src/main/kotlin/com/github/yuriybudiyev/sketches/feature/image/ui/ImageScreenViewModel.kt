@@ -276,7 +276,6 @@ class ImageScreenViewModel @AssistedInject constructor(
                 mode = Mode.Images
             }
             is ImageNavRoute.Data.Bookmarks -> {
-                //TODO
                 currentFileIndex = savedStateHandle[Keys.CurrentFileIndex] ?: data.imageIndex
                 currentFileId = savedStateHandle[Keys.CurrentFileId] ?: data.imageId
                 currentBucketId = null
