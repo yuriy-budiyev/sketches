@@ -29,7 +29,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
-import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.CreateBookmarkUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarkUseCase
@@ -53,6 +52,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -76,39 +76,67 @@ class ImageScreenViewModel @AssistedInject constructor(
 
     val uiState: StateFlow<UiState> =
         flow<IntermediateState> {
-            updateMedia()
+            updateFiles()
             uiAction.collect { action ->
                 when (action) {
                     is UiAction.UpdateMedia -> {
-                        updateMedia()
+                        updateFiles()
                     }
                     is UiAction.ShowError -> {
                         emit(IntermediateState.Error(action.thrown))
                     }
                 }
             }
-        }.combineTransform<IntermediateState, Map<Long, Bookmark>, UiState>(
-            flow = getBookmarks(),
-        ) { state, bookmarks ->
-            when (state) {
-                is IntermediateState.Image -> {
-                    emit(
-                        UiState.Image(
-                            index = state.index,
-                            items = state.files.map { file ->
+        }.combineTransform(getBookmarks()) { state, bookmarks ->
+            if (state is IntermediateState.Files) {
+                emitItemsWithIndex(
+                    when (mode) {
+                        Mode.Images -> {
+                            state.files.map { file ->
                                 MediaItem(
                                     file = file,
                                     isMarked = bookmarks.containsKey(file.id),
                                 )
-                            },
+                            }
+                        }
+                        Mode.Bookmarks -> {
+                            val files = state.files
+                            if (files.isEmpty()) {
+                                emptyList()
+                            } else {
+                                state.files.asSequence()
+                                    .filter { file -> bookmarks.containsKey(file.id) }
+                                    .mapTo(ArrayList(bookmarks.size)) { file ->
+                                        MediaItem(
+                                            file = file,
+                                            isMarked = true,
+                                        )
+                                    }
+                            }
+                        }
+                    },
+                )
+            } else {
+                emit(state)
+            }
+        }.transform { state ->
+            when (state) {
+                is IntermediateState.ItemsWithIndex -> {
+                    emit(
+                        UiState.Image(
+                            items = state.items,
+                            index = state.index,
                         ),
                     )
                 }
-                is IntermediateState.Error -> {
-                    emit(UiState.Error(state.thrown))
+                is IntermediateState.Files -> {
+                    throw IllegalStateException("Invalid state: $state")
                 }
                 is IntermediateState.Empty -> {
                     emit(UiState.Empty)
+                }
+                is IntermediateState.Error -> {
+                    emit(UiState.Error(state.thrown))
                 }
             }
         }.catch { e ->
@@ -119,70 +147,74 @@ class ImageScreenViewModel @AssistedInject constructor(
             initialValue = UiState.Loading,
         )
 
-    private suspend fun FlowCollector<IntermediateState>.updateMedia(
-        fileIndex: Int = currentFileIndex,
-        fileId: Long? = currentFileId,
+    private suspend fun FlowCollector<IntermediateState>.updateFiles(
         bucketId: Long? = currentBucketId,
     ) {
-        if (fileIndex == -1) {
-            emit(IntermediateState.Empty)
-            return
-        }
         try {
             val files = withContext(ioDispatcher) { getMediaFiles(bucketId) }
-            val filesSize = files.size
-            if (filesSize > 0) {
-                if (fileIndex < filesSize && files[fileIndex].id == fileId) {
-                    emit(
-                        IntermediateState.Image(
-                            index = fileIndex,
-                            files = files,
-                        ),
-                    )
-                } else {
-                    var backwardIndex = fileIndex - 1
-                    var forwardIndex = fileIndex + 1
-                    var actualIndex = fileIndex
-                    while (backwardIndex > -1 || forwardIndex < filesSize) {
-                        if (backwardIndex > -1) {
-                            if (files[backwardIndex].id == fileId) {
-                                actualIndex = backwardIndex
-                                break
-                            }
-                            backwardIndex--
-                        }
-                        if (forwardIndex < filesSize) {
-                            if (files[forwardIndex].id == fileId) {
-                                actualIndex = forwardIndex
-                                break
-                            }
-                            forwardIndex++
-                        }
-                    }
-                    val removedFiles = (uiState.value as? UiState.Image)?.let { state ->
-                        state.items.size - filesSize
-                    } ?: 0
-                    emit(
-                        IntermediateState.Image(
-                            index = if (backwardIndex == -1 && forwardIndex == filesSize && removedFiles > 1) {
-                                0
-                            } else {
-                                actualIndex.coerceIn(
-                                    0,
-                                    filesSize - 1,
-                                )
-                            },
-                            files = files,
-                        ),
-                    )
-                }
+            if (files.isNotEmpty()) {
+                emit(IntermediateState.Files(files))
             } else {
                 emit(IntermediateState.Empty)
             }
+        } catch (_: CancellationException) {
+            // Do nothing
         } catch (e: Exception) {
             if (uiState.value !is UiState.Image) {
                 emit(IntermediateState.Error(e))
             }
+        }
+    }
+
+    private suspend fun FlowCollector<IntermediateState>.emitItemsWithIndex(
+        items: List<MediaItem>,
+        fileIndex: Int = currentFileIndex,
+        fileId: Long? = currentFileId,
+    ) {
+        val filesSize = items.size
+        if (fileIndex < filesSize && items[fileIndex].file.id == fileId) {
+            emit(
+                IntermediateState.ItemsWithIndex(
+                    items = items,
+                    index = fileIndex,
+                ),
+            )
+        } else {
+            var backwardIndex = fileIndex - 1
+            var forwardIndex = fileIndex + 1
+            var actualIndex = fileIndex
+            while (backwardIndex > -1 || forwardIndex < filesSize) {
+                if (backwardIndex > -1) {
+                    if (items[backwardIndex].file.id == fileId) {
+                        actualIndex = backwardIndex
+                        break
+                    }
+                    backwardIndex--
+                }
+                if (forwardIndex < filesSize) {
+                    if (items[forwardIndex].file.id == fileId) {
+                        actualIndex = forwardIndex
+                        break
+                    }
+                    forwardIndex++
+                }
+            }
+            val removedFiles = (uiState.value as? UiState.Image)?.let { state ->
+                state.items.size - filesSize
+            } ?: 0
+            emit(
+                IntermediateState.ItemsWithIndex(
+                    items = items,
+                    index = if (backwardIndex == -1 && forwardIndex == filesSize && removedFiles > 1) {
+                        0
+                    } else {
+                        actualIndex.coerceIn(
+                            0,
+                            filesSize - 1,
+                        )
+                    },
+                ),
+            )
         }
     }
 
@@ -266,8 +298,8 @@ class ImageScreenViewModel @AssistedInject constructor(
         data object Loading: UiState
 
         data class Image(
-            val index: Int,
             val items: List<MediaItem>,
+            val index: Int,
         ): UiState
 
         data class Error(val thrown: Throwable): UiState
@@ -275,10 +307,12 @@ class ImageScreenViewModel @AssistedInject constructor(
 
     private sealed interface IntermediateState {
 
-        data class Image(
+        data class ItemsWithIndex(
+            val items: List<MediaItem>,
             val index: Int,
-            val files: List<MediaStoreFile>,
         ): IntermediateState
+
+        data class Files(val files: List<MediaStoreFile>): IntermediateState
 
         data class Error(val thrown: Throwable): IntermediateState
 
