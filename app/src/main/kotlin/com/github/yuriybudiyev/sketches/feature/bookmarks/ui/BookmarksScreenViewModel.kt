@@ -60,5 +60,7 @@ class BookmarksScreenViewModel @Inject constructor(
         data class Files(val files: List<MediaStoreFile>): IntermediateState
 
         data class Items(val items: List<BookmarkItem>): IntermediateState
+
+        data object Empty: IntermediateState
     }
 }
