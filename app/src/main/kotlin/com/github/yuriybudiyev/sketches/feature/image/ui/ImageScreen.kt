@@ -198,7 +198,7 @@ fun ImageScreen(
 @Composable
 private fun ImageScreenLayout(
     index: Int,
-    items: List<MediaItem>,
+    items: List<ImageItem>,
     onChange: (index: Int, file: MediaStoreFile) -> Unit,
     onDelete: (index: Int, file: MediaStoreFile) -> Unit,
     onCreateBookmark: (mediaId: Long) -> Unit,
@@ -410,7 +410,7 @@ private fun ImageScreenLayout(
 @Composable
 private fun MediaPager(
     state: PagerState,
-    items: List<MediaItem>,
+    items: List<ImageItem>,
     onPageTap: () -> Unit,
     controllerVisible: Boolean,
     controllerStartPadding: Dp,
@@ -592,7 +592,7 @@ private fun rememberMediaBarState(
 private fun MediaBar(
     currentIndex: Int,
     state: LazyListState,
-    items: List<MediaItem>,
+    items: List<ImageItem>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
 ) {

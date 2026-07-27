@@ -22,13 +22,14 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.feature.image.ui
+package com.github.yuriybudiyev.sketches.feature.bookmarks.ui
 
 import androidx.compose.runtime.Immutable
+import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
 @Immutable
-class MediaItem(
+class BookmarkItem(
     val file: MediaStoreFile,
-    val isMarked: Boolean,
+    val bookmark: Bookmark?,
 )

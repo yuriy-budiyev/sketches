@@ -42,7 +42,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -82,9 +81,6 @@ class ImageScreenViewModel @AssistedInject constructor(
                     is UiAction.UpdateMedia -> {
                         updateFiles()
                     }
-                    is UiAction.ShowError -> {
-                        emit(IntermediateState.Error(action.thrown))
-                    }
                 }
             }
         }.combineTransform(getBookmarks()) { state, bookmarks ->
@@ -93,7 +89,7 @@ class ImageScreenViewModel @AssistedInject constructor(
                     when (mode) {
                         Mode.Images -> {
                             state.files.map { file ->
-                                MediaItem(
+                                ImageItem(
                                     file = file,
                                     isMarked = bookmarks.containsKey(file.id),
                                 )
@@ -107,7 +103,7 @@ class ImageScreenViewModel @AssistedInject constructor(
                                 state.files.asSequence()
                                     .filter { file -> bookmarks.containsKey(file.id) }
                                     .mapTo(ArrayList(bookmarks.size)) { file ->
-                                        MediaItem(
+                                        ImageItem(
                                             file = file,
                                             isMarked = true,
                                         )
@@ -121,7 +117,7 @@ class ImageScreenViewModel @AssistedInject constructor(
             }
         }.transform { state ->
             when (state) {
-                is IntermediateState.ItemsWithIndex -> {
+                is IntermediateState.Items -> {
                     emit(
                         UiState.Image(
                             items = state.items,
@@ -135,12 +131,9 @@ class ImageScreenViewModel @AssistedInject constructor(
                 is IntermediateState.Empty -> {
                     emit(UiState.Empty)
                 }
-                is IntermediateState.Error -> {
-                    emit(UiState.Error(state.thrown))
-                }
             }
-        }.catch { e ->
-            emit(UiState.Error(e))
+        }.catch { t ->
+            emit(UiState.Error(t))
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
@@ -150,31 +143,23 @@ class ImageScreenViewModel @AssistedInject constructor(
     private suspend fun FlowCollector<IntermediateState>.updateFiles(
         bucketId: Long? = currentBucketId,
     ) {
-        try {
-            val files = withContext(ioDispatcher) { getMediaFiles(bucketId) }
-            if (files.isNotEmpty()) {
-                emit(IntermediateState.Files(files))
-            } else {
-                emit(IntermediateState.Empty)
-            }
-        } catch (_: CancellationException) {
-            // Do nothing
-        } catch (e: Exception) {
-            if (uiState.value !is UiState.Image) {
-                emit(IntermediateState.Error(e))
-            }
+        val files = withContext(ioDispatcher) { getMediaFiles(bucketId) }
+        if (files.isNotEmpty()) {
+            emit(IntermediateState.Files(files))
+        } else {
+            emit(IntermediateState.Empty)
         }
     }
 
     private suspend fun FlowCollector<IntermediateState>.emitItemsWithIndex(
-        items: List<MediaItem>,
+        items: List<ImageItem>,
         fileIndex: Int = currentFileIndex,
         fileId: Long? = currentFileId,
     ) {
         val filesSize = items.size
         if (fileIndex < filesSize && items[fileIndex].file.id == fileId) {
             emit(
-                IntermediateState.ItemsWithIndex(
+                IntermediateState.Items(
                     items = items,
                     index = fileIndex,
                 ),
@@ -199,11 +184,12 @@ class ImageScreenViewModel @AssistedInject constructor(
                     forwardIndex++
                 }
             }
+            //TODO: Remove access to class field?
             val removedFiles = (uiState.value as? UiState.Image)?.let { state ->
                 state.items.size - filesSize
             } ?: 0
             emit(
-                IntermediateState.ItemsWithIndex(
+                IntermediateState.Items(
                     items = items,
                     index = if (backwardIndex == -1 && forwardIndex == filesSize && removedFiles > 1) {
                         0
@@ -220,14 +206,8 @@ class ImageScreenViewModel @AssistedInject constructor(
 
     fun deleteMedia(files: Collection<MediaStoreFile>) {
         viewModelScope.launch {
-            try {
-                withContext(ioDispatcher) {
-                    deleteMediaFiles(files)
-                }
-            } catch (_: CancellationException) {
-                // Do nothing
-            } catch (e: Exception) {
-                uiAction.emit(UiAction.ShowError(e))
+            withContext(ioDispatcher) {
+                deleteMediaFiles(files)
             }
         }
     }
@@ -297,7 +277,7 @@ class ImageScreenViewModel @AssistedInject constructor(
         data object Loading: UiState
 
         data class Image(
-            val items: List<MediaItem>,
+            val items: List<ImageItem>,
             val index: Int,
         ): UiState
 
@@ -306,14 +286,12 @@ class ImageScreenViewModel @AssistedInject constructor(
 
     private sealed interface IntermediateState {
 
-        data class ItemsWithIndex(
-            val items: List<MediaItem>,
+        data class Items(
+            val items: List<ImageItem>,
             val index: Int,
         ): IntermediateState
 
         data class Files(val files: List<MediaStoreFile>): IntermediateState
-
-        data class Error(val thrown: Throwable): IntermediateState
 
         data object Empty: IntermediateState
     }
@@ -321,8 +299,6 @@ class ImageScreenViewModel @AssistedInject constructor(
     private sealed interface UiAction {
 
         data object UpdateMedia: UiAction
-
-        data class ShowError(val thrown: Throwable): UiAction
     }
 
     private enum class Mode {

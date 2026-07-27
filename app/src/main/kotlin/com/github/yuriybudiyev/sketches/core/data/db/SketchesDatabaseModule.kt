@@ -40,7 +40,10 @@ object SketchesDatabaseModule {
 
     @Provides
     @Singleton
-    fun provideSketchesDatabase(@ApplicationContext context: Context): SketchesDatabase =
+    fun provideSketchesDatabase(
+        @ApplicationContext
+        context: Context,
+    ): SketchesDatabase =
         Room.databaseBuilder<SketchesDatabase>(
             context = context,
             name = "sketches",

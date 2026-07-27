@@ -25,7 +25,9 @@
 package com.github.yuriybudiyev.sketches.feature.bookmarks.ui
 
 import android.content.Context
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -35,9 +37,28 @@ import javax.inject.Inject
 class BookmarksScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
+    private val getMediaFiles: GetMediaFilesUseCase,
     getBookmarks: GetBookmarksUseCase,
 ): MediaObservingViewModel(context) {
 
     override suspend fun onMediaChanged() {
+    }
+
+    sealed interface UiState {
+
+        data class Bookmarks(val bookmarks: List<BookmarkItem>): UiState
+
+        data class Error(val thrown: Throwable): UiState
+
+        data object Empty: UiState
+
+        data object Loading: UiState
+    }
+
+    private sealed interface IntermediateState {
+
+        data class Files(val files: List<MediaStoreFile>): IntermediateState
+
+        data class Items(val items: List<BookmarkItem>): IntermediateState
     }
 }
