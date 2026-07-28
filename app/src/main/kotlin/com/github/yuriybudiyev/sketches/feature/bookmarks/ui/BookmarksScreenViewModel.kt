@@ -80,8 +80,8 @@ class BookmarksScreenViewModel @Inject constructor(
         data object Empty: IntermediateState
     }
 
-    private sealed interface UiAction {
+    private sealed interface Action {
 
-        data object UpdateMedia: UiAction
+        data object UpdateMedia: Action
     }
 }

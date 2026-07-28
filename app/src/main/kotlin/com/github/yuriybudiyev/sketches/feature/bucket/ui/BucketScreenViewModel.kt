@@ -38,7 +38,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -65,18 +64,15 @@ class BucketScreenViewModel @AssistedInject constructor(
     val bucketId: Long = route.bucketId
     val bucketName: String = route.bucketName
 
-    private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
+    private val action: MutableSharedFlow<Action> = MutableSharedFlow()
 
     val uiState: StateFlow<UiState> =
         flow<UiState> {
             updateMedia()
-            uiAction.collect { action ->
+            action.collect { action ->
                 when (action) {
-                    is UiAction.UpdateMedia -> {
+                    is Action.UpdateMedia -> {
                         updateMedia()
-                    }
-                    is UiAction.ShowError -> {
-                        emit(UiState.Error(action.thrown))
                     }
                 }
             }
@@ -89,36 +85,24 @@ class BucketScreenViewModel @AssistedInject constructor(
         )
 
     private suspend fun FlowCollector<UiState>.updateMedia() {
-        try {
-            val files = withContext(ioDispatcher) { getMediaFiles(bucketId) }
-            if (files.isNotEmpty()) {
-                emit(UiState.Bucket(files))
-            } else {
-                emit(UiState.Empty)
-            }
-        } catch (e: Exception) {
-            if (uiState.value !is UiState.Bucket) {
-                emit(UiState.Error(e))
-            }
+        val files = withContext(ioDispatcher) { getMediaFiles(bucketId) }
+        if (files.isNotEmpty()) {
+            emit(UiState.Bucket(files))
+        } else {
+            emit(UiState.Empty)
         }
     }
 
     fun deleteMedia(files: Collection<MediaStoreFile>) {
         viewModelScope.launch {
-            try {
-                withContext(ioDispatcher) {
-                    deleteMediaFiles(files)
-                }
-            } catch (_: CancellationException) {
-                // Do nothing
-            } catch (e: Exception) {
-                uiAction.emit(UiAction.ShowError(e))
+            withContext(ioDispatcher) {
+                deleteMediaFiles(files)
             }
         }
     }
 
     override suspend fun onMediaChanged() {
-        uiAction.emit(UiAction.UpdateMedia)
+        action.emit(Action.UpdateMedia)
     }
 
     sealed interface UiState {
@@ -132,11 +116,9 @@ class BucketScreenViewModel @AssistedInject constructor(
         data class Error(val thrown: Throwable): UiState
     }
 
-    private sealed interface UiAction {
+    private sealed interface Action {
 
-        data object UpdateMedia: UiAction
-
-        data class ShowError(val thrown: Throwable): UiAction
+        data object UpdateMedia: Action
     }
 
     @AssistedFactory

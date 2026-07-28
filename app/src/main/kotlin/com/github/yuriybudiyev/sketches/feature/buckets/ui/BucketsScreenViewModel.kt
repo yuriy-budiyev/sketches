@@ -38,7 +38,6 @@ import com.github.yuriybudiyev.sketches.core.domain.GetMediaBucketsUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -62,28 +61,25 @@ class BucketsScreenViewModel @Inject constructor(
     private val deleteContent: DeleteContentUseCase,
 ): MediaObservingViewModel(context) {
 
-    private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
+    private val action: MutableSharedFlow<Action> = MutableSharedFlow()
 
     val uiState: StateFlow<UiState> =
         flow<UiState> {
             updateBuckets()
-            uiAction.collect { action ->
+            action.collect { action ->
                 when (action) {
-                    is UiAction.UpdateBuckets -> {
+                    is Action.UpdateBuckets -> {
                         updateBuckets()
                     }
-                    is UiAction.StartSharingBuckets -> {
+                    is Action.StartSharingBuckets -> {
                         startBucketsAction(action.buckets) { files ->
                             UiState.Buckets.Action.Share(files)
                         }
                     }
-                    is UiAction.StartDeletingBuckets -> {
+                    is Action.StartDeletingBuckets -> {
                         startBucketsAction(action.buckets) { files ->
                             UiState.Buckets.Action.Delete(files)
                         }
-                    }
-                    is UiAction.ShowError -> {
-                        emit(UiState.Error(action.thrown))
                     }
                 }
             }
@@ -96,32 +92,26 @@ class BucketsScreenViewModel @Inject constructor(
         )
 
     private suspend fun FlowCollector<UiState>.updateBuckets() {
-        try {
-            val buckets = withContext(ioDispatcher) { getMediaBuckets() }
-            if (buckets.isNotEmpty()) {
-                val oldValue = uiState.value
-                if (oldValue is UiState.Buckets) {
-                    emit(
-                        UiState.Buckets(
-                            buckets = buckets,
-                            action = oldValue.action,
-                        ),
-                    )
-                } else {
-                    emit(
-                        UiState.Buckets(
-                            buckets = buckets,
-                            action = Consumable.consumed(),
-                        ),
-                    )
-                }
+        val buckets = withContext(ioDispatcher) { getMediaBuckets() }
+        if (buckets.isNotEmpty()) {
+            val oldState = uiState.value
+            if (oldState is UiState.Buckets) {
+                emit(
+                    UiState.Buckets(
+                        buckets = buckets,
+                        action = oldState.action,
+                    ),
+                )
             } else {
-                emit(UiState.Empty)
+                emit(
+                    UiState.Buckets(
+                        buckets = buckets,
+                        action = Consumable.empty(),
+                    ),
+                )
             }
-        } catch (e: Exception) {
-            if (uiState.value !is UiState.Buckets) {
-                emit(UiState.Error(e))
-            }
+        } else {
+            emit(UiState.Empty)
         }
     }
 
@@ -129,51 +119,42 @@ class BucketsScreenViewModel @Inject constructor(
         buckets: Collection<MediaStoreBucket>,
         action: (files: List<MediaStoreFile>) -> UiState.Buckets.Action,
     ) {
-        try {
-            val files = withContext(ioDispatcher) { getBucketsContent(buckets) }
-            if (files.isNotEmpty()) {
-                val oldState = uiState.value
-                if (oldState is UiState.Buckets) {
-                    emit(
-                        UiState.Buckets(
-                            buckets = oldState.buckets,
-                            action = Consumable.from(action(files)),
-                        ),
-                    )
-                }
+        val files = withContext(ioDispatcher) { getBucketsContent(buckets) }
+        if (files.isNotEmpty()) {
+            val oldState = uiState.value
+            if (oldState is UiState.Buckets) {
+                emit(
+                    UiState.Buckets(
+                        buckets = oldState.buckets,
+                        action = Consumable.from(action(files)),
+                    ),
+                )
             }
-        } catch (_: Exception) {
         }
     }
 
     fun startSharingBuckets(buckets: Collection<MediaStoreBucket>) {
         viewModelScope.launch {
-            uiAction.emit(UiAction.StartSharingBuckets(buckets))
+            action.emit(Action.StartSharingBuckets(buckets))
         }
     }
 
     fun startDeletingBuckets(buckets: Collection<MediaStoreBucket>) {
         viewModelScope.launch {
-            uiAction.emit(UiAction.StartDeletingBuckets(buckets))
+            action.emit(Action.StartDeletingBuckets(buckets))
         }
     }
 
     fun deleteMedia(uris: Collection<Uri>) {
         viewModelScope.launch {
-            try {
-                withContext(ioDispatcher) {
-                    deleteContent(uris)
-                }
-            } catch (_: CancellationException) {
-                // Do nothing
-            } catch (e: Exception) {
-                uiAction.emit(UiAction.ShowError(e))
+            withContext(ioDispatcher) {
+                deleteContent(uris)
             }
         }
     }
 
     override suspend fun onMediaChanged() {
-        uiAction.emit(UiAction.UpdateBuckets)
+        action.emit(Action.UpdateBuckets)
     }
 
     sealed interface UiState {
@@ -198,14 +179,12 @@ class BucketsScreenViewModel @Inject constructor(
         data class Error(val thrown: Throwable): UiState
     }
 
-    private sealed interface UiAction {
+    private sealed interface Action {
 
-        data object UpdateBuckets: UiAction
+        data object UpdateBuckets: Action
 
-        data class StartSharingBuckets(val buckets: Collection<MediaStoreBucket>): UiAction
+        data class StartSharingBuckets(val buckets: Collection<MediaStoreBucket>): Action
 
-        data class StartDeletingBuckets(val buckets: Collection<MediaStoreBucket>): UiAction
-
-        data class ShowError(val thrown: Throwable): UiAction
+        data class StartDeletingBuckets(val buckets: Collection<MediaStoreBucket>): Action
     }
 }

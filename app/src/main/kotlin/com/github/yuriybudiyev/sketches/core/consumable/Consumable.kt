@@ -33,31 +33,19 @@ import java.util.concurrent.locks.ReentrantLock
  */
 class Consumable<T> private constructor(value: T) {
 
-    val isConsumed: Boolean
-        get() {
-            val consumed: Boolean
-            consumeLock.lock()
-            try {
-                consumed = valueInternal === Consumed
-            } finally {
-                consumeLock.unlock()
-            }
-            return consumed
-        }
-
     @Suppress("UNCHECKED_CAST")
     fun consume(): T? {
         var value: Any? = valueInternal
-        if (value === Consumed) {
+        if (value === Empty) {
             value = null
         } else {
             consumeLock.lock()
             try {
                 value = valueInternal
-                if (value === Consumed) {
+                if (value === Empty) {
                     value = null
                 } else {
-                    valueInternal = Consumed
+                    valueInternal = Empty
                 }
             } finally {
                 consumeLock.unlock()
@@ -74,11 +62,7 @@ class Consumable<T> private constructor(value: T) {
     override fun toString(): String =
         "Consumable($valueInternal)"
 
-    private object Consumed {
-
-        override fun toString(): String =
-            "Consumed"
-    }
+    private data object Empty
 
     companion object {
 
@@ -86,7 +70,7 @@ class Consumable<T> private constructor(value: T) {
             Consumable(value)
 
         @Suppress("UNCHECKED_CAST")
-        fun <T> consumed(): Consumable<T> =
-            Consumable(Consumed) as Consumable<T>
+        fun <T> empty(): Consumable<T> =
+            Consumable(Empty) as Consumable<T>
     }
 }

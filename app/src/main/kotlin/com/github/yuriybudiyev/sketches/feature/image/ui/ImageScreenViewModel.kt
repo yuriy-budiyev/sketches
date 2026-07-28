@@ -71,14 +71,14 @@ class ImageScreenViewModel @AssistedInject constructor(
     getBookmarks: GetBookmarksUseCase,
 ): MediaObservingViewModel(context) {
 
-    private val uiAction: MutableSharedFlow<UiAction> = MutableSharedFlow()
+    private val action: MutableSharedFlow<Action> = MutableSharedFlow()
 
     val uiState: StateFlow<UiState> =
         flow<IntermediateState> {
             updateFiles()
-            uiAction.collect { action ->
+            action.collect { action ->
                 when (action) {
-                    is UiAction.UpdateMedia -> {
+                    is Action.UpdateMedia -> {
                         updateFiles()
                     }
                 }
@@ -156,8 +156,8 @@ class ImageScreenViewModel @AssistedInject constructor(
         fileIndex: Int = currentFileIndex,
         fileId: Long? = currentFileId,
     ) {
-        val filesSize = items.size
-        if (fileIndex < filesSize && items[fileIndex].file.id == fileId) {
+        val itemsSize = items.size
+        if (fileIndex < itemsSize && items[fileIndex].file.id == fileId) {
             emit(
                 IntermediateState.Items(
                     items = items,
@@ -168,7 +168,7 @@ class ImageScreenViewModel @AssistedInject constructor(
             var backwardIndex = fileIndex - 1
             var forwardIndex = fileIndex + 1
             var actualIndex = fileIndex
-            while (backwardIndex > -1 || forwardIndex < filesSize) {
+            while (backwardIndex > -1 || forwardIndex < itemsSize) {
                 if (backwardIndex > -1) {
                     if (items[backwardIndex].file.id == fileId) {
                         actualIndex = backwardIndex
@@ -176,7 +176,7 @@ class ImageScreenViewModel @AssistedInject constructor(
                     }
                     backwardIndex--
                 }
-                if (forwardIndex < filesSize) {
+                if (forwardIndex < itemsSize) {
                     if (items[forwardIndex].file.id == fileId) {
                         actualIndex = forwardIndex
                         break
@@ -184,19 +184,19 @@ class ImageScreenViewModel @AssistedInject constructor(
                     forwardIndex++
                 }
             }
-            //TODO: Remove access to class field?
-            val removedFiles = (uiState.value as? UiState.Image)?.let { state ->
-                state.items.size - filesSize
-            } ?: 0
+            val removedFiles = when (val state = uiState.value) {
+                is UiState.Image -> state.items.size - itemsSize
+                else -> 0
+            }
             emit(
                 IntermediateState.Items(
                     items = items,
-                    index = if (backwardIndex == -1 && forwardIndex == filesSize && removedFiles > 1) {
+                    index = if (backwardIndex == -1 && forwardIndex == itemsSize && removedFiles > 1) {
                         0
                     } else {
                         actualIndex.coerceIn(
                             0,
-                            filesSize - 1,
+                            itemsSize - 1,
                         )
                     },
                 ),
@@ -213,7 +213,7 @@ class ImageScreenViewModel @AssistedInject constructor(
     }
 
     override suspend fun onMediaChanged() {
-        uiAction.emit(UiAction.UpdateMedia)
+        action.emit(Action.UpdateMedia)
     }
 
     fun createBookmark(mediaId: Long) {
@@ -296,9 +296,9 @@ class ImageScreenViewModel @AssistedInject constructor(
         data object Empty: IntermediateState
     }
 
-    private sealed interface UiAction {
+    private sealed interface Action {
 
-        data object UpdateMedia: UiAction
+        data object UpdateMedia: Action
     }
 
     private enum class Mode {
