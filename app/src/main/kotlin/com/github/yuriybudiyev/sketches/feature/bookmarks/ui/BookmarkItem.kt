@@ -31,5 +31,5 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 @Immutable
 class BookmarkItem(
     val file: MediaStoreFile,
-    val bookmark: Bookmark?,
+    val bookmark: Bookmark,
 )

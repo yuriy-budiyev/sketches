@@ -77,7 +77,7 @@ class ImageScreenViewModel @AssistedInject constructor(
     private val action: MutableSharedFlow<Action> = MutableSharedFlow()
 
     val uiState: StateFlow<UiState> =
-        flow<IntermediateState> {
+        flow {
             updateFiles()
             action.collect { action ->
                 when (action) {
@@ -87,36 +87,42 @@ class ImageScreenViewModel @AssistedInject constructor(
                 }
             }
         }.combineTransform(getBookmarks()) { state, bookmarks ->
-            if (state is IntermediateState.Files) {
-                checkIndexAndEmitItems(
-                    when (mode) {
-                        Mode.Images -> {
-                            state.files.map { file ->
-                                ImageItem(
-                                    file = file,
-                                    isMarked = bookmarks.containsKey(file.id),
-                                )
+            when (state) {
+                is IntermediateState.Items -> {
+                    throw IllegalStateException("Forbidden state: $state")
+                }
+                is IntermediateState.Files -> {
+                    checkIndexAndEmitItems(
+                        when (mode) {
+                            Mode.Images -> {
+                                state.files.map { file ->
+                                    ImageItem(
+                                        file = file,
+                                        isMarked = bookmarks.containsKey(file.id),
+                                    )
+                                }
                             }
-                        }
-                        Mode.Bookmarks -> {
-                            val files = state.files
-                            if (files.isEmpty()) {
-                                emptyList()
-                            } else {
-                                files.asSequence()
-                                    .filter { file -> bookmarks.containsKey(file.id) }
-                                    .mapTo(ArrayList(bookmarks.size)) { file ->
-                                        ImageItem(
-                                            file = file,
-                                            isMarked = true,
-                                        )
-                                    }
+                            Mode.Bookmarks -> {
+                                val files = state.files
+                                if (files.isEmpty()) {
+                                    emptyList()
+                                } else {
+                                    files.asSequence()
+                                        .filter { file -> bookmarks.containsKey(file.id) }
+                                        .mapTo(ArrayList(bookmarks.size)) { file ->
+                                            ImageItem(
+                                                file = file,
+                                                isMarked = true,
+                                            )
+                                        }
+                                }
                             }
-                        }
-                    },
-                )
-            } else {
-                emit(state)
+                        },
+                    )
+                }
+                is IntermediateState.Empty -> {
+                    emit(state)
+                }
             }
         }.transform { state ->
             when (state) {
@@ -129,7 +135,7 @@ class ImageScreenViewModel @AssistedInject constructor(
                     )
                 }
                 is IntermediateState.Files -> {
-                    throw IllegalStateException("Invalid state: $state")
+                    throw IllegalStateException("Forbidden state: $state")
                 }
                 is IntermediateState.Empty -> {
                     emit(UiState.Empty)

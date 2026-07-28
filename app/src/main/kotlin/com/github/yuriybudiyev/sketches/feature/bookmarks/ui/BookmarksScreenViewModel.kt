@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.feature.bookmarks.ui
 
 import android.content.Context
+import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
@@ -35,6 +36,15 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combineTransform
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -50,7 +60,65 @@ class BookmarksScreenViewModel @Inject constructor(
     getBookmarks: GetBookmarksUseCase,
 ): MediaObservingViewModel(context) {
 
+    private val action: MutableSharedFlow<Action> = MutableSharedFlow()
+
+    val uiState: StateFlow<UiState> =
+        flow {
+            updateFiles()
+            action.collect { action ->
+                when (action) {
+                    is Action.UpdateMedia -> {
+                        updateFiles()
+                    }
+                }
+            }
+        }.combineTransform(getBookmarks()) { state, bookmarks ->
+            when (state) {
+                is IntermediateState.Items -> {
+                    throw IllegalStateException("Forbidden state: $state")
+                }
+                is IntermediateState.Files -> {
+                    val items = ArrayList<BookmarkItem>(bookmarks.size)
+                    for (file in state.files) {
+                        val bookmark = bookmarks[file.id]
+                        if (bookmark != null) {
+                            items.add(
+                                BookmarkItem(
+                                    file = file,
+                                    bookmark = bookmark,
+                                ),
+                            )
+                        }
+                    }
+                    items.sortByDescending { item -> item.bookmark.dateAdded }
+                    emit(IntermediateState.Items(items))
+                }
+                is IntermediateState.Empty -> {
+                    emit(state)
+                }
+            }
+        }.transform { state ->
+            when (state) {
+                is IntermediateState.Items -> {
+                    emit(UiState.Bookmarks(state.items))
+                }
+                is IntermediateState.Files -> {
+                    throw IllegalStateException("Forbidden state: $state")
+                }
+                is IntermediateState.Empty -> {
+                    emit(UiState.Empty)
+                }
+            }
+        }.catch { thrown ->
+            emit(UiState.Error(thrown))
+        }.flowOn(defaultDispatcher).stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = UiState.Loading,
+        )
+
     override suspend fun onMediaChanged() {
+        action.emit(Action.UpdateMedia)
     }
 
     private suspend fun FlowCollector<IntermediateState>.updateFiles() {
