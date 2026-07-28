@@ -99,6 +99,8 @@ import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnReques
 import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateListSaver
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
+import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.registerBookmarksNavRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.registerBucketNavRoute
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
@@ -118,6 +120,7 @@ fun SketchesNavRoot(
         listOf(
             ImagesNavRoute,
             BucketsNavRoute,
+            BookmarksNavRoute,
         )
     }
     val initialRoute = remember { rootRoutes.first() }
@@ -154,6 +157,18 @@ fun SketchesNavRoot(
                         BucketNavRoute(
                             bucketId = bucket.id,
                             bucketName = bucket.name,
+                        ),
+                    )
+                },
+            )
+            registerBookmarksNavRoute(
+                onImageClick = { index, file ->
+                    pushNavBackStack(
+                        ImageNavRoute(
+                            data = ImageNavRoute.Data.Bookmarks(
+                                imageIndex = index,
+                                imageId = file.id,
+                            ),
                         ),
                     )
                 },

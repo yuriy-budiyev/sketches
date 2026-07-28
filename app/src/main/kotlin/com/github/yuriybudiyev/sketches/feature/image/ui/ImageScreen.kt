@@ -205,10 +205,15 @@ private fun ImageScreenLayout(
     onDeleteBookmark: (mediaId: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var currentIndex by remember { mutableIntStateOf(index) }
+    var currentIndex by remember { mutableIntStateOf(index) }.apply {
+        intValue = intValue.coerceIn(
+            0,
+            items.size - 1,
+        )
+    }
+    val itemsUpdated by rememberUpdatedState(items)
     val contextUpdated by rememberUpdatedState(LocalContext.current)
     val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
-    val itemsUpdated by rememberUpdatedState(items)
     val onChangeUpdated by rememberUpdatedState(onChange)
     val onDeleteUpdated by rememberUpdatedState(onDelete)
     val onCreateBookmarkUpdated by rememberUpdatedState(onCreateBookmark)

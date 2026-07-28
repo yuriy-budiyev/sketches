@@ -24,12 +24,322 @@
 
 package com.github.yuriybudiyev.sketches.feature.bookmarks.ui
 
+import android.app.Activity
+import android.os.Build
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.component1
+import androidx.activity.result.component2
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.SnapshotStateSet
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
+import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.utils.filterByIds
+import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
+import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
+import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
+import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
+import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
+import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
+import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateSetSaver
+import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirmationDialog
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGrid
+import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
+import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
+import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemClosestEdge
+import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
+import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 @Composable
 fun BookmarksRoute(
     viewModel: BookmarksScreenViewModel,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        viewModel.updateMediaAccess()
+    }
+    BookmarksScreen(
+        uiState = uiState,
+        onImageClick = onImageClick,
+        onDeleteMedia = { files ->
+            viewModel.deleteMedia(files)
+        },
+    )
 }
+
+@Composable
+private fun BookmarksScreen(
+    uiState: BookmarksScreenViewModel.UiState,
+    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
+) {
+    val coroutineScope = rememberCoroutineScope()
+    val contextUpdated by rememberUpdatedState(LocalContext.current)
+    val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
+    val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
+    var allFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptyList()) }
+    val selectedFiles =
+        rememberSaveable(saver = SnapshotStateSetSaver()) { SnapshotStateSet<Long>() }
+    var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
+    val deleteRequestLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult(),
+        onResult = { (resultCode, _) ->
+            if (resultCode == Activity.RESULT_OK) {
+                coroutineScope.launch {
+                    selectedFiles.clear()
+                }
+            }
+        },
+    )
+    DisposableEffect(shareManagerUpdated) {
+        val shareManager = shareManagerUpdated
+        shareManager.registerOnSharedListener(ShareAction) {
+            coroutineScope.launch {
+                selectedFiles.clear()
+            }
+        }
+        onDispose {
+            shareManager.unregisterOnSharedListener(ShareAction)
+        }
+    }
+    LaunchedEffect(Unit) {
+        if (selectedFiles.isEmpty()) {
+            deleteDialogVisible = false
+        }
+    }
+    BackHandler(selectedFiles.isNotEmpty()) {
+        coroutineScope.launch {
+            selectedFiles.clear()
+        }
+    }
+    val mediaGridState = rememberSketchesLazyGridState()
+    val navResultStore = LocalNavResultStore.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(
+        navResultStore,
+        lifecycleOwner,
+    ) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            navResultStore.collectNavResult<ImageScreenNavResult> { result ->
+                mediaGridState.scrollToItemClosestEdge(
+                    index = result.fileIndex,
+                    itemType = SketchesMediaGridContentType.MediaStoreFile,
+                    animate = false,
+                )
+            }
+        }
+    }
+    val systemBarsController = LocalSystemBarsController.current
+    LaunchedEffect(
+        systemBarsController,
+        lifecycleOwner,
+    ) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            if (!systemBarsController.isSystemBarsVisible) {
+                systemBarsController.showSystemBars()
+            }
+        }
+    }
+    val rootNavBarController = LocalRootNavBarController.current
+    LaunchedEffect(rootNavBarController) {
+        snapshotFlow { selectedFiles.toSet().isNotEmpty() }
+            .distinctUntilChanged()
+            .collect { hasSelectedFiles ->
+                if (hasSelectedFiles) {
+                    rootNavBarController.hideRootNavBar()
+                } else {
+                    rootNavBarController.showRootNavBar()
+                }
+            }
+    }
+    DisposableEffect(rootNavBarController) {
+        rootNavBarController.setOnClickListener(BookmarksNavRoute) {
+            coroutineScope.launch {
+                if (allFiles.isNotEmpty()) {
+                    mediaGridState.animateScrollToItem(index = 0)
+                }
+            }
+        }
+        onDispose {
+            rootNavBarController.clearOnClickListener(BookmarksNavRoute)
+        }
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background),
+    ) {
+        when (uiState) {
+            is BookmarksScreenViewModel.UiState.Empty -> {
+                SketchesCenteredMessage(
+                    text = stringResource(R.string.no_images_found),
+                    modifier = Modifier.matchParentSize(),
+                )
+                SideEffect {
+                    if (selectedFiles.isNotEmpty()) {
+                        selectedFiles.clear()
+                    }
+                    if (allFiles.isNotEmpty()) {
+                        allFiles = emptyList()
+                    }
+                }
+            }
+            is BookmarksScreenViewModel.UiState.Loading -> {
+                SketchesLoadingIndicator(modifier = Modifier.matchParentSize())
+            }
+            is BookmarksScreenViewModel.UiState.Bookmarks -> {
+                allFiles = uiState.files
+                SketchesMediaGrid(
+                    files = uiState.files,
+                    selectedFiles = selectedFiles,
+                    onItemClick = onImageClick,
+                    modifier = Modifier.matchParentSize(),
+                    state = mediaGridState,
+                    overlayTop = true,
+                    overlayBottom = true,
+                )
+            }
+            is BookmarksScreenViewModel.UiState.Error -> {
+                SketchesErrorMessage(
+                    thrown = uiState.thrown,
+                    modifier = Modifier.matchParentSize(),
+                )
+                SideEffect {
+                    if (selectedFiles.isNotEmpty()) {
+                        selectedFiles.clear()
+                    }
+                    if (allFiles.isNotEmpty()) {
+                        allFiles = emptyList()
+                    }
+                }
+            }
+        }
+        SketchesTopAppBar(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .fillMaxWidth(),
+            text = if (selectedFiles.isNotEmpty()) {
+                stringResource(
+                    R.string.selected_count,
+                    selectedFiles.size,
+                )
+            } else {
+                stringResource(BookmarksNavRoute.titleRes)
+            },
+            backgroundColor = MaterialTheme.colorScheme.background
+                .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+        ) {
+            if (selectedFiles.isNotEmpty()) {
+                if (selectedFiles.size >= allFiles.size) {
+                    SketchesAppBarActionButton(
+                        iconRes = R.drawable.ic_select_none,
+                        description = stringResource(R.string.select_none),
+                        onClick = {
+                            coroutineScope.launch {
+                                selectedFiles.clear()
+                            }
+                        },
+                    )
+                } else {
+                    SketchesAppBarActionButton(
+                        iconRes = R.drawable.ic_select_all,
+                        description = stringResource(R.string.select_all),
+                        onClick = {
+                            coroutineScope.launch {
+                                selectedFiles.addAll(allFiles.map { file -> file.id })
+                            }
+                        },
+                    )
+                }
+                SketchesAppBarActionButton(
+                    iconRes = R.drawable.ic_delete,
+                    description = stringResource(R.string.delete_selected),
+                    onClick = {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            coroutineScope.launch {
+                                deleteRequestLauncher.launchDeleteMediaRequest(
+                                    contextUpdated,
+                                    allFiles
+                                        .filterByIds(selectedFiles.toSet())
+                                        .map { file -> file.uri },
+                                )
+                            }
+                        } else {
+                            deleteDialogVisible = true
+                        }
+                    },
+                )
+                val shareDescription = stringResource(R.string.share_selected)
+                SketchesAppBarActionButton(
+                    iconRes = R.drawable.ic_share,
+                    description = shareDescription,
+                    onClick = {
+                        coroutineScope.launch {
+                            val shareInfo = allFiles
+                                .filterByIds(selectedFiles.toSet())
+                                .toShareInfo()
+                            shareManagerUpdated.startChooserActivity(
+                                uris = shareInfo.uris,
+                                mimeType = shareInfo.mimeType,
+                                chooserTitle = shareDescription,
+                                listenerAction = ShareAction,
+                            )
+                        }
+                    },
+                )
+            }
+        }
+        if (deleteDialogVisible) {
+            SketchesDeleteConfirmationDialog(
+                onDelete = {
+                    deleteDialogVisible = false
+                    onDeleteMediaUpdated(allFiles.filterByIds(selectedFiles.toSet()))
+                    coroutineScope.launch {
+                        selectedFiles.clear()
+                    }
+                },
+                onDismiss = {
+                    deleteDialogVisible = false
+                },
+            )
+        }
+    }
+}
+
+private const val ShareAction: String =
+    "com.github.yuriybudiyev.sketches.feature.bookmarks.ui.ShareAction"

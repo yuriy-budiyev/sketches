@@ -28,7 +28,9 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
+import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
@@ -45,6 +47,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -57,6 +60,7 @@ class BookmarksScreenViewModel @Inject constructor(
     @Dispatcher(Dispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
     private val getMediaFiles: GetMediaFilesUseCase,
+    private val deleteMediaFiles: DeleteMediaFilesUseCase,
     getBookmarks: GetBookmarksUseCase,
 ): MediaObservingViewModel(context) {
 
@@ -74,24 +78,30 @@ class BookmarksScreenViewModel @Inject constructor(
             }
         }.combineTransform(getBookmarks()) { state, bookmarks ->
             when (state) {
-                is IntermediateState.Items -> {
-                    throw IllegalStateException("Forbidden state: $state")
-                }
                 is IntermediateState.Files -> {
-                    val items = ArrayList<BookmarkItem>(bookmarks.size)
-                    for (file in state.files) {
-                        val bookmark = bookmarks[file.id]
-                        if (bookmark != null) {
-                            items.add(
-                                BookmarkItem(
-                                    file = file,
-                                    bookmark = bookmark,
-                                ),
-                            )
+                    val files = state.files
+                    if (files.isEmpty() || bookmarks.isEmpty()) {
+                        emit(IntermediateState.Empty)
+                    } else {
+                        val temp = ArrayList<FileWithBookmark>(bookmarks.size)
+                        for (file in files) {
+                            val bookmark = bookmarks[file.id]
+                            if (bookmark != null) {
+                                temp.add(
+                                    FileWithBookmark(
+                                        file = file,
+                                        bookmark = bookmark,
+                                    ),
+                                )
+                            }
+                        }
+                        if (temp.isEmpty()) {
+                            emit(IntermediateState.Empty)
+                        } else {
+                            temp.sortByDescending { item -> item.bookmark.dateAdded }
+                            emit(IntermediateState.Files(temp.map { item -> item.file }))
                         }
                     }
-                    items.sortByDescending { item -> item.bookmark.dateAdded }
-                    emit(IntermediateState.Items(items))
                 }
                 is IntermediateState.Empty -> {
                     emit(state)
@@ -99,11 +109,8 @@ class BookmarksScreenViewModel @Inject constructor(
             }
         }.transform { state ->
             when (state) {
-                is IntermediateState.Items -> {
-                    emit(UiState.Bookmarks(state.items))
-                }
                 is IntermediateState.Files -> {
-                    throw IllegalStateException("Forbidden state: $state")
+                    emit(UiState.Bookmarks(state.files))
                 }
                 is IntermediateState.Empty -> {
                     emit(UiState.Empty)
@@ -116,6 +123,14 @@ class BookmarksScreenViewModel @Inject constructor(
             started = SharingStarted.Lazily,
             initialValue = UiState.Loading,
         )
+
+    fun deleteMedia(files: Collection<MediaStoreFile>) {
+        viewModelScope.launch {
+            withContext(ioDispatcher) {
+                deleteMediaFiles(files)
+            }
+        }
+    }
 
     override suspend fun onMediaChanged() {
         action.emit(Action.UpdateMedia)
@@ -132,7 +147,7 @@ class BookmarksScreenViewModel @Inject constructor(
 
     sealed interface UiState {
 
-        data class Bookmarks(val bookmarks: List<BookmarkItem>): UiState
+        data class Bookmarks(val files: List<MediaStoreFile>): UiState
 
         data class Error(val thrown: Throwable): UiState
 
@@ -145,8 +160,6 @@ class BookmarksScreenViewModel @Inject constructor(
 
         data class Files(val files: List<MediaStoreFile>): IntermediateState
 
-        data class Items(val items: List<BookmarkItem>): IntermediateState
-
         data object Empty: IntermediateState
     }
 
@@ -154,4 +167,9 @@ class BookmarksScreenViewModel @Inject constructor(
 
         data object UpdateMedia: Action
     }
+
+    private data class FileWithBookmark(
+        val file: MediaStoreFile,
+        val bookmark: Bookmark,
+    )
 }

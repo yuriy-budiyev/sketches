@@ -38,7 +38,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-class BookmarksNavRoute: RootNavRoute {
+object BookmarksNavRoute: RootNavRoute {
 
     @get:StringRes
     @IgnoredOnParcel
@@ -46,11 +46,11 @@ class BookmarksNavRoute: RootNavRoute {
 
     @get:DrawableRes
     @IgnoredOnParcel
-    override val selectedIconRes: Int = R.drawable.ic_buckets_selected
+    override val selectedIconRes: Int = R.drawable.ic_bookmarks_selected
 
     @get:DrawableRes
     @IgnoredOnParcel
-    override val unselectedIconRes: Int = R.drawable.ic_buckets_unselected
+    override val unselectedIconRes: Int = R.drawable.ic_bookmarks_unselected
 }
 
 fun EntryProviderScope<NavRoute>.registerBookmarksNavRoute(

@@ -29,6 +29,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
+import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.CreateBookmarkUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarkUseCase
@@ -92,33 +93,50 @@ class ImageScreenViewModel @AssistedInject constructor(
                     throw IllegalStateException("Forbidden state: $state")
                 }
                 is IntermediateState.Files -> {
-                    checkIndexAndEmitItems(
-                        when (mode) {
-                            Mode.Images -> {
-                                state.files.map { file ->
+                    val files = state.files
+                    when (mode) {
+                        Mode.Images -> {
+                            checkIndexAndEmitItems(
+                                files.map { file ->
                                     ImageItem(
                                         file = file,
                                         isMarked = bookmarks.containsKey(file.id),
                                     )
-                                }
-                            }
-                            Mode.Bookmarks -> {
-                                val files = state.files
-                                if (files.isEmpty()) {
-                                    emptyList()
-                                } else {
-                                    files.asSequence()
-                                        .filter { file -> bookmarks.containsKey(file.id) }
-                                        .mapTo(ArrayList(bookmarks.size)) { file ->
-                                            ImageItem(
+                                },
+                            )
+                        }
+                        Mode.Bookmarks -> {
+                            if (files.isEmpty() || bookmarks.isEmpty()) {
+                                emit(IntermediateState.Empty)
+                            } else {
+                                val temp = ArrayList<FileWithBookmark>(bookmarks.size)
+                                for (file in files) {
+                                    val bookmark = bookmarks[file.id]
+                                    if (bookmark != null) {
+                                        temp.add(
+                                            FileWithBookmark(
                                                 file = file,
+                                                bookmark = bookmark,
+                                            ),
+                                        )
+                                    }
+                                }
+                                if (temp.isEmpty()) {
+                                    emit(IntermediateState.Empty)
+                                } else {
+                                    temp.sortByDescending { item -> item.bookmark.dateAdded }
+                                    checkIndexAndEmitItems(
+                                        temp.map { item ->
+                                            ImageItem(
+                                                file = item.file,
                                                 isMarked = true,
                                             )
-                                        }
+                                        },
+                                    )
                                 }
                             }
-                        },
-                    )
+                        }
+                    }
                 }
                 is IntermediateState.Empty -> {
                     emit(state)
@@ -193,21 +211,13 @@ class ImageScreenViewModel @AssistedInject constructor(
                     forwardIndex++
                 }
             }
-            val removedFiles = when (val state = uiState.value) {
-                is UiState.Image -> state.items.size - itemsSize
-                else -> 0
-            }
             emit(
                 IntermediateState.Items(
                     items = items,
-                    index = if (backwardIndex == -1 && forwardIndex == itemsSize && removedFiles > 1) {
-                        0
-                    } else {
-                        actualIndex.coerceIn(
-                            0,
-                            itemsSize - 1,
-                        )
-                    },
+                    index = actualIndex.coerceIn(
+                        0,
+                        itemsSize - 1,
+                    ),
                 ),
             )
         }
@@ -315,6 +325,11 @@ class ImageScreenViewModel @AssistedInject constructor(
         Images,
         Bookmarks,
     }
+
+    private data class FileWithBookmark(
+        val file: MediaStoreFile,
+        val bookmark: Bookmark,
+    )
 
     @AssistedFactory
     interface Factory {
