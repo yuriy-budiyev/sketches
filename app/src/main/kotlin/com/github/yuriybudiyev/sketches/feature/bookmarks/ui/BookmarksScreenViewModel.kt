@@ -42,6 +42,8 @@ import javax.inject.Inject
 class BookmarksScreenViewModel @Inject constructor(
     @ApplicationContext
     context: Context,
+    @Dispatcher(Dispatchers.Default)
+    defaultDispatcher: CoroutineDispatcher,
     @Dispatcher(Dispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
     private val getMediaFiles: GetMediaFilesUseCase,

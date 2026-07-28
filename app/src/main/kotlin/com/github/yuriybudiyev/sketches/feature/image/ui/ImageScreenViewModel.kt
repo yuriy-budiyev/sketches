@@ -50,6 +50,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
@@ -62,6 +63,8 @@ class ImageScreenViewModel @AssistedInject constructor(
     private val savedStateHandle: SavedStateHandle,
     @Assisted
     route: ImageNavRoute,
+    @Dispatcher(Dispatchers.Default)
+    defaultDispatcher: CoroutineDispatcher,
     @Dispatcher(Dispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
     private val getMediaFiles: GetMediaFilesUseCase,
@@ -134,7 +137,7 @@ class ImageScreenViewModel @AssistedInject constructor(
             }
         }.catch { t ->
             emit(UiState.Error(t))
-        }.stateIn(
+        }.flowOn(defaultDispatcher).stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
             initialValue = UiState.Loading,

@@ -45,6 +45,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -55,6 +56,8 @@ class BucketScreenViewModel @AssistedInject constructor(
     context: Context,
     @Assisted
     route: BucketNavRoute,
+    @Dispatcher(Dispatchers.Default)
+    defaultDispatcher: CoroutineDispatcher,
     @Dispatcher(Dispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
     private val getMediaFiles: GetMediaFilesUseCase,
@@ -78,7 +81,7 @@ class BucketScreenViewModel @AssistedInject constructor(
             }
         }.catch { e ->
             emit(UiState.Error(e))
-        }.stateIn(
+        }.flowOn(defaultDispatcher).stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
             initialValue = UiState.Loading,
