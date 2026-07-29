@@ -53,7 +53,6 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
@@ -63,6 +62,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.ceil
 
 @Singleton
 class MediaStoreRepositoryImpl @Inject constructor(
@@ -115,10 +115,6 @@ class MediaStoreRepositoryImpl @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getBucketFiles(bucketId: Long): Flow<List<MediaStoreFile>> =
         allFilesFlow.mapLatest { files -> files.filter { file -> file.bucketId == bucketId } }
-
-    //TODO: Move to use-case
-    suspend fun getBucketsContent(bucketIds: Set<Long>): List<MediaStoreFile> =
-        allFilesFlow.first().filter { file -> bucketIds.contains(file.id) }
 
     private fun collectAllFiles(mediaType: MediaType): List<MediaStoreFile> {
         val contentUri = mediaType.contentUri
@@ -434,24 +430,25 @@ class MediaStoreRepositoryImpl @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getBookmarks(): Flow<Map<Long, Bookmark>> =
-        bookmarksDao.getAll().mapLatest { entities ->
+        bookmarksDao.getAll().transformLatest { entities ->
             val size = entities.size
-            if (size == 0) {
-                return@mapLatest emptyMap()
-            }
             val bookmarks: MutableMap<Long, Bookmark> =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
                     LinkedHashMap.newLinkedHashMap(size)
                 } else {
-                    LinkedHashMap()
+                    LinkedHashMap(
+                        ceil(size.toDouble() / 0.75).toInt(),
+                        0.75F,
+                    )
                 }
             for (entity in entities) {
-                bookmarks[entity.mediaId] = Bookmark(
-                    mediaId = entity.mediaId,
+                val mediaId = entity.mediaId
+                bookmarks[mediaId] = Bookmark(
+                    mediaId = mediaId,
                     dateAdded = entity.dateAdded,
                 )
             }
-            return@mapLatest bookmarks
+            emit(bookmarks)
         }
 
     private data class BucketInfo(
