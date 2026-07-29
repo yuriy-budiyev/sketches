@@ -32,6 +32,12 @@ import kotlinx.coroutines.flow.Flow
 
 interface MediaStoreRepository {
 
+    fun getAllFiles(): Flow<List<MediaStoreFile>>
+
+    fun getAllBuckets(): Flow<List<MediaStoreBucket>>
+
+    fun getBucketFiles(bucketId: Long): Flow<List<MediaStoreFile>>
+
     suspend fun deleteContent(uris: Collection<Uri>)
 
     suspend fun getFiles(bucketId: Long? = null): List<MediaStoreFile>

@@ -75,11 +75,11 @@ class MediaStoreRepositoryImpl @Inject constructor(
     private val bookmarksDao: BookmarksDao,
 ): MediaStoreRepository {
 
-    fun getAllFiles(): Flow<List<MediaStoreFile>> =
+    override fun getAllFiles(): Flow<List<MediaStoreFile>> =
         allFilesFlow
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun getAllBuckets(): Flow<List<MediaStoreBucket>> =
+    override fun getAllBuckets(): Flow<List<MediaStoreBucket>> =
         allFilesFlow.transformLatest { files ->
             val bucketsInfo = LinkedHashMap<Long, MediaStoreBucketInfo>()
             for (file in files) {
@@ -113,9 +113,10 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun getBucketFiles(bucketId: Long): Flow<List<MediaStoreFile>> =
+    override fun getBucketFiles(bucketId: Long): Flow<List<MediaStoreFile>> =
         allFilesFlow.mapLatest { files -> files.filter { file -> file.bucketId == bucketId } }
 
+    //TODO: Move to use-case
     suspend fun getBucketsContent(bucketIds: Set<Long>): List<MediaStoreFile> =
         allFilesFlow.first().filter { file -> bucketIds.contains(file.id) }
 
