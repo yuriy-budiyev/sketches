@@ -26,11 +26,17 @@ package com.github.yuriybudiyev.sketches.core.data.repository
 
 import android.content.ContentUris
 import android.content.Context
+import android.database.ContentObserver
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
 import android.provider.MediaStore
 import androidx.collection.MutableLongObjectMap
 import androidx.core.database.getStringOrNull
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.dao.BookmarksDao
 import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
@@ -38,9 +44,20 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -49,22 +66,195 @@ import javax.inject.Singleton
 
 @Singleton
 class MediaStoreRepositoryImpl @Inject constructor(
-    @param:ApplicationContext
-    private val context: Context,
+    @ApplicationContext
+    private val appContext: Context,
+    @Dispatcher(Dispatchers.Default)
+    private val defaultDispatcher: CoroutineDispatcher,
+    @Dispatcher(Dispatchers.IO)
+    private val ioDispatcher: CoroutineDispatcher,
     private val bookmarksDao: BookmarksDao,
 ): MediaStoreRepository {
+
+    fun getAllFiles(): Flow<List<MediaStoreFile>> =
+        allFilesFlow
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun getAllBuckets(): Flow<List<MediaStoreBucket>> =
+        allFilesFlow.transformLatest { files ->
+            val bucketsInfo = LinkedHashMap<Long, MediaStoreBucketInfo>()
+            for (file in files) {
+                val bucketId = file.bucketId
+                val coverUri = file.uri
+                val coverDateAdded = file.dateAdded
+                val bucketInfo = bucketsInfo.getOrPut(bucketId) {
+                    MediaStoreBucketInfo(
+                        id = bucketId,
+                        name = file.bucketName,
+                        coverUri = coverUri,
+                        coverDateAdded = coverDateAdded,
+                        size = 0,
+                    )
+                }
+                bucketInfo.size++
+            }
+            val buckets = ArrayList<MediaStoreBucket>(bucketsInfo.size)
+            for ((_, bucketInfo) in bucketsInfo) {
+                buckets.add(
+                    MediaStoreBucket(
+                        id = bucketInfo.id,
+                        name = bucketInfo.name,
+                        size = bucketInfo.size,
+                        coverUri = bucketInfo.coverUri,
+                        coverDateAdded = bucketInfo.coverDateAdded,
+                    ),
+                )
+            }
+            emit(buckets)
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun getBucketFiles(bucketId: Long): Flow<List<MediaStoreFile>> =
+        allFilesFlow.mapLatest { files -> files.filter { file -> file.bucketId == bucketId } }
+
+    suspend fun getBucketsContent(bucketIds: Set<Long>): List<MediaStoreFile> =
+        allFilesFlow.first().filter { file -> bucketIds.contains(file.id) }
+
+    private fun collectAllFiles(mediaType: MediaType): List<MediaStoreFile> {
+        val contentUri = mediaType.contentUri
+        val cursor = appContext.contentResolver.query(
+            contentUri,
+            arrayOf(
+                MediaStore.MediaColumns._ID,
+                MediaStore.MediaColumns.BUCKET_ID,
+                MediaStore.MediaColumns.DISPLAY_NAME,
+                MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
+                MediaStore.MediaColumns.DATE_ADDED,
+                MediaStore.MediaColumns.MIME_TYPE,
+            ),
+            null,
+            null,
+            null,
+        ) ?: return emptyList()
+        cursor.use { cursor ->
+            val files = ArrayList<MediaStoreFile>(cursor.count)
+            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
+            val bucketIdColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_ID)
+            val displayNameColumn =
+                cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)
+            val bucketDisplayNameColumn =
+                cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME)
+            val dateAddedColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_ADDED)
+            val mimeTypeColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE)
+            while (cursor.moveToNext()) {
+                val id = cursor.getLong(idColumn)
+                val bucketId = cursor.getLong(bucketIdColumn)
+                files.add(
+                    MediaStoreFile(
+                        id = id,
+                        bucketId = bucketId,
+                        name = cursor.getStringOrNull(displayNameColumn) ?: id.toString(),
+                        bucketName = cursor.getStringOrNull(bucketDisplayNameColumn)
+                            ?: bucketId.toString(),
+                        dateAdded = LocalDateTime.ofInstant(
+                            Instant.ofEpochSecond(cursor.getLong(dateAddedColumn)),
+                            ZoneId.systemDefault(),
+                        ),
+                        mediaType = mediaType,
+                        mimeType = cursor.getStringOrNull(mimeTypeColumn) ?: mediaType.mimeType,
+                        uri = ContentUris.withAppendedId(
+                            contentUri,
+                            id,
+                        ),
+                    ),
+                )
+            }
+            return files
+        }
+    }
+
+    private fun updateAllFiles(delayMillis: Long = 0L) {
+        updateAllFilesJob?.cancel()
+        updateAllFilesJob = defaultCoroutineScope.launch {
+            delay(delayMillis)
+            val imageFiles = withContext(ioDispatcher) { collectAllFiles(MediaType.Image) }
+            val videoFiles = withContext(ioDispatcher) { collectAllFiles(MediaType.Video) }
+            val allFiles = ArrayList<MediaStoreFile>(imageFiles.size + videoFiles.size)
+            allFiles.addAll(imageFiles)
+            allFiles.addAll(videoFiles)
+            allFiles.sortByDescending { file -> file.dateAdded }
+            allFilesFlow.emit(allFiles)
+        }
+    }
+
+    private val defaultCoroutineScope: CoroutineScope =
+        CoroutineScope(defaultDispatcher + SupervisorJob())
+
+    private val allFilesFlow: MutableSharedFlow<List<MediaStoreFile>> =
+        MutableSharedFlow(
+            replay = 1,
+            extraBufferCapacity = 0,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
+
+    private var updateAllFilesJob: Job? = null
+
+    init {
+        updateAllFiles()
+        val mediaObserver = MediaObserver()
+        with(appContext.contentResolver) {
+            registerContentObserver(
+                MediaType.Image.contentUri,
+                true,
+                mediaObserver,
+            )
+            registerContentObserver(
+                MediaType.Video.contentUri,
+                true,
+                mediaObserver,
+            )
+        }
+    }
+
+    private inner class MediaObserver: ContentObserver(Handler(Looper.getMainLooper())) {
+
+        override fun onChange(
+            selfChange: Boolean,
+            uri: Uri?,
+        ) {
+            val currentCallTime = SystemClock.uptimeMillis()
+            if (currentCallTime - lastCallTime > 1000L) {
+                lastCallTime = currentCallTime
+                updateAllFiles()
+            } else {
+                updateAllFiles(delayMillis = 1000L)
+            }
+        }
+
+        private var lastCallTime: Long = SystemClock.uptimeMillis()
+    }
+
+    private data class MediaStoreBucketInfo(
+        val id: Long,
+        val name: String,
+        val coverUri: Uri,
+        val coverDateAdded: LocalDateTime,
+        var size: Int,
+    )
+
+    //--- Old code ---
 
     private fun collectFiles(
         mediaType: MediaType,
         bucketId: Long?,
     ): List<MediaStoreFile> {
         val contentUri = mediaType.contentUri
-        val cursor = context.contentResolver.query(
+        val cursor = appContext.contentResolver.query(
             contentUri,
             arrayOf(
                 MediaStore.MediaColumns._ID,
                 MediaStore.MediaColumns.BUCKET_ID,
                 MediaStore.MediaColumns.DISPLAY_NAME,
+                MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
                 MediaStore.MediaColumns.DATE_ADDED,
                 MediaStore.MediaColumns.MIME_TYPE,
             ),
@@ -80,26 +270,32 @@ class MediaStoreRepositoryImpl @Inject constructor(
             },
             null,
         ) ?: return emptyList()
-        cursor.use { c ->
-            val files = ArrayList<MediaStoreFile>(c.count)
-            val idColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
-            val bucketIdColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_ID)
-            val displayNameColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)
-            val dateAddedColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_ADDED)
-            val mimeTypeColumn = c.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE)
-            while (c.moveToNext()) {
-                val id = c.getLong(idColumn)
+        cursor.use { cursor ->
+            val files = ArrayList<MediaStoreFile>(cursor.count)
+            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
+            val bucketIdColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_ID)
+            val displayNameColumn =
+                cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)
+            val bucketDisplayNameColumn =
+                cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME)
+            val dateAddedColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_ADDED)
+            val mimeTypeColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE)
+            while (cursor.moveToNext()) {
+                val id = cursor.getLong(idColumn)
+                val bucketId = cursor.getLong(bucketIdColumn)
                 files.add(
                     MediaStoreFile(
                         id = id,
-                        bucketId = c.getLong(bucketIdColumn),
-                        displayName = c.getStringOrNull(displayNameColumn) ?: id.toString(),
+                        bucketId = bucketId,
+                        name = cursor.getStringOrNull(displayNameColumn) ?: id.toString(),
+                        bucketName = cursor.getStringOrNull(bucketDisplayNameColumn)
+                            ?: bucketId.toString(),
                         dateAdded = LocalDateTime.ofInstant(
-                            Instant.ofEpochSecond(c.getLong(dateAddedColumn)),
+                            Instant.ofEpochSecond(cursor.getLong(dateAddedColumn)),
                             ZoneId.systemDefault(),
                         ),
                         mediaType = mediaType,
-                        mimeType = c.getStringOrNull(mimeTypeColumn) ?: mediaType.mimeType,
+                        mimeType = cursor.getStringOrNull(mimeTypeColumn) ?: mediaType.mimeType,
                         uri = ContentUris.withAppendedId(
                             contentUri,
                             id,
@@ -112,7 +308,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteContent(uris: Collection<Uri>) {
-        val contentResolver = context.contentResolver
+        val contentResolver = appContext.contentResolver
         for (uri in uris) {
             contentResolver.delete(
                 uri,
@@ -147,7 +343,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         destination: MutableLongObjectMap<BucketInfo>,
     ) {
         val contentUri = mediaType.contentUri
-        val cursor = context.contentResolver.query(
+        val cursor = appContext.contentResolver.query(
             contentUri,
             arrayOf(
                 MediaStore.MediaColumns._ID,

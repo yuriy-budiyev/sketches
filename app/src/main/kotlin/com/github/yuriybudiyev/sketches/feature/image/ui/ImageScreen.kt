@@ -333,7 +333,7 @@ private fun ImageScreenLayout(
         ) {
             SketchesTopAppBar(
                 modifier = Modifier.fillMaxWidth(),
-                text = itemsUpdated[currentIndex].file.displayName,
+                text = itemsUpdated[currentIndex].file.name,
                 backgroundColor = MaterialTheme.colorScheme.background
                     .copy(alpha = SketchesColors.UiAlphaLowTransparency),
             ) {
