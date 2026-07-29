@@ -134,13 +134,11 @@ fun SketchesNavRoot(
             navBackStack.lastOrNull() is RootNavRoute
         }
     }
-    val pushNavBackStack = remember { fun(route: NavRoute) { navBackStack.add(route) } }
-    val popNavBackStack = remember { fun() { navBackStack.removeLastOrNull() } }
     val navEntryProvider = remember {
         entryProvider {
             registerImagesNavRoute(
                 onImageClick = { index, file ->
-                    pushNavBackStack(
+                    navBackStack.add(
                         ImageNavRoute(
                             data = ImageNavRoute.Data.Images(
                                 imageIndex = index,
@@ -153,7 +151,7 @@ fun SketchesNavRoot(
             )
             registerBucketsNavRoute(
                 onBucketClick = { _, bucket ->
-                    pushNavBackStack(
+                    navBackStack.add(
                         BucketNavRoute(
                             bucketId = bucket.id,
                             bucketName = bucket.name,
@@ -163,7 +161,7 @@ fun SketchesNavRoot(
             )
             registerBookmarksNavRoute(
                 onImageClick = { index, file ->
-                    pushNavBackStack(
+                    navBackStack.add(
                         ImageNavRoute(
                             data = ImageNavRoute.Data.Bookmarks(
                                 imageIndex = index,
@@ -175,7 +173,7 @@ fun SketchesNavRoot(
             )
             registerBucketNavRoute(
                 onImageClick = { index, file ->
-                    pushNavBackStack(
+                    navBackStack.add(
                         ImageNavRoute(
                             data = ImageNavRoute.Data.Bucket(
                                 imageIndex = index,
@@ -255,7 +253,7 @@ fun SketchesNavRoot(
             entries = navEntries,
             sceneStrategies = listOf(SinglePaneSceneStrategy()),
             sharedTransitionScope = this@SharedTransitionScope,
-            onBack = popNavBackStack,
+            onBack = { navBackStack.removeLastOrNull() },
         )
         val currentScene = sceneState.currentScene
         val currentInfo = SceneInfo(currentScene)
@@ -268,7 +266,9 @@ fun SketchesNavRoot(
             state = navEventState,
             isBackEnabled = currentScene.previousEntries.isNotEmpty(),
             onBackCompleted = {
-                repeat(navEntries.size - currentScene.previousEntries.size) { popNavBackStack() }
+                repeat(navEntries.size - currentScene.previousEntries.size) {
+                    navBackStack.removeLastOrNull()
+                }
             },
         )
         val navResultStore = rememberNavResultStore()
@@ -345,8 +345,15 @@ fun SketchesNavRoot(
                                         } else {
                                             if (route == initialRoute) {
                                                 navBackStack.clear()
+                                            } else {
+                                                val iterator = navBackStack.iterator()
+                                                while (iterator.hasNext()) {
+                                                    if (iterator.next() == route) {
+                                                        iterator.remove()
+                                                    }
+                                                }
                                             }
-                                            pushNavBackStack(route)
+                                            navBackStack.add(route)
                                         }
                                     },
                                     icon = {
