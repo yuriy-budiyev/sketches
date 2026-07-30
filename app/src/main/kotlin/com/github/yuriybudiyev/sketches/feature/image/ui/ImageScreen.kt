@@ -102,7 +102,7 @@ import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteConfirmationDialog
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
@@ -394,7 +394,8 @@ private fun ImageScreenLayout(
             }
         }
         if (deleteDialogVisible) {
-            SketchesDeleteConfirmationDialog(
+            SketchesDeleteImagesConfirmationDialog(
+                count = 1,
                 onDelete = {
                     deleteDialogVisible = false
                     coroutineScope.launch {

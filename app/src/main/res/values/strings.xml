@@ -18,10 +18,14 @@
     <string name="enable_volume">Unmute</string>
     <string name="disable_volume">Mute</string>
     <string name="image_error">Error loading image</string>
-    <string name="delete_image_dialog_title">Confirmation</string>
-    <string name="delete_image_dialog_content">Are you sure you want to proceed with deletion?</string>
-    <string name="delete_image_dialog_positive">Delete</string>
-    <string name="delete_image_dialog_negative">Dismiss</string>
+    <string name="delete_images_dialog_title">Confirmation</string>
+    <string name="delete_images_dialog_positive">Delete</string>
+    <string name="delete_images_dialog_negative">Dismiss</string>
+    <string name="delete_images_dialog_content_one">Are you sure you want to delete image?</string>
+    <plurals name="delete_images_dialog_content">
+        <item quantity="one">Are you sure you want to delete %d image?</item>
+        <item quantity="other">Are you sure you want to delete %d images?</item>
+    </plurals>
     <string name="request_media_access">Update selected media</string>
     <string name="delete_selected">Delete selected</string>
     <string name="share_selected">Share selected</string>
@@ -31,6 +35,14 @@
     <string name="select_none">Clear selection</string>
     <string name="scroll_to_start">Scroll to start</string>
     <string name="bookmarks">Bookmarks</string>
-    <string name="create_bookmark">Add bookmark</string>
-    <string name="delete_bookmark">Remove bookmark</string>
+    <string name="create_bookmark">Create bookmark</string>
+    <string name="delete_bookmark">Delete bookmark</string>
+    <string name="delete_bookmarks_dialog_title">Confirmation</string>
+    <string name="delete_bookmarks_dialog_positive">Delete</string>
+    <string name="delete_bookmarks_dialog_negative">Dismiss</string>
+    <string name="delete_bookmarks_dialog_content_one">Are you sure you want to delete bookmark?</string>
+    <plurals name="delete_bookmarks_dialog_content">
+        <item quantity="one">Are you sure you want to delete %d bookmark?</item>
+        <item quantity="other">Are you sure you want to delete %d bookmarks?</item>
+    </plurals>
 </resources>

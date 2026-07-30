@@ -18,10 +18,16 @@
     <string name="enable_volume">Включить звук</string>
     <string name="disable_volume">Выключить звук</string>
     <string name="image_error">Ошибка загрузки изображения</string>
-    <string name="delete_image_dialog_title">Подтверждение</string>
-    <string name="delete_image_dialog_content">Вы уверены, что хотите продолжить удаление?</string>
-    <string name="delete_image_dialog_positive">Удалить</string>
-    <string name="delete_image_dialog_negative">Отмена</string>
+    <string name="delete_images_dialog_title">Подтверждение</string>
+    <string name="delete_images_dialog_positive">Удалить</string>
+    <string name="delete_images_dialog_negative">Отмена</string>
+    <string name="delete_images_dialog_content_one">Вы уверены, что хотите удалить изображение?</string>
+    <plurals name="delete_images_dialog_content">
+        <item quantity="one">Вы уверены, что хотите удалить %d изображение?</item>
+        <item quantity="few">Вы уверены, что хотите удалить %d изображения?</item>
+        <item quantity="many">Вы уверены, что хотите удалить %d изображений?</item>
+        <item quantity="other">Вы уверены, что хотите удалить %d изображений?</item>
+    </plurals>
     <string name="request_media_access">Обновить выбранные изображения</string>
     <string name="delete_selected">Удалить выбранное</string>
     <string name="share_selected">Поделиться выбранным</string>
@@ -31,6 +37,16 @@
     <string name="select_none">Снять выделение</string>
     <string name="scroll_to_start">Прокрутить в начало</string>
     <string name="bookmarks">Закладки</string>
-    <string name="create_bookmark">Добавить закладку</string>
-    <string name="delete_bookmark">Убрать закладку</string>
+    <string name="create_bookmark">Создать закладку</string>
+    <string name="delete_bookmark">Удалить закладку</string>
+    <string name="delete_bookmarks_dialog_positive">Удалить</string>
+    <string name="delete_bookmarks_dialog_negative">Отмена</string>
+    <string name="delete_bookmarks_dialog_title">Подтверждение</string>
+    <string name="delete_bookmarks_dialog_content_one">Вы уверены, что хотите удалить закладку?</string>
+    <plurals name="delete_bookmarks_dialog_content">
+        <item quantity="one">Вы уверены, что хотите удалить %d закладку?</item>
+        <item quantity="few">Вы уверены, что хотите удалить %d закладки?</item>
+        <item quantity="many">Вы уверены, что хотите удалить %d закладок?</item>
+        <item quantity="other">Вы уверены, что хотите удалить %d закладок?</item>
+    </plurals>
 </resources>

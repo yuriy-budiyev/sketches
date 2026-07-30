@@ -30,6 +30,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import com.github.yuriybudiyev.sketches.R
@@ -79,16 +80,52 @@ fun SketchesAlertDialog(
 
 @Composable
 @NonRestartableComposable
-fun SketchesDeleteConfirmationDialog(
+fun SketchesDeleteImagesConfirmationDialog(
+    count: Int,
     onDelete: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     SketchesAlertDialog(
-        titleText = stringResource(R.string.delete_image_dialog_title),
-        contentText = stringResource(R.string.delete_image_dialog_content),
-        positiveButtonText = stringResource(R.string.delete_image_dialog_positive),
-        negativeButtonText = stringResource(R.string.delete_image_dialog_negative),
+        titleText = stringResource(R.string.delete_images_dialog_title),
+        contentText = if (count == 1) {
+            stringResource(R.string.delete_images_dialog_content_one)
+        } else {
+            pluralStringResource(
+                id = R.plurals.delete_images_dialog_content,
+                count = count,
+                formatArgs = arrayOf(count),
+            )
+        },
+        positiveButtonText = stringResource(R.string.delete_images_dialog_positive),
+        negativeButtonText = stringResource(R.string.delete_images_dialog_negative),
+        onPositiveResult = onDelete,
+        onNegativeResult = onDismiss,
+        modifier = modifier,
+    )
+}
+
+@Composable
+@NonRestartableComposable
+fun SketchesDeleteBookmarksConfirmationDialog(
+    count: Int,
+    onDelete: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    SketchesAlertDialog(
+        titleText = stringResource(R.string.delete_bookmarks_dialog_title),
+        contentText = if (count == 1) {
+            stringResource(R.string.delete_bookmarks_dialog_content_one)
+        } else {
+            pluralStringResource(
+                id = R.plurals.delete_bookmarks_dialog_content,
+                count = count,
+                formatArgs = arrayOf(count),
+            )
+        },
+        positiveButtonText = stringResource(R.string.delete_bookmarks_dialog_positive),
+        negativeButtonText = stringResource(R.string.delete_bookmarks_dialog_negative),
         onPositiveResult = onDelete,
         onNegativeResult = onDismiss,
         modifier = modifier,
