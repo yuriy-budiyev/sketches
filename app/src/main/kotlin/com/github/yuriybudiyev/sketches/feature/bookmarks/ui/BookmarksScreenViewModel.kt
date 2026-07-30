@@ -30,10 +30,12 @@ import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaUseCase
+import com.github.yuriybudiyev.sketches.core.platform.log.logDebug
 import com.github.yuriybudiyev.sketches.core.ui.model.SketchesViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -58,6 +60,7 @@ class BookmarksScreenViewModel @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher,
     private val deleteMediaFiles: DeleteMediaFilesUseCase,
     private val updateMedia: UpdateMediaUseCase,
+    private val deleteBookmarks: DeleteBookmarksUseCase,
     getMediaFiles: GetMediaFilesUseCase,
     getBookmarks: GetBookmarksUseCase,
 ): SketchesViewModel(context) {
@@ -98,6 +101,15 @@ class BookmarksScreenViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(ioDispatcher) {
                 deleteMediaFiles(files)
+            }
+        }
+    }
+
+    fun deleteBookmarks(mediaIds: Collection<Long>) {
+        logDebug(mediaIds)
+        viewModelScope.launch {
+            withContext(ioDispatcher) {
+                deleteBookmarks.invoke(mediaIds)
             }
         }
     }

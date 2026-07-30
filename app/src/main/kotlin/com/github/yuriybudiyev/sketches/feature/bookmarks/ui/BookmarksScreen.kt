@@ -71,6 +71,7 @@ import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateSetSaver
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteBookmarksConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
@@ -99,6 +100,9 @@ fun BookmarksRoute(
         onDeleteMedia = { files ->
             viewModel.deleteMedia(files)
         },
+        onDeleteBookmarks = { mediaIds ->
+            viewModel.deleteBookmarks(mediaIds)
+        },
     )
 }
 
@@ -107,15 +111,18 @@ private fun BookmarksScreen(
     uiState: BookmarksScreenViewModel.UiState,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
     onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
+    onDeleteBookmarks: (mediaIds: Collection<Long>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val contextUpdated by rememberUpdatedState(LocalContext.current)
     val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
+    val onDeleteBookmarksUpdated by rememberUpdatedState(onDeleteBookmarks)
     var allFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptyList()) }
     val selectedFiles =
         rememberSaveable(saver = SnapshotStateSetSaver()) { SnapshotStateSet<Long>() }
-    var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
+    var deleteFilesDialogVisible by rememberSaveable { mutableStateOf(false) }
+    var deleteBookmarksDialogVisible by rememberSaveable { mutableStateOf(false) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->
@@ -139,7 +146,8 @@ private fun BookmarksScreen(
     }
     LaunchedEffect(Unit) {
         if (selectedFiles.isEmpty()) {
-            deleteDialogVisible = false
+            deleteFilesDialogVisible = false
+            deleteBookmarksDialogVisible = false
         }
     }
     BackHandler(selectedFiles.isNotEmpty()) {
@@ -207,7 +215,7 @@ private fun BookmarksScreen(
         when (uiState) {
             is BookmarksScreenViewModel.UiState.Empty -> {
                 SketchesCenteredMessage(
-                    text = stringResource(R.string.no_images_found),
+                    text = stringResource(R.string.no_bookmarks_found),
                     modifier = Modifier.matchParentSize(),
                 )
                 SideEffect {
@@ -287,6 +295,13 @@ private fun BookmarksScreen(
                     )
                 }
                 SketchesAppBarActionButton(
+                    iconRes = R.drawable.ic_bookmark_delete,
+                    description = stringResource(R.string.delete_bookmarks),
+                    onClick = {
+                        deleteBookmarksDialogVisible = true
+                    },
+                )
+                SketchesAppBarActionButton(
                     iconRes = R.drawable.ic_delete,
                     description = stringResource(R.string.delete_selected),
                     onClick = {
@@ -300,7 +315,7 @@ private fun BookmarksScreen(
                                 )
                             }
                         } else {
-                            deleteDialogVisible = true
+                            deleteFilesDialogVisible = true
                         }
                     },
                 )
@@ -324,18 +339,33 @@ private fun BookmarksScreen(
                 )
             }
         }
-        if (deleteDialogVisible) {
+        if (deleteFilesDialogVisible) {
             SketchesDeleteImagesConfirmationDialog(
                 count = selectedFiles.size,
                 onDelete = {
-                    deleteDialogVisible = false
+                    deleteFilesDialogVisible = false
                     onDeleteMediaUpdated(allFiles.filterByIds(selectedFiles.toSet()))
                     coroutineScope.launch {
                         selectedFiles.clear()
                     }
                 },
                 onDismiss = {
-                    deleteDialogVisible = false
+                    deleteFilesDialogVisible = false
+                },
+            )
+        }
+        if (deleteBookmarksDialogVisible) {
+            SketchesDeleteBookmarksConfirmationDialog(
+                count = selectedFiles.size,
+                onDelete = {
+                    deleteBookmarksDialogVisible = false
+                    onDeleteBookmarksUpdated(selectedFiles.toSet())
+                    coroutineScope.launch {
+                        selectedFiles.clear()
+                    }
+                },
+                onDismiss = {
+                    deleteBookmarksDialogVisible = false
                 },
             )
         }

@@ -1,12 +1,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Sketches</string>
-    <string name="no_images_found">No images found</string>
+    <string name="no_images_found">No images</string>
     <string name="no_images_permission">Permission required to access images and video</string>
     <string name="no_storage_permission">Permission required to access the storage</string>
     <string name="unexpected_error">An unexpected error occurred</string>
     <string name="images">Images</string>
     <string name="buckets">Albums</string>
-    <string name="no_buckets_found">No albums found</string>
+    <string name="no_buckets_found">No albums</string>
     <string name="open_settings">Settings</string>
     <string name="share_image">Share</string>
     <string name="delete_image">Delete</string>
@@ -35,8 +35,10 @@
     <string name="select_none">Clear selection</string>
     <string name="scroll_to_start">Scroll to start</string>
     <string name="bookmarks">Bookmarks</string>
+    <string name="no_bookmarks_found">No bookmarks</string>
     <string name="create_bookmark">Create bookmark</string>
     <string name="delete_bookmark">Delete bookmark</string>
+    <string name="delete_bookmarks">Delete bookmarks</string>
     <string name="delete_bookmarks_dialog_title">Confirmation</string>
     <string name="delete_bookmarks_dialog_positive">Delete</string>
     <string name="delete_bookmarks_dialog_negative">Dismiss</string>

@@ -29,9 +29,9 @@ import dagger.Reusable
 import javax.inject.Inject
 
 @Reusable
-class DeleteBookmarkUseCase @Inject constructor(private val repository: MediaStoreRepository) {
+class DeleteBookmarksUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    suspend operator fun invoke(mediaId: Long) {
-        repository.deleteBookmarks(listOf(mediaId))
+    suspend operator fun invoke(mediaIds: Collection<Long>) {
+        repository.deleteBookmarks(mediaIds)
     }
 }

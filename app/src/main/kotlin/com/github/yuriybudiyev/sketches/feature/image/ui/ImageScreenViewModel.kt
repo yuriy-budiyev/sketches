@@ -32,7 +32,7 @@ import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.CreateBookmarkUseCase
-import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarkUseCase
+import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
@@ -68,7 +68,7 @@ class ImageScreenViewModel @AssistedInject constructor(
     private val ioDispatcher: CoroutineDispatcher,
     private val deleteMediaFiles: DeleteMediaFilesUseCase,
     private val createBookmark: CreateBookmarkUseCase,
-    private val deleteBookmark: DeleteBookmarkUseCase,
+    private val deleteBookmarks: DeleteBookmarksUseCase,
     private val updateMedia: UpdateMediaUseCase,
     getMediaFiles: GetMediaFilesUseCase,
     getBookmarks: GetBookmarksUseCase,
@@ -137,13 +137,17 @@ class ImageScreenViewModel @AssistedInject constructor(
 
     fun createBookmark(mediaId: Long) {
         viewModelScope.launch {
-            createBookmark.invoke(mediaId)
+            withContext(ioDispatcher) {
+                createBookmark.invoke(mediaId)
+            }
         }
     }
 
     fun deleteBookmark(mediaId: Long) {
         viewModelScope.launch {
-            deleteBookmark.invoke(mediaId)
+            withContext(ioDispatcher) {
+                deleteBookmarks.invoke(listOf(mediaId))
+            }
         }
     }
 

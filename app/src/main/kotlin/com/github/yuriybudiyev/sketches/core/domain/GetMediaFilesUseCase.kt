@@ -39,7 +39,7 @@ class GetMediaFilesUseCase @Inject constructor(private val repository: MediaStor
     operator fun invoke(bucketId: Long? = null): Flow<List<MediaStoreFile>> {
         var files = repository.getFiles()
         if (bucketId != null) {
-            files = files.mapLatest { files -> files.filter { file -> file.id == bucketId } }
+            files = files.mapLatest { files -> files.filter { file -> file.bucketId == bucketId } }
         }
         return files
     }
