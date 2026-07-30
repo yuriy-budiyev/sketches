@@ -39,6 +39,6 @@ interface BookmarksDao {
     @Upsert
     suspend fun upsert(value: BookmarkEntity)
 
-    @Query("DELETE FROM bookmarks WHERE media_id=:mediaId")
-    suspend fun delete(mediaId: Long)
+    @Query("DELETE FROM bookmarks WHERE media_id IN (:mediaIds)")
+    suspend fun delete(mediaIds: Collection<Long>)
 }

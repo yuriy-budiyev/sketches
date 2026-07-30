@@ -111,8 +111,8 @@ class MediaStoreRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun deleteBookmark(mediaId: Long) {
-        bookmarksDao.delete(mediaId)
+    override suspend fun deleteBookmarks(mediaIds: Collection<Long>) {
+        bookmarksDao.delete(mediaIds)
     }
 
     override suspend fun deleteContent(uris: Collection<Uri>) {
