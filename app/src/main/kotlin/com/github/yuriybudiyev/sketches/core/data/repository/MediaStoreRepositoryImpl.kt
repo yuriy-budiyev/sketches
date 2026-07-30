@@ -46,9 +46,11 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.transformLatest
@@ -132,11 +134,36 @@ class MediaStoreRepositoryImpl @Inject constructor(
             delay(delayMillis)
             val imageFiles = withContext(ioDispatcher) { collectAllFiles(MediaType.Image) }
             val videoFiles = withContext(ioDispatcher) { collectAllFiles(MediaType.Video) }
-            val allFiles = ArrayList<MediaStoreFile>(imageFiles.size + videoFiles.size)
+            val allFilesSize = imageFiles.size + videoFiles.size
+            val allFiles = ArrayList<MediaStoreFile>(allFilesSize)
             allFiles.addAll(imageFiles)
             allFiles.addAll(videoFiles)
             allFiles.sortByDescending { file -> file.dateAdded }
-            allFilesFlow.emit(allFiles)
+            val allFilesIds: MutableSet<Long> =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                    HashSet.newHashSet(allFilesSize)
+                } else {
+                    HashSet(
+                        ceil(allFilesSize.toDouble() / 0.75).toInt(),
+                        0.75F,
+                    )
+                }
+            allFiles.mapTo(allFilesIds) { file -> file.id }
+            for (file in allFiles) {
+                allFilesIds.add(file.id)
+            }
+            val deletedFilesIds = currentFiles.asSequence()
+                .filterNot { file -> allFilesIds.contains(file.id) }
+                .map { file -> file.id }
+                .toList()
+            ensureActive()
+            withContext(NonCancellable) {
+                currentFiles = allFiles
+                allFilesFlow.emit(allFiles)
+                if (deletedFilesIds.isNotEmpty()) {
+                    bookmarksDao.delete(deletedFilesIds)
+                }
+            }
         }
     }
 
@@ -204,6 +231,9 @@ class MediaStoreRepositoryImpl @Inject constructor(
         )
 
     private var updateAllFilesJob: Job? = null
+
+    @Volatile
+    private var currentFiles: List<MediaStoreFile> = emptyList()
 
     init {
         updateAllFiles()
