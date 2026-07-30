@@ -35,18 +35,20 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteContentUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBucketsContentUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaBucketsUseCase
-import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
+import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaUseCase
+import com.github.yuriybudiyev.sketches.core.ui.model.SketchesViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -59,21 +61,39 @@ class BucketsScreenViewModel @Inject constructor(
     defaultDispatcher: CoroutineDispatcher,
     @Dispatcher(Dispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
-    private val getMediaBuckets: GetMediaBucketsUseCase,
     private val getBucketsContent: GetBucketsContentUseCase,
     private val deleteContent: DeleteContentUseCase,
-): MediaObservingViewModel(context) {
+    private val updateMedia: UpdateMediaUseCase,
+    getMediaBuckets: GetMediaBucketsUseCase,
+): SketchesViewModel(context) {
 
     private val action: MutableSharedFlow<Action> = MutableSharedFlow()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<UiState> =
-        flow<UiState> {
-            updateBuckets()
+        getMediaBuckets().transformLatest { buckets ->
+            if (buckets.isEmpty()) {
+                emit(UiState.Empty)
+            } else {
+                val oldState = uiState.value
+                if (oldState is UiState.Buckets) {
+                    emit(
+                        UiState.Buckets(
+                            buckets = buckets,
+                            action = oldState.action,
+                        ),
+                    )
+                } else {
+                    emit(
+                        UiState.Buckets(
+                            buckets = buckets,
+                            action = Consumable.empty(),
+                        ),
+                    )
+                }
+            }
             action.collect { action ->
                 when (action) {
-                    is Action.UpdateBuckets -> {
-                        updateBuckets()
-                    }
                     is Action.StartSharingBuckets -> {
                         startBucketsAction(action.buckets) { files ->
                             UiState.Buckets.Action.Share(files)
@@ -93,30 +113,6 @@ class BucketsScreenViewModel @Inject constructor(
             started = SharingStarted.Lazily,
             initialValue = UiState.Loading,
         )
-
-    private suspend fun FlowCollector<UiState>.updateBuckets() {
-        val buckets = withContext(ioDispatcher) { getMediaBuckets() }
-        if (buckets.isNotEmpty()) {
-            val oldState = uiState.value
-            if (oldState is UiState.Buckets) {
-                emit(
-                    UiState.Buckets(
-                        buckets = buckets,
-                        action = oldState.action,
-                    ),
-                )
-            } else {
-                emit(
-                    UiState.Buckets(
-                        buckets = buckets,
-                        action = Consumable.empty(),
-                    ),
-                )
-            }
-        } else {
-            emit(UiState.Empty)
-        }
-    }
 
     private suspend inline fun FlowCollector<UiState>.startBucketsAction(
         buckets: Collection<MediaStoreBucket>,
@@ -156,8 +152,10 @@ class BucketsScreenViewModel @Inject constructor(
         }
     }
 
-    override suspend fun onMediaChanged() {
-        action.emit(Action.UpdateBuckets)
+    override fun onMediaAccessChanged() {
+        viewModelScope.launch {
+            updateMedia()
+        }
     }
 
     sealed interface UiState {
@@ -183,8 +181,6 @@ class BucketsScreenViewModel @Inject constructor(
     }
 
     private sealed interface Action {
-
-        data object UpdateBuckets: Action
 
         data class StartSharingBuckets(val buckets: Collection<MediaStoreBucket>): Action
 

@@ -24,14 +24,58 @@
 
 package com.github.yuriybudiyev.sketches.core.domain
 
+import android.net.Uri
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.Reusable
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.transformLatest
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @Reusable
 class GetMediaBucketsUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    suspend operator fun invoke(): List<MediaStoreBucket> =
-        repository.getBuckets()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    operator fun invoke(): Flow<List<MediaStoreBucket>> =
+        repository.getFiles().transformLatest { files ->
+            val bucketsInfo = LinkedHashMap<Long, MediaStoreBucketInfo>()
+            for (file in files) {
+                val bucketId = file.bucketId
+                val coverUri = file.uri
+                val coverDateAdded = file.dateAdded
+                val bucketInfo = bucketsInfo.getOrPut(bucketId) {
+                    MediaStoreBucketInfo(
+                        id = bucketId,
+                        name = file.bucketName,
+                        coverUri = coverUri,
+                        coverDateAdded = coverDateAdded,
+                        size = 0,
+                    )
+                }
+                bucketInfo.size++
+            }
+            val buckets = ArrayList<MediaStoreBucket>(bucketsInfo.size)
+            for ((_, bucketInfo) in bucketsInfo) {
+                buckets.add(
+                    MediaStoreBucket(
+                        id = bucketInfo.id,
+                        name = bucketInfo.name,
+                        size = bucketInfo.size,
+                        coverUri = bucketInfo.coverUri,
+                        coverDateAdded = bucketInfo.coverDateAdded,
+                    ),
+                )
+            }
+            emit(buckets)
+        }
+
+    private data class MediaStoreBucketInfo(
+        val id: Long,
+        val name: String,
+        val coverUri: Uri,
+        val coverDateAdded: LocalDateTime,
+        var size: Int,
+    )
 }

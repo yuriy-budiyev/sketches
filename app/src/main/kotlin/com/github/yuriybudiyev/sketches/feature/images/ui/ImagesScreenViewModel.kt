@@ -31,18 +31,18 @@ import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
-import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
+import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaUseCase
+import com.github.yuriybudiyev.sketches.core.ui.model.SketchesViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.YearMonth
@@ -56,21 +56,23 @@ class ImagesScreenViewModel @Inject constructor(
     private val defaultDispatcher: CoroutineDispatcher,
     @Dispatcher(Dispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
-    private val getMediaFiles: GetMediaFilesUseCase,
     private val deleteMediaFiles: DeleteMediaFilesUseCase,
-): MediaObservingViewModel(context) {
+    private val updateMedia: UpdateMediaUseCase,
+    getMediaFiles: GetMediaFilesUseCase,
+): SketchesViewModel(context) {
 
-    private val action: MutableSharedFlow<Action> = MutableSharedFlow()
-
+    @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<UiState> =
-        flow<UiState> {
-            updateMedia()
-            action.collect { action ->
-                when (action) {
-                    is Action.UpdateMedia -> {
-                        updateMedia()
-                    }
-                }
+        getMediaFiles().transformLatest { files ->
+            if (files.isEmpty()) {
+                emit(UiState.Empty)
+            } else {
+                emit(
+                    UiState.Images(
+                        files = files,
+                        groups = files.groupBy { file -> YearMonth.from(file.dateAdded) },
+                    ),
+                )
             }
         }.catch { e ->
             emit(UiState.Error(e))
@@ -80,23 +82,6 @@ class ImagesScreenViewModel @Inject constructor(
             initialValue = UiState.Loading,
         )
 
-    private suspend fun FlowCollector<UiState>.updateMedia() {
-        val files = withContext(ioDispatcher) { getMediaFiles() }
-        if (files.isNotEmpty()) {
-            val groups = withContext(defaultDispatcher) {
-                files.groupBy { file -> YearMonth.from(file.dateAdded) }
-            }
-            emit(
-                UiState.Images(
-                    files = files,
-                    groups = groups,
-                ),
-            )
-        } else {
-            emit(UiState.Empty)
-        }
-    }
-
     fun deleteMedia(files: Collection<MediaStoreFile>) {
         viewModelScope.launch {
             withContext(ioDispatcher) {
@@ -105,8 +90,10 @@ class ImagesScreenViewModel @Inject constructor(
         }
     }
 
-    override suspend fun onMediaChanged() {
-        action.emit(Action.UpdateMedia)
+    override fun onMediaAccessChanged() {
+        viewModelScope.launch {
+            updateMedia()
+        }
     }
 
     sealed interface UiState {
@@ -121,10 +108,5 @@ class ImagesScreenViewModel @Inject constructor(
         ): UiState
 
         data class Error(val thrown: Throwable): UiState
-    }
-
-    private sealed interface Action {
-
-        data object UpdateMedia: Action
     }
 }

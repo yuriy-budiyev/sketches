@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 Yuriy Budiyev
+ * Copyright (c) 2026 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,41 +24,14 @@
 
 package com.github.yuriybudiyev.sketches.core.domain
 
-import android.os.Build
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.Reusable
-import kotlinx.coroutines.flow.first
 import javax.inject.Inject
-import kotlin.math.ceil
 
 @Reusable
-class GetBucketsContentUseCase @Inject constructor(private val repository: MediaStoreRepository) {
+class UpdateMediaUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    suspend operator fun invoke(buckets: Collection<MediaStoreBucket>): List<MediaStoreFile> {
-        val allFiles = repository.getFiles().first()
-        val bucketsSize = buckets.size
-        val bucketIds: MutableSet<Long> =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                HashSet.newHashSet(bucketsSize)
-            } else {
-                HashSet(
-                    ceil(bucketsSize.toDouble() / 0.75).toInt(),
-                    0.75F,
-                )
-            }
-        var contentSize = 0
-        for (bucket in buckets) {
-            bucketIds.add(bucket.id)
-            contentSize += bucket.size
-        }
-        val contentFiles = ArrayList<MediaStoreFile>(contentSize)
-        for (file in allFiles) {
-            if (bucketIds.contains(file.bucketId)) {
-                contentFiles.add(file)
-            }
-        }
-        return contentFiles
+    operator fun invoke() {
+        repository.updateFiles()
     }
 }

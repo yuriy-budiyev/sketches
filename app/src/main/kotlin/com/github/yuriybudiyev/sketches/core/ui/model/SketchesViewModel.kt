@@ -22,25 +22,26 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.domain
+package com.github.yuriybudiyev.sketches.core.ui.model
 
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
-import dagger.Reusable
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.mapLatest
-import javax.inject.Inject
+import android.content.Context
+import androidx.lifecycle.ViewModel
+import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
+import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
 
-@Reusable
-class GetMediaFilesUseCase @Inject constructor(private val repository: MediaStoreRepository) {
+abstract class SketchesViewModel(context: Context): ViewModel() {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(bucketId: Long? = null): Flow<List<MediaStoreFile>> {
-        var files = repository.getFiles()
-        if (bucketId != null) {
-            files = files.mapLatest { files -> files.filter { file -> file.id == bucketId } }
+    protected abstract fun onMediaAccessChanged()
+
+    fun updateMediaAccess() {
+        val current = mediaAccess
+        val updated = appContext.checkMediaAccess()
+        mediaAccess = updated
+        if (current != updated || updated == MediaAccess.UserSelected) {
+            onMediaAccessChanged()
         }
-        return files
     }
+
+    private val appContext: Context = context.applicationContext
+    private var mediaAccess: MediaAccess = appContext.checkMediaAccess()
 }

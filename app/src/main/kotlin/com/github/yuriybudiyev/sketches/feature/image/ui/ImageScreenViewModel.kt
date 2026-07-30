@@ -36,7 +36,8 @@ import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarkUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
-import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
+import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaUseCase
+import com.github.yuriybudiyev.sketches.core.ui.model.SketchesViewModel
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageNavRoute
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -45,15 +46,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combineTransform
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -68,117 +66,17 @@ class ImageScreenViewModel @AssistedInject constructor(
     defaultDispatcher: CoroutineDispatcher,
     @Dispatcher(Dispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
-    private val getMediaFiles: GetMediaFilesUseCase,
     private val deleteMediaFiles: DeleteMediaFilesUseCase,
     private val createBookmark: CreateBookmarkUseCase,
     private val deleteBookmark: DeleteBookmarkUseCase,
+    private val updateMedia: UpdateMediaUseCase,
+    getMediaFiles: GetMediaFilesUseCase,
     getBookmarks: GetBookmarksUseCase,
-): MediaObservingViewModel(context) {
+): SketchesViewModel(context) {
 
-    private val action: MutableSharedFlow<Action> = MutableSharedFlow()
+    val uiState: StateFlow<UiState>
 
-    val uiState: StateFlow<UiState> =
-        flow {
-            updateFiles()
-            action.collect { action ->
-                when (action) {
-                    is Action.UpdateMedia -> {
-                        updateFiles()
-                    }
-                }
-            }
-        }.combineTransform(getBookmarks()) { state, bookmarks ->
-            when (state) {
-                is IntermediateState.Items -> {
-                    throw IllegalStateException("Forbidden state: $state")
-                }
-                is IntermediateState.Files -> {
-                    val files = state.files
-                    when (mode) {
-                        Mode.Images -> {
-                            checkIndexAndEmitItems(
-                                files.map { file ->
-                                    ImageItem(
-                                        file = file,
-                                        isMarked = bookmarks.containsKey(file.id),
-                                    )
-                                },
-                            )
-                        }
-                        Mode.Bookmarks -> {
-                            if (files.isEmpty() || bookmarks.isEmpty()) {
-                                emit(IntermediateState.Empty)
-                            } else {
-                                val temp = ArrayList<FileWithBookmark>(bookmarks.size)
-                                for (file in files) {
-                                    val bookmark = bookmarks[file.id]
-                                    if (bookmark != null) {
-                                        temp.add(
-                                            FileWithBookmark(
-                                                file = file,
-                                                bookmark = bookmark,
-                                            ),
-                                        )
-                                    }
-                                }
-                                if (temp.isEmpty()) {
-                                    emit(IntermediateState.Empty)
-                                } else {
-                                    temp.sortByDescending { item -> item.bookmark.dateAdded }
-                                    checkIndexAndEmitItems(
-                                        temp.map { item ->
-                                            ImageItem(
-                                                file = item.file,
-                                                isMarked = true,
-                                            )
-                                        },
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-                is IntermediateState.Empty -> {
-                    emit(state)
-                }
-            }
-        }.transform { state ->
-            when (state) {
-                is IntermediateState.Items -> {
-                    emit(
-                        UiState.Image(
-                            items = state.items,
-                            index = state.index,
-                        ),
-                    )
-                }
-                is IntermediateState.Files -> {
-                    throw IllegalStateException("Forbidden state: $state")
-                }
-                is IntermediateState.Empty -> {
-                    emit(UiState.Empty)
-                }
-            }
-        }.catch { t ->
-            emit(UiState.Error(t))
-        }.flowOn(defaultDispatcher).stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Lazily,
-            initialValue = UiState.Loading,
-        )
-
-    private suspend fun FlowCollector<IntermediateState>.updateFiles(
-        bucketId: Long? = currentBucketId,
-    ) {
-        val files = withContext(ioDispatcher) { getMediaFiles(bucketId) }
-        if (files.isNotEmpty()) {
-            emit(IntermediateState.Files(files))
-        } else {
-            emit(IntermediateState.Empty)
-        }
-    }
-
-    private suspend fun FlowCollector<IntermediateState>.checkIndexAndEmitItems(
+    private suspend fun FlowCollector<UiState>.checkIndexAndEmitItems(
         items: List<ImageItem>,
         fileIndex: Int = currentFileIndex,
         fileId: Long? = currentFileId,
@@ -186,7 +84,7 @@ class ImageScreenViewModel @AssistedInject constructor(
         val itemsSize = items.size
         if (fileIndex < itemsSize && items[fileIndex].file.id == fileId) {
             emit(
-                IntermediateState.Items(
+                UiState.Image(
                     items = items,
                     index = fileIndex,
                 ),
@@ -212,7 +110,7 @@ class ImageScreenViewModel @AssistedInject constructor(
                 }
             }
             emit(
-                IntermediateState.Items(
+                UiState.Image(
                     items = items,
                     index = actualIndex.coerceIn(
                         0,
@@ -231,8 +129,10 @@ class ImageScreenViewModel @AssistedInject constructor(
         }
     }
 
-    override suspend fun onMediaChanged() {
-        action.emit(Action.UpdateMedia)
+    override fun onMediaAccessChanged() {
+        viewModelScope.launch {
+            updateMedia()
+        }
     }
 
     fun createBookmark(mediaId: Long) {
@@ -287,6 +187,62 @@ class ImageScreenViewModel @AssistedInject constructor(
                 mode = Mode.Images
             }
         }
+        uiState = getMediaFiles(currentBucketId)
+            .combineTransform(getBookmarks()) { files, bookmarks ->
+                if (files.isEmpty()) {
+                    emit(UiState.Empty)
+                } else {
+                    when (mode) {
+                        Mode.Images -> {
+                            checkIndexAndEmitItems(
+                                files.map { file ->
+                                    ImageItem(
+                                        file = file,
+                                        isMarked = bookmarks.containsKey(file.id),
+                                    )
+                                },
+                            )
+                        }
+                        Mode.Bookmarks -> {
+                            if (bookmarks.isEmpty()) {
+                                emit(UiState.Empty)
+                            } else {
+                                val temp = ArrayList<FileWithBookmark>(bookmarks.size)
+                                for (file in files) {
+                                    val bookmark = bookmarks[file.id]
+                                    if (bookmark != null) {
+                                        temp.add(
+                                            FileWithBookmark(
+                                                file = file,
+                                                bookmark = bookmark,
+                                            ),
+                                        )
+                                    }
+                                }
+                                if (temp.isEmpty()) {
+                                    emit(UiState.Empty)
+                                } else {
+                                    temp.sortByDescending { item -> item.bookmark.dateAdded }
+                                    checkIndexAndEmitItems(
+                                        temp.map { item ->
+                                            ImageItem(
+                                                file = item.file,
+                                                isMarked = true,
+                                            )
+                                        },
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }.catch { t ->
+                emit(UiState.Error(t))
+            }.flowOn(defaultDispatcher).stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Lazily,
+                initialValue = UiState.Loading,
+            )
     }
 
     sealed interface UiState {
@@ -301,23 +257,6 @@ class ImageScreenViewModel @AssistedInject constructor(
         ): UiState
 
         data class Error(val thrown: Throwable): UiState
-    }
-
-    private sealed interface IntermediateState {
-
-        data class Items(
-            val items: List<ImageItem>,
-            val index: Int,
-        ): IntermediateState
-
-        data class Files(val files: List<MediaStoreFile>): IntermediateState
-
-        data object Empty: IntermediateState
-    }
-
-    private sealed interface Action {
-
-        data object UpdateMedia: Action
     }
 
     private enum class Mode {

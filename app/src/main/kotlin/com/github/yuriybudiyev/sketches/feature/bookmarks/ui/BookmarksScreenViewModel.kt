@@ -33,20 +33,17 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
-import com.github.yuriybudiyev.sketches.core.ui.model.MediaObservingViewModel
+import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaUseCase
+import com.github.yuriybudiyev.sketches.core.ui.model.SketchesViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combineTransform
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -59,61 +56,34 @@ class BookmarksScreenViewModel @Inject constructor(
     defaultDispatcher: CoroutineDispatcher,
     @Dispatcher(Dispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
-    private val getMediaFiles: GetMediaFilesUseCase,
     private val deleteMediaFiles: DeleteMediaFilesUseCase,
+    private val updateMedia: UpdateMediaUseCase,
+    getMediaFiles: GetMediaFilesUseCase,
     getBookmarks: GetBookmarksUseCase,
-): MediaObservingViewModel(context) {
-
-    private val action: MutableSharedFlow<Action> = MutableSharedFlow()
+): SketchesViewModel(context) {
 
     val uiState: StateFlow<UiState> =
-        flow {
-            updateFiles()
-            action.collect { action ->
-                when (action) {
-                    is Action.UpdateMedia -> {
-                        updateFiles()
+        getMediaFiles().combineTransform(getBookmarks()) { files, bookmarks ->
+            if (files.isEmpty() || bookmarks.isEmpty()) {
+                emit(UiState.Empty)
+            } else {
+                val temp = ArrayList<FileWithBookmark>(bookmarks.size)
+                for (file in files) {
+                    val bookmark = bookmarks[file.id]
+                    if (bookmark != null) {
+                        temp.add(
+                            FileWithBookmark(
+                                file = file,
+                                bookmark = bookmark,
+                            ),
+                        )
                     }
                 }
-            }
-        }.combineTransform(getBookmarks()) { state, bookmarks ->
-            when (state) {
-                is IntermediateState.Files -> {
-                    val files = state.files
-                    if (files.isEmpty() || bookmarks.isEmpty()) {
-                        emit(IntermediateState.Empty)
-                    } else {
-                        val temp = ArrayList<FileWithBookmark>(bookmarks.size)
-                        for (file in files) {
-                            val bookmark = bookmarks[file.id]
-                            if (bookmark != null) {
-                                temp.add(
-                                    FileWithBookmark(
-                                        file = file,
-                                        bookmark = bookmark,
-                                    ),
-                                )
-                            }
-                        }
-                        if (temp.isEmpty()) {
-                            emit(IntermediateState.Empty)
-                        } else {
-                            temp.sortByDescending { item -> item.bookmark.dateAdded }
-                            emit(IntermediateState.Files(temp.map { item -> item.file }))
-                        }
-                    }
-                }
-                is IntermediateState.Empty -> {
-                    emit(state)
-                }
-            }
-        }.transform { state ->
-            when (state) {
-                is IntermediateState.Files -> {
-                    emit(UiState.Bookmarks(state.files))
-                }
-                is IntermediateState.Empty -> {
+                if (temp.isEmpty()) {
                     emit(UiState.Empty)
+                } else {
+                    temp.sortByDescending { item -> item.bookmark.dateAdded }
+                    emit(UiState.Bookmarks(temp.map { item -> item.file }))
                 }
             }
         }.catch { thrown ->
@@ -132,17 +102,8 @@ class BookmarksScreenViewModel @Inject constructor(
         }
     }
 
-    override suspend fun onMediaChanged() {
-        action.emit(Action.UpdateMedia)
-    }
-
-    private suspend fun FlowCollector<IntermediateState>.updateFiles() {
-        val files = withContext(ioDispatcher) { getMediaFiles() }
-        if (files.isNotEmpty()) {
-            emit(IntermediateState.Files(files))
-        } else {
-            emit(IntermediateState.Empty)
-        }
+    override fun onMediaAccessChanged() {
+        updateMedia()
     }
 
     sealed interface UiState {
@@ -154,18 +115,6 @@ class BookmarksScreenViewModel @Inject constructor(
         data object Empty: UiState
 
         data object Loading: UiState
-    }
-
-    private sealed interface IntermediateState {
-
-        data class Files(val files: List<MediaStoreFile>): IntermediateState
-
-        data object Empty: IntermediateState
-    }
-
-    private sealed interface Action {
-
-        data object UpdateMedia: Action
     }
 
     private data class FileWithBookmark(
