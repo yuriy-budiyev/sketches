@@ -28,26 +28,26 @@ import android.os.Build
 import kotlin.math.ceil
 
 /**
- * Backport of [LinkedHashSet].newLinkedHashSet(numElements) for older APIs
+ * Backport of [java.util.LinkedHashSet.newLinkedHashSet] for older APIs
  */
 fun <E> newLinkedHashSet(numElements: Int): LinkedHashSet<E> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-        LinkedHashSet.newLinkedHashSet(numElements)
+        java.util.LinkedHashSet.newLinkedHashSet(numElements)
     } else {
-        LinkedHashSet(
+        java.util.LinkedHashSet(
             ceil(numElements.toDouble() / 0.75).toInt(),
             0.75F,
         )
     }
 
 /**
- * Backport of [LinkedHashMap].newLinkedHashMap(numElements) for older APIs
+ * Backport of [java.util.LinkedHashMap.newLinkedHashMap] for older APIs
  */
 fun <K, V> newLinkedHashMap(numElements: Int): LinkedHashMap<K, V> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-        LinkedHashMap.newLinkedHashMap(numElements)
+        java.util.LinkedHashMap.newLinkedHashMap(numElements)
     } else {
-        LinkedHashMap(
+        java.util.LinkedHashMap(
             ceil(numElements.toDouble() / 0.75).toInt(),
             0.75F,
         )
