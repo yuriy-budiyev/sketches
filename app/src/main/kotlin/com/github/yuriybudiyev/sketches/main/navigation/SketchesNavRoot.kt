@@ -415,7 +415,7 @@ private class ViewModelStoreViewModel: ViewModel() {
         }
     }
 
-    private val viewModelStores: LinkedHashMap<Any, ViewModelStore> = LinkedHashMap()
+    private val viewModelStores: MutableMap<Any, ViewModelStore> = LinkedHashMap()
 }
 
 @Composable
@@ -449,7 +449,7 @@ private class RootNavBarControllerImpl: RootNavBarController {
         listeners[route]?.invoke()
     }
 
-    private val listeners: HashMap<RootNavRoute, () -> Unit> = HashMap()
+    private val listeners: MutableMap<RootNavRoute, () -> Unit> = LinkedHashMap()
 }
 
 private class RootNavBarControllerImplSaver: Saver<RootNavBarControllerImpl, RootNavBarConfig> {

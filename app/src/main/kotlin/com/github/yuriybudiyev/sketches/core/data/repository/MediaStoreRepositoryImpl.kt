@@ -28,12 +28,13 @@ import android.content.ContentUris
 import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.provider.MediaStore
 import androidx.core.database.getStringOrNull
+import com.github.yuriybudiyev.sketches.core.collections.newLinkedHashMap
+import com.github.yuriybudiyev.sketches.core.collections.newLinkedHashSet
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.dao.BookmarksDao
@@ -62,7 +63,6 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.math.ceil
 
 @Singleton
 class MediaStoreRepositoryImpl @Inject constructor(
@@ -85,16 +85,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getBookmarks(): Flow<Map<Long, Bookmark>> =
         bookmarksDao.getAll().transformLatest { entities ->
-            val size = entities.size
-            val bookmarks: MutableMap<Long, Bookmark> =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                    LinkedHashMap.newLinkedHashMap(size)
-                } else {
-                    LinkedHashMap(
-                        ceil(size.toDouble() / 0.75).toInt(),
-                        0.75F,
-                    )
-                }
+            val bookmarks = newLinkedHashMap<Long, Bookmark>(entities.size)
             for (entity in entities) {
                 val mediaId = entity.mediaId
                 bookmarks[mediaId] = Bookmark(
@@ -140,15 +131,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
             allFiles.addAll(imageFiles)
             allFiles.addAll(videoFiles)
             allFiles.sortByDescending { file -> file.dateAdded }
-            val allFilesIds: MutableSet<Long> =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                    HashSet.newHashSet(allFilesSize)
-                } else {
-                    HashSet(
-                        ceil(allFilesSize.toDouble() / 0.75).toInt(),
-                        0.75F,
-                    )
-                }
+            val allFilesIds = newLinkedHashSet<Long>(allFilesSize)
             allFiles.mapTo(allFilesIds) { file -> file.id }
             val deletedFilesIds = currentFiles.asSequence()
                 .filterNot { file -> allFilesIds.contains(file.id) }

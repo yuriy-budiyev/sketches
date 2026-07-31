@@ -24,30 +24,20 @@
 
 package com.github.yuriybudiyev.sketches.core.domain
 
-import android.os.Build
+import com.github.yuriybudiyev.sketches.core.collections.newLinkedHashSet
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.Reusable
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
-import kotlin.math.ceil
 
 @Reusable
 class GetBucketsContentUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
     suspend operator fun invoke(buckets: Collection<MediaStoreBucket>): List<MediaStoreFile> {
         val allFiles = repository.getFiles().first()
-        val bucketsSize = buckets.size
-        val bucketIds: MutableSet<Long> =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                HashSet.newHashSet(bucketsSize)
-            } else {
-                HashSet(
-                    ceil(bucketsSize.toDouble() / 0.75).toInt(),
-                    0.75F,
-                )
-            }
+        val bucketIds = newLinkedHashSet<Long>(buckets.size)
         var contentSize = 0
         for (bucket in buckets) {
             bucketIds.add(bucket.id)
