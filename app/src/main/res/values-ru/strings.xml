@@ -21,12 +21,12 @@
     <string name="delete_images_dialog_title">Подтверждение</string>
     <string name="delete_images_dialog_positive">Удалить</string>
     <string name="delete_images_dialog_negative">Отмена</string>
-    <string name="delete_images_dialog_content_one">Вы уверены, что хотите удалить изображение?</string>
+    <string name="delete_images_dialog_content_one">Удалить изображение?</string>
     <plurals name="delete_images_dialog_content">
-        <item quantity="one">Вы уверены, что хотите удалить %d изображение?</item>
-        <item quantity="few">Вы уверены, что хотите удалить %d изображения?</item>
-        <item quantity="many">Вы уверены, что хотите удалить %d изображений?</item>
-        <item quantity="other">Вы уверены, что хотите удалить %d изображений?</item>
+        <item quantity="one">Удалить %d изображение?</item>
+        <item quantity="few">Удалить %d изображения?</item>
+        <item quantity="many">Удалить %d изображений?</item>
+        <item quantity="other">Удалить %d изображений?</item>
     </plurals>
     <string name="request_media_access">Обновить выбранные изображения</string>
     <string name="delete_selected">Удалить выбранное</string>
@@ -44,11 +44,11 @@
     <string name="delete_bookmarks_dialog_positive">Удалить</string>
     <string name="delete_bookmarks_dialog_negative">Отмена</string>
     <string name="delete_bookmarks_dialog_title">Подтверждение</string>
-    <string name="delete_bookmarks_dialog_content_one">Вы уверены, что хотите удалить закладку?</string>
+    <string name="delete_bookmarks_dialog_content_one">Удалить закладку?</string>
     <plurals name="delete_bookmarks_dialog_content">
-        <item quantity="one">Вы уверены, что хотите удалить %d закладку?</item>
-        <item quantity="few">Вы уверены, что хотите удалить %d закладки?</item>
-        <item quantity="many">Вы уверены, что хотите удалить %d закладок?</item>
-        <item quantity="other">Вы уверены, что хотите удалить %d закладок?</item>
+        <item quantity="one">Удалить %d закладку?</item>
+        <item quantity="few">Удалить %d закладки?</item>
+        <item quantity="many">Удалить %d закладок?</item>
+        <item quantity="other">Удалить %d закладок?</item>
     </plurals>
 </resources>

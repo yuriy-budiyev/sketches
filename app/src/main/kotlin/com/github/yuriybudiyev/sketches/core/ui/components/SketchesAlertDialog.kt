@@ -24,16 +24,22 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.ui.wsc.LocalWindowSizeClass
 
 @Composable
 fun SketchesAlertDialog(
@@ -43,8 +49,8 @@ fun SketchesAlertDialog(
     negativeButtonText: String,
     onPositiveResult: () -> Unit,
     onNegativeResult: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
+    val windowSizeClass by rememberUpdatedState(LocalWindowSizeClass.current)
     AlertDialog(
         title = {
             Text(
@@ -74,7 +80,14 @@ fun SketchesAlertDialog(
                 )
             }
         },
-        modifier = modifier,
+        modifier = when (windowSizeClass.widthSizeClass) {
+            WindowWidthSizeClass.Compact -> {
+                Modifier.fillMaxWidth()
+            }
+            else -> {
+                Modifier.wrapContentWidth()
+            }
+        },
     )
 }
 
@@ -84,7 +97,6 @@ fun SketchesDeleteImagesConfirmationDialog(
     count: Int,
     onDelete: () -> Unit,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     SketchesAlertDialog(
         titleText = stringResource(R.string.delete_images_dialog_title),
@@ -101,7 +113,6 @@ fun SketchesDeleteImagesConfirmationDialog(
         negativeButtonText = stringResource(R.string.delete_images_dialog_negative),
         onPositiveResult = onDelete,
         onNegativeResult = onDismiss,
-        modifier = modifier,
     )
 }
 
@@ -111,7 +122,6 @@ fun SketchesDeleteBookmarksConfirmationDialog(
     count: Int,
     onDelete: () -> Unit,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     SketchesAlertDialog(
         titleText = stringResource(R.string.delete_bookmarks_dialog_title),
@@ -128,6 +138,5 @@ fun SketchesDeleteBookmarksConfirmationDialog(
         negativeButtonText = stringResource(R.string.delete_bookmarks_dialog_negative),
         onPositiveResult = onDelete,
         onNegativeResult = onDismiss,
-        modifier = modifier,
     )
 }

@@ -102,6 +102,7 @@ import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaR
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteBookmarksConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
@@ -139,7 +140,7 @@ fun ImageRoute(viewModel: ImageScreenViewModel) {
                 ),
             )
         },
-        onDelete = { _, file ->
+        onDeleteImage = { _, file ->
             viewModel.deleteMedia(listOf(file))
         },
         onCreateBookmark = { mediaId ->
@@ -155,7 +156,7 @@ fun ImageRoute(viewModel: ImageScreenViewModel) {
 fun ImageScreen(
     uiState: ImageScreenViewModel.UiState,
     onChange: (index: Int, file: MediaStoreFile) -> Unit,
-    onDelete: (index: Int, file: MediaStoreFile) -> Unit,
+    onDeleteImage: (index: Int, file: MediaStoreFile) -> Unit,
     onCreateBookmark: (mediaId: Long) -> Unit,
     onDeleteBookmark: (mediaId: Long) -> Unit,
 ) {
@@ -181,7 +182,7 @@ fun ImageScreen(
                     index = uiState.index,
                     items = uiState.items,
                     onChange = onChange,
-                    onDelete = onDelete,
+                    onDeleteImage = onDeleteImage,
                     onCreateBookmark = onCreateBookmark,
                     onDeleteBookmark = onDeleteBookmark,
                     modifier = Modifier.matchParentSize(),
@@ -202,7 +203,7 @@ private fun ImageScreenLayout(
     index: Int,
     items: List<ImageItem>,
     onChange: (index: Int, file: MediaStoreFile) -> Unit,
-    onDelete: (index: Int, file: MediaStoreFile) -> Unit,
+    onDeleteImage: (index: Int, file: MediaStoreFile) -> Unit,
     onCreateBookmark: (mediaId: Long) -> Unit,
     onDeleteBookmark: (mediaId: Long) -> Unit,
     modifier: Modifier = Modifier,
@@ -217,7 +218,7 @@ private fun ImageScreenLayout(
     val contextUpdated by rememberUpdatedState(LocalContext.current)
     val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
     val onChangeUpdated by rememberUpdatedState(onChange)
-    val onDeleteUpdated by rememberUpdatedState(onDelete)
+    val onDeleteImageUpdated by rememberUpdatedState(onDeleteImage)
     val onCreateBookmarkUpdated by rememberUpdatedState(onCreateBookmark)
     val onDeleteBookmarkUpdated by rememberUpdatedState(onDeleteBookmark)
     val coroutineScope = rememberCoroutineScope()
@@ -228,7 +229,8 @@ private fun ImageScreenLayout(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { },
     )
-    var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
+    var deleteImageDialogVisible by rememberSaveable { mutableStateOf(false) }
+    var deleteBookmarkDialogVisible by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(index) {
         pagerState.scrollToPage(index)
     }
@@ -356,7 +358,7 @@ private fun ImageScreenLayout(
                     onClick = {
                         val item = itemsUpdated[currentIndex]
                         if (item.isMarked) {
-                            onDeleteBookmarkUpdated(item.file.id)
+                            deleteBookmarkDialogVisible = true
                         } else {
                             onCreateBookmarkUpdated(item.file.id)
                         }
@@ -374,7 +376,7 @@ private fun ImageScreenLayout(
                                 )
                             }
                         } else {
-                            deleteDialogVisible = true
+                            deleteImageDialogVisible = true
                         }
                     },
                 )
@@ -395,20 +397,30 @@ private fun ImageScreenLayout(
                 )
             }
         }
-        if (deleteDialogVisible) {
+        if (deleteImageDialogVisible) {
             SketchesDeleteImagesConfirmationDialog(
                 count = 1,
                 onDelete = {
-                    deleteDialogVisible = false
-                    coroutineScope.launch {
-                        onDeleteUpdated(
-                            currentIndex,
-                            itemsUpdated[currentIndex].file,
-                        )
-                    }
+                    deleteImageDialogVisible = false
+                    onDeleteImageUpdated(
+                        currentIndex,
+                        itemsUpdated[currentIndex].file,
+                    )
                 },
                 onDismiss = {
-                    deleteDialogVisible = false
+                    deleteImageDialogVisible = false
+                },
+            )
+        }
+        if (deleteBookmarkDialogVisible) {
+            SketchesDeleteBookmarksConfirmationDialog(
+                count = 1,
+                onDelete = {
+                    deleteBookmarkDialogVisible = false
+                    onDeleteBookmarkUpdated(itemsUpdated[currentIndex].file.id)
+                },
+                onDismiss = {
+                    deleteBookmarkDialogVisible = false
                 },
             )
         }

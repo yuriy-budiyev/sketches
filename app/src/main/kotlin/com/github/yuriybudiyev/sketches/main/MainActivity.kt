@@ -39,6 +39,8 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,6 +58,7 @@ import com.github.yuriybudiyev.sketches.core.platform.share.ShareManager
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.dimens.SketchesDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.SketchesTheme
+import com.github.yuriybudiyev.sketches.core.ui.wsc.LocalWindowSizeClass
 import com.github.yuriybudiyev.sketches.main.ui.SketchesApp
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -123,6 +126,10 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
                 LocalDimens.provides(SketchesDimens()),
                 LocalSystemBarsController.provides(this),
                 LocalShareManager.provides(this),
+                LocalWindowSizeClass.provides(
+                    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+                    calculateWindowSizeClass(this),
+                ),
             ) {
                 SketchesTheme {
                     SketchesApp()
