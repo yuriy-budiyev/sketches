@@ -65,37 +65,39 @@ class BookmarksScreenViewModel @Inject constructor(
     getBookmarks: GetBookmarksUseCase,
 ): SketchesViewModel(context) {
 
-    val uiState: StateFlow<UiState> =
-        getMediaFiles().combineTransform(getBookmarks()) { files, bookmarks ->
-            if (files.isEmpty() || bookmarks.isEmpty()) {
-                emit(UiState.Empty)
-            } else {
-                val temp = ArrayList<FileWithBookmark>(bookmarks.size)
-                for (file in files) {
-                    val bookmark = bookmarks[file.id]
-                    if (bookmark != null) {
-                        temp.add(
-                            FileWithBookmark(
-                                file = file,
-                                bookmark = bookmark,
-                            ),
-                        )
-                    }
-                }
-                if (temp.isEmpty()) {
-                    emit(UiState.Empty)
-                } else {
-                    temp.sortByDescending { item -> item.bookmark.dateAdded }
-                    emit(UiState.Bookmarks(temp.map { item -> item.file }))
+    val uiState: StateFlow<UiState> = combineTransform(
+        getMediaFiles(),
+        getBookmarks(),
+    ) { files, bookmarks ->
+        if (files.isEmpty() || bookmarks.isEmpty()) {
+            emit(UiState.Empty)
+        } else {
+            val temp = ArrayList<FileWithBookmark>(bookmarks.size)
+            for (file in files) {
+                val bookmark = bookmarks[file.id]
+                if (bookmark != null) {
+                    temp.add(
+                        FileWithBookmark(
+                            file = file,
+                            bookmark = bookmark,
+                        ),
+                    )
                 }
             }
-        }.catch { thrown ->
-            emit(UiState.Error(thrown))
-        }.flowOn(defaultDispatcher).stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Lazily,
-            initialValue = UiState.Loading,
-        )
+            if (temp.isEmpty()) {
+                emit(UiState.Empty)
+            } else {
+                temp.sortByDescending { item -> item.bookmark.dateAdded }
+                emit(UiState.Bookmarks(temp.map { item -> item.file }))
+            }
+        }
+    }.catch { thrown ->
+        emit(UiState.Error(thrown))
+    }.flowOn(defaultDispatcher).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Lazily,
+        initialValue = UiState.Loading,
+    )
 
     fun deleteMedia(files: Collection<MediaStoreFile>) {
         viewModelScope.launch {

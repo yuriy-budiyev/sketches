@@ -191,62 +191,64 @@ class ImageScreenViewModel @AssistedInject constructor(
                 mode = Mode.Images
             }
         }
-        uiState = getMediaFiles(currentBucketId)
-            .combineTransform(getBookmarks()) { files, bookmarks ->
-                if (files.isEmpty()) {
-                    emit(UiState.Empty)
-                } else {
-                    when (mode) {
-                        Mode.Images -> {
-                            checkIndexAndEmitItems(
-                                files.map { file ->
-                                    ImageItem(
-                                        file = file,
-                                        isMarked = bookmarks.containsKey(file.id),
+        uiState = combineTransform(
+            getMediaFiles(),
+            getBookmarks(),
+        ) { files, bookmarks ->
+            if (files.isEmpty()) {
+                emit(UiState.Empty)
+            } else {
+                when (mode) {
+                    Mode.Images -> {
+                        checkIndexAndEmitItems(
+                            files.map { file ->
+                                ImageItem(
+                                    file = file,
+                                    isMarked = bookmarks.containsKey(file.id),
+                                )
+                            },
+                        )
+                    }
+                    Mode.Bookmarks -> {
+                        if (bookmarks.isEmpty()) {
+                            emit(UiState.Empty)
+                        } else {
+                            val temp = ArrayList<FileWithBookmark>(bookmarks.size)
+                            for (file in files) {
+                                val bookmark = bookmarks[file.id]
+                                if (bookmark != null) {
+                                    temp.add(
+                                        FileWithBookmark(
+                                            file = file,
+                                            bookmark = bookmark,
+                                        ),
                                     )
-                                },
-                            )
-                        }
-                        Mode.Bookmarks -> {
-                            if (bookmarks.isEmpty()) {
+                                }
+                            }
+                            if (temp.isEmpty()) {
                                 emit(UiState.Empty)
                             } else {
-                                val temp = ArrayList<FileWithBookmark>(bookmarks.size)
-                                for (file in files) {
-                                    val bookmark = bookmarks[file.id]
-                                    if (bookmark != null) {
-                                        temp.add(
-                                            FileWithBookmark(
-                                                file = file,
-                                                bookmark = bookmark,
-                                            ),
+                                temp.sortByDescending { item -> item.bookmark.dateAdded }
+                                checkIndexAndEmitItems(
+                                    temp.map { item ->
+                                        ImageItem(
+                                            file = item.file,
+                                            isMarked = true,
                                         )
-                                    }
-                                }
-                                if (temp.isEmpty()) {
-                                    emit(UiState.Empty)
-                                } else {
-                                    temp.sortByDescending { item -> item.bookmark.dateAdded }
-                                    checkIndexAndEmitItems(
-                                        temp.map { item ->
-                                            ImageItem(
-                                                file = item.file,
-                                                isMarked = true,
-                                            )
-                                        },
-                                    )
-                                }
+                                    },
+                                )
                             }
                         }
                     }
                 }
-            }.catch { t ->
-                emit(UiState.Error(t))
-            }.flowOn(defaultDispatcher).stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.Lazily,
-                initialValue = UiState.Loading,
-            )
+            }
+        }.catch { t ->
+            emit(UiState.Error(t))
+        }.flowOn(defaultDispatcher).stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = UiState.Loading,
+        )
     }
 
     sealed interface UiState {
