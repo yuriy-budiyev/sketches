@@ -28,6 +28,7 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Parcelable
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -101,7 +102,6 @@ import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaR
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
@@ -159,6 +159,9 @@ fun ImageScreen(
     onCreateBookmark: (mediaId: Long) -> Unit,
     onDeleteBookmark: (mediaId: Long) -> Unit,
 ) {
+    val onBackPressedDispatcher by rememberUpdatedState(
+        LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher,
+    )
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -166,10 +169,9 @@ fun ImageScreen(
     ) {
         when (uiState) {
             is ImageScreenViewModel.UiState.Empty -> {
-                SketchesCenteredMessage(
-                    text = stringResource(R.string.no_images_found),
-                    modifier = Modifier.matchParentSize(),
-                )
+                LaunchedEffect(Unit) {
+                    onBackPressedDispatcher?.onBackPressed()
+                }
             }
             is ImageScreenViewModel.UiState.Loading -> {
                 SketchesLoadingIndicator(modifier = Modifier.matchParentSize())

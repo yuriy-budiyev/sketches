@@ -28,6 +28,7 @@ import android.app.Activity
 import android.content.res.Configuration
 import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.component1
 import androidx.activity.result.component2
@@ -91,7 +92,6 @@ import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateSetSaver
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
@@ -203,6 +203,9 @@ fun BucketScreen(
             }
         }
     }
+    val onBackPressedDispatcher by rememberUpdatedState(
+        LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher,
+    )
     val colorScheme = MaterialTheme.colorScheme
     Box(
         modifier = Modifier
@@ -211,17 +214,14 @@ fun BucketScreen(
     ) {
         when (uiState) {
             is BucketScreenViewModel.UiState.Empty -> {
-                SketchesCenteredMessage(
-                    text = stringResource(R.string.no_images_found),
-                    modifier = Modifier.matchParentSize(),
-                )
-                SideEffect {
+                LaunchedEffect(Unit) {
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }
                     if (allFiles.isNotEmpty()) {
                         allFiles = emptyList()
                     }
+                    onBackPressedDispatcher?.onBackPressed()
                 }
             }
             is BucketScreenViewModel.UiState.Loading -> {
