@@ -81,12 +81,8 @@ fun SketchesAlertDialog(
             }
         },
         modifier = when (windowSizeClass.widthSizeClass) {
-            WindowWidthSizeClass.Compact -> {
-                Modifier.fillMaxWidth()
-            }
-            else -> {
-                Modifier.wrapContentWidth()
-            }
+            WindowWidthSizeClass.Compact -> Modifier.fillMaxWidth()
+            else -> Modifier.wrapContentWidth()
         },
     )
 }
