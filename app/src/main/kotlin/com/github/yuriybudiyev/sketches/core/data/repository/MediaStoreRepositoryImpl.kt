@@ -255,10 +255,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
 
     private inner class MediaObserver: ContentObserver(Handler(Looper.getMainLooper())) {
 
-        override fun onChange(
-            selfChange: Boolean,
-            uri: Uri?,
-        ) {
+        override fun onChange(selfChange: Boolean) {
             val currentCallTime = SystemClock.uptimeMillis()
             if (currentCallTime - lastCallTime > 1000L) {
                 lastCallTime = currentCallTime
