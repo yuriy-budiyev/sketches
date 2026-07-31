@@ -50,11 +50,12 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDateTime
@@ -149,19 +150,17 @@ class MediaStoreRepositoryImpl @Inject constructor(
                     )
                 }
             allFiles.mapTo(allFilesIds) { file -> file.id }
-            for (file in allFiles) {
-                allFilesIds.add(file.id)
-            }
             val deletedFilesIds = currentFiles.asSequence()
                 .filterNot { file -> allFilesIds.contains(file.id) }
                 .map { file -> file.id }
                 .toList()
-            ensureActive()
-            withContext(NonCancellable) {
-                currentFiles = allFiles
-                allFilesFlow.emit(allFiles)
-                if (deletedFilesIds.isNotEmpty()) {
-                    bookmarksDao.delete(deletedFilesIds)
+            publishAllFilesMutex.withLock {
+                withContext(NonCancellable) {
+                    currentFiles = allFiles
+                    allFilesFlow.emit(allFiles)
+                    if (deletedFilesIds.isNotEmpty()) {
+                        bookmarksDao.delete(deletedFilesIds)
+                    }
                 }
             }
         }
@@ -234,6 +233,8 @@ class MediaStoreRepositoryImpl @Inject constructor(
 
     @Volatile
     private var currentFiles: List<MediaStoreFile> = emptyList()
+
+    private val publishAllFilesMutex: Mutex = Mutex()
 
     init {
         updateAllFiles()
