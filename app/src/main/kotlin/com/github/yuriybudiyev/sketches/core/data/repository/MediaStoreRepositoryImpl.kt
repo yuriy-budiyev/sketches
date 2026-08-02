@@ -63,6 +63,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.EmptyCoroutineContext
 
 @Singleton
 class MediaStoreRepositoryImpl @Inject constructor(
@@ -120,36 +121,45 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun updateAllFiles(delayMillis: Long = 0L) {
-        updateAllFilesJob?.cancel()
-        updateAllFilesJob = defaultCoroutineScope.launch {
-            delay(delayMillis)
-            val imageFiles = withContext(ioDispatcher) { collectAllFiles(MediaType.Image) }
-            val videoFiles = withContext(ioDispatcher) { collectAllFiles(MediaType.Video) }
-            val allFilesSize = imageFiles.size + videoFiles.size
-            val allFiles = ArrayList<MediaStoreFile>(allFilesSize)
-            allFiles.addAll(imageFiles)
-            allFiles.addAll(videoFiles)
-            allFiles.sortByDescending { file -> file.dateAdded }
-            val allFilesIds = newLinkedHashSet<Long>(allFilesSize)
-            allFiles.mapTo(allFilesIds) { file -> file.id }
-            val deletedFilesIds = currentFiles.asSequence()
-                .filterNot { file -> allFilesIds.contains(file.id) }
-                .map { file -> file.id }
-                .toList()
-            publishAllFilesMutex.withLock {
-                withContext(NonCancellable) {
-                    currentFiles = allFiles
-                    allFilesFlow.emit(allFiles)
-                    if (deletedFilesIds.isNotEmpty()) {
-                        bookmarksDao.delete(deletedFilesIds)
+    private fun updateAllFiles(
+        delayMillis: Long = 0L,
+        nonCancellable: Boolean = false,
+    ) {
+        defaultCoroutineScope.launch {
+            scheduleAllFilesUpdateMutex.withLock {
+                updateAllFilesJob?.cancel()
+                updateAllFilesJob = defaultCoroutineScope.launch {
+                    withContext(if (nonCancellable) NonCancellable else EmptyCoroutineContext) {
+                        delay(delayMillis)
+                        val imageFiles = withContext(ioDispatcher) { getAllFiles(MediaType.Image) }
+                        val videoFiles = withContext(ioDispatcher) { getAllFiles(MediaType.Video) }
+                        val allFilesSize = imageFiles.size + videoFiles.size
+                        val allFiles = ArrayList<MediaStoreFile>(allFilesSize)
+                        allFiles.addAll(imageFiles)
+                        allFiles.addAll(videoFiles)
+                        allFiles.sortByDescending { file -> file.dateAdded }
+                        val allFilesIds = newLinkedHashSet<Long>(allFilesSize)
+                        allFiles.mapTo(allFilesIds) { file -> file.id }
+                        val deletedFilesIds = currentAllFiles.asSequence()
+                            .filterNot { file -> allFilesIds.contains(file.id) }
+                            .map { file -> file.id }
+                            .toList()
+                        publishAllFilesMutex.withLock {
+                            withContext(NonCancellable) {
+                                currentAllFiles = allFiles
+                                allFilesFlow.emit(allFiles)
+                                if (deletedFilesIds.isNotEmpty()) {
+                                    bookmarksDao.delete(deletedFilesIds)
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
     }
 
-    private fun collectAllFiles(mediaType: MediaType): List<MediaStoreFile> {
+    private fun getAllFiles(mediaType: MediaType): List<MediaStoreFile> {
         val contentUri = mediaType.contentUri
         val cursor = appContext.contentResolver.query(
             contentUri,
@@ -212,10 +222,13 @@ class MediaStoreRepositoryImpl @Inject constructor(
             onBufferOverflow = BufferOverflow.DROP_OLDEST,
         )
 
-    private var updateAllFilesJob: Job? = null
+    @Volatile
+    private var currentAllFiles: List<MediaStoreFile> = emptyList()
 
     @Volatile
-    private var currentFiles: List<MediaStoreFile> = emptyList()
+    private var updateAllFilesJob: Job? = null
+
+    private val scheduleAllFilesUpdateMutex: Mutex = Mutex()
 
     private val publishAllFilesMutex: Mutex = Mutex()
 
@@ -242,7 +255,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
             val currentCallTime = SystemClock.uptimeMillis()
             if (currentCallTime - lastCallTime > 1000L) {
                 lastCallTime = currentCallTime
-                updateAllFiles()
+                updateAllFiles(nonCancellable = true)
             } else {
                 updateAllFiles(delayMillis = 1000L)
             }
