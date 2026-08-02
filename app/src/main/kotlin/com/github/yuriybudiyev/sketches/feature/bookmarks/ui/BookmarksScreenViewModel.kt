@@ -35,7 +35,6 @@ import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaUseCase
-import com.github.yuriybudiyev.sketches.core.platform.log.logDebug
 import com.github.yuriybudiyev.sketches.core.ui.model.SketchesViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -108,7 +107,6 @@ class BookmarksScreenViewModel @Inject constructor(
     }
 
     fun deleteBookmarks(mediaIds: Collection<Long>) {
-        logDebug(mediaIds)
         viewModelScope.launch {
             withContext(ioDispatcher) {
                 deleteBookmarks.invoke(mediaIds)
