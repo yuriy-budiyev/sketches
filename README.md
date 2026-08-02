@@ -1,6 +1,6 @@
 # Sketches
 
-Android gallery app based on **Compose**, **Navigation 3**, **Coil** and **Media3** with zoom, share, delete and multiselect support.
+Android gallery app based on **compose**, **navigation**, **room3**, **media3** and **coil3** with video and zoom support.
 
 #### Screenshot
 
