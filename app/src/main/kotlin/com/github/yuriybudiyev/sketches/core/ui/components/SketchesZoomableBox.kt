@@ -318,29 +318,12 @@ sealed interface SketchesZoomableBoxScope: BoxScope {
 
 @Composable
 fun rememberZoomToggle(): ZoomToggle =
-    remember { ZoomToggle() }
+    remember { ZoomToggleImpl() }
 
-/**
- * Do not instantiate this directly.
- *
- * Use [rememberZoomToggle].
- */
 @Stable
-class ZoomToggle internal constructor(): RememberObserver {
+interface ZoomToggle {
 
-    var isZoomed: Boolean by mutableStateOf(false)
-
-    override fun onRemembered() {
-        //Do nothing
-    }
-
-    override fun onForgotten() {
-        isZoomed = false
-    }
-
-    override fun onAbandoned() {
-        isZoomed = false
-    }
+    var isZoomed: Boolean
 }
 
 @Stable
@@ -377,6 +360,24 @@ private class SketchesZoomableBoxScopeImpl(
     @Stable
     override fun Modifier.matchParentSize(): Modifier =
         with(boxScope) { matchParentSize() }
+}
+
+@Stable
+private class ZoomToggleImpl: ZoomToggle, RememberObserver {
+
+    override var isZoomed: Boolean by mutableStateOf(false)
+
+    override fun onRemembered() {
+        //Do nothing
+    }
+
+    override fun onForgotten() {
+        isZoomed = false
+    }
+
+    override fun onAbandoned() {
+        isZoomed = false
+    }
 }
 
 /**
