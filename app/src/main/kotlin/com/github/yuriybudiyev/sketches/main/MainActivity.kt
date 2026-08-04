@@ -113,7 +113,7 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             window.colorMode = ActivityInfo.COLOR_MODE_HDR
-            window.desiredHdrHeadroom = 1.5f
+            window.desiredHdrHeadroom = 1.5F
         }
         ContextCompat.registerReceiver(
             this,

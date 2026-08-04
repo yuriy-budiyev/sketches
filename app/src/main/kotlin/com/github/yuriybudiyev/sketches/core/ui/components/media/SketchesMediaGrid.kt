@@ -289,7 +289,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
     Box(
         modifier = Modifier
             .animateItem()
-            .aspectRatio(ratio = 1f)
+            .aspectRatio(ratio = 1F)
             .border(
                 width = dimens.mediaItemBorderThickness,
                 color = if (fileSelectedUpdated) {

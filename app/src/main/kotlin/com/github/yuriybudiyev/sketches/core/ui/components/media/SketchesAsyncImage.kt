@@ -200,7 +200,7 @@ fun SketchesPreviewAsyncImage(
                                 .zoomable()
                                 .aspectRatio(
                                     ratio = ratio,
-                                    matchHeightConstraintsFirst = ratio < 1f,
+                                    matchHeightConstraintsFirst = ratio < 1F,
                                 ).let { modifier ->
                                     if (state is AsyncImagePainter.State.Loading) {
                                         modifier.blur(radius = 16.dp)

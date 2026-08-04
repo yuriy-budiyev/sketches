@@ -419,7 +419,7 @@ private fun BucketsScreenLayout(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(ratio = 1f)
+                        .aspectRatio(ratio = 1F)
                         .border(
                             width = dimens.mediaItemBorderThickness,
                             color = if (bucketSelectedUpdated) {

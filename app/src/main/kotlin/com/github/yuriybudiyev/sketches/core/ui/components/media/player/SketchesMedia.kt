@@ -171,7 +171,7 @@ fun SketchesMediaDisplay(
                     .zoomable()
                     .aspectRatio(
                         ratio = displayAspectRatio,
-                        matchHeightConstraintsFirst = displayAspectRatio < 1f,
+                        matchHeightConstraintsFirst = displayAspectRatio < 1F,
                     ),
                 factory = { context -> TextureView(context) },
                 update = { view -> state.setVideoView(view) },
@@ -231,7 +231,7 @@ fun SketchesMediaDisplay(
                                         .align(Alignment.Center)
                                         .aspectRatio(
                                             ratio = ratio,
-                                            matchHeightConstraintsFirst = ratio < 1f,
+                                            matchHeightConstraintsFirst = ratio < 1F,
                                         )
                                         .blur(radius = 16.dp),
                                 ) {
@@ -318,7 +318,7 @@ fun SketchesMediaController(
             ) {
                 (position.toDouble() / duration.toDouble()).toFloat()
             } else {
-                0f
+                0F
             },
             onValueChange = { value ->
                 if (!seeking) {
@@ -348,7 +348,7 @@ fun SketchesMediaController(
                 }
                 seeking = false
             },
-            modifier = Modifier.weight(weight = 1f),
+            modifier = Modifier.weight(weight = 1F),
             thumbColor = color,
             trackColor = color.copy(alpha = SketchesColors.UiAlphaLowTransparency),
         )

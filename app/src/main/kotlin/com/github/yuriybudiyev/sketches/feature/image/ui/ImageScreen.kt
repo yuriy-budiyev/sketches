@@ -613,8 +613,8 @@ private fun rememberMediaBarState(
 ): LazyListState =
     rememberLazyListState(
         cacheWindow = LazyLayoutCacheWindow(
-            aheadFraction = 0.5f,
-            behindFraction = 0.5f,
+            aheadFraction = 0.5F,
+            behindFraction = 0.5F,
         ),
         initialFirstVisibleItemIndex = initialFirstVisibleItemIndex,
         initialFirstVisibleItemScrollOffset = initialFirstVisibleItemScrollOffset,

@@ -261,7 +261,7 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
     private fun isVolumeEnabledInternal(): Boolean =
         player.withCheck(
             Player.COMMAND_GET_VOLUME,
-            available = { volume > 0f },
+            available = { volume > 0F },
             unavailable = { false },
         )
 
@@ -274,13 +274,13 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
 
     override fun enableVolume() {
         player.withCheck(Player.COMMAND_SET_VOLUME) {
-            volume = 1f
+            volume = 1F
         }
     }
 
     override fun disableVolume() {
         player.withCheck(Player.COMMAND_SET_VOLUME) {
-            volume = 0f
+            volume = 0F
         }
     }
 
@@ -325,10 +325,10 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
     private fun displayAspectRatioInternal(videoSize: VideoSize = player.videoSize): Float {
         val width = videoSize.width.toFloat()
         val height = videoSize.height.toFloat()
-        return if (width > 0f && height > 0f) {
+        return if (width > 0F && height > 0F) {
             width * videoSize.pixelWidthHeightRatio / height
         } else {
-            1f
+            1F
         }
     }
 
