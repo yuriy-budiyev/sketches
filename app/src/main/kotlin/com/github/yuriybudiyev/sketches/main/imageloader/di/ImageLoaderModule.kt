@@ -57,20 +57,17 @@ object ImageLoaderModule {
         context: Context,
     ): ImageLoader {
         val imageLoaderDispatcher = ImageLoaderExecutor().asCoroutineDispatcher()
-        val memoryCache = MemoryCache
-            .Builder()
+        val memoryCache = MemoryCache.Builder()
             .maxSizeBytes(context.getMaxMemory() / 2L)
             .strongReferencesEnabled(true)
             .weakReferencesEnabled(true)
             .build()
-        val diskCache = DiskCache
-            .Builder()
+        val diskCache = DiskCache.Builder()
             .cleanupCoroutineContext(imageLoaderDispatcher)
             .directory(context.cacheDir.resolve("thumbnails").absolutePath.toPath())
             .maxSizeBytes(1073741824L)
             .build()
-        return ImageLoader
-            .Builder(context)
+        return ImageLoader.Builder(context)
             .serviceLoaderEnabled(false)
             .coroutineContext(imageLoaderDispatcher)
             .memoryCache(memoryCache)
