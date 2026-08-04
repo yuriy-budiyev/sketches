@@ -320,6 +320,7 @@ sealed interface SketchesZoomableBoxScope: BoxScope {
 fun rememberZoomToggle(): ZoomToggle =
     remember { ZoomToggle() }
 
+@Stable
 class ZoomToggle: RememberObserver {
 
     var isZoomed: Boolean by mutableStateOf(false)
