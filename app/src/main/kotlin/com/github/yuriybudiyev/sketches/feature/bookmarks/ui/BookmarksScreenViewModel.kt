@@ -35,7 +35,7 @@ import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaUseCase
-import com.github.yuriybudiyev.sketches.core.ui.model.SketchesViewModel
+import com.github.yuriybudiyev.sketches.core.ui.viewmodel.SketchesViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher

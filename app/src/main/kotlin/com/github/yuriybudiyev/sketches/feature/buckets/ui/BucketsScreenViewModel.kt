@@ -36,7 +36,7 @@ import com.github.yuriybudiyev.sketches.core.domain.DeleteContentUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBucketsContentUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaBucketsUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaUseCase
-import com.github.yuriybudiyev.sketches.core.ui.model.SketchesViewModel
+import com.github.yuriybudiyev.sketches.core.ui.viewmodel.SketchesViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher

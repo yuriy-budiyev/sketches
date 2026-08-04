@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.model
+package com.github.yuriybudiyev.sketches.core.ui.viewmodel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
