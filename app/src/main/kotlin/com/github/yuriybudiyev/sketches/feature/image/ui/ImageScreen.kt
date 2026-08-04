@@ -28,6 +28,7 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Parcelable
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -107,11 +108,13 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesC
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.components.ZoomToggle
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesPreviewAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.rememberSketchesMediaState
+import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomToggle
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemCentered
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
@@ -466,7 +469,6 @@ private fun MediaPager(
 }
 
 @Composable
-@NonRestartableComposable
 private fun MediaPage(
     state: PagerState,
     number: Int,
@@ -479,10 +481,15 @@ private fun MediaPage(
     controllerBottomPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
+    val zoomToggle = rememberZoomToggle()
+    BackHandler(zoomToggle.isZoomed) {
+        zoomToggle.isZoomed = false
+    }
     when (fileType) {
         MediaType.Image -> {
             ImagePage(
                 state = state,
+                zoomToggle = zoomToggle,
                 number = number,
                 fileUri = fileUri,
                 onPageTap = onPageTap,
@@ -492,6 +499,7 @@ private fun MediaPage(
         MediaType.Video -> {
             VideoPage(
                 state = state,
+                zoomToggle = zoomToggle,
                 number = number,
                 fileUri = fileUri,
                 onPageTap = onPageTap,
@@ -509,6 +517,7 @@ private fun MediaPage(
 @NonRestartableComposable
 private fun ImagePage(
     state: PagerState,
+    zoomToggle: ZoomToggle,
     number: Int,
     fileUri: Uri,
     onPageTap: () -> Unit,
@@ -526,12 +535,14 @@ private fun ImagePage(
         contentDescription = stringResource(R.string.image),
         onTap = onPageTap,
         modifier = modifier,
+        zoomToggle = zoomToggle,
     )
 }
 
 @Composable
 private fun VideoPage(
     state: PagerState,
+    zoomToggle: ZoomToggle,
     number: Int,
     fileUri: Uri,
     onPageTap: () -> Unit,
@@ -586,6 +597,7 @@ private fun VideoPage(
         controllerEndPadding = controllerEndPadding,
         controllerBottomPadding = controllerBottomPadding,
         modifier = modifier,
+        zoomToggle = zoomToggle,
         enablePlaceholder = true,
         placeholderMemoryCacheKey = SketchesMemoryCacheKeys.thumbnail(fileUri),
         placeholderMemoryCacheFallback = SketchesMemoryCacheKeys.mediaBar(fileUri),

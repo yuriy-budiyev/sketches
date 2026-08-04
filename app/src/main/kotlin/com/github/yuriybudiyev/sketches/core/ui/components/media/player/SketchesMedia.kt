@@ -69,6 +69,8 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
+import com.github.yuriybudiyev.sketches.core.ui.components.ZoomToggle
+import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomToggle
 import kotlinx.coroutines.launch
 import kotlin.math.roundToLong
 
@@ -78,6 +80,7 @@ fun SketchesMediaPlayer(
     onDisplayTap: () -> Unit,
     controllerVisible: Boolean,
     modifier: Modifier = Modifier,
+    zoomToggle: ZoomToggle = rememberZoomToggle(),
     controllerStartPadding: Dp = 0.dp,
     controllerEndPadding: Dp = 0.dp,
     controllerBottomPadding: Dp = 0.dp,
@@ -98,6 +101,7 @@ fun SketchesMediaPlayer(
         SketchesMediaDisplay(
             state = state,
             modifier = Modifier.matchParentSize(),
+            zoomToggle = zoomToggle,
             onTap = onDisplayTap,
             backgroundColor = backgroundColor,
             indicatorColor = controlsColor,
@@ -141,6 +145,7 @@ fun SketchesMediaPlayer(
 fun SketchesMediaDisplay(
     state: SketchesMediaState,
     modifier: Modifier = Modifier,
+    zoomToggle: ZoomToggle = rememberZoomToggle(),
     onTap: (() -> Unit)? = null,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     indicatorColor: Color = MaterialTheme.colorScheme.onBackground,
@@ -157,6 +162,7 @@ fun SketchesMediaDisplay(
                     color = backgroundColor,
                     shape = RectangleShape,
                 ),
+            zoomToggle = zoomToggle,
             onTap = onTap,
         ) {
             val displayAspectRatio = state.displayAspectRatio
