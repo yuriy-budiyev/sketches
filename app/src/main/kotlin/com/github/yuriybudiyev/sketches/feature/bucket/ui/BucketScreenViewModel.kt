@@ -24,21 +24,19 @@
 
 package com.github.yuriybudiyev.sketches.feature.bucket.ui
 
-import android.content.Context
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
-import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaUseCase
-import com.github.yuriybudiyev.sketches.core.ui.viewmodel.SketchesViewModel
+import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavRoute
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -52,8 +50,6 @@ import kotlinx.coroutines.withContext
 
 @HiltViewModel(assistedFactory = BucketScreenViewModel.Factory::class)
 class BucketScreenViewModel @AssistedInject constructor(
-    @ApplicationContext
-    context: Context,
     @Assisted
     route: BucketNavRoute,
     @Dispatcher(Dispatchers.Default)
@@ -61,9 +57,9 @@ class BucketScreenViewModel @AssistedInject constructor(
     @Dispatcher(Dispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
     private val deleteMedia: DeleteMediaUseCase,
-    private val updateMedia: UpdateMediaUseCase,
+    private val updateMediaAccess: UpdateMediaAccessUseCase,
     getMediaFiles: GetMediaFilesUseCase,
-): SketchesViewModel(context) {
+): ViewModel() {
 
     val bucketId: Long = route.bucketId
     val bucketName: String = route.bucketName
@@ -92,8 +88,10 @@ class BucketScreenViewModel @AssistedInject constructor(
         }
     }
 
-    override fun onMediaAccessChanged() {
-        updateMedia()
+    fun updateMediaAccess() {
+        viewModelScope.launch {
+            updateMediaAccess.invoke()
+        }
     }
 
     sealed interface UiState {

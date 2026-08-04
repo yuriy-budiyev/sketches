@@ -24,8 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
-import android.content.Context
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
@@ -36,14 +36,12 @@ import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
-import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaUseCase
-import com.github.yuriybudiyev.sketches.core.ui.viewmodel.SketchesViewModel
+import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageNavRoute
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.SharingStarted
@@ -57,8 +55,6 @@ import kotlinx.coroutines.withContext
 
 @HiltViewModel(assistedFactory = ImageScreenViewModel.Factory::class)
 class ImageScreenViewModel @AssistedInject constructor(
-    @ApplicationContext
-    context: Context,
     private val savedStateHandle: SavedStateHandle,
     @Assisted
     route: ImageNavRoute,
@@ -69,10 +65,10 @@ class ImageScreenViewModel @AssistedInject constructor(
     private val deleteMedia: DeleteMediaUseCase,
     private val createBookmark: CreateBookmarkUseCase,
     private val deleteBookmarks: DeleteBookmarksUseCase,
-    private val updateMedia: UpdateMediaUseCase,
+    private val updateMediaAccess: UpdateMediaAccessUseCase,
     getMediaFiles: GetMediaFilesUseCase,
     getBookmarks: GetBookmarksUseCase,
-): SketchesViewModel(context) {
+): ViewModel() {
 
     val uiState: StateFlow<UiState>
 
@@ -129,9 +125,9 @@ class ImageScreenViewModel @AssistedInject constructor(
         }
     }
 
-    override fun onMediaAccessChanged() {
+    fun updateMediaAccess() {
         viewModelScope.launch {
-            updateMedia()
+            updateMediaAccess.invoke()
         }
     }
 

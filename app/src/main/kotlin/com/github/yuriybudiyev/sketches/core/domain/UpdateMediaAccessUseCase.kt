@@ -29,9 +29,9 @@ import dagger.Reusable
 import javax.inject.Inject
 
 @Reusable
-class UpdateMediaUseCase @Inject constructor(private val repository: MediaStoreRepository) {
+class UpdateMediaAccessUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
     operator fun invoke() {
-        repository.updateFiles()
+        repository.updateMediaAccess()
     }
 }

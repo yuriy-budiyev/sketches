@@ -24,8 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
-import android.content.Context
 import android.net.Uri
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.consumable.Consumable
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
@@ -35,10 +35,8 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteContentUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBucketsContentUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaBucketsUseCase
-import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaUseCase
-import com.github.yuriybudiyev.sketches.core.ui.viewmodel.SketchesViewModel
+import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.FlowCollector
@@ -55,17 +53,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BucketsScreenViewModel @Inject constructor(
-    @ApplicationContext
-    context: Context,
     @Dispatcher(Dispatchers.Default)
     defaultDispatcher: CoroutineDispatcher,
     @Dispatcher(Dispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
     private val getBucketsContent: GetBucketsContentUseCase,
     private val deleteContent: DeleteContentUseCase,
-    private val updateMedia: UpdateMediaUseCase,
+    private val updateMediaAccess: UpdateMediaAccessUseCase,
     getMediaBuckets: GetMediaBucketsUseCase,
-): SketchesViewModel(context) {
+): ViewModel() {
 
     private val action: MutableSharedFlow<Action> = MutableSharedFlow()
 
@@ -152,9 +148,9 @@ class BucketsScreenViewModel @Inject constructor(
         }
     }
 
-    override fun onMediaAccessChanged() {
+    fun updateMediaAccess() {
         viewModelScope.launch {
-            updateMedia()
+            updateMediaAccess.invoke()
         }
     }
 

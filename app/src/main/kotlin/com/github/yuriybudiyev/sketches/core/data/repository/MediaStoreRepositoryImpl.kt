@@ -42,6 +42,8 @@ import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
+import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
+import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -79,8 +81,17 @@ class MediaStoreRepositoryImpl @Inject constructor(
     override fun getFiles(): Flow<List<MediaStoreFile>> =
         allFilesFlow
 
-    override fun updateFiles() {
-        updateAllFiles()
+    override fun updateMediaAccess() {
+        defaultCoroutineScope.launch {
+            updateMediaAccessMutex.withLock {
+                val current = currentMediaAccess
+                val updated = appContext.checkMediaAccess()
+                currentMediaAccess = updated
+                if (current != updated || updated == MediaAccess.UserSelected) {
+                    updateAllFiles()
+                }
+            }
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -231,6 +242,11 @@ class MediaStoreRepositoryImpl @Inject constructor(
     private val scheduleAllFilesUpdateMutex: Mutex = Mutex()
 
     private val publishAllFilesMutex: Mutex = Mutex()
+
+    @Volatile
+    private var currentMediaAccess: MediaAccess = appContext.checkMediaAccess()
+
+    private val updateMediaAccessMutex: Mutex = Mutex()
 
     init {
         updateAllFiles()

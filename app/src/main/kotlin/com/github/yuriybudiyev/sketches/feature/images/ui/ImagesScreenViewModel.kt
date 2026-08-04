@@ -24,17 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.feature.images.ui
 
-import android.content.Context
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
-import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaUseCase
-import com.github.yuriybudiyev.sketches.core.ui.viewmodel.SketchesViewModel
+import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -50,16 +48,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ImagesScreenViewModel @Inject constructor(
-    @ApplicationContext
-    context: Context,
     @Dispatcher(Dispatchers.Default)
     private val defaultDispatcher: CoroutineDispatcher,
     @Dispatcher(Dispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
     private val deleteMedia: DeleteMediaUseCase,
-    private val updateMedia: UpdateMediaUseCase,
+    private val updateMediaAccess: UpdateMediaAccessUseCase,
     getMediaFiles: GetMediaFilesUseCase,
-): SketchesViewModel(context) {
+): ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<UiState> =
@@ -90,9 +86,9 @@ class ImagesScreenViewModel @Inject constructor(
         }
     }
 
-    override fun onMediaAccessChanged() {
+    fun updateMediaAccess() {
         viewModelScope.launch {
-            updateMedia()
+            updateMediaAccess.invoke()
         }
     }
 

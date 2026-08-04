@@ -24,7 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.bookmarks.ui
 
-import android.content.Context
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
@@ -34,10 +34,8 @@ import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
-import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaUseCase
-import com.github.yuriybudiyev.sketches.core.ui.viewmodel.SketchesViewModel
+import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -51,18 +49,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookmarksScreenViewModel @Inject constructor(
-    @ApplicationContext
-    context: Context,
     @Dispatcher(Dispatchers.Default)
     defaultDispatcher: CoroutineDispatcher,
     @Dispatcher(Dispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
     private val deleteMedia: DeleteMediaUseCase,
-    private val updateMedia: UpdateMediaUseCase,
     private val deleteBookmarks: DeleteBookmarksUseCase,
+    private val updateMediaAccess: UpdateMediaAccessUseCase,
     getMediaFiles: GetMediaFilesUseCase,
     getBookmarks: GetBookmarksUseCase,
-): SketchesViewModel(context) {
+): ViewModel() {
 
     val uiState: StateFlow<UiState> = combineTransform(
         getMediaFiles(),
@@ -114,8 +110,10 @@ class BookmarksScreenViewModel @Inject constructor(
         }
     }
 
-    override fun onMediaAccessChanged() {
-        updateMedia()
+    fun updateMediaAccess() {
+        viewModelScope.launch {
+            updateMediaAccess.invoke()
+        }
     }
 
     sealed interface UiState {

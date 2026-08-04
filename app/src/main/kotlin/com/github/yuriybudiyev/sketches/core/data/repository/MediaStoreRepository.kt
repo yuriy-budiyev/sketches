@@ -33,7 +33,7 @@ interface MediaStoreRepository {
 
     fun getFiles(): Flow<List<MediaStoreFile>>
 
-    fun updateFiles()
+    fun updateMediaAccess()
 
     fun getBookmarks(): Flow<Map<Long, Bookmark>>
 
