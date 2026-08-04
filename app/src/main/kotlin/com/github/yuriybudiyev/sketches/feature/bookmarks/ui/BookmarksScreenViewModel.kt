@@ -31,7 +31,7 @@ import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarksUseCase
-import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
+import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaUseCase
@@ -57,7 +57,7 @@ class BookmarksScreenViewModel @Inject constructor(
     defaultDispatcher: CoroutineDispatcher,
     @Dispatcher(Dispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
-    private val deleteMediaFiles: DeleteMediaFilesUseCase,
+    private val deleteMedia: DeleteMediaUseCase,
     private val updateMedia: UpdateMediaUseCase,
     private val deleteBookmarks: DeleteBookmarksUseCase,
     getMediaFiles: GetMediaFilesUseCase,
@@ -101,7 +101,7 @@ class BookmarksScreenViewModel @Inject constructor(
     fun deleteMedia(files: Collection<MediaStoreFile>) {
         viewModelScope.launch {
             withContext(ioDispatcher) {
-                deleteMediaFiles(files)
+                deleteMedia.invoke(files)
             }
         }
     }

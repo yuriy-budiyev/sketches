@@ -30,7 +30,7 @@ import dagger.Reusable
 import javax.inject.Inject
 
 @Reusable
-class DeleteMediaFilesUseCase @Inject constructor(private val repository: MediaStoreRepository) {
+class DeleteMediaUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
     suspend operator fun invoke(files: Collection<MediaStoreFile>) {
         repository.deleteContent(files.map { file -> file.uri })

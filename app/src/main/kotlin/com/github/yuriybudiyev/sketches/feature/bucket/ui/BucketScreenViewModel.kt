@@ -29,7 +29,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaFilesUseCase
+import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaUseCase
 import com.github.yuriybudiyev.sketches.core.ui.model.SketchesViewModel
@@ -60,7 +60,7 @@ class BucketScreenViewModel @AssistedInject constructor(
     defaultDispatcher: CoroutineDispatcher,
     @Dispatcher(Dispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
-    private val deleteMediaFiles: DeleteMediaFilesUseCase,
+    private val deleteMedia: DeleteMediaUseCase,
     private val updateMedia: UpdateMediaUseCase,
     getMediaFiles: GetMediaFilesUseCase,
 ): SketchesViewModel(context) {
@@ -87,7 +87,7 @@ class BucketScreenViewModel @AssistedInject constructor(
     fun deleteMedia(files: Collection<MediaStoreFile>) {
         viewModelScope.launch {
             withContext(ioDispatcher) {
-                deleteMediaFiles(files)
+                deleteMedia.invoke(files)
             }
         }
     }
