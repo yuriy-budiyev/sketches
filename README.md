@@ -1,7 +1,6 @@
 # Sketches
 
-Android gallery app based on **compose**, **coroutines/flow**, **navigation3**, **room3**, **media3
-** and **coil3** with video and zoom support.
+Android gallery app based on **compose**, **coroutines/flow**, **navigation3**, **room3**, **media3** and **coil3** with video and zoom support.
 
 #### Screenshot
 
