@@ -321,7 +321,7 @@ fun rememberZoomToggle(): ZoomToggle =
     remember { ZoomToggle() }
 
 @Stable
-class ZoomToggle: RememberObserver {
+class ZoomToggle internal constructor(): RememberObserver {
 
     var isZoomed: Boolean by mutableStateOf(false)
 
