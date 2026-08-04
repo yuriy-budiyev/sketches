@@ -320,6 +320,11 @@ sealed interface SketchesZoomableBoxScope: BoxScope {
 fun rememberZoomToggle(): ZoomToggle =
     remember { ZoomToggle() }
 
+/**
+ * Do not instantiate this directly.
+ *
+ * Use [rememberZoomToggle].
+ */
 @Stable
 class ZoomToggle internal constructor(): RememberObserver {
 
