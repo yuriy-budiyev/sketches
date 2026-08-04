@@ -1,7 +1,8 @@
 # Sketches
 
-Android gallery app based on **compose**, **coroutines/flow**, **navigation3**, **room3**, **media3** and **coil3** with video and zoom support.
+Android gallery app based on **compose**, **coroutines/flow**, **navigation3**, **room3**, **media3
+** and **coil3** with video and zoom support.
 
 #### Screenshot
 
-<img src="https://github.com/yuriy-budiyev/sketches/blob/main/screenshots/images_screen.png?raw=true" width="360" alt="Images screen">
+<img src="https://github.com/yuriy-budiyev/sketches/blob/main/screenshots/images_screen.png?raw=true" width="360" alt="Images screen displays all media by grouped by month captured" title="Images screen screenshot">
