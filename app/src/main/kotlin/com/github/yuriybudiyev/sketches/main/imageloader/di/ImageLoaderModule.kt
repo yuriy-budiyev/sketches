@@ -64,7 +64,7 @@ object ImageLoaderModule {
             .build()
         val diskCache = DiskCache.Builder()
             .cleanupCoroutineContext(imageLoaderDispatcher)
-            .directory(context.cacheDir.resolve("thumbnails").absolutePath.toPath())
+            .directory(context.cacheDir.resolve("images").absolutePath.toPath())
             .maxSizeBytes(1073741824L)
             .build()
         return ImageLoader.Builder(context)
