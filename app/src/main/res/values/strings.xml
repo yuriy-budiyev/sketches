@@ -20,7 +20,7 @@
     <string name="image_error">Error loading image</string>
     <string name="delete_images_dialog_title">Confirmation</string>
     <string name="delete_images_dialog_positive">Delete</string>
-    <string name="delete_images_dialog_negative">Dismiss</string>
+    <string name="delete_images_dialog_negative">Cancel</string>
     <string name="delete_images_dialog_content_one">Delete image?</string>
     <plurals name="delete_images_dialog_content">
         <item quantity="one">Delete %d image?</item>
@@ -41,7 +41,7 @@
     <string name="delete_bookmarks">Delete bookmarks</string>
     <string name="delete_bookmarks_dialog_title">Confirmation</string>
     <string name="delete_bookmarks_dialog_positive">Delete</string>
-    <string name="delete_bookmarks_dialog_negative">Dismiss</string>
+    <string name="delete_bookmarks_dialog_negative">Cancel</string>
     <string name="delete_bookmarks_dialog_content_one">Delete bookmark?</string>
     <plurals name="delete_bookmarks_dialog_content">
         <item quantity="one">Delete %d bookmark?</item>
