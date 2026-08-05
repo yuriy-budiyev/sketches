@@ -39,8 +39,8 @@ fun SketchesTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = if (isSystemInDarkTheme()) {
             darkColorScheme(
-                primary = SketchesColors.Primary,
-                onPrimary = SketchesColors.OnPrimary,
+                primary = SketchesColors.Dark.Primary,
+                onPrimary = SketchesColors.Dark.OnPrimary,
                 primaryContainer = SketchesColors.Dark.PrimaryContainer,
                 onPrimaryContainer = SketchesColors.Dark.OnPrimaryContainer,
                 background = SketchesColors.Dark.Background,
@@ -49,13 +49,13 @@ fun SketchesTheme(content: @Composable () -> Unit) {
                 onSurface = SketchesColors.Dark.OnSurface,
                 onSurfaceVariant = SketchesColors.Dark.OnSurfaceVariant,
                 surfaceContainerHigh = SketchesColors.Dark.SurfaceContainerHigh,
-                outline = SketchesColors.Primary,
-                outlineVariant = SketchesColors.Primary,
+                outline = SketchesColors.Dark.Outline,
+                outlineVariant = SketchesColors.Dark.OutlineVariant,
             )
         } else {
             lightColorScheme(
-                primary = SketchesColors.Primary,
-                onPrimary = SketchesColors.OnPrimary,
+                primary = SketchesColors.Light.Primary,
+                onPrimary = SketchesColors.Light.OnPrimary,
                 primaryContainer = SketchesColors.Light.PrimaryContainer,
                 onPrimaryContainer = SketchesColors.Light.OnPrimaryContainer,
                 background = SketchesColors.Light.Background,
@@ -64,8 +64,8 @@ fun SketchesTheme(content: @Composable () -> Unit) {
                 onSurface = SketchesColors.Light.OnSurface,
                 onSurfaceVariant = SketchesColors.Light.OnSurfaceVariant,
                 surfaceContainerHigh = SketchesColors.Light.SurfaceContainerHigh,
-                outline = SketchesColors.Primary,
-                outlineVariant = SketchesColors.Primary,
+                outline = SketchesColors.Light.Outline,
+                outlineVariant = SketchesColors.Light.OutlineVariant,
             )
         },
         typography = SketchesTypography,
