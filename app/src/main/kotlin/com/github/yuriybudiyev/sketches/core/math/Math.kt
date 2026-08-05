@@ -27,5 +27,5 @@ package com.github.yuriybudiyev.sketches.core.math
 /**
  * Closest even value to this integer value towards positive infinity.
  */
-fun Int.closestEven(): Int =
-    if (this and 1 == 0) this else this + 1
+fun ceilEven(x: Int): Int =
+    if (x and 1 == 1) x + 1 else x

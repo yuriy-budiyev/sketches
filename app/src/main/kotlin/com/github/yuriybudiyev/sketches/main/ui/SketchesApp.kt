@@ -82,7 +82,7 @@ fun SketchesApp() {
         onRequestMediaAccess.isEnabled = mediaAccess == MediaAccess.UserSelected
     }
     val colorScheme = MaterialTheme.colorScheme
-    CompositionLocalProvider(LocalContentColor.provides(colorScheme.onSurface)) {
+    CompositionLocalProvider(LocalContentColor provides colorScheme.onSurface) {
         Box(
             modifier = Modifier
                 .fillMaxSize()

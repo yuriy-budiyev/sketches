@@ -122,14 +122,12 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
             ContextCompat.RECEIVER_NOT_EXPORTED,
         )
         setContent {
+            @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
             CompositionLocalProvider(
-                LocalDimens.provides(SketchesDimens()),
-                LocalSystemBarsController.provides(this),
-                LocalShareManager.provides(this),
-                LocalWindowSizeClass.provides(
-                    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
-                    calculateWindowSizeClass(this),
-                ),
+                LocalDimens provides SketchesDimens(),
+                LocalSystemBarsController provides this,
+                LocalShareManager provides this,
+                LocalWindowSizeClass provides calculateWindowSizeClass(this),
             ) {
                 SketchesTheme {
                     SketchesApp()

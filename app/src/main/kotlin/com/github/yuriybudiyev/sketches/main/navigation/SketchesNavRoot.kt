@@ -234,7 +234,7 @@ fun SketchesNavRoot(
                         }
                     }
                     CompositionLocalProvider(
-                        LocalViewModelStoreOwner.provides(childViewModelStoreOwner),
+                        LocalViewModelStoreOwner provides childViewModelStoreOwner,
                     ) {
                         navEntry.Content()
                     }
@@ -275,9 +275,9 @@ fun SketchesNavRoot(
         val rootNavBarController = rememberRootNavBarController()
         Box(modifier = modifier.then(transitionModifier)) {
             CompositionLocalProvider(
-                LocalNavResultStore.provides(navResultStore),
-                LocalRootNavBarController.provides(rootNavBarController),
-                LocalNavSharedTransitionScope.provides(this@SharedTransitionScope),
+                LocalNavResultStore provides navResultStore,
+                LocalRootNavBarController provides rootNavBarController,
+                LocalNavSharedTransitionScope provides this@SharedTransitionScope,
             ) {
                 NavDisplay(
                     sceneState = sceneState,
