@@ -54,6 +54,7 @@ fun SketchesAlertDialog(
         title = {
             Text(
                 text = titleText,
+                fontSize = 24.sp,
             )
         },
         text = {
@@ -62,7 +63,6 @@ fun SketchesAlertDialog(
                 fontSize = 18.sp,
             )
         },
-        onDismissRequest = onNegativeResult,
         confirmButton = {
             SketchesFilledButton(
                 text = positiveButtonText,
@@ -75,6 +75,7 @@ fun SketchesAlertDialog(
                 onClick = onNegativeResult,
             )
         },
+        onDismissRequest = onNegativeResult,
         modifier = when (windowSizeClass.widthSizeClass) {
             WindowWidthSizeClass.Compact -> Modifier.fillMaxWidth()
             else -> Modifier.wrapContentWidth()
