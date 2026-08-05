@@ -24,9 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.core.math
 
+/**
+ * Closest even value to this integer value towards positive infinity.
+ */
 fun Int.closestEven(): Int =
-    if (this % 2 != 0) {
-        this + 1
-    } else {
-        this
-    }
+    if (this % 2 != 0) this + 1 else this
