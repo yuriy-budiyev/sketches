@@ -24,12 +24,38 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+
+@Composable
+fun SketchesFilledButton(
+    text: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    FilledTonalButton(
+        onClick = onClick,
+        modifier = modifier,
+        colors = ButtonDefaults.filledTonalButtonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+        ),
+    ) {
+        Text(
+            text = text,
+            fontSize = 16.sp,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
 
 @Composable
 fun SketchesOutlinedButton(
@@ -40,6 +66,10 @@ fun SketchesOutlinedButton(
     OutlinedButton(
         onClick = onClick,
         modifier = modifier,
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.primary,
+        ),
     ) {
         Text(
             text = text,

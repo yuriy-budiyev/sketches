@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
@@ -65,20 +64,16 @@ fun SketchesAlertDialog(
         },
         onDismissRequest = onNegativeResult,
         confirmButton = {
-            TextButton(onClick = onPositiveResult) {
-                Text(
-                    text = positiveButtonText,
-                    fontSize = 16.sp,
-                )
-            }
+            SketchesFilledButton(
+                text = positiveButtonText,
+                onClick = onPositiveResult,
+            )
         },
         dismissButton = {
-            TextButton(onClick = onNegativeResult) {
-                Text(
-                    text = negativeButtonText,
-                    fontSize = 16.sp,
-                )
-            }
+            SketchesOutlinedButton(
+                text = negativeButtonText,
+                onClick = onNegativeResult,
+            )
         },
         modifier = when (windowSizeClass.widthSizeClass) {
             WindowWidthSizeClass.Compact -> Modifier.fillMaxWidth()

@@ -47,6 +47,8 @@ fun SketchesTheme(content: @Composable () -> Unit) {
                 onSurface = SketchesColors.Dark.OnSurface,
                 onSurfaceVariant = SketchesColors.Dark.OnSurfaceVariant,
                 surfaceContainerHigh = SketchesColors.Dark.SurfaceContainerHigh,
+                outline = SketchesColors.Primary,
+                outlineVariant = SketchesColors.Primary,
             )
         } else {
             lightColorScheme(
@@ -58,6 +60,8 @@ fun SketchesTheme(content: @Composable () -> Unit) {
                 onSurface = SketchesColors.Light.OnSurface,
                 onSurfaceVariant = SketchesColors.Light.OnSurfaceVariant,
                 surfaceContainerHigh = SketchesColors.Light.SurfaceContainerHigh,
+                outline = SketchesColors.Primary,
+                outlineVariant = SketchesColors.Primary,
             )
         },
         typography = SketchesTypography,
