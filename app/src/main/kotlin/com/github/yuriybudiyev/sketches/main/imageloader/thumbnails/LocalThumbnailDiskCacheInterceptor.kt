@@ -118,9 +118,5 @@ class LocalThumbnailDiskCacheInterceptor(
     }
 
     private val bufferSize: Int =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            16384
-        } else {
-            8192
-        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) 16384 else 8192
 }
