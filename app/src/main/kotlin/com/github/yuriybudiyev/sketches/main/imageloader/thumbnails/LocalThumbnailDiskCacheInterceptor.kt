@@ -27,7 +27,6 @@ package com.github.yuriybudiyev.sketches.main.imageloader.thumbnails
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Build
 import coil3.asImage
 import coil3.decode.DataSource
 import coil3.disk.DiskCache
@@ -64,7 +63,7 @@ class LocalThumbnailDiskCacheInterceptor(
             val bitmap = snapshot.data
                 .toNioPath()
                 .inputStream()
-                .buffered(bufferSize)
+                .buffered(BufferSize)
                 .use { inputStream -> BitmapFactory.decodeStream(inputStream) }
             if (bitmap != null) {
                 val image = bitmap.asImage(shareable = true)
@@ -100,7 +99,7 @@ class LocalThumbnailDiskCacheInterceptor(
                     snapshot.data
                         .toNioPath()
                         .outputStream()
-                        .buffered(bufferSize)
+                        .buffered(BufferSize)
                         .use { outputStream ->
                             bitmap.compress(
                                 Bitmap.CompressFormat.PNG,
@@ -117,6 +116,8 @@ class LocalThumbnailDiskCacheInterceptor(
         return result
     }
 
-    private val bufferSize: Int =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) 16384 else 8192
+    private companion object {
+
+        const val BufferSize = 65536
+    }
 }
