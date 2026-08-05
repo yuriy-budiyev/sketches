@@ -83,7 +83,7 @@ class BucketsScreenViewModel @Inject constructor(
                     emit(
                         UiState.Buckets(
                             buckets = buckets,
-                            action = Consumable.empty(),
+                            action = Consumable.consumed(),
                         ),
                     )
                 }
