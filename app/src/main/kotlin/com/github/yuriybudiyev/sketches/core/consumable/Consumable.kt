@@ -24,34 +24,30 @@
 
 package com.github.yuriybudiyev.sketches.core.consumable
 
-import java.util.concurrent.locks.Lock
-import java.util.concurrent.locks.ReentrantLock
+import kotlinx.coroutines.sync.Mutex
 
 /**
  * Container with value that can be consumed once.
- * Thread safe.
+ * Safe to [consume] on multithreaded dispatchers.
  */
 class Consumable<T> private constructor(value: T) {
 
-    val isConsumed: Boolean
-        get() = valueInternal === Consumed
-
     @Suppress("UNCHECKED_CAST")
-    fun consume(): T? {
+    suspend fun consume(): T? {
         var value: Any? = valueInternal
-        if (value === Consumed) {
+        if (value === Empty) {
             value = null
         } else {
-            consumeLock.lock()
+            consumeMutex.lock()
             try {
                 value = valueInternal
-                if (value === Consumed) {
+                if (value === Empty) {
                     value = null
                 } else {
-                    valueInternal = Consumed
+                    valueInternal = Empty
                 }
             } finally {
-                consumeLock.unlock()
+                consumeMutex.unlock()
             }
         }
         return value as T?
@@ -60,12 +56,12 @@ class Consumable<T> private constructor(value: T) {
     @Volatile
     private var valueInternal: Any? = value
 
-    private val consumeLock: Lock = ReentrantLock()
+    private val consumeMutex: Mutex = Mutex()
 
     override fun toString(): String =
         "Consumable($valueInternal)"
 
-    private data object Consumed
+    private data object Empty
 
     companion object {
 
@@ -73,7 +69,7 @@ class Consumable<T> private constructor(value: T) {
             Consumable(value)
 
         @Suppress("UNCHECKED_CAST")
-        fun <T> consumed(): Consumable<T> =
-            Consumable(Consumed) as Consumable<T>
+        fun <T> empty(): Consumable<T> =
+            Consumable(Empty) as Consumable<T>
     }
 }
