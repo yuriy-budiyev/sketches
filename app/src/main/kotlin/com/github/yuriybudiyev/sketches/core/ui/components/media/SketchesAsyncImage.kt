@@ -61,9 +61,9 @@ import coil3.request.ImageRequest
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
-import com.github.yuriybudiyev.sketches.core.ui.components.ZoomToggle
+import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
-import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomToggle
+import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
 @Composable
@@ -142,7 +142,7 @@ fun SketchesPreviewAsyncImage(
     uri: Uri,
     contentDescription: String,
     modifier: Modifier = Modifier,
-    zoomToggle: ZoomToggle = rememberZoomToggle(),
+    zoomState: ZoomState = rememberZoomState(),
     onTap: (() -> Unit)? = null,
 ) {
     val context = LocalPlatformContext.current
@@ -189,7 +189,7 @@ fun SketchesPreviewAsyncImage(
             is AsyncImagePainter.State.Success -> {
                 SketchesZoomableBox(
                     modifier = Modifier.matchParentSize(),
-                    zoomToggle = zoomToggle,
+                    zoomState = zoomState,
                     onTap = onTap,
                 ) {
                     val size = painter.intrinsicSize

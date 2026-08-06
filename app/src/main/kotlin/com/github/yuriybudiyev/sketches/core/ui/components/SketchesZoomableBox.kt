@@ -74,7 +74,7 @@ import kotlin.math.min
 @Composable
 fun SketchesZoomableBox(
     modifier: Modifier = Modifier,
-    zoomToggle: ZoomToggle = rememberZoomToggle(),
+    zoomState: ZoomState = rememberZoomState(),
     onTap: (() -> Unit)? = null,
     @FloatRange(
         from = 1.0,
@@ -210,15 +210,15 @@ fun SketchesZoomableBox(
         offsetYJob.join()
         zoomed = newScale > minScale
     }
-    LaunchedEffect(zoomToggle) {
+    LaunchedEffect(zoomState) {
         snapshotFlow { zoomed }
             .distinctUntilChanged()
             .collect { zoomed ->
-                zoomToggle.isZoomed = zoomed
+                zoomState.isZoomed = zoomed
             }
     }
-    LaunchedEffect(zoomToggle) {
-        snapshotFlow { zoomToggle.isZoomed }
+    LaunchedEffect(zoomState) {
+        snapshotFlow { zoomState.isZoomed }
             .distinctUntilChanged()
             .collect { isZoomed ->
                 if (isZoomed != zoomed) {
@@ -317,11 +317,11 @@ sealed interface SketchesZoomableBoxScope: BoxScope {
 }
 
 @Composable
-fun rememberZoomToggle(): ZoomToggle =
-    remember { ZoomToggleImpl() }
+fun rememberZoomState(): ZoomState =
+    remember { ZoomStateImpl() }
 
 @Stable
-interface ZoomToggle {
+sealed interface ZoomState {
 
     var isZoomed: Boolean
 }
@@ -363,7 +363,7 @@ private class SketchesZoomableBoxScopeImpl(
 }
 
 @Stable
-private class ZoomToggleImpl: ZoomToggle, RememberObserver {
+private class ZoomStateImpl: ZoomState, RememberObserver {
 
     override var isZoomed: Boolean by mutableStateOf(false)
 
