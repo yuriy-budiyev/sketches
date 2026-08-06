@@ -153,14 +153,10 @@ class MediaStoreRepositoryImpl @Inject constructor(
                         val allFilesIds = newLinkedHashSet<Long>(allFilesSize)
                         allFiles.mapTo(allFilesIds) { file -> file.id }
                         val allBookmarks = bookmarksDao.getAll().first()
-                        val deletedBookmarksIds = if (allBookmarks.isNotEmpty()) {
-                            allBookmarks.asSequence()
-                                .filter { entity -> !allFilesIds.contains(entity.mediaId) }
-                                .map { entity -> entity.mediaId }
-                                .toList()
-                        } else {
-                            emptyList()
-                        }
+                        val deletedBookmarksIds = allBookmarks.asSequence()
+                            .filter { entity -> !allFilesIds.contains(entity.mediaId) }
+                            .map { entity -> entity.mediaId }
+                            .toList()
                         publishAllFilesMutex.withLock {
                             withContext(NonCancellable) {
                                 allFilesFlow.emit(allFiles)
