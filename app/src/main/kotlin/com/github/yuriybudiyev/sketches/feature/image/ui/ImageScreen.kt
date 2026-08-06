@@ -569,7 +569,7 @@ private fun VideoPage(
                         mediaState.disableVolume()
                     }
                     if (!mediaState.isPlaying) {
-                        mediaState.play()
+                        mediaState.playIfNotPlayed()
                     }
                 }
             } else {
@@ -580,6 +580,7 @@ private fun VideoPage(
                     if (mediaState.isVolumeEnabled) {
                         mediaState.disableVolume()
                     }
+                    mediaState.resetNotPlayed()
                 }
             }
         }
