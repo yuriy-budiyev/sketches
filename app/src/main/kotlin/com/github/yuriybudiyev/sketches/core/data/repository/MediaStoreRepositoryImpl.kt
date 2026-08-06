@@ -55,6 +55,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -151,16 +152,20 @@ class MediaStoreRepositoryImpl @Inject constructor(
                         allFiles.sortByDescending { file -> file.dateAdded }
                         val allFilesIds = newLinkedHashSet<Long>(allFilesSize)
                         allFiles.mapTo(allFilesIds) { file -> file.id }
-                        val deletedFilesIds = currentAllFiles.asSequence()
-                            .filterNot { file -> allFilesIds.contains(file.id) }
-                            .map { file -> file.id }
-                            .toList()
+                        val allBookmarks = bookmarksDao.getAll().first()
+                        val deletedBookmarksIds = if (allBookmarks.isNotEmpty()) {
+                            allBookmarks.asSequence()
+                                .filter { entity -> !allFilesIds.contains(entity.mediaId) }
+                                .map { entity -> entity.mediaId }
+                                .toList()
+                        } else {
+                            emptyList()
+                        }
                         publishAllFilesMutex.withLock {
                             withContext(NonCancellable) {
-                                currentAllFiles = allFiles
                                 allFilesFlow.emit(allFiles)
-                                if (deletedFilesIds.isNotEmpty()) {
-                                    bookmarksDao.delete(deletedFilesIds)
+                                if (deletedBookmarksIds.isNotEmpty()) {
+                                    bookmarksDao.delete(deletedBookmarksIds)
                                 }
                             }
                         }
@@ -232,9 +237,6 @@ class MediaStoreRepositoryImpl @Inject constructor(
             extraBufferCapacity = 0,
             onBufferOverflow = BufferOverflow.DROP_OLDEST,
         )
-
-    @Volatile
-    private var currentAllFiles: List<MediaStoreFile> = emptyList()
 
     @Volatile
     private var updateAllFilesJob: Job? = null
