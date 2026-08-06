@@ -221,7 +221,7 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
     override fun onIsPlayingChanged(isPlaying: Boolean) {
         this.isPlaying = isPlaying
         if (isPlaying) {
-            playedAtLeastOnce = true
+            isPlayedAtLeastOnce = true
             updatePosition()
             startPositionPeriodicUpdate()
         } else {
@@ -252,13 +252,13 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
     }
 
     override fun playIfNotPlayed() {
-        if (!playedAtLeastOnce) {
+        if (!isPlayedAtLeastOnce) {
             play()
         }
     }
 
     override fun resetNotPlayed() {
-        playedAtLeastOnce = false
+        isPlayedAtLeastOnce = false
     }
 
     override fun pause() {
@@ -538,7 +538,7 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
         resetNotPlayed: Boolean,
     ) {
         if (resetNotPlayed) {
-            playedAtLeastOnce = false
+            isPlayedAtLeastOnce = false
         }
         player.withCheck(Player.COMMAND_CHANGE_MEDIA_ITEMS) {
             setMediaItem(
@@ -598,7 +598,7 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
         releasePlayer()
     }
 
-    var playedAtLeastOnce: Boolean = false
+    var isPlayedAtLeastOnce: Boolean = false
 
     init {
         player.addListener(this)
@@ -636,7 +636,7 @@ private class SketchesMediaStateImplSaver(
                     disableRepeat()
                 }
             }
-            playedAtLeastOnce = value.playedAtLeastOnce
+            isPlayedAtLeastOnce = value.isPlayedAtLeastOnce
         }
 
     override fun SaverScope.save(value: SketchesMediaStateImpl): SketchesMediaStateConfig =
@@ -646,7 +646,7 @@ private class SketchesMediaStateImplSaver(
             isRepeatEnabled = value.isRepeatEnabled,
             position = value.position,
             uri = value.uri,
-            playedAtLeastOnce = value.playedAtLeastOnce,
+            isPlayedAtLeastOnce = value.isPlayedAtLeastOnce,
         )
 }
 
@@ -657,7 +657,7 @@ private data class SketchesMediaStateConfig(
     val isRepeatEnabled: Boolean,
     val position: Long,
     val uri: Uri?,
-    val playedAtLeastOnce: Boolean,
+    val isPlayedAtLeastOnce: Boolean,
 ): Parcelable
 
 @kotlin.OptIn(ExperimentalContracts::class)
