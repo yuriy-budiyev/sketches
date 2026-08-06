@@ -188,7 +188,7 @@ class ImageScreenViewModel @AssistedInject constructor(
             }
         }
         uiState = combineTransform(
-            getMediaFiles(),
+            getMediaFiles(currentBucketId),
             getBookmarks(),
         ) { files, bookmarks ->
             if (files.isEmpty()) {
