@@ -118,6 +118,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemCentered
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
@@ -482,6 +483,19 @@ private fun MediaPage(
     modifier: Modifier = Modifier,
 ) {
     val zoomState = rememberZoomState()
+    LaunchedEffect(
+        state,
+        number,
+        zoomState,
+    ) {
+        snapshotFlow { state.currentPage }
+            .distinctUntilChanged().collect { currentPage ->
+                if (currentPage != number) {
+                    //TODO: unzoom without animation
+                    //zoomState.isZoomed = false
+                }
+            }
+    }
     BackHandler(zoomState.isZoomed) {
         zoomState.isZoomed = false
     }
