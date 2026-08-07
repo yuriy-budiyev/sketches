@@ -106,43 +106,45 @@ fun SketchesZoomableBox(
     val offsetY = remember { Animatable(0F) }
     var zoomed by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        snapshotFlow { containerSize to contentSize }.collect { (containerSize, contentSize) ->
-            if (containerSize != Size.Zero && contentSize != Size.Zero) {
-                val fitScaleWidth = containerSize.width / contentSize.width
-                val fitScaleHeight = containerSize.height / contentSize.height
-                val fitScale = min(
-                    fitScaleWidth,
-                    fitScaleHeight,
-                )
-                minScale = fitScale
-                maxScale = fitScale * maxRelativeZoom
-                scale.updateBounds(
-                    minScale,
-                    maxScale,
-                )
-                if (scale.value == 0F || !zoomed) {
-                    scale.snapTo(fitScale)
-                    offsetX.snapTo(0F)
-                    offsetX.snapTo(0F)
-                } else {
-                    val maxOffsetX =
-                        (containerSize.width - (contentSize.width * scale.value)).absoluteValue / 2F
-                    val maxOffsetY =
-                        (containerSize.height - (contentSize.height * scale.value)).absoluteValue / 2F
-                    val newOffsetX = offsetX.value.coerceIn(
-                        -maxOffsetX,
-                        +maxOffsetX,
+        snapshotFlow { containerSize to contentSize }
+            .distinctUntilChanged()
+            .collect { (containerSize, contentSize) ->
+                if (containerSize != Size.Zero && contentSize != Size.Zero) {
+                    val fitScaleWidth = containerSize.width / contentSize.width
+                    val fitScaleHeight = containerSize.height / contentSize.height
+                    val fitScale = min(
+                        fitScaleWidth,
+                        fitScaleHeight,
                     )
-                    val newOffsetY = offsetY.value.coerceIn(
-                        -maxOffsetY,
-                        +maxOffsetY,
+                    minScale = fitScale
+                    maxScale = fitScale * maxRelativeZoom
+                    scale.updateBounds(
+                        minScale,
+                        maxScale,
                     )
-                    offsetX.snapTo(newOffsetX)
-                    offsetY.snapTo(newOffsetY)
+                    if (scale.value == 0F || !zoomed) {
+                        scale.snapTo(fitScale)
+                        offsetX.snapTo(0F)
+                        offsetX.snapTo(0F)
+                    } else {
+                        val maxOffsetX =
+                            (containerSize.width - (contentSize.width * scale.value)).absoluteValue / 2F
+                        val maxOffsetY =
+                            (containerSize.height - (contentSize.height * scale.value)).absoluteValue / 2F
+                        val newOffsetX = offsetX.value.coerceIn(
+                            -maxOffsetX,
+                            +maxOffsetX,
+                        )
+                        val newOffsetY = offsetY.value.coerceIn(
+                            -maxOffsetY,
+                            +maxOffsetY,
+                        )
+                        offsetX.snapTo(newOffsetX)
+                        offsetY.snapTo(newOffsetY)
+                    }
+                    zoomed = scale.value > fitScale
                 }
-                zoomed = scale.value > fitScale
             }
-        }
     }
     LaunchedEffect(maxRelativeZoom) {
         maxScale = minScale * maxRelativeZoom
@@ -293,9 +295,11 @@ fun SketchesZoomableBox(
     ) {
         val scope = remember { SketchesZoomableBoxScopeImpl(this) }
         LaunchedEffect(Unit) {
-            snapshotFlow { scope.contentSize }.collect { size ->
-                contentSize = size
-            }
+            snapshotFlow { scope.contentSize }
+                .distinctUntilChanged()
+                .collect { size ->
+                    contentSize = size
+                }
         }
         scope.offsetX = offsetX.value
         scope.offsetY = offsetY.value
