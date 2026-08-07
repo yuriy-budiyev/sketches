@@ -118,7 +118,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemCentered
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
@@ -239,33 +238,31 @@ private fun ImageScreenLayout(
         pagerState.scrollToPage(index)
     }
     LaunchedEffect(Unit) {
-        snapshotFlow { pagerState.currentPage }
-            .distinctUntilChanged().collect { page ->
-                currentIndex = page
-                onChangeUpdated(
-                    page,
-                    itemsUpdated[page].file,
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            currentIndex = page
+            onChangeUpdated(
+                page,
+                itemsUpdated[page].file,
+            )
+            coroutineScope.launch {
+                barState.scrollToItemCentered(
+                    index = page,
+                    animate = true,
                 )
+            }
+        }
+    }
+    LaunchedEffect(Unit) {
+        snapshotFlow { systemBarsControllerUpdated.isSystemBarsVisible }.collect { visible ->
+            if (visible) {
                 coroutineScope.launch {
                     barState.scrollToItemCentered(
-                        index = page,
-                        animate = true,
+                        index = pagerState.currentPage,
+                        animate = false,
                     )
                 }
             }
-    }
-    LaunchedEffect(Unit) {
-        snapshotFlow { systemBarsControllerUpdated.isSystemBarsVisible }
-            .distinctUntilChanged().collect { visible ->
-                if (visible) {
-                    coroutineScope.launch {
-                        barState.scrollToItemCentered(
-                            index = pagerState.currentPage,
-                            animate = false,
-                        )
-                    }
-                }
-            }
+        }
     }
     val dimens = LocalDimens.current
     Box(modifier = modifier) {
@@ -491,16 +488,15 @@ private fun MediaPage(
         number,
         zoomState,
     ) {
-        snapshotFlow { state.currentPage }
-            .distinctUntilChanged().collect { currentPage ->
-                if (currentPage != number) {
-                    if (zoomState.isZoomed) {
-                        coroutineScope.launch {
-                            zoomState.toggleZoom(animate = false)
-                        }
+        snapshotFlow { state.currentPage }.collect { currentPage ->
+            if (currentPage != number) {
+                if (zoomState.isZoomed) {
+                    coroutineScope.launch {
+                        zoomState.toggleZoom(animate = false)
                     }
                 }
             }
+        }
     }
     BackHandler(zoomState.isZoomed) {
         coroutineScope.launch {
@@ -548,10 +544,9 @@ private fun ImagePage(
     val numberUpdated by rememberUpdatedState(number)
     var displayedPage by remember { mutableStateOf(state.currentPage == number) }
     LaunchedEffect(state) {
-        snapshotFlow { state.currentPage }
-            .distinctUntilChanged().collect { currentPage ->
-                displayedPage = currentPage == numberUpdated
-            }
+        snapshotFlow { state.currentPage }.collect { currentPage ->
+            displayedPage = currentPage == numberUpdated
+        }
     }
     SketchesPreviewAsyncImage(
         uri = fileUri,
@@ -585,29 +580,28 @@ private fun VideoPage(
         }
     }
     LaunchedEffect(state) {
-        snapshotFlow { state.currentPage }
-            .distinctUntilChanged().collect { currentPage ->
-                if (currentPage == numberUpdated) {
-                    mediaState.coroutineScope.launch {
-                        if (mediaState.isVolumeEnabled) {
-                            mediaState.disableVolume()
-                        }
-                        if (!mediaState.isPlaying) {
-                            mediaState.playIfNotPlayed()
-                        }
+        snapshotFlow { state.currentPage }.collect { currentPage ->
+            if (currentPage == numberUpdated) {
+                mediaState.coroutineScope.launch {
+                    if (mediaState.isVolumeEnabled) {
+                        mediaState.disableVolume()
                     }
-                } else {
-                    mediaState.coroutineScope.launch {
-                        if (mediaState.isPlaying) {
-                            mediaState.pause()
-                        }
-                        if (mediaState.isVolumeEnabled) {
-                            mediaState.disableVolume()
-                        }
-                        mediaState.resetNotPlayed()
+                    if (!mediaState.isPlaying) {
+                        mediaState.playIfNotPlayed()
                     }
                 }
+            } else {
+                mediaState.coroutineScope.launch {
+                    if (mediaState.isPlaying) {
+                        mediaState.pause()
+                    }
+                    if (mediaState.isVolumeEnabled) {
+                        mediaState.disableVolume()
+                    }
+                    mediaState.resetNotPlayed()
+                }
             }
+        }
     }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
         mediaState.coroutineScope.launch {

@@ -83,7 +83,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyG
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemClosestEdge
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @Composable
@@ -185,15 +184,13 @@ fun ImagesScreen(
     }
     val rootNavBarController = LocalRootNavBarController.current
     LaunchedEffect(rootNavBarController) {
-        snapshotFlow { selectedFiles.toSet().isNotEmpty() }
-            .distinctUntilChanged()
-            .collect { hasSelectedFiles ->
-                if (hasSelectedFiles) {
-                    rootNavBarController.hideRootNavBar()
-                } else {
-                    rootNavBarController.showRootNavBar()
-                }
+        snapshotFlow { selectedFiles.toSet().isNotEmpty() }.collect { hasSelectedFiles ->
+            if (hasSelectedFiles) {
+                rootNavBarController.hideRootNavBar()
+            } else {
+                rootNavBarController.showRootNavBar()
             }
+        }
     }
     DisposableEffect(rootNavBarController) {
         rootNavBarController.setOnClickListener(ImagesNavRoute) {

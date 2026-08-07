@@ -97,7 +97,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesM
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @Composable
@@ -213,15 +212,13 @@ fun BucketsScreen(
     }
     val rootNavBarController = LocalRootNavBarController.current
     LaunchedEffect(rootNavBarController) {
-        snapshotFlow { selectedBuckets.toSet().isNotEmpty() }
-            .distinctUntilChanged()
-            .collect { hasSelectedBuckets ->
-                if (hasSelectedBuckets) {
-                    rootNavBarController.hideRootNavBar()
-                } else {
-                    rootNavBarController.showRootNavBar()
-                }
+        snapshotFlow { selectedBuckets.toSet().isNotEmpty() }.collect { hasSelectedBuckets ->
+            if (hasSelectedBuckets) {
+                rootNavBarController.hideRootNavBar()
+            } else {
+                rootNavBarController.showRootNavBar()
             }
+        }
     }
     val bucketsGridState = rememberSketchesLazyGridState()
     DisposableEffect(rootNavBarController) {
