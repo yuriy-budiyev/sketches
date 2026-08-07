@@ -88,6 +88,9 @@ fun SketchesZoomableBox(
     doubleTapRelativeZoom: Float = 2.5F,
     content: @Composable SketchesZoomableBoxScope.() -> Unit,
 ) {
+    require(zoomState is ZoomStateImpl) {
+        "zoomState should be obtained only by call to rememberZoomState"
+    }
     require(maxRelativeZoom >= 1F) {
         "maxRelativeZoom can't be lower than 1.0"
     }
