@@ -484,6 +484,7 @@ private fun MediaPage(
     controllerBottomPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val zoomState = rememberZoomState()
     LaunchedEffect(
         state,
@@ -493,13 +494,18 @@ private fun MediaPage(
         snapshotFlow { state.currentPage }
             .distinctUntilChanged().collect { currentPage ->
                 if (currentPage != number) {
-                    //TODO: unzoom without animation
-                    //zoomState.isZoomed = false
+                    if (zoomState.isZoomed) {
+                        coroutineScope.launch {
+                            zoomState.toggleZoom(animate = false)
+                        }
+                    }
                 }
             }
     }
     BackHandler(zoomState.isZoomed) {
-        zoomState.isZoomed = false
+        coroutineScope.launch {
+            zoomState.toggleZoom(animate = true)
+        }
     }
     when (fileType) {
         MediaType.Image -> {

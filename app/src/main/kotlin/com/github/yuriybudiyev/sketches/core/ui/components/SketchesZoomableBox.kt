@@ -69,6 +69,8 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastForEach
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -175,7 +177,10 @@ fun SketchesZoomableBox(
             maxScale,
         )
     }
-    suspend fun CoroutineScope.toggleZoom(offset: Offset = Offset.Zero) {
+    suspend fun CoroutineScope.toggleZoom(
+        offset: Offset = Offset.Zero,
+        animate: Boolean = true,
+    ) {
         val newScale: Float
         val newOffsetX: Float
         val newOffsetY: Float
@@ -211,27 +216,33 @@ fun SketchesZoomableBox(
             newOffsetX = 0F
             newOffsetY = 0F
         }
-        val scaleJob = launch {
-            currentScale.animateTo(
-                newScale,
-                tween(),
-            )
+        if (animate) {
+            val scaleJob = launch {
+                currentScale.animateTo(
+                    newScale,
+                    tween(),
+                )
+            }
+            val offsetXJob = launch {
+                currentOffsetX.animateTo(
+                    newOffsetX,
+                    tween(),
+                )
+            }
+            val offsetYJob = launch {
+                currentOffsetY.animateTo(
+                    newOffsetY,
+                    tween(),
+                )
+            }
+            scaleJob.join()
+            offsetXJob.join()
+            offsetYJob.join()
+        } else {
+            currentScale.snapTo(newScale)
+            currentOffsetX.snapTo(newOffsetX)
+            currentOffsetY.snapTo(newOffsetY)
         }
-        val offsetXJob = launch {
-            currentOffsetX.animateTo(
-                newOffsetX,
-                tween(),
-            )
-        }
-        val offsetYJob = launch {
-            currentOffsetY.animateTo(
-                newOffsetY,
-                tween(),
-            )
-        }
-        scaleJob.join()
-        offsetXJob.join()
-        offsetYJob.join()
         currentIsZoomed = newScale > minScale
     }
     LaunchedEffect(zoomState) {
@@ -241,12 +252,9 @@ fun SketchesZoomableBox(
             }
     }
     LaunchedEffect(zoomState) {
-        snapshotFlow { zoomState.isZoomed }
-            .distinctUntilChanged().collect { isZoomed ->
-                if (isZoomed != currentIsZoomed) {
-                    toggleZoom()
-                }
-            }
+        zoomState.toggleZoom.collect { toggleZoom ->
+            toggleZoom(animate = toggleZoom.animate)
+        }
     }
     LaunchedEffect(zoomState) {
         snapshotFlow {
@@ -357,7 +365,9 @@ sealed interface SketchesZoomableBoxScope: BoxScope {
 @Stable
 sealed interface ZoomState {
 
-    var isZoomed: Boolean
+    val isZoomed: Boolean
+
+    suspend fun toggleZoom(animate: Boolean = true)
 }
 
 @Immutable
@@ -412,6 +422,15 @@ private class SketchesZoomableBoxScopeImpl(
 private class ZoomStateImpl: ZoomState {
 
     override var isZoomed: Boolean by mutableStateOf(false)
+
+    override suspend fun toggleZoom(animate: Boolean) {
+        toggleZoom.emit(ToggleZoom(animate))
+    }
+
+    val toggleZoom: Flow<ToggleZoom>
+        field: MutableSharedFlow<ToggleZoom> = MutableSharedFlow()
+
+    data class ToggleZoom(val animate: Boolean)
 
     var scale: Float = 0F
     var offsetX: Float = 0F
