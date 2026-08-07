@@ -69,7 +69,6 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastCoerceIn
 import androidx.compose.ui.util.fastForEach
-import com.github.yuriybudiyev.sketches.core.platform.log.logDebug
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -116,7 +115,15 @@ fun SketchesZoomableBox(
     val currentScale = remember(zoomState) { Animatable(zoomState.scale) }
     val currentOffsetX = remember(zoomState) { Animatable(zoomState.offsetX) }
     val currentOffsetY = remember(zoomState) { Animatable(zoomState.offsetY) }
-    LaunchedEffect(zoomState) {
+    LaunchedEffect(Unit) {
+        snapshotFlow { maxZoomUpdated }.collect { scale ->
+            currentScale.updateBounds(
+                1F,
+                scale,
+            )
+        }
+    }
+    LaunchedEffect(Unit) {
         snapshotFlow {
             SizeSpec(
                 container = containerSize,
@@ -124,13 +131,8 @@ fun SketchesZoomableBox(
             )
         }.collect { (containerSize, contentSize) ->
             if (containerSize != Size.Zero && contentSize != Size.Zero) {
-                logDebug(
-                    "init " + ZoomSpec(
-                        scale = currentScale.value,
-                        offsetX = currentOffsetX.value,
-                        offsetY = currentOffsetY.value,
-                    ),
-                )
+                //TODO
+
                 /*currentScale.updateBounds(
                     1F,
                     maxZoomUpdated,
@@ -178,14 +180,6 @@ fun SketchesZoomableBox(
                 currentIsZoomed = currentScale.value > 1F
                 isInitialized = true*/
             }
-        }
-    }
-    LaunchedEffect(Unit) {
-        snapshotFlow { maxZoomUpdated }.collect { scale ->
-            currentScale.updateBounds(
-                1F,
-                scale,
-            )
         }
     }
     suspend fun CoroutineScope.toggleZoom(
@@ -256,10 +250,9 @@ fun SketchesZoomableBox(
         }
     }
     LaunchedEffect(zoomState) {
-        snapshotFlow { currentScale.value > 1F }
-            .collect { zoomed ->
-                zoomState.isZoomed = zoomed
-            }
+        snapshotFlow { currentScale.value > 1F }.collect { zoomed ->
+            zoomState.isZoomed = zoomed
+        }
     }
     LaunchedEffect(zoomState) {
         zoomState.toggleZoom.collect { toggleZoom ->
