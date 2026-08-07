@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import android.os.Parcelable
 import androidx.annotation.FloatRange
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -38,6 +39,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.LayoutScopeMarker
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
@@ -47,6 +49,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.SaverScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -67,9 +72,14 @@ import androidx.compose.ui.util.fastForEach
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.min
+
+@Composable
+fun rememberZoomState(): ZoomState =
+    rememberSaveable(saver = ZoomStateImplSaver()) { ZoomStateImpl() }
 
 @Composable
 fun SketchesZoomableBox(
@@ -104,10 +114,10 @@ fun SketchesZoomableBox(
     var contentSize by remember { mutableStateOf(Size.Zero) }
     var minScale by remember { mutableFloatStateOf(0F) }
     var maxScale by remember { mutableFloatStateOf(0F) }
-    val scale = remember { Animatable(0F) }
-    val offsetX = remember { Animatable(0F) }
-    val offsetY = remember { Animatable(0F) }
-    var zoomed by remember { mutableStateOf(false) }
+    val currentScale = remember { Animatable(0F) }
+    val currentOffsetX = remember { Animatable(0F) }
+    val currentOffsetY = remember { Animatable(0F) }
+    var currentIsZoomed by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         snapshotFlow { containerSize to contentSize }
             .distinctUntilChanged()
@@ -121,37 +131,37 @@ fun SketchesZoomableBox(
                     )
                     minScale = fitScale
                     maxScale = fitScale * maxRelativeZoom
-                    scale.updateBounds(
+                    currentScale.updateBounds(
                         minScale,
                         maxScale,
                     )
-                    if (scale.value == 0F || !zoomed) {
-                        scale.snapTo(fitScale)
-                        offsetX.snapTo(0F)
-                        offsetX.snapTo(0F)
+                    if (currentScale.value == 0F || !currentIsZoomed) {
+                        currentScale.snapTo(fitScale)
+                        currentOffsetX.snapTo(0F)
+                        currentOffsetX.snapTo(0F)
                     } else {
                         val maxOffsetX =
-                            (containerSize.width - (contentSize.width * scale.value)).absoluteValue / 2F
+                            (containerSize.width - (contentSize.width * currentScale.value)).absoluteValue / 2F
                         val maxOffsetY =
-                            (containerSize.height - (contentSize.height * scale.value)).absoluteValue / 2F
-                        val newOffsetX = offsetX.value.coerceIn(
+                            (containerSize.height - (contentSize.height * currentScale.value)).absoluteValue / 2F
+                        val newOffsetX = currentOffsetX.value.coerceIn(
                             -maxOffsetX,
                             +maxOffsetX,
                         )
-                        val newOffsetY = offsetY.value.coerceIn(
+                        val newOffsetY = currentOffsetY.value.coerceIn(
                             -maxOffsetY,
                             +maxOffsetY,
                         )
-                        offsetX.snapTo(newOffsetX)
-                        offsetY.snapTo(newOffsetY)
+                        currentOffsetX.snapTo(newOffsetX)
+                        currentOffsetY.snapTo(newOffsetY)
                     }
-                    zoomed = scale.value > fitScale
+                    currentIsZoomed = currentScale.value > fitScale
                 }
             }
     }
     LaunchedEffect(maxRelativeZoom) {
         maxScale = minScale * maxRelativeZoom
-        scale.updateBounds(
+        currentScale.updateBounds(
             minScale,
             maxScale,
         )
@@ -160,9 +170,9 @@ fun SketchesZoomableBox(
         val newScale: Float
         val newOffsetX: Float
         val newOffsetY: Float
-        if (scale.value == minScale) {
+        if (currentScale.value == minScale) {
             newScale = minScale * doubleTapRelativeZoomUpdated
-            val scaleFactor = newScale / scale.value
+            val scaleFactor = newScale / currentScale.value
             val scaledContentWidth = contentSize.width * newScale
             val scaledContentHeight = contentSize.height * newScale
             val unusedContainerWidth = containerSize.width - scaledContentWidth
@@ -170,7 +180,7 @@ fun SketchesZoomableBox(
                 containerSize.height - scaledContentHeight
             val relativeTapOffset = containerSize.center - offset
             newOffsetX = if (unusedContainerWidth < 0F) {
-                ((offsetX.value + relativeTapOffset.x) * scaleFactor - relativeTapOffset.x)
+                ((currentOffsetX.value + relativeTapOffset.x) * scaleFactor - relativeTapOffset.x)
                     .coerceIn(
                         -unusedContainerWidth.absoluteValue / 2F,
                         +unusedContainerWidth.absoluteValue / 2F,
@@ -179,7 +189,7 @@ fun SketchesZoomableBox(
                 0F
             }
             newOffsetY = if (unusedContainerHeight < 0F) {
-                ((offsetY.value + relativeTapOffset.y) * scaleFactor - relativeTapOffset.y)
+                ((currentOffsetY.value + relativeTapOffset.y) * scaleFactor - relativeTapOffset.y)
                     .coerceIn(
                         -unusedContainerHeight.absoluteValue / 2F,
                         +unusedContainerHeight.absoluteValue / 2F,
@@ -193,19 +203,19 @@ fun SketchesZoomableBox(
             newOffsetY = 0F
         }
         val scaleJob = launch {
-            scale.animateTo(
+            currentScale.animateTo(
                 newScale,
                 tween(),
             )
         }
         val offsetXJob = launch {
-            offsetX.animateTo(
+            currentOffsetX.animateTo(
                 newOffsetX,
                 tween(),
             )
         }
         val offsetYJob = launch {
-            offsetY.animateTo(
+            currentOffsetY.animateTo(
                 newOffsetY,
                 tween(),
             )
@@ -213,10 +223,10 @@ fun SketchesZoomableBox(
         scaleJob.join()
         offsetXJob.join()
         offsetYJob.join()
-        zoomed = newScale > minScale
+        currentIsZoomed = newScale > minScale
     }
     LaunchedEffect(zoomState) {
-        snapshotFlow { zoomed }
+        snapshotFlow { currentIsZoomed }
             .distinctUntilChanged()
             .collect { zoomed ->
                 zoomState.isZoomed = zoomed
@@ -226,7 +236,7 @@ fun SketchesZoomableBox(
         snapshotFlow { zoomState.isZoomed }
             .distinctUntilChanged()
             .collect { isZoomed ->
-                if (isZoomed != zoomed) {
+                if (isZoomed != currentIsZoomed) {
                     toggleZoom(Offset.Zero)
                 }
             }
@@ -241,18 +251,18 @@ fun SketchesZoomableBox(
                 detectTransformGestures(
                     onGesture = { centroid, pan, zoom ->
                         coroutineScope.launch {
-                            val newScale = (scale.value * zoom).coerceIn(
+                            val newScale = (currentScale.value * zoom).coerceIn(
                                 minimumValue = minScale,
                                 maximumValue = maxScale,
                             )
-                            val scaleFactor = newScale / scale.value
+                            val scaleFactor = newScale / currentScale.value
                             val scaledContentWidth = contentSize.width * newScale
                             val scaledContentHeight = contentSize.height * newScale
                             val unusedContainerWidth = containerSize.width - scaledContentWidth
                             val unusedContainerHeight = containerSize.height - scaledContentHeight
                             val relativeCentroid = containerSize.center - centroid
                             val newOffsetX = if (unusedContainerWidth < 0F) {
-                                ((offsetX.value + relativeCentroid.x) * scaleFactor - relativeCentroid.x + pan.x)
+                                ((currentOffsetX.value + relativeCentroid.x) * scaleFactor - relativeCentroid.x + pan.x)
                                     .coerceIn(
                                         -unusedContainerWidth.absoluteValue / 2F,
                                         +unusedContainerWidth.absoluteValue / 2F,
@@ -261,7 +271,7 @@ fun SketchesZoomableBox(
                                 0F
                             }
                             val newOffsetY = if (unusedContainerHeight < 0F) {
-                                ((offsetY.value + relativeCentroid.y) * scaleFactor - relativeCentroid.y + pan.y)
+                                ((currentOffsetY.value + relativeCentroid.y) * scaleFactor - relativeCentroid.y + pan.y)
                                     .coerceIn(
                                         -unusedContainerHeight.absoluteValue / 2F,
                                         +unusedContainerHeight.absoluteValue / 2F,
@@ -269,14 +279,14 @@ fun SketchesZoomableBox(
                             } else {
                                 0F
                             }
-                            scale.snapTo(newScale)
-                            offsetX.snapTo(newOffsetX)
-                            offsetY.snapTo(newOffsetY)
-                            zoomed = newScale > minScale
+                            currentScale.snapTo(newScale)
+                            currentOffsetX.snapTo(newOffsetX)
+                            currentOffsetY.snapTo(newOffsetY)
+                            currentIsZoomed = newScale > minScale
                         }
                     },
                     onAfterGesture = { change ->
-                        if (scale.value > minScale) {
+                        if (currentScale.value > minScale) {
                             change.consume()
                         }
                     },
@@ -304,9 +314,9 @@ fun SketchesZoomableBox(
                     contentSize = size
                 }
         }
-        scope.offsetX = offsetX.value
-        scope.offsetY = offsetY.value
-        scope.scale = scale.value
+        scope.scale = currentScale.value
+        scope.offsetX = currentOffsetX.value
+        scope.offsetY = currentOffsetY.value
         scope.content()
     }
 }
@@ -323,28 +333,31 @@ sealed interface SketchesZoomableBoxScope: BoxScope {
     fun Modifier.zoomable(): Modifier
 }
 
-@Composable
-fun rememberZoomState(): ZoomState =
-    remember { ZoomStateImpl() }
-
 @Stable
 sealed interface ZoomState {
 
     var isZoomed: Boolean
 }
 
+@Immutable
+private data class ZoomSpec(
+    val scale: Float,
+    val offsetX: Float,
+    val offsetY: Float,
+)
+
 @Stable
 private class SketchesZoomableBoxScopeImpl(
     private val boxScope: BoxScope,
 ): SketchesZoomableBoxScope {
 
-    var contentSize: Size by mutableStateOf(Size.Zero)
+    var scale: Float by mutableFloatStateOf(0F)
 
     var offsetX: Float by mutableFloatStateOf(0F)
 
     var offsetY: Float by mutableFloatStateOf(0F)
 
-    var scale: Float by mutableFloatStateOf(0F)
+    var contentSize: Size by mutableStateOf(Size.Zero)
 
     @Stable
     override fun Modifier.zoomable(): Modifier =
@@ -385,7 +398,37 @@ private class ZoomStateImpl: ZoomState, RememberObserver {
     override fun onAbandoned() {
         isZoomed = false
     }
+
+    var scale: Float by mutableFloatStateOf(0F)
+
+    var offsetX: Float by mutableFloatStateOf(0F)
+
+    var offsetY: Float by mutableFloatStateOf(0F)
 }
+
+private class ZoomStateImplSaver: Saver<ZoomStateImpl, ZoomStateImplConfig> {
+
+    override fun SaverScope.save(value: ZoomStateImpl): ZoomStateImplConfig =
+        ZoomStateImplConfig(
+            scale = value.scale,
+            offsetX = value.offsetX,
+            offsetY = value.offsetY,
+        )
+
+    override fun restore(value: ZoomStateImplConfig): ZoomStateImpl =
+        ZoomStateImpl().apply {
+            scale = value.scale
+            offsetX = value.offsetX
+            offsetY = value.offsetY
+        }
+}
+
+@Parcelize
+private data class ZoomStateImplConfig(
+    val scale: Float,
+    val offsetX: Float,
+    val offsetY: Float,
+): Parcelable
 
 /**
  * Slightly changed version of [androidx.compose.foundation.gestures.detectTransformGestures]
