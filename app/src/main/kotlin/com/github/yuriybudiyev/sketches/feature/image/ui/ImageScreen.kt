@@ -239,31 +239,33 @@ private fun ImageScreenLayout(
         pagerState.scrollToPage(index)
     }
     LaunchedEffect(Unit) {
-        snapshotFlow { pagerState.currentPage }.collect { page ->
-            currentIndex = page
-            onChangeUpdated(
-                page,
-                itemsUpdated[page].file,
-            )
-            coroutineScope.launch {
-                barState.scrollToItemCentered(
-                    index = page,
-                    animate = true,
+        snapshotFlow { pagerState.currentPage }
+            .distinctUntilChanged().collect { page ->
+                currentIndex = page
+                onChangeUpdated(
+                    page,
+                    itemsUpdated[page].file,
                 )
-            }
-        }
-    }
-    LaunchedEffect(Unit) {
-        snapshotFlow { systemBarsControllerUpdated.isSystemBarsVisible }.collect { visible ->
-            if (visible) {
                 coroutineScope.launch {
                     barState.scrollToItemCentered(
-                        index = pagerState.currentPage,
-                        animate = false,
+                        index = page,
+                        animate = true,
                     )
                 }
             }
-        }
+    }
+    LaunchedEffect(Unit) {
+        snapshotFlow { systemBarsControllerUpdated.isSystemBarsVisible }
+            .distinctUntilChanged().collect { visible ->
+                if (visible) {
+                    coroutineScope.launch {
+                        barState.scrollToItemCentered(
+                            index = pagerState.currentPage,
+                            animate = false,
+                        )
+                    }
+                }
+            }
     }
     val dimens = LocalDimens.current
     Box(modifier = modifier) {
@@ -540,9 +542,10 @@ private fun ImagePage(
     val numberUpdated by rememberUpdatedState(number)
     var displayedPage by remember { mutableStateOf(state.currentPage == number) }
     LaunchedEffect(state) {
-        snapshotFlow { state.currentPage }.collect { currentPage ->
-            displayedPage = currentPage == numberUpdated
-        }
+        snapshotFlow { state.currentPage }
+            .distinctUntilChanged().collect { currentPage ->
+                displayedPage = currentPage == numberUpdated
+            }
     }
     SketchesPreviewAsyncImage(
         uri = fileUri,
@@ -576,28 +579,29 @@ private fun VideoPage(
         }
     }
     LaunchedEffect(state) {
-        snapshotFlow { state.currentPage }.collect { currentPage ->
-            if (currentPage == numberUpdated) {
-                mediaState.coroutineScope.launch {
-                    if (mediaState.isVolumeEnabled) {
-                        mediaState.disableVolume()
+        snapshotFlow { state.currentPage }
+            .distinctUntilChanged().collect { currentPage ->
+                if (currentPage == numberUpdated) {
+                    mediaState.coroutineScope.launch {
+                        if (mediaState.isVolumeEnabled) {
+                            mediaState.disableVolume()
+                        }
+                        if (!mediaState.isPlaying) {
+                            mediaState.playIfNotPlayed()
+                        }
                     }
-                    if (!mediaState.isPlaying) {
-                        mediaState.playIfNotPlayed()
+                } else {
+                    mediaState.coroutineScope.launch {
+                        if (mediaState.isPlaying) {
+                            mediaState.pause()
+                        }
+                        if (mediaState.isVolumeEnabled) {
+                            mediaState.disableVolume()
+                        }
+                        mediaState.resetNotPlayed()
                     }
-                }
-            } else {
-                mediaState.coroutineScope.launch {
-                    if (mediaState.isPlaying) {
-                        mediaState.pause()
-                    }
-                    if (mediaState.isVolumeEnabled) {
-                        mediaState.disableVolume()
-                    }
-                    mediaState.resetNotPlayed()
                 }
             }
-        }
     }
     LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
         mediaState.coroutineScope.launch {
