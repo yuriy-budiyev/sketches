@@ -96,7 +96,7 @@ fun SketchesThumbnailAsyncImage(
             painterState = state
         },
         contentScale = ContentScale.Crop,
-        filterQuality = FilterQuality.Low,
+        filterQuality = FilterQuality.High,
     )
     val colorScheme = MaterialTheme.colorScheme
     Box(
