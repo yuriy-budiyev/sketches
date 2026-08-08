@@ -49,13 +49,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
         isCoreLibraryDesugaringEnabled = true
     }
 
     buildFeatures {
-        compose = true
         buildConfig = true
     }
 
@@ -81,16 +80,16 @@ androidComponents {
 }
 
 composeCompiler {
-    reportsDestination = layout.buildDirectory.dir("compose_compiler")
-    metricsDestination = layout.buildDirectory.dir("compose_compiler")
-    stabilityConfigurationFiles = listOf(
-        project.rootProject.layout.projectDirectory.file("compose_stability_config.conf"),
+    reportsDestination.set(layout.buildDirectory.dir("compose_compiler"))
+    metricsDestination.set(layout.buildDirectory.dir("compose_compiler"))
+    stabilityConfigurationFiles.set(
+        listOf(project.rootProject.layout.projectDirectory.file("compose_stability_config.conf")),
     )
 }
 
 kotlin {
     compilerOptions {
-        jvmTarget = JvmTarget.JVM_11
+        jvmTarget = JvmTarget.JVM_21
     }
 }
 
