@@ -36,6 +36,7 @@ class SketchesTest {
         assert("aaa".capitalizeFirstChar() == "Aaa")
         val initial = "Aaa"
         val capitalized = initial.capitalizeFirstChar()
+        @Suppress("StringReferentialEquality")
         assert(initial === capitalized)
     }
 }
