@@ -1,3 +1,5 @@
 <resources>
     <color name="ic_launcher_background">#FF6B69D6</color>
+    <color name="navigation_bar_compat">#FF000000</color>
+    <color name="on_navigation_bar_compat">#FFFFFFFF</color>
 </resources>

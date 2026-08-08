@@ -97,7 +97,8 @@ import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateListSaver
-import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.colors.withUiAlphaLowTransparency
+import com.github.yuriybudiyev.sketches.core.ui.compat.navigationBarColorCompat
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.registerBookmarksNavRoute
@@ -321,8 +322,7 @@ fun SketchesNavRoot(
                         Row(
                             modifier = Modifier
                                 .background(
-                                    color = colorScheme.background
-                                        .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                                    color = colorScheme.navigationBarColorCompat(),
                                     shape = RectangleShape,
                                 )
                                 .fillMaxSize(),
@@ -387,8 +387,7 @@ fun SketchesNavRoot(
                         Box(
                             modifier = Modifier
                                 .background(
-                                    color = colorScheme.background
-                                        .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                                    color = colorScheme.background.withUiAlphaLowTransparency(),
                                     shape = RectangleShape,
                                 )
                                 .fillMaxSize(),

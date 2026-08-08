@@ -102,6 +102,8 @@ import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.colors.withUiAlphaLowTransparency
+import com.github.yuriybudiyev.sketches.core.ui.compat.navigationBarColorCompat
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteBookmarksConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
@@ -261,6 +263,7 @@ private fun ImageScreenLayout(
             }
         }
     }
+    val colorScheme = MaterialTheme.colorScheme
     val dimens = LocalDimens.current
     Box(modifier = modifier) {
         val layoutDirection = LocalLayoutDirection.current
@@ -322,8 +325,11 @@ private fun ImageScreenLayout(
                         bottom = contentPaddingBottom,
                     )
                     .background(
-                        color = MaterialTheme.colorScheme.background
-                            .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                        color = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                            colorScheme.background.withUiAlphaLowTransparency()
+                        } else {
+                            colorScheme.navigationBarColorCompat()
+                        },
                     )
                     .height(dimens.bottomBarHeight)
                     .fillMaxWidth(),
@@ -338,8 +344,7 @@ private fun ImageScreenLayout(
             SketchesTopAppBar(
                 modifier = Modifier.fillMaxWidth(),
                 text = itemsUpdated[currentIndex].file.name,
-                backgroundColor = MaterialTheme.colorScheme.background
-                    .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                backgroundColor = colorScheme.background.withUiAlphaLowTransparency(),
             ) {
                 SketchesAppBarActionButton(
                     iconRes =
@@ -672,8 +677,7 @@ private fun MediaBar(
                     .border(
                         width = dimens.mediaItemBorderThickness,
                         color = if (position == currentIndexUpdated) {
-                            colorScheme.onBackground
-                                .copy(alpha = SketchesColors.UiAlphaLowTransparency)
+                            colorScheme.onBackground.withUiAlphaLowTransparency()
                         } else {
                             colorScheme.onBackground
                                 .copy(alpha = SketchesColors.UiAlphaHighTransparency)
@@ -721,8 +725,7 @@ private fun MediaBar(
                             .align(alignment = Alignment.BottomStart)
                             .padding(all = dimens.mediaBarVideoIconPadding)
                             .background(
-                                color = colorScheme.background
-                                    .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                                color = colorScheme.background.withUiAlphaLowTransparency(),
                                 shape = CircleShape,
                             ),
                     )

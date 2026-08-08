@@ -58,6 +58,7 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.colors.withUiAlphaLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
@@ -293,8 +294,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
             .border(
                 width = dimens.mediaItemBorderThickness,
                 color = if (fileSelectedUpdated) {
-                    colorScheme.onBackground
-                        .copy(alpha = SketchesColors.UiAlphaLowTransparency)
+                    colorScheme.onBackground.withUiAlphaLowTransparency()
                 } else {
                     colorScheme.onBackground
                         .copy(alpha = SketchesColors.UiAlphaHighTransparency)
@@ -336,8 +336,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                     .align(alignment = Alignment.TopStart)
                     .padding(all = dimens.mediaGridIconPadding)
                     .background(
-                        color = colorScheme.background
-                            .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                        color = colorScheme.background.withUiAlphaLowTransparency(),
                         shape = CircleShape,
                     ),
             )
@@ -351,8 +350,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                     .align(alignment = Alignment.BottomStart)
                     .padding(all = dimens.mediaGridIconPadding)
                     .background(
-                        color = colorScheme.background
-                            .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+                        color = colorScheme.background.withUiAlphaLowTransparency(),
                         shape = CircleShape,
                     ),
             )

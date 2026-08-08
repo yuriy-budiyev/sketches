@@ -42,7 +42,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.colors.withUiAlphaLowTransparency
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,13 +51,8 @@ fun SketchesSlider(
     onValueChange: (Float) -> Unit,
     onValueChangeFinished: () -> Unit,
     modifier: Modifier = Modifier,
-    thumbColor: Color = MaterialTheme
-        .colorScheme
-        .onBackground,
-    trackColor: Color = MaterialTheme
-        .colorScheme
-        .onBackground
-        .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+    thumbColor: Color = MaterialTheme.colorScheme.onBackground,
+    trackColor: Color = MaterialTheme.colorScheme.onBackground.withUiAlphaLowTransparency(),
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val trackHeight = 4.dp

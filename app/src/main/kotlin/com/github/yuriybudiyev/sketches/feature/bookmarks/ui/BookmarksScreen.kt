@@ -68,7 +68,7 @@ import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaR
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateSetSaver
-import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.colors.withUiAlphaLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteBookmarksConfirmationDialog
@@ -266,8 +266,7 @@ private fun BookmarksScreen(
             } else {
                 stringResource(BookmarksNavRoute.titleRes)
             },
-            backgroundColor = MaterialTheme.colorScheme.background
-                .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+            backgroundColor = MaterialTheme.colorScheme.background.withUiAlphaLowTransparency(),
         ) {
             if (selectedFiles.isNotEmpty()) {
                 if (selectedFiles.size >= allFiles.size) {

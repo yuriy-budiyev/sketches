@@ -69,7 +69,7 @@ import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnReques
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateSetSaver
-import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.colors.withUiAlphaLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
@@ -266,8 +266,7 @@ fun ImagesScreen(
             } else {
                 stringResource(ImagesNavRoute.titleRes)
             },
-            backgroundColor = MaterialTheme.colorScheme.background
-                .copy(alpha = SketchesColors.UiAlphaLowTransparency),
+            backgroundColor = MaterialTheme.colorScheme.background.withUiAlphaLowTransparency(),
         ) {
             if (onRequestMediaAccess.isEnabled) {
                 SketchesAppBarActionButton(

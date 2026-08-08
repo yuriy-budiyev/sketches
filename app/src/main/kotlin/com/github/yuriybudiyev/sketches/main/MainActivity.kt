@@ -94,8 +94,10 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             @Suppress("DEPRECATION")
             window.statusBarColor = Color.TRANSPARENT
-            @Suppress("DEPRECATION")
-            window.navigationBarColor = Color.TRANSPARENT
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                @Suppress("DEPRECATION")
+                window.navigationBarColor = Color.TRANSPARENT
+            }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
