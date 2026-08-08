@@ -74,6 +74,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlin.math.abs
 
 @Composable
@@ -131,122 +134,74 @@ fun SketchesZoomableBox(
             )
         }.collect { (containerSize, contentSize) ->
             if (containerSize != Size.Zero && contentSize != Size.Zero) {
-                //TODO
-
-                /*currentScale.updateBounds(
-                    1F,
-                    maxZoomUpdated,
-                )
-                var newScale: Float
-                var newOffsetX: Float
-                var newOffsetY: Float
-                if (isInitialized) {
-                    newScale = currentScale.value
-                    newOffsetX = currentOffsetX.value
-                    newOffsetX = currentOffsetY.value
-                } else {
-
-                }*/
-
-                /*if (isInitialized) {
-                    if (currentIsZoomed) {
-                        val maxOffsetX =
-                            abs(containerSize.width - (contentSize.width * currentScale.value)) / 2F
-                        val maxOffsetY =
-                            abs(containerSize.height - (contentSize.height * currentScale.value)) / 2F
-                        val newOffsetX = currentOffsetX.value.fastCoerceIn(
-                            -maxOffsetX,
-                            +maxOffsetX,
-                        )
-                        val newOffsetY = currentOffsetY.value.fastCoerceIn(
-                            -maxOffsetY,
-                            +maxOffsetY,
-                        )
-                        currentOffsetX.snapTo(newOffsetX)
-                        currentOffsetY.snapTo(newOffsetY)
-                    } else {
-                        currentScale.snapTo(1F)
-                        currentOffsetX.snapTo(0F)
-                        currentOffsetX.snapTo(0F)
-                    }
-                } else {
-                    var targetScale = zoomState.scale
-                    var targetOffsetX = zoomState.offsetX
-                    var targetOffsetY = zoomState.offsetY
-                    currentScale.snapTo(targetScale)
-                    currentOffsetX.snapTo(targetOffsetX)
-                    currentOffsetY.snapTo(targetOffsetY)
+                invalidateZoom(
+                    target = Offset.Zero,
+                    shift = Offset.Zero,
+                    containerSize = containerSize,
+                    contentSize = contentSize,
+                    currentScale = currentScale.value,
+                    currentOffsetX = currentOffsetX.value,
+                    currentOffsetY = currentOffsetY.value,
+                    newScale = currentScale.value,
+                ) { newScale, newOffsetX, newOffsetY ->
+                    currentScale.snapTo(newScale)
+                    currentOffsetX.snapTo(newOffsetX)
+                    currentOffsetY.snapTo(newOffsetY)
                 }
-                currentIsZoomed = currentScale.value > 1F
-                isInitialized = true*/
             }
         }
     }
     suspend fun CoroutineScope.toggleZoom(
-        target: Offset = Offset.Zero,
+        offset: Offset = Offset.Zero,
         animate: Boolean = true,
     ) {
+        val scale = currentScale.value
+        val target: Offset
         val newScale: Float
-        val newOffsetX: Float
-        val newOffsetY: Float
-        if (currentScale.value == 1F) {
+        if (scale == 1F) {
+            target = offset
             newScale = doubleTapZoomUpdated
-            val scaledContentWidth = contentSize.width * newScale
-            val scaledContentHeight = contentSize.height * newScale
-            val unusedContainerWidth = containerSize.width - scaledContentWidth
-            val unusedContainerHeight = containerSize.height - scaledContentHeight
-            val relativeTarget = containerSize.center - target
-            newOffsetX = if (unusedContainerWidth < 0F) {
-                val maxOffset = unusedContainerWidth / 2F
-                (((currentOffsetX.value + relativeTarget.x) * newScale) - relativeTarget.x)
-                    .fastCoerceIn(
-                        +maxOffset,
-                        -maxOffset,
-                    )
-            } else {
-                0F
-            }
-            newOffsetY = if (unusedContainerHeight < 0F) {
-                val maxOffset = unusedContainerHeight / 2F
-                (((currentOffsetY.value + relativeTarget.y) * newScale) - relativeTarget.y)
-                    .fastCoerceIn(
-                        +maxOffset,
-                        -maxOffset,
-                    )
-            } else {
-                0F
-            }
         } else {
+            target = Offset.Zero
             newScale = 1F
-            newOffsetX = 0F
-            newOffsetY = 0F
         }
-        if (animate) {
-            val scaleJob = launch {
-                currentScale.animateTo(
-                    newScale,
-                    tween(),
-                )
+        invalidateZoom(
+            target = target,
+            shift = Offset.Zero,
+            containerSize = containerSize,
+            contentSize = contentSize,
+            currentScale = scale,
+            currentOffsetX = currentOffsetX.value,
+            currentOffsetY = currentOffsetY.value,
+            newScale = newScale,
+        ) { newScale, newOffsetX, newOffsetY ->
+            if (animate) {
+                val scaleJob = launch {
+                    currentScale.animateTo(
+                        newScale,
+                        tween(),
+                    )
+                }
+                val offsetXJob = launch {
+                    currentOffsetX.animateTo(
+                        newOffsetX,
+                        tween(),
+                    )
+                }
+                val offsetYJob = launch {
+                    currentOffsetY.animateTo(
+                        newOffsetY,
+                        tween(),
+                    )
+                }
+                scaleJob.join()
+                offsetXJob.join()
+                offsetYJob.join()
+            } else {
+                currentScale.snapTo(newScale)
+                currentOffsetX.snapTo(newOffsetX)
+                currentOffsetY.snapTo(newOffsetY)
             }
-            val offsetXJob = launch {
-                currentOffsetX.animateTo(
-                    newOffsetX,
-                    tween(),
-                )
-            }
-            val offsetYJob = launch {
-                currentOffsetY.animateTo(
-                    newOffsetY,
-                    tween(),
-                )
-            }
-            scaleJob.join()
-            offsetXJob.join()
-            offsetYJob.join()
-        } else {
-            currentScale.snapTo(newScale)
-            currentOffsetX.snapTo(newOffsetX)
-            currentOffsetY.snapTo(newOffsetY)
         }
     }
     LaunchedEffect(zoomState) {
@@ -282,40 +237,24 @@ fun SketchesZoomableBox(
                 detectTransformGestures(
                     onGesture = { centroid, pan, zoom ->
                         coroutineScope.launch {
-                            val newScale = (currentScale.value * zoom)
-                                .fastCoerceIn(
-                                    1F,
-                                    maxZoomUpdated,
-                                )
-                            val scaleFactor = newScale / currentScale.value
-                            val scaledContentWidth = contentSize.width * newScale
-                            val scaledContentHeight = contentSize.height * newScale
-                            val unusedContainerWidth = containerSize.width - scaledContentWidth
-                            val unusedContainerHeight = containerSize.height - scaledContentHeight
-                            val relativeCentroid = contentSize.center - centroid
-                            val newOffsetX = if (unusedContainerWidth < 0F) {
-                                val maxOffset = unusedContainerWidth / 2F
-                                (((currentOffsetX.value + relativeCentroid.x) * scaleFactor) - relativeCentroid.x + pan.x)
-                                    .fastCoerceIn(
-                                        +maxOffset,
-                                        -maxOffset,
-                                    )
-                            } else {
-                                0F
+                            val scale = currentScale.value
+                            invalidateZoom(
+                                target = centroid,
+                                shift = pan,
+                                containerSize = containerSize,
+                                contentSize = contentSize,
+                                currentScale = scale,
+                                currentOffsetX = currentOffsetX.value,
+                                currentOffsetY = currentOffsetY.value,
+                                newScale = (scale * zoom).fastCoerceIn(
+                                    minimumValue = 1F,
+                                    maximumValue = maxZoomUpdated,
+                                ),
+                            ) { newScale, newOffsetX, newOffsetY ->
+                                currentScale.snapTo(newScale)
+                                currentOffsetX.snapTo(newOffsetX)
+                                currentOffsetY.snapTo(newOffsetY)
                             }
-                            val newOffsetY = if (unusedContainerHeight < 0F) {
-                                val maxOffset = unusedContainerHeight / 2F
-                                (((currentOffsetY.value + relativeCentroid.y) * scaleFactor) - relativeCentroid.y + pan.y)
-                                    .fastCoerceIn(
-                                        +maxOffset,
-                                        -maxOffset,
-                                    )
-                            } else {
-                                0F
-                            }
-                            currentScale.snapTo(newScale)
-                            currentOffsetX.snapTo(newOffsetX)
-                            currentOffsetY.snapTo(newOffsetY)
                         }
                     },
                     onAfterGesture = { change ->
@@ -329,7 +268,10 @@ fun SketchesZoomableBox(
                 detectTapGestures(
                     onDoubleTap = { tapOffset ->
                         coroutineScope.launch {
-                            toggleZoom(tapOffset)
+                            toggleZoom(
+                                offset = tapOffset,
+                                animate = true,
+                            )
                         }
                     },
                     onTap = {
@@ -470,12 +412,56 @@ private data class ZoomStateImplConfig(
     val offsetY: Float,
 ): Parcelable
 
-/**
- * Slightly changed version of [androidx.compose.foundation.gestures.detectTransformGestures]
- */
-private suspend fun PointerInputScope.detectTransformGestures(
-    onGesture: (centroid: Offset, pan: Offset, zoom: Float) -> Unit,
-    onAfterGesture: (change: PointerInputChange) -> Unit,
+@OptIn(ExperimentalContracts::class)
+private inline fun invalidateZoom(
+    target: Offset,
+    shift: Offset,
+    containerSize: Size,
+    contentSize: Size,
+    currentScale: Float,
+    currentOffsetX: Float,
+    currentOffsetY: Float,
+    newScale: Float,
+    invalidate: (newScale: Float, newOffsetX: Float, newOffsetY: Float) -> Unit,
+) {
+    contract {
+        callsInPlace(
+            invalidate,
+            InvocationKind.EXACTLY_ONCE,
+        )
+    }
+    val scaleFactor = newScale / currentScale
+    val relativeTarget = containerSize.center - target
+    val maxOffsetX = (containerSize.width - (contentSize.width * newScale)) / 2F
+    val newOffsetX = if (maxOffsetX < 0F) {
+        (((currentOffsetX + relativeTarget.x) * scaleFactor) - relativeTarget.x + shift.x)
+            .fastCoerceIn(
+                minimumValue = +maxOffsetX,
+                maximumValue = -maxOffsetX,
+            )
+    } else {
+        0F
+    }
+    val maxOffsetY = (containerSize.height - (contentSize.height * newScale)) / 2F
+    val newOffsetY = if (maxOffsetY < 0F) {
+        (((currentOffsetY + relativeTarget.y) * scaleFactor) - relativeTarget.y + shift.y)
+            .fastCoerceIn(
+                minimumValue = +maxOffsetY,
+                maximumValue = -maxOffsetY,
+            )
+    } else {
+        0F
+    }
+    invalidate(
+        newScale,
+        newOffsetX,
+        newOffsetY,
+    )
+}
+
+private suspend inline fun PointerInputScope.detectTransformGestures(
+    crossinline onGesture: (centroid: Offset, pan: Offset, zoom: Float) -> Unit,
+    crossinline onAfterGesture: (change: PointerInputChange) -> Unit,
 ) {
     awaitEachGesture {
         var zoom = 1F
