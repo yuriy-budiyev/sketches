@@ -36,7 +36,6 @@ hilt = "2.60.1"
 guava = "33.6.0-android"
 okio = "3.18.1"
 coil = "3.5.0"
-junit = "4.13.2"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -162,7 +161,6 @@ coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref 
 coil-svg = { group = "io.coil-kt.coil3", name = "coil-svg", version.ref = "coil" }
 coil-gif = { group = "io.coil-kt.coil3", name = "coil-gif", version.ref = "coil" }
 coil-video = { group = "io.coil-kt.coil3", name = "coil-video", version.ref = "coil" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 [bundles]
 kotlin = [
@@ -283,13 +281,18 @@ androidx-room3 = [
 ]
 androidx-test = [
     "androidx-test-annotation",
+    "androidx-test-junit",
+    "androidx-test-junit-ktx"
+]
+androidx-test-instrumented = [
+    "androidx-test-annotation",
+    "androidx-test-junit",
+    "androidx-test-junit-ktx",
     "androidx-test-core",
     "androidx-test-core-ktx",
     "androidx-test-monitor",
     "androidx-test-rules",
     "androidx-test-runner",
-    "androidx-test-junit",
-    "androidx-test-junit-ktx",
     "androidx-test-espresso",
     "androidx-test-uiautomator",
 ]
