@@ -39,7 +39,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.LayoutScopeMarker
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -127,12 +126,7 @@ fun SketchesZoomableBox(
         }
     }
     LaunchedEffect(Unit) {
-        snapshotFlow {
-            SizeSpec(
-                container = containerSize,
-                content = contentSize,
-            )
-        }.collect { (containerSize, contentSize) ->
+        snapshotFlow { containerSize to contentSize }.collect { (containerSize, contentSize) ->
             if (containerSize != Size.Zero && contentSize != Size.Zero) {
                 invalidateZoom(
                     target = Offset.Zero,
@@ -205,26 +199,30 @@ fun SketchesZoomableBox(
         }
     }
     LaunchedEffect(zoomState) {
-        snapshotFlow { currentScale.value > 1F }.collect { zoomed ->
-            zoomState.isZoomed = zoomed
+        launch {
+            zoomState.toggleZoom.collect { toggleZoom ->
+                toggleZoom(animate = toggleZoom.animate)
+            }
         }
-    }
-    LaunchedEffect(zoomState) {
-        zoomState.toggleZoom.collect { toggleZoom ->
-            toggleZoom(animate = toggleZoom.animate)
+        launch {
+            snapshotFlow { currentScale.value > 1F }.collect { zoomed ->
+                zoomState.isZoomed = zoomed
+            }
         }
-    }
-    LaunchedEffect(zoomState) {
-        snapshotFlow {
-            ZoomSpec(
-                scale = currentScale.value,
-                offsetX = currentOffsetX.value,
-                offsetY = currentOffsetY.value,
-            )
-        }.collect { (scale, offsetX, offsetY) ->
-            zoomState.scale = scale
-            zoomState.offsetX = offsetX
-            zoomState.offsetY = offsetY
+        launch {
+            snapshotFlow { currentScale.value }.collect { scale ->
+                zoomState.scale = scale
+            }
+        }
+        launch {
+            snapshotFlow { currentOffsetX.value }.collect { offsetX ->
+                zoomState.offsetX = offsetX
+            }
+        }
+        launch {
+            snapshotFlow { currentOffsetY.value }.collect { offsetY ->
+                zoomState.offsetY = offsetY
+            }
         }
     }
     Box(
@@ -283,10 +281,9 @@ fun SketchesZoomableBox(
     ) {
         val scope = remember { SketchesZoomableBoxScopeImpl(this) }
         LaunchedEffect(Unit) {
-            snapshotFlow { scope.contentSize }
-                .collect { size ->
-                    contentSize = size
-                }
+            snapshotFlow { scope.contentSize }.collect { size ->
+                contentSize = size
+            }
         }
         scope.scale = currentScale.value
         scope.offsetX = currentOffsetX.value
@@ -320,19 +317,6 @@ private object Defaults {
     const val Scale = 1F
     const val Offset = 0F
 }
-
-@Immutable
-private data class ZoomSpec(
-    val scale: Float,
-    val offsetX: Float,
-    val offsetY: Float,
-)
-
-@Immutable
-private data class SizeSpec(
-    val container: Size,
-    val content: Size,
-)
 
 @Stable
 private class SketchesZoomableBoxScopeImpl(
