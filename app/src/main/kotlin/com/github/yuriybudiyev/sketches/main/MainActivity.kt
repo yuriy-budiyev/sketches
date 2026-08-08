@@ -141,21 +141,6 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
         super.onDestroy()
     }
 
-    override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                newBase
-            } else {
-                newBase.createConfigurationContext(
-                    Configuration(newBase.resources.configuration).apply {
-                        uiMode = (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or
-                            Configuration.UI_MODE_NIGHT_YES
-                    },
-                )
-            },
-        )
-    }
-
     override var isSystemBarsVisible: Boolean by mutableStateOf(true)
         private set
 
