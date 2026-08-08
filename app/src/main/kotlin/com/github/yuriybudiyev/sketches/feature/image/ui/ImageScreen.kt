@@ -211,7 +211,7 @@ private fun ImageScreenLayout(
     onDeleteBookmark: (mediaId: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var currentIndex by remember { mutableIntStateOf(index) }.apply {
+    var currentIndex by rememberSaveable { mutableIntStateOf(index) }.apply {
         intValue = intValue.coerceIn(
             0,
             items.size - 1,
@@ -234,9 +234,6 @@ private fun ImageScreenLayout(
     )
     var deleteImageDialogVisible by rememberSaveable { mutableStateOf(false) }
     var deleteBookmarkDialogVisible by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(index) {
-        pagerState.scrollToPage(index)
-    }
     LaunchedEffect(Unit) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
             currentIndex = page
