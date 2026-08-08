@@ -1,0 +1,9 @@
+<resources>
+
+    <style name="Theme.Sketches.Base.V29" parent="Theme.Sketches.Base.V27">
+        <item name="android:enforceStatusBarContrast">false</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
+    </style>
+
+    <style name="Theme.Sketches" parent="Theme.Sketches.Base.V29" />
+</resources>
