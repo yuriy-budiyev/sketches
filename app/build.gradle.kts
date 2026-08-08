@@ -75,7 +75,7 @@ androidComponents {
     onVariants(selector().withBuildType("release")) { variant ->
         variant.outputs.forEach { output ->
             @Suppress("UnstableApiUsage")
-            output.outputFileName.set("sketches-v${output.versionName.get()}.apk")
+            output.outputFileName.set("${rootProject.name}-v${output.versionName.get()}.apk")
         }
     }
 }
