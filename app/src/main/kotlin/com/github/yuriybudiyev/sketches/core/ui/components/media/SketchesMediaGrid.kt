@@ -57,8 +57,9 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
-import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
-import com.github.yuriybudiyev.sketches.core.ui.colors.withUiAlphaLowTransparency
+import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
+import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
+import com.github.yuriybudiyev.sketches.core.ui.colors.withMediumTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
@@ -294,10 +295,9 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
             .border(
                 width = dimens.mediaItemBorderThickness,
                 color = if (fileSelectedUpdated) {
-                    colorScheme.onBackground.withUiAlphaLowTransparency()
+                    colorScheme.onBackground.withLowTransparency()
                 } else {
-                    colorScheme.onBackground
-                        .copy(alpha = SketchesColors.UiAlphaHighTransparency)
+                    colorScheme.onBackground.withHighTransparency()
                 },
                 shape = RectangleShape,
             )
@@ -324,8 +324,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                 modifier = Modifier
                     .matchParentSize()
                     .background(
-                        color = colorScheme.background
-                            .copy(alpha = SketchesColors.UiAlphaMidTransparency),
+                        color = colorScheme.background.withMediumTransparency(),
                     ),
             )
             Icon(
@@ -336,7 +335,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                     .align(alignment = Alignment.TopStart)
                     .padding(all = dimens.mediaGridIconPadding)
                     .background(
-                        color = colorScheme.background.withUiAlphaLowTransparency(),
+                        color = colorScheme.background.withLowTransparency(),
                         shape = CircleShape,
                     ),
             )
@@ -350,7 +349,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                     .align(alignment = Alignment.BottomStart)
                     .padding(all = dimens.mediaGridIconPadding)
                     .background(
-                        color = colorScheme.background.withUiAlphaLowTransparency(),
+                        color = colorScheme.background.withLowTransparency(),
                         shape = CircleShape,
                     ),
             )

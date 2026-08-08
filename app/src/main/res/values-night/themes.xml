@@ -6,6 +6,7 @@
         <item name="android:statusBarColor">#FF000000</item>
         <item name="android:navigationBarColor">#FF000000</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:dialogTheme">@style/Theme.Sketches.Dialog</item>
     </style>
 

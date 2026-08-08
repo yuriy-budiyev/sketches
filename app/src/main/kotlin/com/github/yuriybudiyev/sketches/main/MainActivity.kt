@@ -87,17 +87,15 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
                 windowInsets,
             )
         }
-        val darkTheme = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
-            Configuration.UI_MODE_NIGHT_YES
+        val darkTheme =
+            resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
         insetsController.isAppearanceLightStatusBars = !darkTheme
         insetsController.isAppearanceLightNavigationBars = !darkTheme
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             @Suppress("DEPRECATION")
             window.statusBarColor = Color.TRANSPARENT
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                @Suppress("DEPRECATION")
-                window.navigationBarColor = Color.TRANSPARENT
-            }
+            @Suppress("DEPRECATION")
+            window.navigationBarColor = Color.TRANSPARENT
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -141,6 +139,21 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
     override fun onDestroy() {
         unregisterReceiver(shareReceiver)
         super.onDestroy()
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                newBase
+            } else {
+                newBase.createConfigurationContext(
+                    Configuration(newBase.resources.configuration).apply {
+                        uiMode = (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or
+                            Configuration.UI_MODE_NIGHT_YES
+                    },
+                )
+            },
+        )
     }
 
     override var isSystemBarsVisible: Boolean by mutableStateOf(true)

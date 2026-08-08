@@ -91,7 +91,7 @@ import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateSetSaver
 import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
-import com.github.yuriybudiyev.sketches.core.ui.colors.withUiAlphaLowTransparency
+import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
@@ -268,7 +268,7 @@ fun BucketScreen(
             } else {
                 bucketName
             },
-            backgroundColor = colorScheme.background.withUiAlphaLowTransparency(),
+            backgroundColor = colorScheme.background.withLowTransparency(),
         ) {
             if (selectedFiles.isNotEmpty()) {
                 if (selectedFiles.size >= allFiles.size) {
@@ -353,7 +353,7 @@ fun BucketScreen(
                             radius = 8.dp,
                             spread = 0.dp,
                             offset = DpOffset.Zero,
-                            color = SketchesColors.Shadow.withUiAlphaLowTransparency(),
+                            color = SketchesColors.Shadow.withLowTransparency(),
                         ),
                     ),
             ) {

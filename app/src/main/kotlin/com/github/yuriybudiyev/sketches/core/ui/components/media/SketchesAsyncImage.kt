@@ -59,7 +59,7 @@ import coil3.imageLoader
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
+import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
@@ -106,8 +106,7 @@ fun SketchesThumbnailAsyncImage(
                 this.role = Role.Image
             }
             .background(
-                color = colorScheme.onBackground
-                    .copy(alpha = SketchesColors.UiAlphaHighTransparency),
+                color = colorScheme.onBackground.withHighTransparency(),
                 shape = RectangleShape,
             )
             .then(modifier)

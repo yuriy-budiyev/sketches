@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.theme
 
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -37,10 +38,10 @@ import com.github.yuriybudiyev.sketches.core.ui.typography.SketchesTypography
 @NonRestartableComposable
 fun SketchesTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) {
+        colorScheme = if (isSystemInDarkTheme() || Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
             darkColorScheme(
-                primary = SketchesColors.Dark.Primary,
-                onPrimary = SketchesColors.Dark.OnPrimary,
+                primary = SketchesColors.Primary,
+                onPrimary = SketchesColors.OnPrimary,
                 primaryContainer = SketchesColors.Dark.PrimaryContainer,
                 onPrimaryContainer = SketchesColors.Dark.OnPrimaryContainer,
                 background = SketchesColors.Dark.Background,
@@ -54,8 +55,8 @@ fun SketchesTheme(content: @Composable () -> Unit) {
             )
         } else {
             lightColorScheme(
-                primary = SketchesColors.Light.Primary,
-                onPrimary = SketchesColors.Light.OnPrimary,
+                primary = SketchesColors.Primary,
+                onPrimary = SketchesColors.OnPrimary,
                 primaryContainer = SketchesColors.Light.PrimaryContainer,
                 onPrimaryContainer = SketchesColors.Light.OnPrimaryContainer,
                 background = SketchesColors.Light.Background,

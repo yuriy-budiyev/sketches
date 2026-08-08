@@ -66,7 +66,7 @@ import coil3.compose.asPainter
 import coil3.imageLoader
 import coil3.memory.MemoryCache
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.ui.colors.withUiAlphaLowTransparency
+import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
@@ -85,7 +85,7 @@ fun SketchesMediaPlayer(
     controllerEndPadding: Dp = 0.dp,
     controllerBottomPadding: Dp = 0.dp,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
-    controlsBackgroundColor: Color = backgroundColor.withUiAlphaLowTransparency(),
+    controlsBackgroundColor: Color = backgroundColor.withLowTransparency(),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
     enablePlaceholder: Boolean = true,
     placeholderMemoryCacheKey: MemoryCache.Key? = null,
@@ -349,7 +349,7 @@ fun SketchesMediaController(
             },
             modifier = Modifier.weight(weight = 1F),
             thumbColor = color,
-            trackColor = color.withUiAlphaLowTransparency(),
+            trackColor = color.withLowTransparency(),
         )
         Box(
             modifier = Modifier

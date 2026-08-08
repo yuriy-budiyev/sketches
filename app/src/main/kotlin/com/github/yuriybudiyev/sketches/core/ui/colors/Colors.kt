@@ -29,13 +29,16 @@ import androidx.compose.ui.graphics.Color
 
 object SketchesColors {
 
+    @get:Stable
+    val Primary = Color(0xFF6B69D6)
+
+    @get:Stable
+    val OnPrimary = Color(0xFFFFFFFF)
+
+    @get:Stable
+    val Shadow = Color(0xFF000000)
+
     object Light {
-
-        @get:Stable
-        val Primary = Color(0xFF6B69D6)
-
-        @get:Stable
-        val OnPrimary = Color(0xFFFFFFFF)
 
         @get:Stable
         val PrimaryContainer = Color(0x00000000)
@@ -71,12 +74,6 @@ object SketchesColors {
     object Dark {
 
         @get:Stable
-        val Primary = Color(0xFF6B69D6)
-
-        @get:Stable
-        val OnPrimary = Color(0xFFFFFFFF)
-
-        @get:Stable
         val PrimaryContainer = Color(0x00000000)
 
         @get:Stable
@@ -106,23 +103,16 @@ object SketchesColors {
         @get:Stable
         val OutlineVariant = Color(0xFF6B69D6)
     }
-
-    @get:Stable
-    val Shadow = Color(0xFF000000)
-
-    const val UiAlphaLowTransparency = 0.85F
-    const val UiAlphaMidTransparency = 0.35F
-    const val UiAlphaHighTransparency = 0.15F
 }
 
 @Stable
-fun Color.withUiAlphaLowTransparency(): Color =
-    this.copy(/*skip*/alpha = SketchesColors.UiAlphaLowTransparency)
+fun Color.withLowTransparency(): Color =
+    this.copy(alpha = 0.85F)
 
 @Stable
-fun Color.withUiAlphaMidTransparency(): Color =
-    this.copy(/*skip*/alpha = SketchesColors.UiAlphaMidTransparency)
+fun Color.withMediumTransparency(): Color =
+    this.copy(alpha = 0.35F)
 
 @Stable
-fun Color.withUiAlphaHighTransparency(): Color =
-    this.copy(/*skip*/alpha = SketchesColors.UiAlphaHighTransparency)
+fun Color.withHighTransparency(): Color =
+    this.copy(alpha = 0.15F)

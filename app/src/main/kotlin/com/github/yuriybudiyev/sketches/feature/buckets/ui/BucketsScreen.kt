@@ -84,8 +84,9 @@ import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateListSaver
 import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateSetSaver
-import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
-import com.github.yuriybudiyev.sketches.core.ui.colors.withUiAlphaLowTransparency
+import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
+import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
+import com.github.yuriybudiyev.sketches.core.ui.colors.withMediumTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
@@ -301,7 +302,7 @@ fun BucketsScreen(
             } else {
                 stringResource(BucketsNavRoute.titleRes)
             },
-            backgroundColor = MaterialTheme.colorScheme.background.withUiAlphaLowTransparency(),
+            backgroundColor = MaterialTheme.colorScheme.background.withLowTransparency(),
         ) {
             if (selectedBuckets.isNotEmpty()) {
                 if (selectedBuckets.size >= allBuckets.size) {
@@ -420,10 +421,9 @@ private fun BucketsScreenLayout(
                         .border(
                             width = dimens.mediaItemBorderThickness,
                             color = if (bucketSelectedUpdated) {
-                                colorScheme.onBackground.withUiAlphaLowTransparency()
+                                colorScheme.onBackground.withLowTransparency()
                             } else {
-                                colorScheme.onBackground
-                                    .copy(alpha = SketchesColors.UiAlphaHighTransparency)
+                                colorScheme.onBackground.withHighTransparency()
                             },
                             shape = RectangleShape,
                         )
@@ -441,8 +441,7 @@ private fun BucketsScreenLayout(
                             modifier = Modifier
                                 .matchParentSize()
                                 .background(
-                                    color = colorScheme.background
-                                        .copy(alpha = SketchesColors.UiAlphaMidTransparency),
+                                    color = colorScheme.background.withMediumTransparency(),
                                 ),
                         )
                         Icon(
@@ -453,7 +452,7 @@ private fun BucketsScreenLayout(
                                 .align(alignment = Alignment.TopStart)
                                 .padding(all = dimens.mediaGridIconPadding)
                                 .background(
-                                    color = colorScheme.background.withUiAlphaLowTransparency(),
+                                    color = colorScheme.background.withLowTransparency(),
                                     shape = CircleShape,
                                 ),
                         )

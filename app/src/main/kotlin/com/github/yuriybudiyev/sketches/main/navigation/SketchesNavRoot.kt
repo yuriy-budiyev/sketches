@@ -97,8 +97,7 @@ import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateListSaver
-import com.github.yuriybudiyev.sketches.core.ui.colors.withUiAlphaLowTransparency
-import com.github.yuriybudiyev.sketches.core.ui.compat.navigationBarColorCompat
+import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.registerBookmarksNavRoute
@@ -212,8 +211,7 @@ fun SketchesNavRoot(
                         viewModelStoreViewModel.getOrCreateViewModelStore(navEntry.contentKey)
                     val savedStateRegistryOwner = LocalSavedStateRegistryOwner.current
                     val childViewModelStoreOwner = remember {
-                        object:
-                            ViewModelStoreOwner,
+                        object: ViewModelStoreOwner,
                             SavedStateRegistryOwner by savedStateRegistryOwner,
                             HasDefaultViewModelProviderFactory {
 
@@ -322,7 +320,7 @@ fun SketchesNavRoot(
                         Row(
                             modifier = Modifier
                                 .background(
-                                    color = colorScheme.navigationBarColorCompat(),
+                                    color = colorScheme.background.withLowTransparency(),
                                     shape = RectangleShape,
                                 )
                                 .fillMaxSize(),
@@ -379,15 +377,14 @@ fun SketchesNavRoot(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(
-                                WindowInsets.navigationBars
-                                    .asPaddingValues()
+                                WindowInsets.navigationBars.asPaddingValues()
                                     .calculateBottomPadding(),
                             ),
                     ) {
                         Box(
                             modifier = Modifier
                                 .background(
-                                    color = colorScheme.background.withUiAlphaLowTransparency(),
+                                    color = colorScheme.background.withLowTransparency(),
                                     shape = RectangleShape,
                                 )
                                 .fillMaxSize(),
