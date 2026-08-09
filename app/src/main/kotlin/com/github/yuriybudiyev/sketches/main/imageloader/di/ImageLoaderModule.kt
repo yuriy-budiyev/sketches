@@ -31,6 +31,7 @@ import coil3.disk.DiskCache
 import coil3.gif.AnimatedImageDecoder
 import coil3.gif.GifDecoder
 import coil3.memory.MemoryCache
+import coil3.request.allowHardware
 import coil3.serviceLoaderEnabled
 import coil3.svg.SvgDecoder
 import coil3.video.VideoFrameDecoder
@@ -58,7 +59,7 @@ object ImageLoaderModule {
     ): ImageLoader {
         val imageLoaderDispatcher = ImageLoaderExecutor().asCoroutineDispatcher()
         val memoryCache = MemoryCache.Builder()
-            .maxSizeBytes(context.getMaxMemory() / 2L)
+            .maxSizeBytes(context.getMaxMemory() / 4L)
             .strongReferencesEnabled(true)
             .weakReferencesEnabled(true)
             .build()
@@ -72,6 +73,7 @@ object ImageLoaderModule {
             .coroutineContext(imageLoaderDispatcher)
             .memoryCache(memoryCache)
             .diskCache(diskCache)
+            .allowHardware(true)
             .components {
                 add(
                     LocalThumbnailDiskCacheInterceptor(
