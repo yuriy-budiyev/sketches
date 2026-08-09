@@ -58,6 +58,7 @@ import coil3.compose.rememberConstraintsSizeResolver
 import coil3.imageLoader
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
+import coil3.size.Scale
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
@@ -85,6 +86,7 @@ fun SketchesThumbnailAsyncImage(
             .memoryCacheKey(memoryCacheKey)
             .data(uri)
             .size(sizeResolver)
+            .scale(Scale.FILL)
             .build()
     }
     var painterState by remember {
