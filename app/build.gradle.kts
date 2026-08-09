@@ -1,3 +1,4 @@
+import com.android.build.api.variant.VariantOutputConfiguration
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -72,10 +73,11 @@ android {
 
 androidComponents {
     onVariants(selector().withBuildType("release")) { variant ->
-        variant.outputs.forEach { output ->
-            @Suppress("UnstableApiUsage")
-            output.outputFileName.set("${rootProject.name}-v${output.versionName.get()}.apk")
+        val mainOutput = variant.outputs.single { output ->
+            output.outputType == VariantOutputConfiguration.OutputType.SINGLE
         }
+        @Suppress("UnstableApiUsage")
+        mainOutput.outputFileName.set("${rootProject.name}-v${mainOutput.versionName.get()}.apk")
     }
 }
 
