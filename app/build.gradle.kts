@@ -73,11 +73,11 @@ android {
 
 androidComponents {
     onVariants(selector().withBuildType("release")) { variant ->
-        val mainOutput = variant.outputs.single { output ->
+        val output = variant.outputs.single { output ->
             output.outputType == VariantOutputConfiguration.OutputType.SINGLE
         }
         @Suppress("UnstableApiUsage")
-        mainOutput.outputFileName.set("${rootProject.name}-v${mainOutput.versionName.get()}.apk")
+        output.outputFileName.set("${rootProject.name}-v${output.versionName.get()}.apk")
     }
 }
 
