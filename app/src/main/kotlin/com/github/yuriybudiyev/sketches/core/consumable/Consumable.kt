@@ -30,9 +30,8 @@ import kotlinx.coroutines.sync.Mutex
  * Container with value that can be consumed once.
  * Safe to [consume] on multithreaded dispatchers.
  */
-class Consumable<T> private constructor(value: T) {
+class Consumable<T> private constructor(value: Any?) {
 
-    @Suppress("UNCHECKED_CAST")
     suspend fun consume(): T? {
         var value: Any? = valueInternal
         if (value === Empty) {
@@ -50,6 +49,7 @@ class Consumable<T> private constructor(value: T) {
                 consumeMutex.unlock()
             }
         }
+        @Suppress("UNCHECKED_CAST")
         return value as T?
     }
 
@@ -68,8 +68,7 @@ class Consumable<T> private constructor(value: T) {
         fun <T> from(value: T): Consumable<T> =
             Consumable(value)
 
-        @Suppress("UNCHECKED_CAST")
         fun <T> empty(): Consumable<T> =
-            Consumable(Empty) as Consumable<T>
+            Consumable(Empty)
     }
 }
