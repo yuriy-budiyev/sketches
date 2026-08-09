@@ -36,7 +36,7 @@ object SketchesColors {
     val OnPrimary = Color(0xFFFFFFFF)
 
     @get:Stable
-    val Shadow = Color(0xFF000000)
+    val Scrim = Color(0xFF000000)
 
     object Light {
 

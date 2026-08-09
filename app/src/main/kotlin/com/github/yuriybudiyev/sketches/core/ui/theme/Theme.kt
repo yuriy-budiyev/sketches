@@ -41,6 +41,7 @@ fun SketchesTheme(content: @Composable () -> Unit) {
             darkColorScheme(
                 primary = SketchesColors.Primary,
                 onPrimary = SketchesColors.OnPrimary,
+                scrim = SketchesColors.Scrim,
                 primaryContainer = SketchesColors.Dark.PrimaryContainer,
                 onPrimaryContainer = SketchesColors.Dark.OnPrimaryContainer,
                 background = SketchesColors.Dark.Background,
@@ -56,6 +57,7 @@ fun SketchesTheme(content: @Composable () -> Unit) {
             lightColorScheme(
                 primary = SketchesColors.Primary,
                 onPrimary = SketchesColors.OnPrimary,
+                scrim = SketchesColors.Scrim,
                 primaryContainer = SketchesColors.Light.PrimaryContainer,
                 onPrimaryContainer = SketchesColors.Light.OnPrimaryContainer,
                 background = SketchesColors.Light.Background,

@@ -90,7 +90,6 @@ import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaR
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateSetSaver
-import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
@@ -353,7 +352,7 @@ fun BucketScreen(
                             radius = 8.dp,
                             spread = 0.dp,
                             offset = DpOffset.Zero,
-                            color = SketchesColors.Shadow.withLowTransparency(),
+                            color = colorScheme.scrim.withLowTransparency(),
                         ),
                     ),
             ) {
