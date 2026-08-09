@@ -30,7 +30,7 @@ import kotlin.math.ceil
 /**
  * Backport of [java.util.LinkedHashSet.newLinkedHashSet] for older APIs
  */
-fun <E> newLinkedHashSet(numElements: Int): LinkedHashSet<E> =
+fun <E> newLinkedHashSet(numElements: Int): java.util.LinkedHashSet<E> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
         java.util.LinkedHashSet.newLinkedHashSet(numElements)
     } else {
@@ -43,7 +43,7 @@ fun <E> newLinkedHashSet(numElements: Int): LinkedHashSet<E> =
 /**
  * Backport of [java.util.LinkedHashMap.newLinkedHashMap] for older APIs
  */
-fun <K, V> newLinkedHashMap(numElements: Int): LinkedHashMap<K, V> =
+fun <K, V> newLinkedHashMap(numElements: Int): java.util.LinkedHashMap<K, V> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
         java.util.LinkedHashMap.newLinkedHashMap(numElements)
     } else {
