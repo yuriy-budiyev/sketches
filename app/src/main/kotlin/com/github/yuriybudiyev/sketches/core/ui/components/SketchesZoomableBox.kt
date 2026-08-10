@@ -68,6 +68,7 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastCoerceIn
 import androidx.compose.ui.util.fastForEach
+import com.github.yuriybudiyev.sketches.core.compose.area
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -91,12 +92,12 @@ fun SketchesZoomableBox(
         from = 1.0,
         fromInclusive = true,
     )
-    maxZoom: Float = 10F,
+    maxZoom: Float = 20F,
     @FloatRange(
         from = 1.0,
         fromInclusive = true,
     )
-    doubleTapZoom: Float = 2.5F,
+    doubleTapZoom: Float = 2F,
     content: @Composable SketchesZoomableBoxScope.() -> Unit,
 ) {
     require(zoomState is ZoomStateImpl) {
@@ -154,7 +155,10 @@ fun SketchesZoomableBox(
         val newScale: Float
         if (scale == 1F) {
             target = offset
-            newScale = doubleTapZoomUpdated
+            newScale = (containerSize.area / contentSize.area).fastCoerceIn(
+                minimumValue = doubleTapZoomUpdated,
+                maximumValue = maxZoomUpdated,
+            )
         } else {
             target = Offset.Zero
             newScale = 1F
