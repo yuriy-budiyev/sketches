@@ -295,18 +295,7 @@ fun BucketScreen(
                     iconRes = R.drawable.ic_delete,
                     description = stringResource(R.string.delete_selected),
                     onClick = {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            coroutineScope.launch {
-                                deleteRequestLauncher.launchDeleteMediaRequest(
-                                    contextUpdated,
-                                    allFiles
-                                        .filterByIds(selectedFiles.toSet())
-                                        .map { file -> file.uri },
-                                )
-                            }
-                        } else {
-                            deleteDialogVisible = true
-                        }
+                        deleteDialogVisible = true
                     },
                 )
                 val shareDescription = stringResource(R.string.share_selected)
@@ -385,9 +374,20 @@ fun BucketScreen(
                 count = selectedFiles.size,
                 onDelete = {
                     deleteDialogVisible = false
-                    onDeleteMediaUpdated(allFiles.filterByIds(selectedFiles.toSet()))
-                    coroutineScope.launch {
-                        selectedFiles.clear()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        coroutineScope.launch {
+                            deleteRequestLauncher.launchDeleteMediaRequest(
+                                contextUpdated,
+                                allFiles
+                                    .filterByIds(selectedFiles.toSet())
+                                    .map { file -> file.uri },
+                            )
+                        }
+                    } else {
+                        onDeleteMediaUpdated(allFiles.filterByIds(selectedFiles.toSet()))
+                        coroutineScope.launch {
+                            selectedFiles.clear()
+                        }
                     }
                 },
                 onDismiss = {

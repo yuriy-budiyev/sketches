@@ -193,17 +193,10 @@ fun BucketsScreen(
                         )
                     }
                     is BucketsScreenViewModel.UiState.Buckets.Action.Delete -> {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            deleteRequestLauncher.launchDeleteMediaRequest(
-                                contextUpdated,
-                                action.files.map { file -> file.uri },
-                            )
-                        } else {
-                            if (deleteDialogUris.isNotEmpty()) {
-                                deleteDialogUris.clear()
-                            }
-                            deleteDialogUris.addAll(action.files.map { file -> file.uri })
+                        if (deleteDialogUris.isNotEmpty()) {
+                            deleteDialogUris.clear()
                         }
+                        deleteDialogUris.addAll(action.files.map { file -> file.uri })
                     }
                     else -> {
                         // Do nothing
@@ -347,10 +340,20 @@ fun BucketsScreen(
             SketchesDeleteImagesConfirmationDialog(
                 count = deleteDialogUris.size,
                 onDelete = {
-                    onDeleteMediaUpdated(deleteDialogUris.toList())
-                    coroutineScope.launch {
-                        deleteDialogUris.clear()
-                        selectedBuckets.clear()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        deleteRequestLauncher.launchDeleteMediaRequest(
+                            contextUpdated,
+                            deleteDialogUris.toList(),
+                        )
+                        coroutineScope.launch {
+                            deleteDialogUris.clear()
+                        }
+                    } else {
+                        onDeleteMediaUpdated(deleteDialogUris.toList())
+                        coroutineScope.launch {
+                            deleteDialogUris.clear()
+                            selectedBuckets.clear()
+                        }
                     }
                 },
                 onDismiss = {

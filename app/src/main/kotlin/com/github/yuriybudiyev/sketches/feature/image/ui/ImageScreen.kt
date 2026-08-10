@@ -370,16 +370,7 @@ private fun ImageScreenLayout(
                     iconRes = R.drawable.ic_delete,
                     description = stringResource(R.string.delete_image),
                     onClick = {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            coroutineScope.launch {
-                                deleteRequestLauncher.launchDeleteMediaRequest(
-                                    contextUpdated,
-                                    listOf(itemsUpdated[currentIndex].file.uri),
-                                )
-                            }
-                        } else {
-                            deleteImageDialogVisible = true
-                        }
+                        deleteImageDialogVisible = true
                     },
                 )
                 val shareDescription = stringResource(R.string.share_image)
@@ -403,11 +394,20 @@ private fun ImageScreenLayout(
             SketchesDeleteImagesConfirmationDialog(
                 count = 1,
                 onDelete = {
-                    deleteImageDialogVisible = false
-                    onDeleteImageUpdated(
-                        currentIndex,
-                        itemsUpdated[currentIndex].file,
-                    )
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        coroutineScope.launch {
+                            deleteRequestLauncher.launchDeleteMediaRequest(
+                                contextUpdated,
+                                listOf(itemsUpdated[currentIndex].file.uri),
+                            )
+                        }
+                    } else {
+                        deleteImageDialogVisible = false
+                        onDeleteImageUpdated(
+                            currentIndex,
+                            itemsUpdated[currentIndex].file,
+                        )
+                    }
                 },
                 onDismiss = {
                     deleteImageDialogVisible = false

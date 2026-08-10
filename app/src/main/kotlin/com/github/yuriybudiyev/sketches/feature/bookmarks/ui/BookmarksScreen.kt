@@ -301,18 +301,7 @@ private fun BookmarksScreen(
                     iconRes = R.drawable.ic_delete,
                     description = stringResource(R.string.delete_selected),
                     onClick = {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            coroutineScope.launch {
-                                deleteRequestLauncher.launchDeleteMediaRequest(
-                                    contextUpdated,
-                                    allFiles
-                                        .filterByIds(selectedFiles.toSet())
-                                        .map { file -> file.uri },
-                                )
-                            }
-                        } else {
-                            deleteFilesDialogVisible = true
-                        }
+                        deleteFilesDialogVisible = true
                     },
                 )
                 val shareDescription = stringResource(R.string.share_selected)
@@ -355,9 +344,20 @@ private fun BookmarksScreen(
                 count = selectedFiles.size,
                 onDelete = {
                     deleteBookmarksDialogVisible = false
-                    onDeleteBookmarksUpdated(selectedFiles.toSet())
-                    coroutineScope.launch {
-                        selectedFiles.clear()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        coroutineScope.launch {
+                            deleteRequestLauncher.launchDeleteMediaRequest(
+                                contextUpdated,
+                                allFiles
+                                    .filterByIds(selectedFiles.toSet())
+                                    .map { file -> file.uri },
+                            )
+                        }
+                    } else {
+                        onDeleteBookmarksUpdated(selectedFiles.toSet())
+                        coroutineScope.launch {
+                            selectedFiles.clear()
+                        }
                     }
                 },
                 onDismiss = {
