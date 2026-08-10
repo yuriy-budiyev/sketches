@@ -394,6 +394,7 @@ private fun ImageScreenLayout(
             SketchesDeleteImagesConfirmationDialog(
                 count = 1,
                 onDelete = {
+                    deleteImageDialogVisible = false
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         coroutineScope.launch {
                             deleteRequestLauncher.launchDeleteMediaRequest(
@@ -402,7 +403,6 @@ private fun ImageScreenLayout(
                             )
                         }
                     } else {
-                        deleteImageDialogVisible = false
                         onDeleteImageUpdated(
                             currentIndex,
                             itemsUpdated[currentIndex].file,
