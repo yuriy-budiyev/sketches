@@ -24,12 +24,24 @@
 
 package com.github.yuriybudiyev.sketches.core.data.utils
 
+import android.net.Uri
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 
 @JvmName("filterFilesByIds")
 fun Collection<MediaStoreFile>.filterByIds(ids: Collection<Long>): List<MediaStoreFile> =
     filterTo(ArrayList(size.coerceAtMost(ids.size))) { file -> ids.contains(file.id) }
+
+@JvmName("filterFilesByIdsToUris")
+fun Collection<MediaStoreFile>.filterByIdsToUris(ids: Collection<Long>): List<Uri> {
+    val uris = ArrayList<Uri>(this.size.coerceAtMost(ids.size))
+    for (file in this) {
+        if (ids.contains(file.id)) {
+            uris.add(file.uri)
+        }
+    }
+    return uris
+}
 
 @JvmName("filterBucketsByIds")
 fun Collection<MediaStoreBucket>.filterByIds(ids: Collection<Long>): List<MediaStoreBucket> =

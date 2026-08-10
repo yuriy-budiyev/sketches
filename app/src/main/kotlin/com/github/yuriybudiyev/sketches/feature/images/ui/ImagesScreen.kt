@@ -61,6 +61,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.utils.filterByIds
+import com.github.yuriybudiyev.sketches.core.data.utils.filterByIdsToUris
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
@@ -70,6 +71,7 @@ import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateSetSaver
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
+import com.github.yuriybudiyev.sketches.core.ui.components.BatchDeleteState
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
@@ -79,6 +81,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesGroupingMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.calculateMediaIndexWithGroups
+import com.github.yuriybudiyev.sketches.core.ui.components.rememberBatchDeleteState
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemClosestEdge
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
@@ -120,16 +123,43 @@ fun ImagesScreen(
     val selectedFiles =
         rememberSaveable(saver = SnapshotStateSetSaver()) { SnapshotStateSet<Long>() }
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
+    val batchDeleteState = rememberBatchDeleteState()
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->
-            if (resultCode == Activity.RESULT_OK) {
-                coroutineScope.launch {
-                    selectedFiles.clear()
+            coroutineScope.launch {
+                if (resultCode == Activity.RESULT_OK) {
+                    batchDeleteState.proceed()
+                } else {
+                    batchDeleteState.reset()
                 }
             }
         },
     )
+    LaunchedEffect(Unit) {
+        batchDeleteState.action.collect { action ->
+            when (action) {
+                is BatchDeleteState.Action.Delete -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        coroutineScope.launch {
+                            deleteRequestLauncher.launchDeleteMediaRequest(
+                                contextUpdated,
+                                action.uris,
+                            )
+                        }
+                    }
+                }
+                is BatchDeleteState.Action.Finish -> {
+                    coroutineScope.launch {
+                        selectedFiles.clear()
+                    }
+                }
+                is BatchDeleteState.Action.Reset -> {
+                    // Do nothing
+                }
+            }
+        }
+    }
     DisposableEffect(shareManagerUpdated) {
         val shareManager = shareManagerUpdated
         shareManager.registerOnSharedListener(ShareAction) {
@@ -333,12 +363,7 @@ fun ImagesScreen(
                     deleteDialogVisible = false
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         coroutineScope.launch {
-                            deleteRequestLauncher.launchDeleteMediaRequest(
-                                contextUpdated,
-                                allFiles
-                                    .filterByIds(selectedFiles.toSet())
-                                    .map { file -> file.uri },
-                            )
+                            batchDeleteState.start(allFiles.filterByIdsToUris(selectedFiles.toSet()))
                         }
                     } else {
                         onDeleteMediaUpdated(allFiles.filterByIds(selectedFiles.toSet()))
