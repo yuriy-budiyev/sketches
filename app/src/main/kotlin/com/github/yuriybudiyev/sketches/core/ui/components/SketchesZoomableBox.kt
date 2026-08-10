@@ -68,7 +68,6 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastCoerceIn
 import androidx.compose.ui.util.fastForEach
-import com.github.yuriybudiyev.sketches.core.compose.area
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -399,6 +398,10 @@ private data class ZoomStateImplConfig(
     val offsetX: Float,
     val offsetY: Float,
 ): Parcelable
+
+@get:Stable
+private inline val Size.area: Float
+    get() = width * height
 
 @OptIn(ExperimentalContracts::class)
 private inline fun invalidateZoom(
