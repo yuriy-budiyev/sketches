@@ -124,6 +124,7 @@ fun ImagesScreen(
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     var allFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptyList()) }
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
+    var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val mediaBatchState = rememberMediaBatchState()
     val deleteRequestLauncher = rememberLauncherForActivityResult(
@@ -131,6 +132,7 @@ fun ImagesScreen(
         onResult = { (resultCode, _) ->
             coroutineScope.launch {
                 if (resultCode == Activity.RESULT_OK) {
+                    selectedFiles.removeAll(currentBatch)
                     mediaBatchState.proceed()
                 } else {
                     mediaBatchState.reset()
@@ -149,6 +151,7 @@ fun ImagesScreen(
                         is BatchAction.Delete -> {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                                 coroutineScope.launch {
+                                    currentBatch = action.ids
                                     deleteRequestLauncher.launchDeleteMediaRequest(
                                         contextUpdated,
                                         action.uris,
@@ -161,10 +164,13 @@ fun ImagesScreen(
                 is MediaBatchState.Action.Finish -> {
                     coroutineScope.launch {
                         selectedFiles.clear()
+                        currentBatch = emptySet()
                     }
                 }
                 is MediaBatchState.Action.Reset -> {
-                    // Do nothing
+                    coroutineScope.launch {
+                        currentBatch = emptySet()
+                    }
                 }
             }
         }
