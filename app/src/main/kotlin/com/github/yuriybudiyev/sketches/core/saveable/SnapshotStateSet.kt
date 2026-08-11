@@ -32,19 +32,30 @@ import androidx.compose.runtime.snapshots.SnapshotStateSet
 
 @Composable
 inline fun <T: Any> rememberSaveableSnapshotStateSet(
+    vararg inputs: Any?,
     crossinline onInit: SnapshotStateSet<T>.() -> Unit = {},
 ): SnapshotStateSet<T> =
-    rememberSaveable(saver = SnapshotStateSetSaver()) { SnapshotStateSet<T>().apply(onInit) }
+    @Suppress("UNCHECKED_CAST")
+    rememberSaveable(
+        inputs = inputs,
+        saver = snapshotStateSetSaver(),
+    ) {
+        SnapshotStateSet<T>().apply(onInit)
+    }
 
-class SnapshotStateSetSaver<T: Any>: Saver<SnapshotStateSet<T>, ArrayList<T>> {
+@Suppress("UNCHECKED_CAST")
+fun <T: Any> snapshotStateSetSaver(): Saver<SnapshotStateSet<T>, ArrayList<T>> =
+    SnapshotStateSetSaver as Saver<SnapshotStateSet<T>, ArrayList<T>>
 
-    override fun SaverScope.save(value: SnapshotStateSet<T>): ArrayList<T>? {
+private object SnapshotStateSetSaver: Saver<SnapshotStateSet<Any>, ArrayList<Any>> {
+
+    override fun SaverScope.save(value: SnapshotStateSet<Any>): ArrayList<Any>? {
         val snapshot = value.toSet()
         val snapshotSize = snapshot.size
         if (snapshotSize == 0) {
             return null
         }
-        val arrayList = ArrayList<T>(snapshotSize)
+        val arrayList = ArrayList<Any>(snapshotSize)
         for (element in snapshot) {
             require(canBeSaved(element)) { "Element can't be saved: $element" }
             arrayList.add(element)
@@ -52,8 +63,8 @@ class SnapshotStateSetSaver<T: Any>: Saver<SnapshotStateSet<T>, ArrayList<T>> {
         return arrayList
     }
 
-    override fun restore(value: ArrayList<T>): SnapshotStateSet<T> {
-        val set = SnapshotStateSet<T>()
+    override fun restore(value: ArrayList<Any>): SnapshotStateSet<Any> {
+        val set = SnapshotStateSet<Any>()
         set.addAll(value)
         return set
     }

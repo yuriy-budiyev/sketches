@@ -40,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
@@ -74,13 +75,19 @@ fun rememberSketchesMediaState(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): SketchesMediaState {
     val appContext = LocalContext.current.applicationContext
+    val saver = remember(
+        appContext,
+        coroutineScope,
+    ) {
+        SketchesMediaStateImplSaver(
+            appContext,
+            coroutineScope,
+        )
+    }
     return rememberSaveable(
         appContext,
         coroutineScope,
-        saver = SketchesMediaStateImplSaver(
-            appContext,
-            coroutineScope,
-        ),
+        saver = saver,
     ) {
         SketchesMediaStateImpl(
             appContext,
@@ -605,6 +612,16 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
     }
 }
 
+@Parcelize
+private data class SketchesMediaStateConfig(
+    val isPlaying: Boolean,
+    val isVolumeEnabled: Boolean,
+    val isRepeatEnabled: Boolean,
+    val position: Long,
+    val uri: Uri?,
+    val isPlayedAtLeastOnce: Boolean,
+): Parcelable
+
 private class SketchesMediaStateImplSaver(
     private val context: Context,
     private val coroutineScope: CoroutineScope,
@@ -649,16 +666,6 @@ private class SketchesMediaStateImplSaver(
             isPlayedAtLeastOnce = value.isPlayedAtLeastOnce,
         )
 }
-
-@Parcelize
-private data class SketchesMediaStateConfig(
-    val isPlaying: Boolean,
-    val isVolumeEnabled: Boolean,
-    val isRepeatEnabled: Boolean,
-    val position: Long,
-    val uri: Uri?,
-    val isPlayedAtLeastOnce: Boolean,
-): Parcelable
 
 @kotlin.OptIn(ExperimentalContracts::class)
 private inline fun Player.withCheck(

@@ -70,9 +70,15 @@ val LocalNavResultStore: ProvidableCompositionLocal<NavResultStore> =
 
 @Composable
 fun rememberNavResultStore(): NavResultStore =
-    rememberSaveable(saver = ResultStoreSaver()) { NavResultStore() }
+    rememberSaveable(saver = ResultStoreSaver) { NavResultStore() }
 
-private class ResultStoreSaver: Saver<NavResultStore, ArrayList<KeyValue>> {
+@Parcelize
+private class KeyValue(
+    val key: String,
+    val value: Parcelable,
+): Parcelable
+
+private object ResultStoreSaver: Saver<NavResultStore, ArrayList<KeyValue>> {
 
     override fun SaverScope.save(value: NavResultStore): ArrayList<KeyValue>? {
         val snapshot = value.storage.toMap()
@@ -99,9 +105,3 @@ private class ResultStoreSaver: Saver<NavResultStore, ArrayList<KeyValue>> {
             }
         }
 }
-
-@Parcelize
-private class KeyValue(
-    val key: String,
-    val value: Parcelable,
-): Parcelable

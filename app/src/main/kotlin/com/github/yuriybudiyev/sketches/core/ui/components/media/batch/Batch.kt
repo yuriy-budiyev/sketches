@@ -41,7 +41,7 @@ import kotlinx.parcelize.Parcelize
 
 @Composable
 fun rememberMediaBatchState(): MediaBatchState =
-    rememberSaveable(saver = MediaBatchStateImplSaver()) { MediaBatchStateImpl() }
+    rememberSaveable(saver = MediaBatchStateImplSaver) { MediaBatchStateImpl() }
 
 fun MediaStoreFile.toMediaDescriptor(): MediaDescriptor =
     MediaDescriptor(
@@ -167,7 +167,7 @@ private data class MediaBatchStateImplConfig(
     var allMedia: List<MediaDescriptor>,
 ): Parcelable
 
-private class MediaBatchStateImplSaver: Saver<MediaBatchStateImpl, MediaBatchStateImplConfig> {
+private object MediaBatchStateImplSaver: Saver<MediaBatchStateImpl, MediaBatchStateImplConfig> {
 
     override fun SaverScope.save(value: MediaBatchStateImpl): MediaBatchStateImplConfig =
         MediaBatchStateImplConfig(

@@ -80,7 +80,7 @@ import kotlin.math.abs
 
 @Composable
 fun rememberZoomState(): ZoomState =
-    rememberSaveable(saver = ZoomStateImplSaver()) { ZoomStateImpl() }
+    rememberSaveable(saver = ZoomStateImplSaver) { ZoomStateImpl() }
 
 @Composable
 fun SketchesZoomableBox(
@@ -375,7 +375,14 @@ private class ZoomStateImpl: ZoomState {
     var offsetY: Float = Defaults.Offset
 }
 
-private class ZoomStateImplSaver: Saver<ZoomStateImpl, ZoomStateImplConfig> {
+@Parcelize
+private data class ZoomStateImplConfig(
+    val scale: Float,
+    val offsetX: Float,
+    val offsetY: Float,
+): Parcelable
+
+private object ZoomStateImplSaver: Saver<ZoomStateImpl, ZoomStateImplConfig> {
 
     override fun SaverScope.save(value: ZoomStateImpl): ZoomStateImplConfig =
         ZoomStateImplConfig(
@@ -391,13 +398,6 @@ private class ZoomStateImplSaver: Saver<ZoomStateImpl, ZoomStateImplConfig> {
             offsetY = value.offsetY
         }
 }
-
-@Parcelize
-private data class ZoomStateImplConfig(
-    val scale: Float,
-    val offsetX: Float,
-    val offsetY: Float,
-): Parcelable
 
 @get:Stable
 private inline val Size.area: Float

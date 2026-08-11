@@ -413,7 +413,7 @@ private class ViewModelStoreViewModel: ViewModel() {
 
 @Composable
 private fun rememberRootNavBarController(): RootNavBarControllerImpl =
-    rememberSaveable(saver = RootNavBarControllerImplSaver()) { RootNavBarControllerImpl() }
+    rememberSaveable(saver = RootNavBarControllerImplSaver) { RootNavBarControllerImpl() }
 
 private class RootNavBarControllerImpl: RootNavBarController {
 
@@ -445,7 +445,10 @@ private class RootNavBarControllerImpl: RootNavBarController {
     private val listeners: MutableMap<RootNavRoute, () -> Unit> = LinkedHashMap()
 }
 
-private class RootNavBarControllerImplSaver: Saver<RootNavBarControllerImpl, RootNavBarConfig> {
+@Parcelize
+private data class RootNavBarConfig(val isVisible: Boolean): Parcelable
+
+private object RootNavBarControllerImplSaver: Saver<RootNavBarControllerImpl, RootNavBarConfig> {
 
     override fun SaverScope.save(value: RootNavBarControllerImpl): RootNavBarConfig =
         RootNavBarConfig(isVisible = value.isRootNavBarVisible)
@@ -456,6 +459,3 @@ private class RootNavBarControllerImplSaver: Saver<RootNavBarControllerImpl, Roo
         return controller
     }
 }
-
-@Parcelize
-private data class RootNavBarConfig(val isVisible: Boolean): Parcelable
