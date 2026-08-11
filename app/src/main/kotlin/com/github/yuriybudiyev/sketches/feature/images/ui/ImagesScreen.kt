@@ -61,7 +61,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.utils.filterByIds
-import com.github.yuriybudiyev.sketches.core.data.utils.filterByIdsToUris
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
@@ -71,7 +70,6 @@ import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateSetSaver
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
-import com.github.yuriybudiyev.sketches.core.ui.components.BatchDeleteState
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
@@ -80,8 +78,10 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndica
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesGroupingMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchState
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.calculateMediaIndexWithGroups
-import com.github.yuriybudiyev.sketches.core.ui.components.rememberBatchDeleteState
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemClosestEdge
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
@@ -123,7 +123,7 @@ fun ImagesScreen(
     val selectedFiles =
         rememberSaveable(saver = SnapshotStateSetSaver()) { SnapshotStateSet<Long>() }
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
-    val batchDeleteState = rememberBatchDeleteState()
+    val batchDeleteState = rememberMediaBatchState()
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->
@@ -139,7 +139,7 @@ fun ImagesScreen(
     LaunchedEffect(Unit) {
         batchDeleteState.action.collect { action ->
             when (action) {
-                is BatchDeleteState.Action.Delete -> {
+                is MediaBatchState.Action.Batch -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         coroutineScope.launch {
                             deleteRequestLauncher.launchDeleteMediaRequest(
@@ -149,12 +149,12 @@ fun ImagesScreen(
                         }
                     }
                 }
-                is BatchDeleteState.Action.Finish -> {
+                is MediaBatchState.Action.Finish -> {
                     coroutineScope.launch {
                         selectedFiles.clear()
                     }
                 }
-                is BatchDeleteState.Action.Reset -> {
+                is MediaBatchState.Action.Reset -> {
                     // Do nothing
                 }
             }
@@ -363,7 +363,7 @@ fun ImagesScreen(
                     deleteDialogVisible = false
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         coroutineScope.launch {
-                            batchDeleteState.start(allFiles.filterByIdsToUris(selectedFiles.toSet()))
+                            batchDeleteState.start(allFiles.toMediaList(selectedFiles.toSet()))
                         }
                     } else {
                         onDeleteMediaUpdated(allFiles.filterByIds(selectedFiles.toSet()))
