@@ -66,7 +66,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
@@ -90,7 +89,7 @@ import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsContro
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
-import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateSetSaver
+import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
@@ -139,8 +138,7 @@ fun BucketScreen(
     val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     var allFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptyList()) }
-    val selectedFiles =
-        rememberSaveable(saver = SnapshotStateSetSaver()) { SnapshotStateSet<Long>() }
+    val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val mediaBatchState = rememberMediaBatchState()
     val deleteRequestLauncher = rememberLauncherForActivityResult(

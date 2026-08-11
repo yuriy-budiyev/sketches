@@ -55,10 +55,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -82,8 +80,8 @@ import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarControlle
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
-import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateListSaver
-import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateSetSaver
+import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
+import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withMediumTransparency
@@ -140,10 +138,8 @@ fun BucketsScreen(
     val onDeleteBucketsUpdated by rememberUpdatedState(onDeleteBuckets)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     var allBuckets by remember { mutableStateOf<List<MediaStoreBucket>>(emptyList()) }
-    val selectedBuckets =
-        rememberSaveable(saver = SnapshotStateSetSaver()) { SnapshotStateSet<Long>() }
-    val deleteDialogUris =
-        rememberSaveable(saver = SnapshotStateListSaver()) { SnapshotStateList<Uri>() }
+    val selectedBuckets = rememberSaveableSnapshotStateSet<Long>()
+    val deleteDialogUris = rememberSaveableSnapshotStateList<Uri>()
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->

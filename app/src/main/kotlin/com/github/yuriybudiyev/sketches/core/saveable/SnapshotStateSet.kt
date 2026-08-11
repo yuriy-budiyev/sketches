@@ -22,11 +22,19 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.saver
+package com.github.yuriybudiyev.sketches.core.saveable
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateSet
+
+@Composable
+inline fun <T: Any> rememberSaveableSnapshotStateSet(
+    crossinline onInit: SnapshotStateSet<T>.() -> Unit = {},
+): SnapshotStateSet<T> =
+    rememberSaveable(saver = SnapshotStateSetSaver()) { SnapshotStateSet<T>().apply(onInit) }
 
 class SnapshotStateSetSaver<T: Any>: Saver<SnapshotStateSet<T>, ArrayList<T>> {
 

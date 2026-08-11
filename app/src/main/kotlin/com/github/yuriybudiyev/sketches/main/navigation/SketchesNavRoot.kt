@@ -56,7 +56,6 @@ import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -96,7 +95,7 @@ import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
-import com.github.yuriybudiyev.sketches.core.saver.SnapshotStateListSaver
+import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
@@ -124,10 +123,8 @@ fun SketchesNavRoot(
         )
     }
     val initialRoute = remember { rootRoutes.first() }
-    val navBackStack = rememberSaveable(saver = SnapshotStateListSaver()) {
-        SnapshotStateList<NavRoute>().apply {
-            add(initialRoute)
-        }
+    val navBackStack = rememberSaveableSnapshotStateList<NavRoute> {
+        add(initialRoute)
     }
     val currentRouteIsRoot by remember {
         derivedStateOf {

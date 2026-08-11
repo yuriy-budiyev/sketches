@@ -28,7 +28,6 @@ import android.content.ContentUris
 import android.net.Uri
 import android.os.Parcelable
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
@@ -97,7 +96,6 @@ sealed interface MediaBatchState {
     }
 }
 
-@Immutable
 @Parcelize
 data class MediaDescriptor(
     val id: Long,
