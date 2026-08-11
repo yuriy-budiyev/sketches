@@ -57,11 +57,11 @@ fun Collection<MediaStoreFile>.toMediaList(): List<MediaDescriptor> {
     return media
 }
 
-fun Collection<MediaStoreFile>.toMediaList(ids: Collection<Long>): List<MediaDescriptor> {
-    val media = ArrayList<MediaDescriptor>(this.size.coerceAtMost(ids.size))
+fun Collection<MediaStoreFile>.toMediaList(filterIds: Collection<Long>): List<MediaDescriptor> {
+    val media = ArrayList<MediaDescriptor>(this.size.coerceAtMost(filterIds.size))
     for (file in this) {
         val fileId = file.id
-        if (ids.contains(fileId)) {
+        if (filterIds.contains(fileId)) {
             media.add(
                 MediaDescriptor(
                     id = fileId,
