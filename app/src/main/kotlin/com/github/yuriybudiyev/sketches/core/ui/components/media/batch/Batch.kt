@@ -44,30 +44,20 @@ import kotlinx.parcelize.Parcelize
 fun rememberMediaBatchState(): MediaBatchState =
     rememberSaveable(saver = MediaBatchStateImplSaver()) { MediaBatchStateImpl() }
 
-fun Collection<MediaStoreFile>.toMediaList(): List<MediaDescriptor> {
-    val media = ArrayList<MediaDescriptor>(this.size)
-    for (file in this) {
-        media.add(
-            MediaDescriptor(
-                id = file.id,
-                type = file.mediaType.ordinal,
-            ),
-        )
-    }
-    return media
-}
+fun MediaStoreFile.toMediaDescriptor(): MediaDescriptor =
+    MediaDescriptor(
+        id = id,
+        type = mediaType.ordinal,
+    )
+
+fun Collection<MediaStoreFile>.toMediaList(): List<MediaDescriptor> =
+    mapTo(ArrayList(size)) { file -> file.toMediaDescriptor() }
 
 fun Collection<MediaStoreFile>.toMediaList(filterIds: Collection<Long>): List<MediaDescriptor> {
     val media = ArrayList<MediaDescriptor>(this.size.coerceAtMost(filterIds.size))
     for (file in this) {
-        val fileId = file.id
-        if (filterIds.contains(fileId)) {
-            media.add(
-                MediaDescriptor(
-                    id = fileId,
-                    type = file.mediaType.ordinal,
-                ),
-            )
+        if (filterIds.contains(file.id)) {
+            media.add(file.toMediaDescriptor())
         }
     }
     return media
@@ -78,7 +68,7 @@ sealed interface MediaBatchState {
 
     val action: Flow<Action>
 
-    suspend fun start(media: List<MediaDescriptor>)
+    suspend fun start(media: List<MediaDescriptor>) //TODO: Add payload
 
     suspend fun proceed()
 
