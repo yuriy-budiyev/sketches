@@ -92,6 +92,8 @@ fun Collection<MediaDescriptor>.toUriList(): List<Uri> =
 @Stable
 sealed interface MediaBatchState {
 
+    //TODO: isActive
+
     val action: Flow<Action>
 
     suspend fun start(
