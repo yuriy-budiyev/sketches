@@ -61,14 +61,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.data.utils.filterByIds
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
-import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
@@ -84,6 +82,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberM
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.calculateMediaIndexWithGroups
+import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemClosestEdge
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
@@ -119,8 +118,8 @@ fun ImagesScreen(
     onDeleteMedia: (files: Collection<Uri>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val contextUpdated by rememberUpdatedState(LocalContext.current)
-    val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
+    val context by rememberUpdatedState(LocalContext.current)
+    val shareManager by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     var allFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptyList()) }
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
@@ -142,48 +141,61 @@ fun ImagesScreen(
     )
     LaunchedEffect(Unit) {
         mediaBatchState.action.collect { action ->
-            when (action) {
-                is MediaBatchState.Action.Batch -> {
-                    when (action.payload) {
-                        is BatchAction.Share -> {
-                            //TODO
-                        }
-                        is BatchAction.Delete -> {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                coroutineScope.launch {
-                                    currentBatch = action.ids
+            coroutineScope.launch {
+                when (action) {
+                    is MediaBatchState.Action.Batch -> {
+                        currentBatch = action.ids
+                        when (action.payload) {
+                            is BatchAction.Share -> {
+                                shareManager.startChooserActivity(
+                                    uris = action.uris,
+                                    mimeType = action.payload.mimeType,
+                                    chooserTitle = action.payload.chooserTitle,
+                                    listenerAction = ShareAction,
+                                )
+                            }
+                            is BatchAction.Delete -> {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                                     deleteRequestLauncher.launchDeleteMediaRequest(
-                                        contextUpdated,
+                                        context,
                                         action.uris,
                                     )
+                                } else {
+                                    error("Low SDK version: ${Build.VERSION.SDK_INT}")
                                 }
                             }
                         }
                     }
-                }
-                is MediaBatchState.Action.Finish -> {
-                    coroutineScope.launch {
+                    is MediaBatchState.Action.Finish -> {
                         selectedFiles.clear()
                         currentBatch = emptySet()
                     }
-                }
-                is MediaBatchState.Action.Reset -> {
-                    coroutineScope.launch {
+                    is MediaBatchState.Action.Reset -> {
                         currentBatch = emptySet()
                     }
                 }
             }
         }
     }
-    DisposableEffect(shareManagerUpdated) {
-        val shareManager = shareManagerUpdated
-        shareManager.registerOnSharedListener(ShareAction) {
+    LaunchedEffect(Unit) {
+        snapshotFlow { selectedFiles.isEmpty() }.collect { empty ->
+            if (empty) {
+                coroutineScope.launch {
+                    mediaBatchState.reset()
+                }
+            }
+        }
+    }
+    DisposableEffect(shareManager) {
+        val manager = shareManager
+        manager.registerOnSharedListener(ShareAction) {
             coroutineScope.launch {
-                selectedFiles.clear()
+                selectedFiles.removeAll(currentBatch)
+                mediaBatchState.reset()
             }
         }
         onDispose {
-            shareManager.unregisterOnSharedListener(ShareAction)
+            manager.unregisterOnSharedListener(ShareAction)
         }
     }
     LaunchedEffect(Unit) {
@@ -351,21 +363,24 @@ fun ImagesScreen(
                         deleteDialogVisible = true
                     },
                 )
-                val shareDescription = stringResource(R.string.share_selected)
+                val shareTitle by rememberUpdatedState(stringResource(R.string.share_selected))
                 SketchesAppBarActionButton(
                     iconRes = R.drawable.ic_share,
-                    description = shareDescription,
+                    description = shareTitle,
                     onClick = {
                         coroutineScope.launch {
-                            val shareInfo = allFiles
-                                .filterByIds(selectedFiles.toSet())
-                                .toShareInfo()
-                            shareManagerUpdated.startChooserActivity(
-                                uris = shareInfo.uris,
-                                mimeType = shareInfo.mimeType,
-                                chooserTitle = shareDescription,
-                                listenerAction = ShareAction,
-                            )
+                            allFiles.prepareForSharing(
+                                filterIds = selectedFiles.toSet(),
+                                mediaSizeLimit = MediaBatchState.BatchSize,
+                            ) { media, mimeType ->
+                                mediaBatchState.start(
+                                    media = media,
+                                    payload = BatchAction.Share(
+                                        chooserTitle = shareTitle,
+                                        mimeType = mimeType,
+                                    ),
+                                )
+                            }
                         }
                     },
                 )
@@ -400,7 +415,10 @@ fun ImagesScreen(
 private sealed interface BatchAction: Parcelable {
 
     @Parcelize
-    data object Share: BatchAction
+    data class Share(
+        val chooserTitle: String,
+        val mimeType: String,
+    ): BatchAction
 
     @Parcelize
     data object Delete: BatchAction

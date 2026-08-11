@@ -49,11 +49,15 @@ fun MediaStoreFile.toMediaDescriptor(): MediaDescriptor =
         type = mediaType.ordinal,
     )
 
-fun Collection<MediaStoreFile>.toUriList(filterIds: Collection<Long>): List<Uri> {
-    val uris = ArrayList<Uri>(this.size.coerceAtMost(filterIds.size))
+fun Collection<MediaStoreFile>.toUriList(filterIds: Set<Long>): List<Uri> {
+    val size = this.size.coerceAtMost(filterIds.size)
+    val uris = ArrayList<Uri>(size)
     for (file in this) {
         if (filterIds.contains(file.id)) {
             uris.add(file.uri)
+        }
+        if (uris.size == size) {
+            break
         }
     }
     return uris
@@ -63,10 +67,14 @@ fun Collection<MediaStoreFile>.toMediaList(): List<MediaDescriptor> =
     mapTo(ArrayList(size)) { file -> file.toMediaDescriptor() }
 
 fun Collection<MediaStoreFile>.toMediaList(filterIds: Collection<Long>): List<MediaDescriptor> {
-    val media = ArrayList<MediaDescriptor>(this.size.coerceAtMost(filterIds.size))
+    val size = this.size.coerceAtMost(filterIds.size)
+    val media = ArrayList<MediaDescriptor>(size)
     for (file in this) {
         if (filterIds.contains(file.id)) {
             media.add(file.toMediaDescriptor())
+        }
+        if (media.size == size) {
+            break
         }
     }
     return media
@@ -98,14 +106,19 @@ sealed interface MediaBatchState {
     sealed interface Action {
 
         data class Batch(
-            val uris: List<Uri>,
-            val ids: Set<Long>,
+            val uris: ArrayList<Uri>,
+            val ids: LinkedHashSet<Long>,
             val payload: Parcelable?,
         ): Action
 
         data class Finish(val payload: Parcelable?): Action
 
         data class Reset(val payload: Parcelable?): Action
+    }
+
+    companion object {
+
+        const val BatchSize = 500
     }
 }
 
@@ -144,7 +157,7 @@ private class MediaBatchStateImpl: MediaBatchState {
             return
         }
         val batchStartIndex = startIndex
-        val batchEndIndex = (batchStartIndex + 500).coerceAtMost(size)
+        val batchEndIndex = (batchStartIndex + MediaBatchState.BatchSize).coerceAtMost(size)
         startIndex = batchEndIndex
         val batch = media.subList(
             fromIndex = batchStartIndex,
