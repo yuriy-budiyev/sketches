@@ -86,7 +86,10 @@ sealed interface MediaBatchState {
 
     val action: Flow<Action>
 
-    suspend fun start(media: List<MediaDescriptor>) //TODO: Add payload
+    suspend fun start(
+        media: List<MediaDescriptor>,
+        payload: Parcelable? = null,
+    )
 
     suspend fun proceed()
 
@@ -97,11 +100,12 @@ sealed interface MediaBatchState {
         data class Batch(
             val uris: List<Uri>,
             val ids: Set<Long>,
+            val payload: Parcelable?,
         ): Action
 
-        data object Finish: Action
+        data class Finish(val payload: Parcelable?): Action
 
-        data object Reset: Action
+        data class Reset(val payload: Parcelable?): Action
     }
 }
 
@@ -116,27 +120,33 @@ private class MediaBatchStateImpl: MediaBatchState {
     override val action: Flow<MediaBatchState.Action>
         field = MutableSharedFlow()
 
-    override suspend fun start(media: List<MediaDescriptor>) {
-        allMedia = media
+    override suspend fun start(
+        media: List<MediaDescriptor>,
+        payload: Parcelable?,
+    ) {
         startIndex = 0
+        this.media = media
+        this.payload = payload
         proceed()
     }
 
     override suspend fun proceed() {
-        val size = allMedia.size
+        val size = media.size
         if (size == 0) {
             return
         }
         if (startIndex >= size) {
             startIndex = 0
-            allMedia = emptyList()
-            action.emit(MediaBatchState.Action.Finish)
+            media = emptyList()
+            val payload = this.payload
+            this.payload = null
+            action.emit(MediaBatchState.Action.Finish(payload))
             return
         }
         val batchStartIndex = startIndex
         val batchEndIndex = (batchStartIndex + 500).coerceAtMost(size)
         startIndex = batchEndIndex
-        val batch = allMedia.subList(
+        val batch = media.subList(
             fromIndex = batchStartIndex,
             toIndex = batchEndIndex,
         )
@@ -151,24 +161,29 @@ private class MediaBatchStateImpl: MediaBatchState {
             MediaBatchState.Action.Batch(
                 uris = uris,
                 ids = ids,
+                payload,
             ),
         )
     }
 
     override suspend fun reset() {
         startIndex = 0
-        allMedia = emptyList()
-        action.emit(MediaBatchState.Action.Reset)
+        media = emptyList()
+        val payload = this.payload
+        this.payload = null
+        action.emit(MediaBatchState.Action.Reset(payload))
     }
 
     var startIndex: Int = 0
-    var allMedia: List<MediaDescriptor> = emptyList()
+    var media: List<MediaDescriptor> = emptyList()
+    var payload: Parcelable? = null
 }
 
 @Parcelize
 private data class MediaBatchStateImplConfig(
-    var startIndex: Int,
-    var allMedia: List<MediaDescriptor>,
+    val startIndex: Int,
+    val media: List<MediaDescriptor>,
+    val payload: Parcelable?,
 ): Parcelable
 
 private object MediaBatchStateImplSaver: Saver<MediaBatchStateImpl, MediaBatchStateImplConfig> {
@@ -176,12 +191,14 @@ private object MediaBatchStateImplSaver: Saver<MediaBatchStateImpl, MediaBatchSt
     override fun SaverScope.save(value: MediaBatchStateImpl): MediaBatchStateImplConfig =
         MediaBatchStateImplConfig(
             startIndex = value.startIndex,
-            allMedia = value.allMedia,
+            media = value.media,
+            payload = value.payload,
         )
 
     override fun restore(value: MediaBatchStateImplConfig): MediaBatchStateImpl =
         MediaBatchStateImpl().apply {
             startIndex = value.startIndex
-            allMedia = value.allMedia
+            media = value.media
+            payload = value.payload
         }
 }

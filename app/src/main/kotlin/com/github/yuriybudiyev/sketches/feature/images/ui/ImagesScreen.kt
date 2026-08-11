@@ -27,6 +27,7 @@ package com.github.yuriybudiyev.sketches.feature.images.ui
 import android.app.Activity
 import android.net.Uri
 import android.os.Build
+import android.os.Parcelable
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.component1
@@ -88,6 +89,7 @@ import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemClosestEdge
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 
 @Composable
 fun ImagesRoute(
@@ -140,12 +142,19 @@ fun ImagesScreen(
         mediaBatchState.action.collect { action ->
             when (action) {
                 is MediaBatchState.Action.Batch -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        coroutineScope.launch {
-                            deleteRequestLauncher.launchDeleteMediaRequest(
-                                contextUpdated,
-                                action.uris,
-                            )
+                    when (action.payload) {
+                        is BatchAction.Share -> {
+                            //TODO
+                        }
+                        is BatchAction.Delete -> {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                coroutineScope.launch {
+                                    deleteRequestLauncher.launchDeleteMediaRequest(
+                                        contextUpdated,
+                                        action.uris,
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -364,7 +373,10 @@ fun ImagesScreen(
                     coroutineScope.launch {
                         val snapshot = selectedFiles.toSet()
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            mediaBatchState.start(allFiles.toMediaList(snapshot))
+                            mediaBatchState.start(
+                                media = allFiles.toMediaList(snapshot),
+                                payload = BatchAction.Delete,
+                            )
                         } else {
                             selectedFiles.clear()
                             onDeleteMediaUpdated(allFiles.toUriList(snapshot))
@@ -377,6 +389,15 @@ fun ImagesScreen(
             )
         }
     }
+}
+
+private sealed interface BatchAction: Parcelable {
+
+    @Parcelize
+    data object Share: BatchAction
+
+    @Parcelize
+    data object Delete: BatchAction
 }
 
 private const val ShareAction: String =
