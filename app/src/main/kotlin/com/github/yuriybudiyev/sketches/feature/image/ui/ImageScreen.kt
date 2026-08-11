@@ -146,7 +146,7 @@ fun ImageRoute(viewModel: ImageScreenViewModel) {
             )
         },
         onDeleteImage = { _, file ->
-            viewModel.deleteMedia(listOf(file))
+            viewModel.deleteMedia(listOf(file.uri))
         },
         onCreateBookmark = { mediaId ->
             viewModel.createBookmark(mediaId)
@@ -395,18 +395,18 @@ private fun ImageScreenLayout(
                 count = 1,
                 onDelete = {
                     deleteImageDialogVisible = false
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        coroutineScope.launch {
+                    coroutineScope.launch {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             deleteRequestLauncher.launchDeleteMediaRequest(
                                 contextUpdated,
                                 listOf(itemsUpdated[currentIndex].file.uri),
                             )
+                        } else {
+                            onDeleteImageUpdated(
+                                currentIndex,
+                                itemsUpdated[currentIndex].file,
+                            )
                         }
-                    } else {
-                        onDeleteImageUpdated(
-                            currentIndex,
-                            itemsUpdated[currentIndex].file,
-                        )
                     }
                 },
                 onDismiss = {
@@ -419,7 +419,9 @@ private fun ImageScreenLayout(
                 count = 1,
                 onDelete = {
                     deleteBookmarkDialogVisible = false
-                    onDeleteBookmarkUpdated(itemsUpdated[currentIndex].file.id)
+                    coroutineScope.launch {
+                        onDeleteBookmarkUpdated(itemsUpdated[currentIndex].file.id)
+                    }
                 },
                 onDismiss = {
                     deleteBookmarkDialogVisible = false

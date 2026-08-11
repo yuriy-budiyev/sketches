@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.feature.images.ui
 
 import android.app.Activity
+import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -81,6 +82,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGr
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaList
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.calculateMediaIndexWithGroups
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemClosestEdge
@@ -113,7 +115,7 @@ fun ImagesScreen(
     uiState: ImagesScreenViewModel.UiState,
     onRequestMediaAccess: OnRequestMediaAccess,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
-    onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
+    onDeleteMedia: (files: Collection<Uri>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val contextUpdated by rememberUpdatedState(LocalContext.current)
@@ -123,21 +125,21 @@ fun ImagesScreen(
     val selectedFiles =
         rememberSaveable(saver = SnapshotStateSetSaver()) { SnapshotStateSet<Long>() }
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
-    val batchDeleteState = rememberMediaBatchState()
+    val mediaBatchState = rememberMediaBatchState()
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->
             coroutineScope.launch {
                 if (resultCode == Activity.RESULT_OK) {
-                    batchDeleteState.proceed()
+                    mediaBatchState.proceed()
                 } else {
-                    batchDeleteState.reset()
+                    mediaBatchState.reset()
                 }
             }
         },
     )
     LaunchedEffect(Unit) {
-        batchDeleteState.action.collect { action ->
+        mediaBatchState.action.collect { action ->
             when (action) {
                 is MediaBatchState.Action.Batch -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -361,13 +363,11 @@ fun ImagesScreen(
                 count = selectedFiles.size,
                 onDelete = {
                     deleteDialogVisible = false
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        coroutineScope.launch {
-                            batchDeleteState.start(allFiles.toMediaList(selectedFiles.toSet()))
-                        }
-                    } else {
-                        onDeleteMediaUpdated(allFiles.filterByIds(selectedFiles.toSet()))
-                        coroutineScope.launch {
+                    coroutineScope.launch {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            mediaBatchState.start(allFiles.toMediaList(selectedFiles.toSet()))
+                        } else {
+                            onDeleteMediaUpdated(allFiles.toUriList(selectedFiles.toSet()))
                             selectedFiles.clear()
                         }
                     }

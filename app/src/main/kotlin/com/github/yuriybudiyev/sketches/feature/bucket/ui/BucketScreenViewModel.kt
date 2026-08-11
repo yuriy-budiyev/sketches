@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.bucket.ui
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
@@ -80,7 +81,7 @@ class BucketScreenViewModel @AssistedInject constructor(
             initialValue = UiState.Loading,
         )
 
-    fun deleteMedia(files: Collection<MediaStoreFile>) {
+    fun deleteMedia(files: Collection<Uri>) {
         viewModelScope.launch {
             withContext(ioDispatcher) {
                 deleteMedia.invoke(files)

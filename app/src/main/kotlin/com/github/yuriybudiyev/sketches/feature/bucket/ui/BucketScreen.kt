@@ -26,6 +26,7 @@ package com.github.yuriybudiyev.sketches.feature.bucket.ui
 
 import android.app.Activity
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -98,6 +99,10 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndica
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchState
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaList
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemClosestEdge
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
@@ -127,7 +132,7 @@ fun BucketScreen(
     bucketName: String,
     uiState: BucketScreenViewModel.UiState,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
-    onDeleteMedia: (files: Collection<MediaStoreFile>) -> Unit,
+    onDeleteMedia: (files: Collection<Uri>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val contextUpdated by rememberUpdatedState(LocalContext.current)
@@ -137,16 +142,43 @@ fun BucketScreen(
     val selectedFiles =
         rememberSaveable(saver = SnapshotStateSetSaver()) { SnapshotStateSet<Long>() }
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
+    val mediaBatchState = rememberMediaBatchState()
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->
-            if (resultCode == Activity.RESULT_OK) {
-                coroutineScope.launch {
-                    selectedFiles.clear()
+            coroutineScope.launch {
+                if (resultCode == Activity.RESULT_OK) {
+                    mediaBatchState.proceed()
+                } else {
+                    mediaBatchState.reset()
                 }
             }
         },
     )
+    LaunchedEffect(Unit) {
+        mediaBatchState.action.collect { action ->
+            when (action) {
+                is MediaBatchState.Action.Batch -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        coroutineScope.launch {
+                            deleteRequestLauncher.launchDeleteMediaRequest(
+                                contextUpdated,
+                                action.uris,
+                            )
+                        }
+                    }
+                }
+                is MediaBatchState.Action.Finish -> {
+                    coroutineScope.launch {
+                        selectedFiles.clear()
+                    }
+                }
+                is MediaBatchState.Action.Reset -> {
+                    // Do nothing
+                }
+            }
+        }
+    }
     DisposableEffect(shareManagerUpdated) {
         val shareManager = shareManagerUpdated
         shareManager.registerOnSharedListener(ShareAction) {
@@ -374,18 +406,11 @@ fun BucketScreen(
                 count = selectedFiles.size,
                 onDelete = {
                     deleteDialogVisible = false
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        coroutineScope.launch {
-                            deleteRequestLauncher.launchDeleteMediaRequest(
-                                contextUpdated,
-                                allFiles
-                                    .filterByIds(selectedFiles.toSet())
-                                    .map { file -> file.uri },
-                            )
-                        }
-                    } else {
-                        onDeleteMediaUpdated(allFiles.filterByIds(selectedFiles.toSet()))
-                        coroutineScope.launch {
+                    coroutineScope.launch {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            mediaBatchState.start(allFiles.toMediaList(selectedFiles.toSet()))
+                        } else {
+                            onDeleteMediaUpdated(allFiles.toUriList(selectedFiles.toSet()))
                             selectedFiles.clear()
                         }
                     }

@@ -24,7 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.domain
 
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import android.net.Uri
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.Reusable
 import javax.inject.Inject
@@ -32,7 +32,7 @@ import javax.inject.Inject
 @Reusable
 class DeleteMediaUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    suspend operator fun invoke(files: Collection<MediaStoreFile>) {
-        repository.deleteContent(files.map { file -> file.uri })
+    suspend operator fun invoke(files: Collection<Uri>) {
+        repository.deleteContent(files)
     }
 }

@@ -50,6 +50,16 @@ fun MediaStoreFile.toMediaDescriptor(): MediaDescriptor =
         type = mediaType.ordinal,
     )
 
+fun Collection<MediaStoreFile>.toUriList(filterIds: Collection<Long>): List<Uri> {
+    val uris = ArrayList<Uri>(this.size.coerceAtMost(filterIds.size))
+    for (file in this) {
+        if (filterIds.contains(file.id)) {
+            uris.add(file.uri)
+        }
+    }
+    return uris
+}
+
 fun Collection<MediaStoreFile>.toMediaList(): List<MediaDescriptor> =
     mapTo(ArrayList(size)) { file -> file.toMediaDescriptor() }
 

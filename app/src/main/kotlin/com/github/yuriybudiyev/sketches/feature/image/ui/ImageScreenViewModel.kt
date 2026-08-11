@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -117,7 +118,7 @@ class ImageScreenViewModel @AssistedInject constructor(
         }
     }
 
-    fun deleteMedia(files: Collection<MediaStoreFile>) {
+    fun deleteMedia(files: Collection<Uri>) {
         viewModelScope.launch {
             withContext(ioDispatcher) {
                 deleteMedia.invoke(files)
