@@ -28,8 +28,6 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.consumable.Consumable
-import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
-import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteContentUseCase
@@ -37,26 +35,19 @@ import com.github.yuriybudiyev.sketches.core.domain.GetBucketsContentUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaBucketsUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class BucketsScreenViewModel @Inject constructor(
-    @Dispatcher(Dispatchers.Default)
-    defaultDispatcher: CoroutineDispatcher,
-    @Dispatcher(Dispatchers.IO)
-    private val ioDispatcher: CoroutineDispatcher,
     private val getBucketsContent: GetBucketsContentUseCase,
     private val deleteContent: DeleteContentUseCase,
     private val updateMediaAccess: UpdateMediaAccessUseCase,
@@ -104,7 +95,7 @@ class BucketsScreenViewModel @Inject constructor(
             }
         }.catch { e ->
             emit(UiState.Error(e))
-        }.flowOn(defaultDispatcher).stateIn(
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
             initialValue = UiState.Loading,
@@ -114,7 +105,7 @@ class BucketsScreenViewModel @Inject constructor(
         buckets: Collection<MediaStoreBucket>,
         action: (files: List<MediaStoreFile>) -> UiState.Buckets.Action,
     ) {
-        val files = withContext(ioDispatcher) { getBucketsContent(buckets) }
+        val files = getBucketsContent(buckets)
         if (files.isNotEmpty()) {
             val oldState = uiState.value
             if (oldState is UiState.Buckets) {
@@ -142,9 +133,7 @@ class BucketsScreenViewModel @Inject constructor(
 
     fun deleteMedia(uris: Collection<Uri>) {
         viewModelScope.launch {
-            withContext(ioDispatcher) {
-                deleteContent(uris)
-            }
+            deleteContent(uris)
         }
     }
 

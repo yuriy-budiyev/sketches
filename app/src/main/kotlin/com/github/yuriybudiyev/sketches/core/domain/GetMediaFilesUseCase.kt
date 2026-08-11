@@ -24,22 +24,32 @@
 
 package com.github.yuriybudiyev.sketches.core.domain
 
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.Reusable
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import javax.inject.Inject
 
 @Reusable
-class GetMediaFilesUseCase @Inject constructor(private val repository: MediaStoreRepository) {
+class GetMediaFilesUseCase @Inject constructor(
+    private val repository: MediaStoreRepository,
+    @Dispatcher(Dispatchers.Default)
+    private val defaultDispatcher: CoroutineDispatcher,
+) {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(bucketId: Long? = null): Flow<List<MediaStoreFile>> {
         var files = repository.getFiles()
         if (bucketId != null) {
-            files = files.mapLatest { files -> files.filter { file -> file.bucketId == bucketId } }
+            files = files
+                .mapLatest { files -> files.filter { file -> file.bucketId == bucketId } }
+                .flowOn(defaultDispatcher)
         }
         return files
     }

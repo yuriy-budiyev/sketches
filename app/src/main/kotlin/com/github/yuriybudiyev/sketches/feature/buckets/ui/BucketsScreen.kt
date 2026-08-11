@@ -93,6 +93,11 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchState
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaDescriptor
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaList
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
@@ -139,17 +144,44 @@ fun BucketsScreen(
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     var allBuckets by remember { mutableStateOf<List<MediaStoreBucket>>(emptyList()) }
     val selectedBuckets = rememberSaveableSnapshotStateSet<Long>()
-    val deleteDialogUris = rememberSaveableSnapshotStateList<Uri>()
+    val deleteDialogMedia = rememberSaveableSnapshotStateList<MediaDescriptor>()
+    val mediaBatchState = rememberMediaBatchState()
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->
-            if (resultCode == Activity.RESULT_OK) {
-                coroutineScope.launch {
-                    selectedBuckets.clear()
+            coroutineScope.launch {
+                if (resultCode == Activity.RESULT_OK) {
+                    mediaBatchState.proceed()
+                } else {
+                    mediaBatchState.reset()
                 }
             }
         },
     )
+    LaunchedEffect(Unit) {
+        mediaBatchState.action.collect { action ->
+            when (action) {
+                is MediaBatchState.Action.Batch -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        coroutineScope.launch {
+                            deleteRequestLauncher.launchDeleteMediaRequest(
+                                contextUpdated,
+                                action.uris,
+                            )
+                        }
+                    }
+                }
+                is MediaBatchState.Action.Finish -> {
+                    coroutineScope.launch {
+                        selectedBuckets.clear()
+                    }
+                }
+                is MediaBatchState.Action.Reset -> {
+                    // Do nothing
+                }
+            }
+        }
+    }
     DisposableEffect(shareManagerUpdated) {
         val shareManager = shareManagerUpdated
         shareManager.registerOnSharedListener(ShareAction) {
@@ -163,7 +195,7 @@ fun BucketsScreen(
     }
     LaunchedEffect(Unit) {
         if (selectedBuckets.isEmpty()) {
-            deleteDialogUris.clear()
+            deleteDialogMedia.clear()
         }
     }
     BackHandler(selectedBuckets.isNotEmpty()) {
@@ -189,10 +221,10 @@ fun BucketsScreen(
                         )
                     }
                     is BucketsScreenViewModel.UiState.Buckets.Action.Delete -> {
-                        if (deleteDialogUris.isNotEmpty()) {
-                            deleteDialogUris.clear()
+                        if (deleteDialogMedia.isNotEmpty()) {
+                            deleteDialogMedia.clear()
                         }
-                        deleteDialogUris.addAll(action.files.map { file -> file.uri })
+                        deleteDialogMedia.addAll(action.files.toMediaList())
                     }
                     else -> {
                         // Do nothing
@@ -239,8 +271,8 @@ fun BucketsScreen(
                     if (selectedBuckets.isNotEmpty()) {
                         selectedBuckets.clear()
                     }
-                    if (deleteDialogUris.isNotEmpty()) {
-                        deleteDialogUris.clear()
+                    if (deleteDialogMedia.isNotEmpty()) {
+                        deleteDialogMedia.clear()
                     }
                     if (allBuckets.isNotEmpty()) {
                         allBuckets = emptyList()
@@ -270,8 +302,8 @@ fun BucketsScreen(
                     if (selectedBuckets.isNotEmpty()) {
                         selectedBuckets.clear()
                     }
-                    if (deleteDialogUris.isNotEmpty()) {
-                        deleteDialogUris.clear()
+                    if (deleteDialogMedia.isNotEmpty()) {
+                        deleteDialogMedia.clear()
                     }
                     if (allBuckets.isNotEmpty()) {
                         allBuckets = emptyList()
@@ -332,29 +364,24 @@ fun BucketsScreen(
                 )
             }
         }
-        if (deleteDialogUris.isNotEmpty()) {
+        if (deleteDialogMedia.isNotEmpty()) {
             SketchesDeleteImagesConfirmationDialog(
-                count = deleteDialogUris.size,
+                count = deleteDialogMedia.size,
                 onDelete = {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        deleteRequestLauncher.launchDeleteMediaRequest(
-                            contextUpdated,
-                            deleteDialogUris.toList(),
-                        )
-                        coroutineScope.launch {
-                            deleteDialogUris.clear()
-                        }
-                    } else {
-                        onDeleteMediaUpdated(deleteDialogUris.toList())
-                        coroutineScope.launch {
-                            deleteDialogUris.clear()
+                    coroutineScope.launch {
+                        val snapshot = deleteDialogMedia.toList()
+                        deleteDialogMedia.clear()
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            mediaBatchState.start(snapshot)
+                        } else {
                             selectedBuckets.clear()
+                            onDeleteMediaUpdated(snapshot.toUriList())
                         }
                     }
                 },
                 onDismiss = {
                     coroutineScope.launch {
-                        deleteDialogUris.clear()
+                        deleteDialogMedia.clear()
                     }
                 },
             )

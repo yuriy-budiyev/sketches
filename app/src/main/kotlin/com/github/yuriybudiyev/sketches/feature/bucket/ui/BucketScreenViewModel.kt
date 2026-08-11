@@ -27,8 +27,6 @@ package com.github.yuriybudiyev.sketches.feature.bucket.ui
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
-import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
@@ -38,25 +36,18 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @HiltViewModel(assistedFactory = BucketScreenViewModel.Factory::class)
 class BucketScreenViewModel @AssistedInject constructor(
     @Assisted
     route: BucketNavRoute,
-    @Dispatcher(Dispatchers.Default)
-    defaultDispatcher: CoroutineDispatcher,
-    @Dispatcher(Dispatchers.IO)
-    private val ioDispatcher: CoroutineDispatcher,
     private val deleteMedia: DeleteMediaUseCase,
     private val updateMediaAccess: UpdateMediaAccessUseCase,
     getMediaFiles: GetMediaFilesUseCase,
@@ -75,7 +66,7 @@ class BucketScreenViewModel @AssistedInject constructor(
             }
         }.catch { e ->
             emit(UiState.Error(e))
-        }.flowOn(defaultDispatcher).stateIn(
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
             initialValue = UiState.Loading,
@@ -83,9 +74,7 @@ class BucketScreenViewModel @AssistedInject constructor(
 
     fun deleteMedia(files: Collection<Uri>) {
         viewModelScope.launch {
-            withContext(ioDispatcher) {
-                deleteMedia.invoke(files)
-            }
+            deleteMedia.invoke(files)
         }
     }
 

@@ -52,7 +52,6 @@ import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @HiltViewModel(assistedFactory = ImageScreenViewModel.Factory::class)
 class ImageScreenViewModel @AssistedInject constructor(
@@ -61,8 +60,6 @@ class ImageScreenViewModel @AssistedInject constructor(
     route: ImageNavRoute,
     @Dispatcher(Dispatchers.Default)
     defaultDispatcher: CoroutineDispatcher,
-    @Dispatcher(Dispatchers.IO)
-    private val ioDispatcher: CoroutineDispatcher,
     private val deleteMedia: DeleteMediaUseCase,
     private val createBookmark: CreateBookmarkUseCase,
     private val deleteBookmarks: DeleteBookmarksUseCase,
@@ -120,9 +117,7 @@ class ImageScreenViewModel @AssistedInject constructor(
 
     fun deleteMedia(files: Collection<Uri>) {
         viewModelScope.launch {
-            withContext(ioDispatcher) {
-                deleteMedia.invoke(files)
-            }
+            deleteMedia.invoke(files)
         }
     }
 
@@ -134,17 +129,13 @@ class ImageScreenViewModel @AssistedInject constructor(
 
     fun createBookmark(mediaId: Long) {
         viewModelScope.launch {
-            withContext(ioDispatcher) {
-                createBookmark.invoke(mediaId)
-            }
+            createBookmark.invoke(mediaId)
         }
     }
 
     fun deleteBookmark(mediaId: Long) {
         viewModelScope.launch {
-            withContext(ioDispatcher) {
-                deleteBookmarks.invoke(listOf(mediaId))
-            }
+            deleteBookmarks.invoke(listOf(mediaId))
         }
     }
 

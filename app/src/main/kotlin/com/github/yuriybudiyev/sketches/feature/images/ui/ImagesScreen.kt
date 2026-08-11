@@ -362,11 +362,12 @@ fun ImagesScreen(
                 onDelete = {
                     deleteDialogVisible = false
                     coroutineScope.launch {
+                        val snapshot = selectedFiles.toSet()
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            mediaBatchState.start(allFiles.toMediaList(selectedFiles.toSet()))
+                            mediaBatchState.start(allFiles.toMediaList(snapshot))
                         } else {
-                            onDeleteMediaUpdated(allFiles.toUriList(selectedFiles.toSet()))
                             selectedFiles.clear()
+                            onDeleteMediaUpdated(allFiles.toUriList(snapshot))
                         }
                     }
                 },

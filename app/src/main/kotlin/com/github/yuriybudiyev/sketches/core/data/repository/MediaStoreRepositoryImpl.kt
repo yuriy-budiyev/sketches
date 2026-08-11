@@ -56,6 +56,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -107,7 +108,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
                 )
             }
             emit(bookmarks)
-        }
+        }.flowOn(defaultDispatcher)
 
     override suspend fun createBookmark(mediaId: Long) {
         bookmarksDao.upsert(
@@ -119,17 +120,21 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteBookmarks(mediaIds: Collection<Long>) {
-        bookmarksDao.delete(mediaIds)
+        withContext(ioDispatcher) {
+            bookmarksDao.delete(mediaIds)
+        }
     }
 
     override suspend fun deleteContent(uris: Collection<Uri>) {
-        val contentResolver = appContext.contentResolver
-        for (uri in uris) {
-            contentResolver.delete(
-                uri,
-                null,
-                null,
-            )
+        withContext(ioDispatcher) {
+            val contentResolver = appContext.contentResolver
+            for (uri in uris) {
+                contentResolver.delete(
+                    uri,
+                    null,
+                    null,
+                )
+            }
         }
     }
 

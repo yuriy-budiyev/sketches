@@ -72,6 +72,15 @@ fun Collection<MediaStoreFile>.toMediaList(filterIds: Collection<Long>): List<Me
     return media
 }
 
+fun MediaDescriptor.toUri(): Uri =
+    ContentUris.withAppendedId(
+        MediaType.entries[type].contentUri,
+        id,
+    )
+
+fun Collection<MediaDescriptor>.toUriList(): List<Uri> =
+    mapTo(ArrayList(size)) { descriptor -> descriptor.toUri() }
+
 @Stable
 sealed interface MediaBatchState {
 
@@ -134,14 +143,9 @@ private class MediaBatchStateImpl: MediaBatchState {
         val batchSize = batch.size
         val uris = ArrayList<Uri>(batchSize)
         val ids = newLinkedHashSet<Long>(batchSize)
-        for ((id, type) in batch) {
-            uris.add(
-                ContentUris.withAppendedId(
-                    MediaType.entries[type].contentUri,
-                    id,
-                ),
-            )
-            ids.add(id)
+        for (descriptor in batch) {
+            uris.add(descriptor.toUri())
+            ids.add(descriptor.id)
         }
         action.emit(
             MediaBatchState.Action.Batch(

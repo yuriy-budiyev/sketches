@@ -27,32 +27,23 @@ package com.github.yuriybudiyev.sketches.feature.images.ui
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
-import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.YearMonth
 import javax.inject.Inject
 
 @HiltViewModel
 class ImagesScreenViewModel @Inject constructor(
-    @Dispatcher(Dispatchers.Default)
-    private val defaultDispatcher: CoroutineDispatcher,
-    @Dispatcher(Dispatchers.IO)
-    private val ioDispatcher: CoroutineDispatcher,
     private val deleteMedia: DeleteMediaUseCase,
     private val updateMediaAccess: UpdateMediaAccessUseCase,
     getMediaFiles: GetMediaFilesUseCase,
@@ -73,7 +64,7 @@ class ImagesScreenViewModel @Inject constructor(
             }
         }.catch { e ->
             emit(UiState.Error(e))
-        }.flowOn(defaultDispatcher).stateIn(
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
             initialValue = UiState.Loading,
@@ -81,9 +72,7 @@ class ImagesScreenViewModel @Inject constructor(
 
     fun deleteMedia(files: Collection<Uri>) {
         viewModelScope.launch {
-            withContext(ioDispatcher) {
-                deleteMedia.invoke(files)
-            }
+            deleteMedia.invoke(files)
         }
     }
 

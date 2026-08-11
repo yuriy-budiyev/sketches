@@ -45,15 +45,12 @@ import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class BookmarksScreenViewModel @Inject constructor(
     @Dispatcher(Dispatchers.Default)
     defaultDispatcher: CoroutineDispatcher,
-    @Dispatcher(Dispatchers.IO)
-    private val ioDispatcher: CoroutineDispatcher,
     private val deleteMedia: DeleteMediaUseCase,
     private val deleteBookmarks: DeleteBookmarksUseCase,
     private val updateMediaAccess: UpdateMediaAccessUseCase,
@@ -97,17 +94,13 @@ class BookmarksScreenViewModel @Inject constructor(
 
     fun deleteMedia(files: Collection<Uri>) {
         viewModelScope.launch {
-            withContext(ioDispatcher) {
-                deleteMedia.invoke(files)
-            }
+            deleteMedia.invoke(files)
         }
     }
 
     fun deleteBookmarks(mediaIds: Collection<Long>) {
         viewModelScope.launch {
-            withContext(ioDispatcher) {
-                deleteBookmarks.invoke(mediaIds)
-            }
+            deleteBookmarks.invoke(mediaIds)
         }
     }
 

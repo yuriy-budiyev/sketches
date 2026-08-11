@@ -25,17 +25,25 @@
 package com.github.yuriybudiyev.sketches.core.domain
 
 import android.net.Uri
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.Reusable
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.transformLatest
 import java.time.LocalDateTime
 import javax.inject.Inject
 
 @Reusable
-class GetMediaBucketsUseCase @Inject constructor(private val repository: MediaStoreRepository) {
+class GetMediaBucketsUseCase @Inject constructor(
+    private val repository: MediaStoreRepository,
+    @Dispatcher(Dispatchers.Default)
+    private val defaultDispatcher: CoroutineDispatcher,
+) {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(): Flow<List<MediaStoreBucket>> =
@@ -69,7 +77,7 @@ class GetMediaBucketsUseCase @Inject constructor(private val repository: MediaSt
                 )
             }
             emit(buckets)
-        }
+        }.flowOn(defaultDispatcher)
 
     private data class MediaStoreBucketInfo(
         val id: Long,

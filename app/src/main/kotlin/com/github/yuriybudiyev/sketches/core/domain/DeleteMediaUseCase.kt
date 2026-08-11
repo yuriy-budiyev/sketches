@@ -32,7 +32,7 @@ import javax.inject.Inject
 @Reusable
 class DeleteMediaUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    suspend operator fun invoke(files: Collection<Uri>) {
-        repository.deleteContent(files)
+    suspend operator fun invoke(uris: Collection<Uri>) {
+        repository.deleteContent(uris)
     }
 }
