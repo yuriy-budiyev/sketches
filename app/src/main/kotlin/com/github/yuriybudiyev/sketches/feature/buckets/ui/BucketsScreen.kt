@@ -76,7 +76,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
-import com.github.yuriybudiyev.sketches.core.data.utils.filterByIds
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
@@ -389,8 +388,9 @@ fun BucketsScreen(
                     iconRes = R.drawable.ic_delete,
                     description = stringResource(R.string.delete_selected),
                     onClick = {
-                        //TODO
-                        onDeleteBucketsUpdated(allBuckets.filterByIds(selectedBuckets.toSet()))
+                        coroutineScope.launch {
+                            onDeleteBucketsUpdated(allBuckets.filterByIds(selectedBuckets.toSet()))
+                        }
                     },
                 )
                 val shareDescription = stringResource(R.string.share_selected)
@@ -398,8 +398,9 @@ fun BucketsScreen(
                     iconRes = R.drawable.ic_share,
                     description = shareDescription,
                     onClick = {
-                        //TODO
-                        onShareBucketsUpdated(allBuckets.filterByIds(selectedBuckets.toSet()))
+                        coroutineScope.launch {
+                            onShareBucketsUpdated(allBuckets.filterByIds(selectedBuckets.toSet()))
+                        }
                     },
                 )
             }
@@ -558,6 +559,9 @@ private fun BucketsScreenLayout(
         }
     }
 }
+
+private fun Collection<MediaStoreBucket>.filterByIds(ids: Set<Long>): List<MediaStoreBucket> =
+    filterTo(ArrayList(size.coerceAtMost(ids.size))) { file -> ids.contains(file.id) }
 
 private const val ShareAction: String =
     "com.github.yuriybudiyev.sketches.feature.buckets.ui.ShareAction"
