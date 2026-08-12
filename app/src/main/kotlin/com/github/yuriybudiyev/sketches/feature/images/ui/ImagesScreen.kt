@@ -193,7 +193,7 @@ fun ImagesScreen(
             coroutineScope.launch {
                 selectedFiles.removeAll(currentBatch)
                 mediaBatchState.reset()
-                if (selectedFiles.isNotEmpty()) {
+                if (allFiles.isNotEmpty() && selectedFiles.isNotEmpty()) {
                     mediaGridState.scrollToItem(
                         index = calculateMediaIndexWithGroups(allFiles) { _, file ->
                             selectedFiles.contains(file.id)
