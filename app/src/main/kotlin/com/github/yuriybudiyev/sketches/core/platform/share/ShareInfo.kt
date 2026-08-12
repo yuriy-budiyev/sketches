@@ -29,11 +29,13 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import java.util.EnumSet
 
+@Deprecated("Replace with Batch API")
 data class ShareInfo(
     val uris: ArrayList<Uri>,
     val mimeType: String,
 )
 
+@Deprecated("Replace with Batch API")
 fun Collection<MediaStoreFile>.toShareInfo(): ShareInfo {
     val size = this.size
     val uris = ArrayList<Uri>(size)
