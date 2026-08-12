@@ -258,18 +258,25 @@ fun SketchesGroupingMediaGrid(
     }
 }
 
-fun calculateMediaIndexWithGroups(
-    fileIndex: Int,
+inline fun calculateMediaIndexWithGroups(
     files: Collection<MediaStoreFile>,
+    predicate: (index: Int, file: MediaStoreFile) -> Boolean,
 ): Int {
     var offset = 0
+    var fileIndex = 0
     var previousDate = LocalDate.MAX
     for ((index, file) in files.withIndex()) {
         val currentDate = file.dateAdded.toLocalDate()
         if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
             offset++
         }
-        if (index == fileIndex) {
+        if (
+            predicate(
+                index,
+                file,
+            )
+        ) {
+            fileIndex = index
             break
         }
         previousDate = currentDate

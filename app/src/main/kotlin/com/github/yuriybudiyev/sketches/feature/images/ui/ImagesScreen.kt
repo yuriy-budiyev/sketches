@@ -126,6 +126,7 @@ fun ImagesScreen(
     var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val mediaBatchState = rememberMediaBatchState()
+    val mediaGridState = rememberSketchesLazyGridState()
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->
@@ -191,6 +192,11 @@ fun ImagesScreen(
         manager.registerOnSharedListener(ShareAction) {
             coroutineScope.launch {
                 selectedFiles.removeAll(currentBatch)
+                mediaGridState.scrollToItem(
+                    calculateMediaIndexWithGroups(allFiles) { _, file ->
+                        selectedFiles.contains(file.id)
+                    },
+                )
                 mediaBatchState.reset()
             }
         }
@@ -208,7 +214,6 @@ fun ImagesScreen(
             selectedFiles.clear()
         }
     }
-    val mediaGridState = rememberSketchesLazyGridState()
     val navResultStore = LocalNavResultStore.current
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(
@@ -218,10 +223,9 @@ fun ImagesScreen(
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             navResultStore.collectNavResult<ImageScreenNavResult> { result ->
                 mediaGridState.scrollToItemClosestEdge(
-                    index = calculateMediaIndexWithGroups(
-                        fileIndex = result.fileIndex,
-                        files = allFiles,
-                    ),
+                    index = calculateMediaIndexWithGroups(allFiles) { index, _ ->
+                        index == result.fileIndex
+                    },
                     itemType = SketchesMediaGridContentType.MediaStoreFile,
                     animate = false,
                 )

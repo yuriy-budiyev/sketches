@@ -69,7 +69,7 @@ fun Collection<MediaStoreFile>.toUriList(filterIds: Set<Long>): List<Uri> {
 fun Collection<MediaStoreFile>.toMediaList(): List<MediaDescriptor> =
     mapTo(ArrayList(size)) { file -> file.toMediaDescriptor() }
 
-fun Collection<MediaStoreFile>.toMediaList(filterIds: Collection<Long>): List<MediaDescriptor> {
+fun Collection<MediaStoreFile>.toMediaList(filterIds: Set<Long>): List<MediaDescriptor> {
     val size = this.size.coerceAtMost(filterIds.size)
     val media = ArrayList<MediaDescriptor>(size)
     for (file in this) {
