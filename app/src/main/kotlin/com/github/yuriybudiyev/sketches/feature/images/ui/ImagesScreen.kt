@@ -192,11 +192,6 @@ fun ImagesScreen(
         manager.registerOnSharedListener(ShareAction) {
             coroutineScope.launch {
                 selectedFiles.removeAll(currentBatch)
-                mediaGridState.scrollToItem(
-                    calculateMediaIndexWithGroups(allFiles) { _, file ->
-                        selectedFiles.contains(file.id)
-                    },
-                )
                 mediaBatchState.reset()
             }
         }
@@ -223,9 +218,10 @@ fun ImagesScreen(
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             navResultStore.collectNavResult<ImageScreenNavResult> { result ->
                 mediaGridState.scrollToItemClosestEdge(
-                    index = calculateMediaIndexWithGroups(allFiles) { index, _ ->
-                        index == result.fileIndex
-                    },
+                    index = calculateMediaIndexWithGroups(
+                        fileIndex = result.fileIndex,
+                        files = allFiles,
+                    ),
                     itemType = SketchesMediaGridContentType.MediaStoreFile,
                     animate = false,
                 )
