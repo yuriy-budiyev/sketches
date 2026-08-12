@@ -101,7 +101,7 @@ sealed interface MediaBatchState {
 
     suspend fun start(
         media: List<MediaDescriptor>,
-        payload: Parcelable? = null,
+        payload: Parcelable?,
     )
 
     suspend fun proceed()
@@ -125,6 +125,18 @@ sealed interface MediaBatchState {
 
         const val BatchSize: Int = 500
     }
+}
+
+sealed interface BatchAction: Parcelable {
+
+    @Parcelize
+    data class Share(
+        val chooserTitle: String,
+        val mimeType: String,
+    ): BatchAction
+
+    @Parcelize
+    data object Delete: BatchAction
 }
 
 @Parcelize

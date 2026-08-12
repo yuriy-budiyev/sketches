@@ -60,13 +60,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.data.utils.filterByIds
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
-import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
@@ -78,10 +76,12 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndica
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
+import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
@@ -117,20 +117,23 @@ private fun BookmarksScreen(
     onDeleteBookmarks: (mediaIds: Collection<Long>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val contextUpdated by rememberUpdatedState(LocalContext.current)
-    val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
+    val context by rememberUpdatedState(LocalContext.current)
+    val shareManager by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     val onDeleteBookmarksUpdated by rememberUpdatedState(onDeleteBookmarks)
     var allFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptyList()) }
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteFilesDialogVisible by rememberSaveable { mutableStateOf(false) }
     var deleteBookmarksDialogVisible by rememberSaveable { mutableStateOf(false) }
+    val mediaGridState = rememberSketchesLazyGridState()
     val mediaBatchState = rememberMediaBatchState()
+    var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->
             coroutineScope.launch {
                 if (resultCode == Activity.RESULT_OK) {
+                    selectedFiles.removeAll(currentBatch)
                     mediaBatchState.proceed()
                 } else {
                     mediaBatchState.reset()
@@ -142,31 +145,66 @@ private fun BookmarksScreen(
         mediaBatchState.action.collect { action ->
             when (action) {
                 is MediaBatchState.Action.Batch -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        coroutineScope.launch {
-                            deleteRequestLauncher.launchDeleteMediaRequest(
-                                contextUpdated,
-                                action.uris,
+                    currentBatch = action.ids
+                    when (action.payload) {
+                        is BatchAction.Share -> {
+                            shareManager.startChooserActivity(
+                                uris = action.uris,
+                                mimeType = action.payload.mimeType,
+                                chooserTitle = action.payload.chooserTitle,
+                                listenerAction = ShareAction,
                             )
+                        }
+                        is BatchAction.Delete -> {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                deleteRequestLauncher.launchDeleteMediaRequest(
+                                    context,
+                                    action.uris,
+                                )
+                            } else {
+                                error("Low SDK version: ${Build.VERSION.SDK_INT}")
+                            }
                         }
                     }
                 }
                 is MediaBatchState.Action.Finish -> {
-                    coroutineScope.launch {
-                        selectedFiles.clear()
-                    }
+                    selectedFiles.clear()
+                    currentBatch = emptySet()
                 }
                 is MediaBatchState.Action.Reset -> {
-                    // Do nothing
+                    currentBatch = emptySet()
                 }
             }
         }
     }
-    DisposableEffect(shareManagerUpdated) {
-        val shareManager = shareManagerUpdated
+    LaunchedEffect(Unit) {
+        snapshotFlow { selectedFiles.isEmpty() }.collect { empty ->
+            if (empty) {
+                coroutineScope.launch {
+                    mediaBatchState.reset()
+                }
+            }
+        }
+    }
+    DisposableEffect(shareManager) {
         shareManager.registerOnSharedListener(ShareAction) {
             coroutineScope.launch {
-                selectedFiles.clear()
+                selectedFiles.removeAll(currentBatch)
+                mediaBatchState.reset()
+                if (allFiles.isNotEmpty() && selectedFiles.isNotEmpty()) {
+                    val bucketIndex = allFiles.indexOfFirst { file ->
+                        selectedFiles.contains(file.id)
+                    }
+                    if (bucketIndex != -1) {
+                        mediaGridState.scrollToItem(
+                            index = bucketIndex,
+                            itemType = null,
+                            animate = false,
+                            snapToClosestEdge = false,
+                            onlyIfItemAtIndexIsNotVisible = true,
+                        )
+                    }
+                }
             }
         }
         onDispose {
@@ -184,7 +222,6 @@ private fun BookmarksScreen(
             selectedFiles.clear()
         }
     }
-    val mediaGridState = rememberSketchesLazyGridState()
     val navResultStore = LocalNavResultStore.current
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(
@@ -336,21 +373,24 @@ private fun BookmarksScreen(
                         deleteFilesDialogVisible = true
                     },
                 )
-                val shareDescription = stringResource(R.string.share_selected)
+                val shareTitle by rememberUpdatedState(stringResource(R.string.share_selected))
                 SketchesAppBarActionButton(
                     iconRes = R.drawable.ic_share,
-                    description = shareDescription,
+                    description = shareTitle,
                     onClick = {
                         coroutineScope.launch {
-                            val shareInfo = allFiles
-                                .filterByIds(selectedFiles.toSet())
-                                .toShareInfo()
-                            shareManagerUpdated.startChooserActivity(
-                                uris = shareInfo.uris,
-                                mimeType = shareInfo.mimeType,
-                                chooserTitle = shareDescription,
-                                listenerAction = ShareAction,
-                            )
+                            allFiles.prepareForSharing(
+                                filterIds = selectedFiles.toSet(),
+                                mediaSizeLimit = MediaBatchState.BatchSize,
+                            ) { media, mimeType ->
+                                mediaBatchState.start(
+                                    media = media,
+                                    payload = BatchAction.Share(
+                                        chooserTitle = shareTitle,
+                                        mimeType = mimeType,
+                                    ),
+                                )
+                            }
                         }
                     },
                 )
@@ -363,7 +403,10 @@ private fun BookmarksScreen(
                     deleteFilesDialogVisible = false
                     coroutineScope.launch {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            mediaBatchState.start(allFiles.toMediaList(selectedFiles.toSet()))
+                            mediaBatchState.start(
+                                media = allFiles.toMediaList(selectedFiles.toSet()),
+                                payload = BatchAction.Delete,
+                            )
                         } else {
                             onDeleteMediaUpdated(allFiles.toUriList(selectedFiles.toSet()))
                             selectedFiles.clear()

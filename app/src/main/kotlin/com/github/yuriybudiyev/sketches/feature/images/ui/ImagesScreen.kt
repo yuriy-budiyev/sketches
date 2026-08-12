@@ -27,7 +27,6 @@ package com.github.yuriybudiyev.sketches.feature.images.ui
 import android.app.Activity
 import android.net.Uri
 import android.os.Build
-import android.os.Parcelable
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.component1
@@ -78,6 +77,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndica
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesGroupingMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaList
@@ -89,7 +89,6 @@ import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 
 @Composable
 fun ImagesRoute(
@@ -124,10 +123,10 @@ fun ImagesScreen(
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     var allFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptyList()) }
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
-    var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
-    val mediaBatchState = rememberMediaBatchState()
     val mediaGridState = rememberSketchesLazyGridState()
+    val mediaBatchState = rememberMediaBatchState()
+    var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->
@@ -189,8 +188,7 @@ fun ImagesScreen(
         }
     }
     DisposableEffect(shareManager) {
-        val manager = shareManager
-        manager.registerOnSharedListener(ShareAction) {
+        shareManager.registerOnSharedListener(ShareAction) {
             coroutineScope.launch {
                 selectedFiles.removeAll(currentBatch)
                 mediaBatchState.reset()
@@ -205,7 +203,7 @@ fun ImagesScreen(
             }
         }
         onDispose {
-            manager.unregisterOnSharedListener(ShareAction)
+            shareManager.unregisterOnSharedListener(ShareAction)
         }
     }
     LaunchedEffect(Unit) {
@@ -440,18 +438,6 @@ private suspend inline fun LazyGridState.scrollToItem(
             onlyIfItemAtIndexIsNotVisible = true,
         )
     }
-}
-
-private sealed interface BatchAction: Parcelable {
-
-    @Parcelize
-    data class Share(
-        val chooserTitle: String,
-        val mimeType: String,
-    ): BatchAction
-
-    @Parcelize
-    data object Delete: BatchAction
 }
 
 private const val ShareAction: String =

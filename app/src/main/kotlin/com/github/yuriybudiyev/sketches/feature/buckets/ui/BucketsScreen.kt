@@ -55,6 +55,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateSet
@@ -79,7 +80,6 @@ import com.github.yuriybudiyev.sketches.core.data.utils.filterByIds
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
-import com.github.yuriybudiyev.sketches.core.platform.share.toShareInfo
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
@@ -93,12 +93,14 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaDescriptor
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
+import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
@@ -137,8 +139,8 @@ fun BucketsScreen(
     onDeleteMedia: (uris: Collection<Uri>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val contextUpdated by rememberUpdatedState(LocalContext.current)
-    val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
+    val context by rememberUpdatedState(LocalContext.current)
+    val shareManager by rememberUpdatedState(LocalShareManager.current)
     val onShareBucketsUpdated by rememberUpdatedState(onShareBuckets)
     val onDeleteBucketsUpdated by rememberUpdatedState(onDeleteBuckets)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
@@ -146,11 +148,15 @@ fun BucketsScreen(
     val selectedBuckets = rememberSaveableSnapshotStateSet<Long>()
     val deleteDialogMedia = rememberSaveableSnapshotStateList<MediaDescriptor>()
     val mediaBatchState = rememberMediaBatchState()
+    val bucketsGridState = rememberSketchesLazyGridState()
+    var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->
             coroutineScope.launch {
                 if (resultCode == Activity.RESULT_OK) {
+                    //TODO
+                    //deleteDialogMedia.removeAll(currentBatch)
                     mediaBatchState.proceed()
                 } else {
                     mediaBatchState.reset()
@@ -162,31 +168,58 @@ fun BucketsScreen(
         mediaBatchState.action.collect { action ->
             when (action) {
                 is MediaBatchState.Action.Batch -> {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        coroutineScope.launch {
-                            deleteRequestLauncher.launchDeleteMediaRequest(
-                                contextUpdated,
-                                action.uris,
+                    currentBatch = action.ids
+                    when (action.payload) {
+                        is BatchAction.Share -> {
+                            shareManager.startChooserActivity(
+                                uris = action.uris,
+                                mimeType = action.payload.mimeType,
+                                chooserTitle = action.payload.chooserTitle,
+                                listenerAction = ShareAction,
                             )
+                        }
+                        is BatchAction.Delete -> {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                deleteRequestLauncher.launchDeleteMediaRequest(
+                                    context,
+                                    action.uris,
+                                )
+                            } else {
+                                error("Low SDK version: ${Build.VERSION.SDK_INT}")
+                            }
                         }
                     }
                 }
                 is MediaBatchState.Action.Finish -> {
-                    coroutineScope.launch {
-                        selectedBuckets.clear()
-                    }
+                    selectedBuckets.clear()
+                    currentBatch = emptySet()
                 }
                 is MediaBatchState.Action.Reset -> {
-                    // Do nothing
+                    currentBatch = emptySet()
                 }
             }
         }
     }
-    DisposableEffect(shareManagerUpdated) {
-        val shareManager = shareManagerUpdated
+    DisposableEffect(shareManager) {
         shareManager.registerOnSharedListener(ShareAction) {
             coroutineScope.launch {
-                selectedBuckets.clear()
+                //TODO
+                //selectedBuckets.removeAll(currentBatch)
+                mediaBatchState.reset()
+                /*if (allBuckets.isNotEmpty() && selectedBuckets.isNotEmpty()) {
+                    val bucketIndex = allBuckets.indexOfFirst { bucket ->
+                        selectedBuckets.contains(bucket.id)
+                    }
+                    if (bucketIndex != -1) {
+                        bucketsGridState.scrollToItem(
+                            index = bucketIndex,
+                            itemType = null,
+                            animate = false,
+                            snapToClosestEdge = false,
+                            onlyIfItemAtIndexIsNotVisible = true,
+                        )
+                    }
+                }*/
             }
         }
         onDispose {
@@ -212,13 +245,19 @@ fun BucketsScreen(
             if (uiState is BucketsScreenViewModel.UiState.Buckets) {
                 when (val action = uiState.action.consume()) {
                     is BucketsScreenViewModel.UiState.Buckets.Action.Share -> {
-                        val shareInfo = action.files.toShareInfo()
-                        shareManagerUpdated.startChooserActivity(
-                            uris = shareInfo.uris,
-                            mimeType = shareInfo.mimeType,
-                            chooserTitle = contextUpdated.getString(R.string.share_selected),
-                            listenerAction = ShareAction,
-                        )
+                        coroutineScope.launch {
+                            action.files.prepareForSharing(
+                                mediaSizeLimit = MediaBatchState.BatchSize,
+                            ) { media, mimeType ->
+                                mediaBatchState.start(
+                                    media = media,
+                                    payload = BatchAction.Share(
+                                        chooserTitle = context.getString(R.string.share_selected),
+                                        mimeType = mimeType,
+                                    ),
+                                )
+                            }
+                        }
                     }
                     is BucketsScreenViewModel.UiState.Buckets.Action.Delete -> {
                         if (deleteDialogMedia.isNotEmpty()) {
@@ -243,7 +282,6 @@ fun BucketsScreen(
             }
         }
     }
-    val bucketsGridState = rememberSketchesLazyGridState()
     DisposableEffect(rootNavBarController) {
         rootNavBarController.setOnClickListener(BucketsNavRoute) {
             coroutineScope.launch {
@@ -372,7 +410,10 @@ fun BucketsScreen(
                         val snapshot = deleteDialogMedia.toList()
                         deleteDialogMedia.clear()
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            mediaBatchState.start(snapshot)
+                            mediaBatchState.start(
+                                media = snapshot,
+                                payload = BatchAction.Delete,
+                            )
                         } else {
                             selectedBuckets.clear()
                             onDeleteMediaUpdated(snapshot.toUriList())
@@ -411,6 +452,7 @@ private fun BucketsScreenLayout(
         items(
             count = bucketsUpdated.size,
             key = { index -> bucketsUpdated[index].id },
+            contentType = { null },
         ) { index ->
             val bucketUpdated by rememberUpdatedState(bucketsUpdated[index])
             val bucketSelectedUpdated by rememberUpdatedState(selectedBucketsUpdated.contains(bucketUpdated.id))
