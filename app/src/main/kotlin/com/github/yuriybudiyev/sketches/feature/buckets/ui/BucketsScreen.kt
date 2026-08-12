@@ -389,6 +389,7 @@ fun BucketsScreen(
                     iconRes = R.drawable.ic_delete,
                     description = stringResource(R.string.delete_selected),
                     onClick = {
+                        //TODO
                         onDeleteBucketsUpdated(allBuckets.filterByIds(selectedBuckets.toSet()))
                     },
                 )
@@ -397,6 +398,7 @@ fun BucketsScreen(
                     iconRes = R.drawable.ic_share,
                     description = shareDescription,
                     onClick = {
+                        //TODO
                         onShareBucketsUpdated(allBuckets.filterByIds(selectedBuckets.toSet()))
                     },
                 )
