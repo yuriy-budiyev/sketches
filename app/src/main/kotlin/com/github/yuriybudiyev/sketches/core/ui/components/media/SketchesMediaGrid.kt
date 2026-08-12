@@ -71,6 +71,8 @@ import java.time.format.DateTimeFormatterBuilder
 import java.time.format.TextStyle
 import java.time.temporal.ChronoField
 import java.util.Locale
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 @Immutable
 sealed interface SketchesMediaGridKey: Parcelable {
@@ -258,18 +260,27 @@ fun SketchesGroupingMediaGrid(
     }
 }
 
-fun calculateMediaIndexWithGroups(
-    fileIndex: Int,
+@OptIn(ExperimentalContracts::class)
+inline fun calculateMediaIndexWithGroups(
     files: Collection<MediaStoreFile>,
+    predicate: (index: Int, file: MediaStoreFile) -> Boolean,
 ): Int {
+    contract { callsInPlace(predicate) }
     var offset = 0
+    var fileIndex = 0
     var previousDate = LocalDate.MAX
     for ((index, file) in files.withIndex()) {
         val currentDate = file.dateAdded.toLocalDate()
         if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
             offset++
         }
-        if (index == fileIndex) {
+        if (
+            predicate(
+                index,
+                file,
+            )
+        ) {
+            fileIndex = index
             break
         }
         previousDate = currentDate

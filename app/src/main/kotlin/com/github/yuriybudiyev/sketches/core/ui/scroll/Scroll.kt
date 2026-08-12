@@ -61,11 +61,12 @@ suspend fun LazyListState.scrollToItemCentered(
     }
 }
 
-suspend fun LazyGridState.scrollToItemClosestEdge(
+suspend fun LazyGridState.scrollToItem(
     index: Int,
     itemType: Any?,
     animate: Boolean = false,
-    onlyIfItemAtIndexIsNotVisible: Boolean = true,
+    snapToClosestEdge: Boolean = false,
+    onlyIfItemAtIndexIsNotVisible: Boolean = false,
 ) {
     val visibleItemsInfo = layoutInfo.visibleItemsInfo
     val firstItemOfType = visibleItemsInfo.firstOrNull { info -> info.contentType == itemType }
@@ -99,12 +100,14 @@ suspend fun LazyGridState.scrollToItemClosestEdge(
         Orientation.Horizontal -> itemSize.width
     }
     var offset = 0
-    val lastItem = visibleItemsInfo.lastOrNull()
-    if (firstItemOfType != null && lastItem != null && firstItemOfType !== lastItem) {
-        if (index > firstItemOfType.index + (lastItem.index - firstItemOfType.index) / 2) {
-            offset = viewportSizeWithAppliedPaddings
-                .minus(orientationAwareItemSize)
-                .unaryMinus()
+    if (snapToClosestEdge) {
+        val lastItem = visibleItemsInfo.lastOrNull()
+        if (firstItemOfType != null && lastItem != null && firstItemOfType !== lastItem) {
+            if (index > firstItemOfType.index + (lastItem.index - firstItemOfType.index) / 2) {
+                offset = viewportSizeWithAppliedPaddings
+                    .minus(orientationAwareItemSize)
+                    .unaryMinus()
+            }
         }
     }
     if (animate) {

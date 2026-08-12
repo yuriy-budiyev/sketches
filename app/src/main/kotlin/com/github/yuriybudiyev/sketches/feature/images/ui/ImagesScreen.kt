@@ -84,7 +84,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.calculateMediaIndexWithGroups
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
-import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemClosestEdge
+import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
 import kotlinx.coroutines.launch
@@ -193,6 +193,15 @@ fun ImagesScreen(
             coroutineScope.launch {
                 selectedFiles.removeAll(currentBatch)
                 mediaBatchState.reset()
+                mediaGridState.scrollToItem(
+                    index = calculateMediaIndexWithGroups(allFiles) { _, file ->
+                        selectedFiles.contains(file.id)
+                    },
+                    itemType = SketchesMediaGridContentType.MediaStoreFile,
+                    animate = false,
+                    snapToClosestEdge = false,
+                    onlyIfItemAtIndexIsNotVisible = true,
+                )
             }
         }
         onDispose {
@@ -217,13 +226,14 @@ fun ImagesScreen(
     ) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             navResultStore.collectNavResult<ImageScreenNavResult> { result ->
-                mediaGridState.scrollToItemClosestEdge(
-                    index = calculateMediaIndexWithGroups(
-                        fileIndex = result.fileIndex,
-                        files = allFiles,
-                    ),
+                mediaGridState.scrollToItem(
+                    index = calculateMediaIndexWithGroups(allFiles) { index, _ ->
+                        index == result.fileIndex
+                    },
                     itemType = SketchesMediaGridContentType.MediaStoreFile,
                     animate = false,
+                    snapToClosestEdge = true,
+                    onlyIfItemAtIndexIsNotVisible = true,
                 )
             }
         }

@@ -83,7 +83,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberM
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
-import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemClosestEdge
+import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
@@ -193,10 +193,12 @@ private fun BookmarksScreen(
     ) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             navResultStore.collectNavResult<ImageScreenNavResult> { result ->
-                mediaGridState.scrollToItemClosestEdge(
+                mediaGridState.scrollToItem(
                     index = result.fileIndex,
                     itemType = SketchesMediaGridContentType.MediaStoreFile,
                     animate = false,
+                    snapToClosestEdge = true,
+                    onlyIfItemAtIndexIsNotVisible = true,
                 )
             }
         }
