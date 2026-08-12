@@ -37,6 +37,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -193,18 +194,12 @@ fun ImagesScreen(
             coroutineScope.launch {
                 selectedFiles.removeAll(currentBatch)
                 mediaBatchState.reset()
-                if (allFiles.isNotEmpty() && selectedFiles.isNotEmpty()) {
-                    val itemIndex = calculateMediaIndexWithGroups(allFiles) { _, file ->
+                if (selectedFiles.isNotEmpty()) {
+                    mediaGridState.scrollToItem(
+                        files = allFiles,
+                        snapToClosestEdge = false,
+                    ) { _, file ->
                         selectedFiles.contains(file.id)
-                    }
-                    if (itemIndex != -1) {
-                        mediaGridState.scrollToItem(
-                            index = itemIndex,
-                            itemType = SketchesMediaGridContentType.MediaStoreFile,
-                            animate = false,
-                            snapToClosestEdge = false,
-                            onlyIfItemAtIndexIsNotVisible = true,
-                        )
                     }
                 }
             }
@@ -231,17 +226,11 @@ fun ImagesScreen(
     ) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             navResultStore.collectNavResult<ImageScreenNavResult> { result ->
-                val itemIndex = calculateMediaIndexWithGroups(allFiles) { index, _ ->
+                mediaGridState.scrollToItem(
+                    files = allFiles,
+                    snapToClosestEdge = true,
+                ) { index, _ ->
                     index == result.fileIndex
-                }
-                if (itemIndex != -1) {
-                    mediaGridState.scrollToItem(
-                        index = itemIndex,
-                        itemType = SketchesMediaGridContentType.MediaStoreFile,
-                        animate = false,
-                        snapToClosestEdge = true,
-                        onlyIfItemAtIndexIsNotVisible = true,
-                    )
                 }
             }
         }
@@ -427,6 +416,29 @@ fun ImagesScreen(
                 },
             )
         }
+    }
+}
+
+private suspend inline fun LazyGridState.scrollToItem(
+    files: Collection<MediaStoreFile>,
+    snapToClosestEdge: Boolean,
+    predicate: (index: Int, file: MediaStoreFile) -> Boolean,
+) {
+    if (files.isEmpty()) {
+        return
+    }
+    val itemIndex = calculateMediaIndexWithGroups(
+        files = files,
+        predicate = predicate,
+    )
+    if (itemIndex != -1) {
+        scrollToItem(
+            index = itemIndex,
+            itemType = SketchesMediaGridContentType.MediaStoreFile,
+            animate = false,
+            snapToClosestEdge = snapToClosestEdge,
+            onlyIfItemAtIndexIsNotVisible = true,
+        )
     }
 }
 
