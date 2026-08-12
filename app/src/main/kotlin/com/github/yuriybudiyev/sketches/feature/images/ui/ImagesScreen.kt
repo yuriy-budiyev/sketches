@@ -193,15 +193,17 @@ fun ImagesScreen(
             coroutineScope.launch {
                 selectedFiles.removeAll(currentBatch)
                 mediaBatchState.reset()
-                mediaGridState.scrollToItem(
-                    index = calculateMediaIndexWithGroups(allFiles) { _, file ->
-                        selectedFiles.contains(file.id)
-                    },
-                    itemType = SketchesMediaGridContentType.MediaStoreFile,
-                    animate = false,
-                    snapToClosestEdge = false,
-                    onlyIfItemAtIndexIsNotVisible = true,
-                )
+                if (selectedFiles.isNotEmpty()) {
+                    mediaGridState.scrollToItem(
+                        index = calculateMediaIndexWithGroups(allFiles) { _, file ->
+                            selectedFiles.contains(file.id)
+                        },
+                        itemType = SketchesMediaGridContentType.MediaStoreFile,
+                        animate = false,
+                        snapToClosestEdge = false,
+                        onlyIfItemAtIndexIsNotVisible = true,
+                    )
+                }
             }
         }
         onDispose {
