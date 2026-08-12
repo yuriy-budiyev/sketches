@@ -29,9 +29,12 @@ import android.net.Uri
 import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import com.github.yuriybudiyev.sketches.core.collections.newLinkedHashSet
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
@@ -92,7 +95,7 @@ fun Collection<MediaDescriptor>.toUriList(): List<Uri> =
 @Stable
 sealed interface MediaBatchState {
 
-    //TODO: isActive
+    val isActive: Boolean
 
     val action: Flow<Action>
 
@@ -132,6 +135,8 @@ data class MediaDescriptor(
 
 private class MediaBatchStateImpl: MediaBatchState {
 
+    override var isActive: Boolean by mutableStateOf(false)
+
     override val action: Flow<MediaBatchState.Action>
         field = MutableSharedFlow()
 
@@ -139,6 +144,10 @@ private class MediaBatchStateImpl: MediaBatchState {
         media: List<MediaDescriptor>,
         payload: Parcelable?,
     ) {
+        if (media.isEmpty()) {
+            return
+        }
+        isActive = true
         startIndex = 0
         this.media = media
         this.payload = payload
@@ -146,11 +155,12 @@ private class MediaBatchStateImpl: MediaBatchState {
     }
 
     override suspend fun proceed() {
-        val size = media.size
-        if (size == 0) {
+        if (!isActive) {
             return
         }
+        val size = media.size
         if (startIndex >= size) {
+            isActive = false
             startIndex = 0
             media = emptyList()
             val payload = this.payload
@@ -182,6 +192,10 @@ private class MediaBatchStateImpl: MediaBatchState {
     }
 
     override suspend fun reset() {
+        if (!isActive) {
+            return
+        }
+        isActive = false
         startIndex = 0
         media = emptyList()
         val payload = this.payload
@@ -196,6 +210,7 @@ private class MediaBatchStateImpl: MediaBatchState {
 
 @Parcelize
 private data class MediaBatchStateImplConfig(
+    val isActive: Boolean,
     val startIndex: Int,
     val media: List<MediaDescriptor>,
     val payload: Parcelable?,
@@ -205,6 +220,7 @@ private object MediaBatchStateImplSaver: Saver<MediaBatchStateImpl, MediaBatchSt
 
     override fun SaverScope.save(value: MediaBatchStateImpl): MediaBatchStateImplConfig =
         MediaBatchStateImplConfig(
+            isActive = value.isActive,
             startIndex = value.startIndex,
             media = value.media,
             payload = value.payload,
@@ -212,6 +228,7 @@ private object MediaBatchStateImplSaver: Saver<MediaBatchStateImpl, MediaBatchSt
 
     override fun restore(value: MediaBatchStateImplConfig): MediaBatchStateImpl =
         MediaBatchStateImpl().apply {
+            isActive = value.isActive
             startIndex = value.startIndex
             media = value.media
             payload = value.payload
