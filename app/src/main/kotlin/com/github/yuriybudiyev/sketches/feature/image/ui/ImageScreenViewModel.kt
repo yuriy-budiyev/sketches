@@ -272,7 +272,7 @@ class ImageScreenViewModel @AssistedInject constructor(
 
     private object Keys {
 
-        const val CurrentFileIndex = "current_file_index"
-        const val CurrentFileId = "current_file_id"
+        const val CurrentFileIndex: String = "current_file_index"
+        const val CurrentFileId: String = "current_file_id"
     }
 }

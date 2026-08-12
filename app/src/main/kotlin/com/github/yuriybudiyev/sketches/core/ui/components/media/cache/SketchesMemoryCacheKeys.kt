@@ -86,21 +86,21 @@ object SketchesMemoryCacheKeys {
 
     object Extras {
 
-        const val Purpose = "purpose"
-        const val LocalDiskCache = "local_disk_cache"
+        const val Purpose: String = "purpose"
+        const val LocalDiskCache: String = "local_disk_cache"
     }
 
     object Purpose {
 
-        const val Thumbnail = "thumbnail"
-        const val Preview = "preview"
-        const val MediaBar = "media_bar"
+        const val Thumbnail: String = "thumbnail"
+        const val Preview: String = "preview"
+        const val MediaBar: String = "media_bar"
     }
 
     object LocalDiskCache {
 
-        const val Allow = "allow"
-        const val Disallow = "disallow"
+        const val Allow: String = "allow"
+        const val Disallow: String = "disallow"
 
         fun checkAllow(extras: Map<String, String>): Boolean =
             extras[Extras.LocalDiskCache] == Allow

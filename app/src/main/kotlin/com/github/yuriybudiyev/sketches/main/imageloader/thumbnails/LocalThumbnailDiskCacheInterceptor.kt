@@ -118,6 +118,6 @@ class LocalThumbnailDiskCacheInterceptor(
 
     private companion object {
 
-        const val BufferSize = 32768
+        const val BufferSize: Int = 32768
     }
 }

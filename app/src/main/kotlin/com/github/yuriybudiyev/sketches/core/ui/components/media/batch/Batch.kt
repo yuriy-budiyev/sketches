@@ -120,7 +120,7 @@ sealed interface MediaBatchState {
 
     companion object {
 
-        const val BatchSize = 500
+        const val BatchSize: Int = 500
     }
 }
 

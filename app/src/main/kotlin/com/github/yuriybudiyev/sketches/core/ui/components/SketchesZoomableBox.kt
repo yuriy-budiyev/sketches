@@ -317,8 +317,8 @@ sealed interface ZoomState {
 
 private object Defaults {
 
-    const val Scale = 1F
-    const val Offset = 0F
+    const val Scale: Float = 1F
+    const val Offset: Float = 0F
 }
 
 @Stable
