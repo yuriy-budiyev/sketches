@@ -101,7 +101,7 @@ sealed interface MediaBatchState {
 
     suspend fun start(
         media: List<MediaDescriptor>,
-        payload: Parcelable?,
+        payload: Parcelable? = null,
     )
 
     suspend fun proceed()
