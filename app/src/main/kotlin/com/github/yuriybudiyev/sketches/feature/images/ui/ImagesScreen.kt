@@ -194,15 +194,18 @@ fun ImagesScreen(
                 selectedFiles.removeAll(currentBatch)
                 mediaBatchState.reset()
                 if (allFiles.isNotEmpty() && selectedFiles.isNotEmpty()) {
-                    mediaGridState.scrollToItem(
-                        index = calculateMediaIndexWithGroups(allFiles) { _, file ->
-                            selectedFiles.contains(file.id)
-                        },
-                        itemType = SketchesMediaGridContentType.MediaStoreFile,
-                        animate = false,
-                        snapToClosestEdge = false,
-                        onlyIfItemAtIndexIsNotVisible = true,
-                    )
+                    val itemIndex = calculateMediaIndexWithGroups(allFiles) { _, file ->
+                        selectedFiles.contains(file.id)
+                    }
+                    if (itemIndex != -1) {
+                        mediaGridState.scrollToItem(
+                            index = itemIndex,
+                            itemType = SketchesMediaGridContentType.MediaStoreFile,
+                            animate = false,
+                            snapToClosestEdge = false,
+                            onlyIfItemAtIndexIsNotVisible = true,
+                        )
+                    }
                 }
             }
         }
@@ -228,15 +231,18 @@ fun ImagesScreen(
     ) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             navResultStore.collectNavResult<ImageScreenNavResult> { result ->
-                mediaGridState.scrollToItem(
-                    index = calculateMediaIndexWithGroups(allFiles) { index, _ ->
-                        index == result.fileIndex
-                    },
-                    itemType = SketchesMediaGridContentType.MediaStoreFile,
-                    animate = false,
-                    snapToClosestEdge = true,
-                    onlyIfItemAtIndexIsNotVisible = true,
-                )
+                val itemIndex = calculateMediaIndexWithGroups(allFiles) { index, _ ->
+                    index == result.fileIndex
+                }
+                if (itemIndex != -1) {
+                    mediaGridState.scrollToItem(
+                        index = itemIndex,
+                        itemType = SketchesMediaGridContentType.MediaStoreFile,
+                        animate = false,
+                        snapToClosestEdge = true,
+                        onlyIfItemAtIndexIsNotVisible = true,
+                    )
+                }
             }
         }
     }

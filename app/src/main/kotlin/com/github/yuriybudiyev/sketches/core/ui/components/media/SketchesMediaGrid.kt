@@ -267,7 +267,7 @@ inline fun calculateMediaIndexWithGroups(
 ): Int {
     contract { callsInPlace(predicate) }
     var offset = 0
-    var fileIndex = 0
+    var fileIndex = -1
     var previousDate = LocalDate.MAX
     for ((index, file) in files.withIndex()) {
         val currentDate = file.dateAdded.toLocalDate()
@@ -284,6 +284,9 @@ inline fun calculateMediaIndexWithGroups(
             break
         }
         previousDate = currentDate
+    }
+    if (fileIndex == -1) {
+        return -1
     }
     return fileIndex + offset
 }
