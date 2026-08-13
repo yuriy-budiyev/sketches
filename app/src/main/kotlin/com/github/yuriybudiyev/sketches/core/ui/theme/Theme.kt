@@ -25,52 +25,74 @@
 package com.github.yuriybudiyev.sketches.core.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
-import com.github.yuriybudiyev.sketches.core.ui.colors.SketchesColors
-import com.github.yuriybudiyev.sketches.core.ui.typography.SketchesTypography
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 @Composable
 @NonRestartableComposable
 fun SketchesTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = if (isSystemInDarkTheme()) {
-            darkColorScheme(
-                primary = SketchesColors.Primary,
-                onPrimary = SketchesColors.OnPrimary,
-                scrim = SketchesColors.Scrim,
-                primaryContainer = SketchesColors.Dark.PrimaryContainer,
-                onPrimaryContainer = SketchesColors.Dark.OnPrimaryContainer,
-                background = SketchesColors.Dark.Background,
-                onBackground = SketchesColors.Dark.OnBackground,
-                surface = SketchesColors.Dark.Surface,
-                onSurface = SketchesColors.Dark.OnSurface,
-                onSurfaceVariant = SketchesColors.Dark.OnSurfaceVariant,
-                surfaceContainerHigh = SketchesColors.Dark.SurfaceContainerHigh,
-                outline = SketchesColors.Dark.Outline,
-                outlineVariant = SketchesColors.Dark.OutlineVariant,
-            )
+            DarkColorScheme
         } else {
-            lightColorScheme(
-                primary = SketchesColors.Primary,
-                onPrimary = SketchesColors.OnPrimary,
-                scrim = SketchesColors.Scrim,
-                primaryContainer = SketchesColors.Light.PrimaryContainer,
-                onPrimaryContainer = SketchesColors.Light.OnPrimaryContainer,
-                background = SketchesColors.Light.Background,
-                onBackground = SketchesColors.Light.OnBackground,
-                surface = SketchesColors.Light.Surface,
-                onSurface = SketchesColors.Light.OnSurface,
-                onSurfaceVariant = SketchesColors.Light.OnSurfaceVariant,
-                surfaceContainerHigh = SketchesColors.Light.SurfaceContainerHigh,
-                outline = SketchesColors.Light.Outline,
-                outlineVariant = SketchesColors.Light.OutlineVariant,
-            )
+            LightColorScheme
         },
-        typography = SketchesTypography,
+        typography = Typography,
         content = content,
     )
 }
+
+private val DarkColorScheme: ColorScheme =
+    darkColorScheme(
+        primary = Color(0xFF6B69D6),
+        onPrimary = Color(0xFFFFFFFF),
+        scrim = Color(0xFF000000),
+        primaryContainer = Color(0x00000000),
+        onPrimaryContainer = Color(0xFFFFFFFF),
+        background = Color(0xFF000000),
+        onBackground = Color(0xFFFFFFFF),
+        surface = Color(0xFF000000),
+        onSurface = Color(0xFFFFFFFF),
+        onSurfaceVariant = Color(0xFFFFFFFF),
+        surfaceContainerHigh = Color(0xFF272727),
+        outline = Color(0xFF6B69D6),
+        outlineVariant = Color(0xFF6B69D6),
+    )
+
+private val LightColorScheme: ColorScheme =
+    lightColorScheme(
+        primary = Color(0xFF6B69D6),
+        onPrimary = Color(0xFFFFFFFF),
+        scrim = Color(0xFF000000),
+        primaryContainer = Color(0x00000000),
+        onPrimaryContainer = Color(0xFF000000),
+        background = Color(0xFFFFFFFF),
+        onBackground = Color(0xFF000000),
+        surface = Color(0xFFFFFFFF),
+        onSurface = Color(0xFF000000),
+        onSurfaceVariant = Color(0xFF000000),
+        surfaceContainerHigh = Color(0xFFF7F7F7),
+        outline = Color(0xFF6B69D6),
+        outlineVariant = Color(0xFF6B69D6),
+    )
+
+private val Typography: Typography =
+    Typography(
+        bodyLarge = TextStyle(
+            fontFamily = FontFamily.Default,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            letterSpacing = 0.5.sp,
+        ),
+    )
