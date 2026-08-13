@@ -107,8 +107,8 @@ class ImageScreenViewModel @AssistedInject constructor(
                 UiState.Image(
                     items = items,
                     index = actualIndex.coerceIn(
-                        0,
-                        itemsSize - 1,
+                        minimumValue = 0,
+                        maximumValue = itemsSize - 1,
                     ),
                 ),
             )
