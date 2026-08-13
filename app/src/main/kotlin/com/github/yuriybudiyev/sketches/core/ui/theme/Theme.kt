@@ -27,27 +27,17 @@ package com.github.yuriybudiyev.sketches.core.ui.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 
 @Composable
 @NonRestartableComposable
 fun SketchesTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) {
-            DarkColorScheme
-        } else {
-            LightColorScheme
-        },
-        typography = Typography,
+        colorScheme = if (isSystemInDarkTheme()) DarkColorScheme else LightColorScheme,
         content = content,
     )
 }
@@ -84,15 +74,4 @@ private val LightColorScheme: ColorScheme =
         surfaceContainerHigh = Color(0xFFF7F7F7),
         outline = Color(0xFF6B69D6),
         outlineVariant = Color(0xFF6B69D6),
-    )
-
-private val Typography: Typography =
-    Typography(
-        bodyLarge = TextStyle(
-            fontFamily = FontFamily.Default,
-            fontWeight = FontWeight.Normal,
-            fontSize = 16.sp,
-            lineHeight = 24.sp,
-            letterSpacing = 0.5.sp,
-        ),
     )
