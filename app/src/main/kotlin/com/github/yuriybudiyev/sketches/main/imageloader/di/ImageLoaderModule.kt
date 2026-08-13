@@ -70,10 +70,10 @@ object ImageLoaderModule {
             .build()
         return ImageLoader.Builder(context)
             .serviceLoaderEnabled(false)
+            .allowHardware(true)
             .coroutineContext(imageLoaderDispatcher)
             .memoryCache(memoryCache)
             .diskCache(diskCache)
-            .allowHardware(true)
             .components {
                 add(
                     LocalThumbnailDiskCacheInterceptor(
