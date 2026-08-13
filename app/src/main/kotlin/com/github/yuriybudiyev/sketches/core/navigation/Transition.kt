@@ -30,7 +30,7 @@ import androidx.compose.runtime.compositionLocalOf
 
 val LocalNavSharedTransitionScope: ProvidableCompositionLocal<SharedTransitionScope> =
     compositionLocalOf {
-        throw IllegalStateException(
+        error(
             "Unexpected access to LocalNavSharedTransitionScope. You should only " +
                 "access LocalNavSharedTransitionScope inside a NavEntry passed " +
                 "to NavDisplay.",
