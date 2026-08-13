@@ -55,7 +55,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateSet
@@ -148,14 +147,11 @@ fun BucketsScreen(
     val deleteDialogMedia = rememberSaveableSnapshotStateList<MediaDescriptor>()
     val mediaBatchState = rememberMediaBatchState()
     val bucketsGridState = rememberSketchesLazyGridState()
-    var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->
             coroutineScope.launch {
                 if (resultCode == Activity.RESULT_OK) {
-                    //TODO
-                    //deleteDialogMedia.removeAll(currentBatch)
                     mediaBatchState.proceed()
                 } else {
                     mediaBatchState.reset()
@@ -167,7 +163,6 @@ fun BucketsScreen(
         mediaBatchState.action.collect { action ->
             when (action) {
                 is MediaBatchState.Action.Batch -> {
-                    currentBatch = action.ids
                     when (action.payload) {
                         is BatchAction.Share -> {
                             shareManager.startChooserActivity(
@@ -191,10 +186,9 @@ fun BucketsScreen(
                 }
                 is MediaBatchState.Action.Finish -> {
                     selectedBuckets.clear()
-                    currentBatch = emptySet()
                 }
                 is MediaBatchState.Action.Reset -> {
-                    currentBatch = emptySet()
+                    // Do nothing
                 }
             }
         }
@@ -202,23 +196,7 @@ fun BucketsScreen(
     DisposableEffect(shareManager) {
         shareManager.registerOnSharedListener(ShareAction) {
             coroutineScope.launch {
-                //TODO
-                //selectedBuckets.removeAll(currentBatch)
                 mediaBatchState.reset()
-                /*if (allBuckets.isNotEmpty() && selectedBuckets.isNotEmpty()) {
-                    val bucketIndex = allBuckets.indexOfFirst { bucket ->
-                        selectedBuckets.contains(bucket.id)
-                    }
-                    if (bucketIndex != -1) {
-                        bucketsGridState.scrollToItem(
-                            index = bucketIndex,
-                            itemType = null,
-                            animate = false,
-                            snapToClosestEdge = false,
-                            onlyIfItemAtIndexIsNotVisible = true,
-                        )
-                    }
-                }*/
             }
         }
         onDispose {
