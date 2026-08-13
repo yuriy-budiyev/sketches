@@ -119,12 +119,6 @@ class BucketsScreenViewModel @Inject constructor(
         }
     }
 
-    fun startSharingBuckets(buckets: Collection<MediaStoreBucket>) {
-        viewModelScope.launch {
-            action.emit(Action.StartSharingBuckets(buckets))
-        }
-    }
-
     fun startDeletingBuckets(buckets: Collection<MediaStoreBucket>) {
         viewModelScope.launch {
             action.emit(Action.StartDeletingBuckets(buckets))

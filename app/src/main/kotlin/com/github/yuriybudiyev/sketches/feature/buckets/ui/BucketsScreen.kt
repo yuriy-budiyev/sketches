@@ -77,7 +77,6 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
-import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
@@ -98,7 +97,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberM
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
-import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
@@ -116,9 +114,6 @@ fun BucketsRoute(
     BucketsScreen(
         uiState = uiState,
         onBucketClick = onBucketClick,
-        onShareBuckets = { buckets ->
-            viewModel.startSharingBuckets(buckets)
-        },
         onDeleteBuckets = { buckets ->
             viewModel.startDeletingBuckets(buckets)
         },
@@ -132,14 +127,11 @@ fun BucketsRoute(
 fun BucketsScreen(
     uiState: BucketsScreenViewModel.UiState,
     onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
-    onShareBuckets: (buckets: Collection<MediaStoreBucket>) -> Unit,
     onDeleteBuckets: (buckets: Collection<MediaStoreBucket>) -> Unit,
     onDeleteMedia: (uris: Collection<Uri>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context by rememberUpdatedState(LocalContext.current)
-    val shareManager by rememberUpdatedState(LocalShareManager.current)
-    val onShareBucketsUpdated by rememberUpdatedState(onShareBuckets)
     val onDeleteBucketsUpdated by rememberUpdatedState(onDeleteBuckets)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     var allBuckets by remember { mutableStateOf<List<MediaStoreBucket>>(emptyList()) }
@@ -163,24 +155,14 @@ fun BucketsScreen(
         mediaBatchState.action.collect { action ->
             when (action) {
                 is MediaBatchState.Action.Batch -> {
-                    when (action.payload) {
-                        is BatchAction.Share -> {
-                            shareManager.startChooserActivity(
-                                uris = action.uris,
-                                mimeType = action.payload.mimeType,
-                                chooserTitle = action.payload.chooserTitle,
-                                listenerAction = ShareAction,
+                    if (action.payload is BatchAction.Delete) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            deleteRequestLauncher.launchDeleteMediaRequest(
+                                context,
+                                action.uris,
                             )
-                        }
-                        is BatchAction.Delete -> {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                deleteRequestLauncher.launchDeleteMediaRequest(
-                                    context,
-                                    action.uris,
-                                )
-                            } else {
-                                error("Low SDK version: ${Build.VERSION.SDK_INT}")
-                            }
+                        } else {
+                            error("Low SDK version: ${Build.VERSION.SDK_INT}")
                         }
                     }
                 }
@@ -191,16 +173,6 @@ fun BucketsScreen(
                     // Do nothing
                 }
             }
-        }
-    }
-    DisposableEffect(shareManager) {
-        shareManager.registerOnSharedListener(ShareAction) {
-            coroutineScope.launch {
-                mediaBatchState.reset()
-            }
-        }
-        onDispose {
-            shareManager.unregisterOnSharedListener(ShareAction)
         }
     }
     LaunchedEffect(Unit) {
@@ -221,21 +193,6 @@ fun BucketsScreen(
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             if (uiState is BucketsScreenViewModel.UiState.Buckets) {
                 when (val action = uiState.action.consume()) {
-                    is BucketsScreenViewModel.UiState.Buckets.Action.Share -> {
-                        coroutineScope.launch {
-                            action.files.prepareForSharing(
-                                mediaSizeLimit = MediaBatchState.BatchSize,
-                            ) { media, mimeType ->
-                                mediaBatchState.start(
-                                    media = media,
-                                    payload = BatchAction.Share(
-                                        chooserTitle = context.getString(R.string.share_selected),
-                                        mimeType = mimeType,
-                                    ),
-                                )
-                            }
-                        }
-                    }
                     is BucketsScreenViewModel.UiState.Buckets.Action.Delete -> {
                         if (deleteDialogMedia.isNotEmpty()) {
                             deleteDialogMedia.clear()
@@ -368,16 +325,6 @@ fun BucketsScreen(
                     onClick = {
                         coroutineScope.launch {
                             onDeleteBucketsUpdated(allBuckets.filterByIds(selectedBuckets.toSet()))
-                        }
-                    },
-                )
-                val shareDescription = stringResource(R.string.share_selected)
-                SketchesAppBarActionButton(
-                    iconRes = R.drawable.ic_share,
-                    description = shareDescription,
-                    onClick = {
-                        coroutineScope.launch {
-                            onShareBucketsUpdated(allBuckets.filterByIds(selectedBuckets.toSet()))
                         }
                     },
                 )
@@ -554,6 +501,3 @@ private fun Collection<MediaStoreBucket>.filterByIds(ids: Set<Long>): List<Media
     }
     return filtered
 }
-
-private const val ShareAction: String =
-    "com.github.yuriybudiyev.sketches.feature.buckets.ui.ShareAction"
