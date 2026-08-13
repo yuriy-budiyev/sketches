@@ -238,7 +238,7 @@ fun BucketScreen(
             shareManager.unregisterOnSharedListener(ShareAction)
         }
     }
-    LaunchedEffect(Unit) {
+    SideEffect(Unit) {
         if (selectedFiles.isEmpty()) {
             deleteDialogVisible = false
         }
@@ -295,7 +295,7 @@ fun BucketScreen(
     ) {
         when (uiState) {
             is BucketScreenViewModel.UiState.Empty -> {
-                LaunchedEffect(Unit) {
+                SideEffect(Unit) {
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }
@@ -326,7 +326,7 @@ fun BucketScreen(
                     thrown = uiState.thrown,
                     modifier = Modifier.matchParentSize(),
                 )
-                SideEffect {
+                SideEffect(Unit) {
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }

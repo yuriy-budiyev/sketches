@@ -211,7 +211,7 @@ private fun BookmarksScreen(
             shareManager.unregisterOnSharedListener(ShareAction)
         }
     }
-    LaunchedEffect(Unit) {
+    SideEffect(Unit) {
         if (selectedFiles.isEmpty()) {
             deleteFilesDialogVisible = false
             deleteBookmarksDialogVisible = false
@@ -284,7 +284,7 @@ private fun BookmarksScreen(
                     text = stringResource(R.string.no_bookmarks_found),
                     modifier = Modifier.matchParentSize(),
                 )
-                SideEffect {
+                SideEffect(Unit) {
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }
@@ -313,7 +313,7 @@ private fun BookmarksScreen(
                     thrown = uiState.thrown,
                     modifier = Modifier.matchParentSize(),
                 )
-                SideEffect {
+                SideEffect(Unit) {
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }

@@ -206,7 +206,7 @@ fun ImagesScreen(
             shareManager.unregisterOnSharedListener(ShareAction)
         }
     }
-    LaunchedEffect(Unit) {
+    SideEffect(Unit) {
         if (selectedFiles.isEmpty()) {
             deleteDialogVisible = false
         }
@@ -277,7 +277,7 @@ fun ImagesScreen(
                     text = stringResource(R.string.no_images_found),
                     modifier = Modifier.matchParentSize(),
                 )
-                SideEffect {
+                SideEffect(Unit) {
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }
@@ -306,7 +306,7 @@ fun ImagesScreen(
                     thrown = uiState.thrown,
                     modifier = Modifier.matchParentSize(),
                 )
-                SideEffect {
+                SideEffect(Unit) {
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }

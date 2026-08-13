@@ -175,7 +175,7 @@ fun BucketsScreen(
             }
         }
     }
-    LaunchedEffect(Unit) {
+    SideEffect(Unit) {
         if (selectedBuckets.isEmpty()) {
             deleteDialogMedia.clear()
         }
@@ -239,7 +239,7 @@ fun BucketsScreen(
                     text = stringResource(R.string.no_buckets_found),
                     modifier = Modifier.matchParentSize(),
                 )
-                SideEffect {
+                SideEffect(Unit) {
                     if (selectedBuckets.isNotEmpty()) {
                         selectedBuckets.clear()
                     }
@@ -270,7 +270,7 @@ fun BucketsScreen(
                     thrown = uiState.thrown,
                     modifier = Modifier.matchParentSize(),
                 )
-                SideEffect {
+                SideEffect(Unit) {
                     if (selectedBuckets.isNotEmpty()) {
                         selectedBuckets.clear()
                     }
