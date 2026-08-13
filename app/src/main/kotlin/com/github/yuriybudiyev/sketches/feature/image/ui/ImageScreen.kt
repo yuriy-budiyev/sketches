@@ -215,10 +215,10 @@ private fun ImageScreenLayout(
     modifier: Modifier = Modifier,
 ) {
     var currentIndex by rememberSaveable { mutableIntStateOf(index) }.apply {
-        intValue = intValue.coerceIn(
-            0,
-            items.size - 1,
-        )
+        val maxIndex = items.size - 1
+        if (intValue > maxIndex) {
+            intValue = maxIndex
+        }
     }
     val itemsUpdated by rememberUpdatedState(items)
     val contextUpdated by rememberUpdatedState(LocalContext.current)
@@ -237,6 +237,9 @@ private fun ImageScreenLayout(
     )
     var deleteImageDialogVisible by rememberSaveable { mutableStateOf(false) }
     var deleteBookmarkDialogVisible by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(index) {
+        pagerState.scrollToPage(index)
+    }
     LaunchedEffect(Unit) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
             currentIndex = page
