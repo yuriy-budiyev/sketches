@@ -538,8 +538,22 @@ private fun BucketsScreenLayout(
     }
 }
 
-private fun Collection<MediaStoreBucket>.filterByIds(ids: Set<Long>): List<MediaStoreBucket> =
-    filterTo(ArrayList(size.coerceAtMost(ids.size))) { file -> ids.contains(file.id) }
+private fun Collection<MediaStoreBucket>.filterByIds(ids: Set<Long>): List<MediaStoreBucket> {
+    val size = this.size.coerceAtMost(ids.size)
+    if (size == 0) {
+        return emptyList()
+    }
+    val filtered = ArrayList<MediaStoreBucket>(size)
+    for (bucket in this) {
+        if (ids.contains(bucket.id)) {
+            filtered.add(bucket)
+        }
+        if (filtered.size == size) {
+            break
+        }
+    }
+    return filtered
+}
 
 private const val ShareAction: String =
     "com.github.yuriybudiyev.sketches.feature.buckets.ui.ShareAction"
