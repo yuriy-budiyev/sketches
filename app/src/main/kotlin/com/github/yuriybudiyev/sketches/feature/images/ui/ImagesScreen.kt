@@ -32,7 +32,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.component1
 import androidx.activity.result.component2
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -58,12 +60,14 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import coil3.imageLoader
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
+import com.github.yuriybudiyev.sketches.core.platform.log.logDebug
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
@@ -213,6 +217,17 @@ fun ImagesScreen(
     BackHandler(selectedFiles.isNotEmpty()) {
         coroutineScope.launch {
             selectedFiles.clear()
+        }
+    }
+    LaunchedEffect(allFiles) {
+        while (mediaGridState.canScrollForward) {
+            mediaGridState.animateScrollBy(
+                value = 2000F,
+                animationSpec = tween(
+                    durationMillis = 500,
+                    delayMillis = 500,
+                ),
+            )
         }
     }
     val navResultStore = LocalNavResultStore.current

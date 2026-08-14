@@ -60,11 +60,10 @@ class LocalThumbnailDiskCacheInterceptor(
         val heightDimension = size.height as? Dimension.Pixels ?: return chain.proceed()
         val cacheKey = "${data}/s/${widthDimension.px}x${heightDimension.px}"
         diskCache.openSnapshot(cacheKey)?.use { snapshot ->
-            val bitmap = snapshot.data
-                .toNioPath()
-                .inputStream()
-                .buffered(BufferSize)
-                .use { inputStream -> BitmapFactory.decodeStream(inputStream) }
+            val bitmap =
+                snapshot.data.toNioPath().inputStream().buffered(BufferSize).use { inputStream ->
+                    BitmapFactory.decodeStream(inputStream)
+                }
             if (bitmap != null) {
                 val image = bitmap.asImage(shareable = true)
                 val memoryCacheKey = request.memoryCacheKey?.let { memoryCacheKey ->
@@ -92,22 +91,16 @@ class LocalThumbnailDiskCacheInterceptor(
         val result = chain.proceed()
         if (result is SuccessResult) {
             val bitmap = result.image.toBitmap()
-            diskCache
-                .openEditor(cacheKey)
-                ?.commitAndOpenSnapshot()
-                ?.use { snapshot ->
-                    snapshot.data
-                        .toNioPath()
-                        .outputStream()
-                        .buffered(BufferSize)
-                        .use { outputStream ->
-                            bitmap.compress(
-                                Bitmap.CompressFormat.PNG,
-                                100,
-                                outputStream,
-                            )
-                        }
+            diskCache.openEditor(cacheKey)?.also { editor ->
+                editor.data.toNioPath().outputStream().buffered(BufferSize).use { outputStream ->
+                    bitmap.compress(
+                        Bitmap.CompressFormat.PNG,
+                        100,
+                        outputStream,
+                    )
                 }
+                editor.commit()
+            }
             return result.copy(
                 image = bitmap.asImage(shareable = true),
                 diskCacheKey = cacheKey,
