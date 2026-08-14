@@ -37,8 +37,6 @@ import coil3.request.SuccessResult
 import coil3.size.Dimension
 import coil3.toBitmap
 import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
-import kotlin.io.path.inputStream
-import kotlin.io.path.outputStream
 
 class LocalThumbnailDiskCacheInterceptor(
     private val memoryCache: MemoryCache,
@@ -60,10 +58,9 @@ class LocalThumbnailDiskCacheInterceptor(
         val heightDimension = size.height as? Dimension.Pixels ?: return chain.proceed()
         val cacheKey = "${data}/s/${widthDimension.px}x${heightDimension.px}"
         diskCache.openSnapshot(cacheKey)?.use { snapshot ->
-            val bitmap =
-                snapshot.data.toNioPath().inputStream().buffered(BufferSize).use { inputStream ->
-                    BitmapFactory.decodeStream(inputStream)
-                }
+            val bitmap = diskCache.fileSystem.read(snapshot.data) {
+                BitmapFactory.decodeStream(inputStream())
+            }
             if (bitmap != null) {
                 val image = bitmap.asImage(shareable = true)
                 val memoryCacheKey = request.memoryCacheKey?.let { memoryCacheKey ->
@@ -91,12 +88,12 @@ class LocalThumbnailDiskCacheInterceptor(
         val result = chain.proceed()
         if (result is SuccessResult) {
             val bitmap = result.image.toBitmap()
-            diskCache.openEditor(cacheKey)?.also { editor ->
-                editor.data.toNioPath().outputStream().buffered(BufferSize).use { outputStream ->
+            diskCache.openEditor(cacheKey)?.let { editor ->
+                diskCache.fileSystem.write(editor.data) {
                     bitmap.compress(
                         Bitmap.CompressFormat.PNG,
                         100,
-                        outputStream,
+                        outputStream(),
                     )
                 }
                 editor.commit()
@@ -107,10 +104,5 @@ class LocalThumbnailDiskCacheInterceptor(
             )
         }
         return result
-    }
-
-    private companion object {
-
-        const val BufferSize: Int = 32768
     }
 }
