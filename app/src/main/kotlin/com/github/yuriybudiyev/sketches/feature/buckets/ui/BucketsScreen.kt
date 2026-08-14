@@ -256,7 +256,7 @@ fun BucketsScreen(
             is BucketsScreenViewModel.UiState.Buckets -> {
                 val buckets = uiState.buckets
                 allBuckets = buckets
-                BucketsScreenLayout(
+                BucketsMediaGrid(
                     state = bucketsGridState,
                     buckets = buckets,
                     selectedBuckets = selectedBuckets,
@@ -358,7 +358,7 @@ fun BucketsScreen(
 }
 
 @Composable
-private fun BucketsScreenLayout(
+private fun BucketsMediaGrid(
     state: LazyGridState,
     buckets: List<MediaStoreBucket>,
     selectedBuckets: SnapshotStateSet<Long>,
@@ -463,7 +463,7 @@ private fun BucketsScreenLayout(
                     ),
                     color = colorScheme.onBackground,
                     fontSize = 16.sp,
-                    overflow = TextOverflow.Ellipsis,
+                    overflow = TextOverflow.MiddleEllipsis,
                     maxLines = 1,
                 )
                 Text(
