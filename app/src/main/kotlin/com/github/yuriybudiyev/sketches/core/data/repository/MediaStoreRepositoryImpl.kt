@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.data.repository
 
+import android.content.ContentProviderOperation
 import android.content.ContentUris
 import android.content.Context
 import android.database.ContentObserver
@@ -125,17 +126,17 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteContent(uris: Collection<Uri>) {
+    override suspend fun deleteMedia(uris: Collection<Uri>) {
         withContext(ioDispatcher) {
             contentResolverMutex.withLock {
-                val contentResolver = appContext.contentResolver
+                val operations = ArrayList<ContentProviderOperation>(uris.size)
                 for (uri in uris) {
-                    contentResolver.delete(
-                        uri,
-                        null,
-                        null,
-                    )
+                    operations.add(ContentProviderOperation.newDelete(uri).build())
                 }
+                appContext.contentResolver.applyBatch(
+                    MediaStore.AUTHORITY,
+                    operations,
+                )
             }
         }
     }

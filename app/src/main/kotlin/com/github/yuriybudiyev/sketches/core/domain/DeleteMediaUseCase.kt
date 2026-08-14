@@ -33,6 +33,6 @@ import javax.inject.Inject
 class DeleteMediaUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
     suspend operator fun invoke(uris: Collection<Uri>) {
-        repository.deleteContent(uris)
+        repository.deleteMedia(uris)
     }
 }

@@ -30,7 +30,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.consumable.Consumable
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.domain.DeleteContentUseCase
+import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBucketsContentUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetMediaBucketsUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
@@ -49,7 +49,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BucketsScreenViewModel @Inject constructor(
     private val getBucketsContent: GetBucketsContentUseCase,
-    private val deleteContent: DeleteContentUseCase,
+    private val deleteMedia: DeleteMediaUseCase,
     private val updateMediaAccess: UpdateMediaAccessUseCase,
     getMediaBuckets: GetMediaBucketsUseCase,
 ): ViewModel() {
@@ -127,7 +127,7 @@ class BucketsScreenViewModel @Inject constructor(
 
     fun deleteMedia(uris: Collection<Uri>) {
         viewModelScope.launch {
-            deleteContent(uris)
+            deleteMedia.invoke(uris)
         }
     }
 

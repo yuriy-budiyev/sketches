@@ -41,5 +41,5 @@ interface MediaStoreRepository {
 
     suspend fun deleteBookmarks(mediaIds: Collection<Long>)
 
-    suspend fun deleteContent(uris: Collection<Uri>)
+    suspend fun deleteMedia(uris: Collection<Uri>)
 }
