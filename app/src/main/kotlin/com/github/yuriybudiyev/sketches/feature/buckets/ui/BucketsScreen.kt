@@ -95,7 +95,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaDesc
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
-import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
+import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.MemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
@@ -427,7 +427,7 @@ private fun BucketsScreenLayout(
                     val coverUri = bucketUpdated.coverUri
                     SketchesThumbnailAsyncImage(
                         uri = coverUri,
-                        memoryCacheKey = SketchesMemoryCacheKeys.thumbnail(coverUri),
+                        memoryCacheKey = MemoryCacheKeys.thumbnail(coverUri),
                         contentDescription = stringResource(R.string.bucket_cover),
                         modifier = Modifier.matchParentSize(),
                     )

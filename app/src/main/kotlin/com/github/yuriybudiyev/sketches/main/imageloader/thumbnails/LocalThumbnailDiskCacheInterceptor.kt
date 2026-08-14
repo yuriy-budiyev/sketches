@@ -27,6 +27,7 @@ package com.github.yuriybudiyev.sketches.main.imageloader.thumbnails
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import coil3.asImage
 import coil3.decode.DataSource
 import coil3.disk.DiskCache
@@ -36,7 +37,7 @@ import coil3.request.ImageResult
 import coil3.request.SuccessResult
 import coil3.size.Dimension
 import coil3.toBitmap
-import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
+import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.MemoryCacheKeys
 
 class LocalThumbnailDiskCacheInterceptor(
     private val memoryCache: MemoryCache,
@@ -45,7 +46,7 @@ class LocalThumbnailDiskCacheInterceptor(
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val request = chain.request
-        if (!SketchesMemoryCacheKeys.LocalDiskCache.checkAllow(request.memoryCacheKeyExtras)) {
+        if (!MemoryCacheKeys.LocalDiskCache.checkAllow(request.memoryCacheKeyExtras)) {
             return chain.proceed()
         }
         val data = request.data as? Uri ?: return chain.proceed()
@@ -89,12 +90,24 @@ class LocalThumbnailDiskCacheInterceptor(
         if (result is SuccessResult) {
             val bitmap = result.image.toBitmap()
             diskCache.openEditor(cacheKey)?.let { editor ->
+                diskCache.fileSystem.write(editor.metadata) {
+                    writeUtf8("$data\n")
+                }
                 diskCache.fileSystem.write(editor.data) {
-                    bitmap.compress(
-                        Bitmap.CompressFormat.PNG,
-                        100,
-                        outputStream(),
-                    )
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        bitmap.compress(
+                            Bitmap.CompressFormat.WEBP_LOSSY,
+                            90,
+                            outputStream(),
+                        )
+                    } else {
+                        @Suppress("DEPRECATION")
+                        bitmap.compress(
+                            Bitmap.CompressFormat.WEBP,
+                            90,
+                            outputStream(),
+                        )
+                    }
                 }
                 editor.commit()
             }

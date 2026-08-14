@@ -57,13 +57,14 @@ import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
 import coil3.imageLoader
 import coil3.memory.MemoryCache
+import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.size.Scale
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
-import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
+import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.MemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
@@ -83,6 +84,7 @@ fun SketchesThumbnailAsyncImage(
         sizeResolver,
     ) {
         ImageRequest.Builder(context)
+            .diskCachePolicy(CachePolicy.DISABLED)
             .memoryCacheKey(memoryCacheKey)
             .data(uri)
             .size(sizeResolver)
@@ -153,11 +155,12 @@ fun SketchesPreviewAsyncImage(
     ) {
         ImageRequest
             .Builder(context)
+            .diskCachePolicy(CachePolicy.DISABLED)
             .placeholder {
-                context.imageLoader.memoryCache?.get(SketchesMemoryCacheKeys.mediaBar(uri))?.image
+                context.imageLoader.memoryCache?.get(MemoryCacheKeys.mediaBar(uri))?.image
             }
-            .placeholderMemoryCacheKey(SketchesMemoryCacheKeys.thumbnail(uri))
-            .memoryCacheKey(SketchesMemoryCacheKeys.preview(uri))
+            .placeholderMemoryCacheKey(MemoryCacheKeys.thumbnail(uri))
+            .memoryCacheKey(MemoryCacheKeys.preview(uri))
             .data(uri)
             .size(coil3.size.Size.ORIGINAL)
             .build()

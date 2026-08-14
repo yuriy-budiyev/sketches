@@ -215,17 +215,6 @@ fun ImagesScreen(
             selectedFiles.clear()
         }
     }
-    /*LaunchedEffect(allFiles) {
-        while (mediaGridState.canScrollForward) {
-            mediaGridState.animateScrollBy(
-                value = 2000F,
-                animationSpec = tween(
-                    durationMillis = 500,
-                    delayMillis = 500,
-                ),
-            )
-        }
-    }*/
     val navResultStore = LocalNavResultStore.current
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(

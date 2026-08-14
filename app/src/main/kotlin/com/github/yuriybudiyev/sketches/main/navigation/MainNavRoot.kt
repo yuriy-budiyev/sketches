@@ -111,7 +111,7 @@ import com.github.yuriybudiyev.sketches.feature.images.navigation.registerImages
 import kotlinx.parcelize.Parcelize
 
 @Composable
-fun SketchesNavRoot(
+fun MainNavRoot(
     modifier: Modifier = Modifier,
     onRequestMediaAccess: OnRequestMediaAccess,
 ) {

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.theme
+package com.github.yuriybudiyev.sketches.main.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
@@ -35,7 +35,7 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
 @NonRestartableComposable
-fun SketchesTheme(content: @Composable () -> Unit) {
+fun MainTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = if (isSystemInDarkTheme()) DarkColorScheme else LightColorScheme,
         content = content,

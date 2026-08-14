@@ -50,7 +50,7 @@ fun SketchesErrorMessage(
     modifier: Modifier = Modifier,
 ) {
     if (BuildConfig.DEBUG) {
-        val clipboardUpdated by rememberUpdatedState(LocalClipboard.current)
+        val clipboard by rememberUpdatedState(LocalClipboard.current)
         val thrownUpdated by rememberUpdatedState(thrown)
         val coroutineScope = rememberCoroutineScope()
         Column(
@@ -69,7 +69,7 @@ fun SketchesErrorMessage(
                 modifier = Modifier
                     .clickable {
                         coroutineScope.launch {
-                            clipboardUpdated.setClipEntry(
+                            clipboard.setClipEntry(
                                 ClipEntry(
                                     ClipData.newPlainText(
                                         "Stack trace",
@@ -84,12 +84,12 @@ fun SketchesErrorMessage(
             )
         }
     } else {
-        val message = thrown.message
+        val message = thrown.localizedMessage
         SketchesCenteredMessage(
             text = if (message.isNullOrEmpty()) {
                 stringResource(R.string.unexpected_error)
             } else {
-                stringResource(R.string.unexpected_error) + "\n${thrown.message}"
+                stringResource(R.string.unexpected_error) + "\n${message}"
             },
             modifier = modifier,
         )

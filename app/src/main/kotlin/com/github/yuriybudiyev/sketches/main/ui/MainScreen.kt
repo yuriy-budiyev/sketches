@@ -65,12 +65,12 @@ import com.github.yuriybudiyev.sketches.core.platform.permissions.media.remember
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.rememberOnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesOutlinedButton
-import com.github.yuriybudiyev.sketches.main.navigation.SketchesNavRoot
+import com.github.yuriybudiyev.sketches.main.navigation.MainNavRoot
 
 @Composable
-fun SketchesApp() {
-    val appContextUpdated by rememberUpdatedState(LocalContext.current.applicationContext)
-    var mediaAccess by remember { mutableStateOf(appContextUpdated.checkMediaAccess()) }
+fun MainScreen() {
+    val appContext by rememberUpdatedState(LocalContext.current.applicationContext)
+    var mediaAccess by remember { mutableStateOf(appContext.checkMediaAccess()) }
     val mediaAccessLauncher = rememberMediaAccessRequestLauncher { result ->
         mediaAccess = result
     }
@@ -78,7 +78,7 @@ fun SketchesApp() {
         mediaAccessLauncher.requestMediaAccess()
     }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
-        mediaAccess = appContextUpdated.checkMediaAccess()
+        mediaAccess = appContext.checkMediaAccess()
         onRequestMediaAccess.isEnabled = mediaAccess == MediaAccess.UserSelected
     }
     val colorScheme = MaterialTheme.colorScheme
@@ -95,7 +95,7 @@ fun SketchesApp() {
         ) {
             when (mediaAccess) {
                 MediaAccess.Full, MediaAccess.UserSelected -> {
-                    SketchesNavRoot(
+                    MainNavRoot(
                         modifier = Modifier.matchParentSize(),
                         onRequestMediaAccess = onRequestMediaAccess,
                     )
@@ -127,7 +127,7 @@ fun SketchesApp() {
                                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                                 intent.data = Uri.fromParts(
                                     "package",
-                                    appContextUpdated.packageName,
+                                    appContext.packageName,
                                     null,
                                 )
                                 settingsLauncher.launch(intent)

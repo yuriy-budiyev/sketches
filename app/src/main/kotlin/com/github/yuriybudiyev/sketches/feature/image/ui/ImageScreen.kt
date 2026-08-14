@@ -113,7 +113,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesPreviewAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
-import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
+import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.MemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
@@ -129,7 +129,7 @@ fun ImageRoute(viewModel: ImageScreenViewModel) {
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.updateMediaAccess()
     }
-    val navResultStoreUpdated by rememberUpdatedState(LocalNavResultStore.current)
+    val navResultStore by rememberUpdatedState(LocalNavResultStore.current)
     ImageScreen(
         uiState = uiState,
         onChange = { index, file ->
@@ -138,7 +138,7 @@ fun ImageRoute(viewModel: ImageScreenViewModel) {
                 fileIndex = index,
                 fileId = fileId,
             )
-            navResultStoreUpdated.putNavResult(
+            navResultStore.putNavResult(
                 result = ImageScreenNavResult(
                     fileIndex = index,
                     fileId = fileId,
@@ -220,8 +220,8 @@ private fun ImageScreenLayout(
         }
     }
     val itemsUpdated by rememberUpdatedState(items)
-    val contextUpdated by rememberUpdatedState(LocalContext.current)
-    val shareManagerUpdated by rememberUpdatedState(LocalShareManager.current)
+    val context by rememberUpdatedState(LocalContext.current)
+    val shareManager by rememberUpdatedState(LocalShareManager.current)
     val onChangeUpdated by rememberUpdatedState(onChange)
     val onDeleteImageUpdated by rememberUpdatedState(onDeleteImage)
     val onCreateBookmarkUpdated by rememberUpdatedState(onCreateBookmark)
@@ -229,7 +229,7 @@ private fun ImageScreenLayout(
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState(currentIndex) { itemsUpdated.size }
     val barState = rememberMediaBarState(currentIndex)
-    val systemBarsControllerUpdated by rememberUpdatedState(LocalSystemBarsController.current)
+    val systemBarsController by rememberUpdatedState(LocalSystemBarsController.current)
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { },
@@ -255,7 +255,7 @@ private fun ImageScreenLayout(
         }
     }
     LaunchedEffect(Unit) {
-        snapshotFlow { systemBarsControllerUpdated.isSystemBarsVisible }.collect { visible ->
+        snapshotFlow { systemBarsController.isSystemBarsVisible }.collect { visible ->
             if (visible) {
                 coroutineScope.launch {
                     barState.scrollToItemCentered(
@@ -288,14 +288,14 @@ private fun ImageScreenLayout(
             items = itemsUpdated,
             onPageTap = {
                 coroutineScope.launch {
-                    if (systemBarsControllerUpdated.isSystemBarsVisible) {
-                        systemBarsControllerUpdated.hideSystemBars()
+                    if (systemBarsController.isSystemBarsVisible) {
+                        systemBarsController.hideSystemBars()
                     } else {
-                        systemBarsControllerUpdated.showSystemBars()
+                        systemBarsController.showSystemBars()
                     }
                 }
             },
-            controllerVisible = systemBarsControllerUpdated.isSystemBarsVisible,
+            controllerVisible = systemBarsController.isSystemBarsVisible,
             controllerStartPadding = controllerPaddings.calculateStartPadding(layoutDirection),
             controllerEndPadding = controllerPaddings.calculateEndPadding(layoutDirection),
             controllerBottomPadding = contentPaddingBottom + dimens.bottomBarHeight,
@@ -307,7 +307,7 @@ private fun ImageScreenLayout(
                 ),
         )
         AnimatedVisibility(
-            visible = systemBarsControllerUpdated.isSystemBarsVisible,
+            visible = systemBarsController.isSystemBarsVisible,
             enter = fadeIn(),
             exit = fadeOut(),
             modifier = Modifier.align(Alignment.BottomStart),
@@ -336,7 +336,7 @@ private fun ImageScreenLayout(
             )
         }
         AnimatedVisibility(
-            visible = systemBarsControllerUpdated.isSystemBarsVisible,
+            visible = systemBarsController.isSystemBarsVisible,
             enter = fadeIn(),
             exit = fadeOut(),
             modifier = Modifier.align(Alignment.TopStart),
@@ -383,7 +383,7 @@ private fun ImageScreenLayout(
                     onClick = {
                         coroutineScope.launch {
                             val file = itemsUpdated[currentIndex].file
-                            shareManagerUpdated.startChooserActivity(
+                            shareManager.startChooserActivity(
                                 file.uri,
                                 file.mimeType,
                                 shareDescription,
@@ -401,7 +401,7 @@ private fun ImageScreenLayout(
                     coroutineScope.launch {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             deleteRequestLauncher.launchDeleteMediaRequest(
-                                contextUpdated,
+                                context,
                                 listOf(itemsUpdated[currentIndex].file.uri),
                             )
                         } else {
@@ -622,8 +622,8 @@ private fun VideoPage(
         modifier = modifier,
         zoomState = zoomState,
         enablePlaceholder = true,
-        placeholderMemoryCacheKey = SketchesMemoryCacheKeys.thumbnail(fileUri),
-        placeholderMemoryCacheFallback = SketchesMemoryCacheKeys.mediaBar(fileUri),
+        placeholderMemoryCacheKey = MemoryCacheKeys.thumbnail(fileUri),
+        placeholderMemoryCacheFallback = MemoryCacheKeys.mediaBar(fileUri),
         enableErrorIndicator = true,
     )
 }
@@ -698,7 +698,7 @@ private fun MediaBar(
                 val fileUri = file.uri
                 SketchesThumbnailAsyncImage(
                     uri = fileUri,
-                    memoryCacheKey = SketchesMemoryCacheKeys.mediaBar(fileUri),
+                    memoryCacheKey = MemoryCacheKeys.mediaBar(fileUri),
                     contentDescription = stringResource(
                         id = when (file.mediaType) {
                             MediaType.Image -> R.string.image

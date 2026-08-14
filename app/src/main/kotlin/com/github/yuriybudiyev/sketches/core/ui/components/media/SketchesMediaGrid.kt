@@ -61,7 +61,7 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withMediumTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
-import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.SketchesMemoryCacheKeys
+import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.MemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import kotlinx.parcelize.Parcelize
@@ -125,26 +125,26 @@ fun SketchesMediaGrid(
             key = { index -> SketchesMediaGridKey.MediaStoreFile(fileId = filesUpdated[index].id) },
             contentType = { SketchesMediaGridContentType.MediaStoreFile },
         ) { index ->
-            val fileUpdated by rememberUpdatedState(filesUpdated[index])
+            val file by rememberUpdatedState(filesUpdated[index])
             SketchesMediaGridItem(
-                file = fileUpdated,
-                fileSelected = selectedFilesUpdated.contains(fileUpdated.id),
+                file = file,
+                fileSelected = selectedFilesUpdated.contains(file.id),
                 onLongClick = {
                     if (selectedFilesUpdated.isEmpty()) {
-                        selectedFilesUpdated.add(fileUpdated.id)
+                        selectedFilesUpdated.add(file.id)
                     }
                 },
             ) {
                 if (selectedFilesUpdated.isNotEmpty()) {
-                    if (selectedFilesUpdated.contains(fileUpdated.id)) {
-                        selectedFilesUpdated.remove(fileUpdated.id)
+                    if (selectedFilesUpdated.contains(file.id)) {
+                        selectedFilesUpdated.remove(file.id)
                     } else {
-                        selectedFilesUpdated.add(fileUpdated.id)
+                        selectedFilesUpdated.add(file.id)
                     }
                 } else {
                     onItemClickUpdated(
                         index,
-                        fileUpdated,
+                        file,
                     )
                 }
             }
@@ -232,26 +232,26 @@ fun SketchesGroupingMediaGrid(
                 key = { index -> SketchesMediaGridKey.MediaStoreFile(files[index].id) },
                 contentType = { SketchesMediaGridContentType.MediaStoreFile },
             ) { index ->
-                val fileUpdated by rememberUpdatedState(files[index])
+                val file by rememberUpdatedState(files[index])
                 SketchesMediaGridItem(
-                    file = fileUpdated,
-                    fileSelected = selectedFilesUpdated.contains(fileUpdated.id),
+                    file = file,
+                    fileSelected = selectedFilesUpdated.contains(file.id),
                     onLongClick = {
                         if (selectedFilesUpdated.isEmpty()) {
-                            selectedFilesUpdated.add(fileUpdated.id)
+                            selectedFilesUpdated.add(file.id)
                         }
                     },
                 ) {
                     if (selectedFilesUpdated.isNotEmpty()) {
-                        if (selectedFilesUpdated.contains(fileUpdated.id)) {
-                            selectedFilesUpdated.remove(fileUpdated.id)
+                        if (selectedFilesUpdated.contains(file.id)) {
+                            selectedFilesUpdated.remove(file.id)
                         } else {
-                            selectedFilesUpdated.add(fileUpdated.id)
+                            selectedFilesUpdated.add(file.id)
                         }
                     } else {
                         onItemClickUpdated(
                             index,
-                            fileUpdated,
+                            file,
                         )
                     }
                 }
@@ -324,7 +324,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
         val fileUri = fileUpdated.uri
         SketchesThumbnailAsyncImage(
             uri = fileUri,
-            memoryCacheKey = SketchesMemoryCacheKeys.thumbnail(fileUri),
+            memoryCacheKey = MemoryCacheKeys.thumbnail(fileUri),
             contentDescription = stringResource(
                 id = when (fileUpdated.mediaType) {
                     MediaType.Image -> R.string.image

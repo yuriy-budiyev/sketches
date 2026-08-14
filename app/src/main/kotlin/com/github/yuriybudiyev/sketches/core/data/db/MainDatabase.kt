@@ -36,7 +36,7 @@ import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
     version = 1,
 )
 @ColumnTypeConverters(LocalDateTimeConverter::class)
-abstract class SketchesDatabase: RoomDatabase() {
+abstract class MainDatabase: RoomDatabase() {
 
     abstract fun bookmarksDao(): BookmarksDao
 }

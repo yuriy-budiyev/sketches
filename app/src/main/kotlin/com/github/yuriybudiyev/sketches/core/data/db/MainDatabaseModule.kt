@@ -36,20 +36,20 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object SketchesDatabaseModule {
+object MainDatabaseModule {
 
     @Provides
     @Singleton
     fun provideSketchesDatabase(
         @ApplicationContext
         context: Context,
-    ): SketchesDatabase =
-        Room.databaseBuilder<SketchesDatabase>(
+    ): MainDatabase =
+        Room.databaseBuilder<MainDatabase>(
             context = context,
-            name = "sketches",
+            name = "main",
         ).build()
 
     @Provides
-    fun provideBookmarksDao(database: SketchesDatabase): BookmarksDao =
+    fun provideBookmarksDao(database: MainDatabase): BookmarksDao =
         database.bookmarksDao()
 }

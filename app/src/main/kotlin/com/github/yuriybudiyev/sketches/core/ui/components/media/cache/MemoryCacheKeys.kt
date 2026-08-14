@@ -28,7 +28,7 @@ import android.net.Uri
 import androidx.compose.runtime.Stable
 import coil3.memory.MemoryCache
 
-object SketchesMemoryCacheKeys {
+object MemoryCacheKeys {
 
     @Stable
     fun thumbnail(uri: Uri): MemoryCache.Key =
