@@ -32,9 +32,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.component1
 import androidx.activity.result.component2
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -217,7 +215,7 @@ fun ImagesScreen(
             selectedFiles.clear()
         }
     }
-    LaunchedEffect(allFiles) {
+    /*LaunchedEffect(allFiles) {
         while (mediaGridState.canScrollForward) {
             mediaGridState.animateScrollBy(
                 value = 2000F,
@@ -227,7 +225,7 @@ fun ImagesScreen(
                 ),
             )
         }
-    }
+    }*/
     val navResultStore = LocalNavResultStore.current
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(
