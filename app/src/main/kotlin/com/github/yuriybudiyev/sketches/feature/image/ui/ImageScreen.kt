@@ -72,7 +72,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.NonRestartableComposable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -176,7 +175,7 @@ fun ImageScreen(
     ) {
         when (uiState) {
             is ImageScreenViewModel.UiState.Empty -> {
-                SideEffect(Unit) {
+                LaunchedEffect(Unit) {
                     onBackPressedDispatcher?.onBackPressed()
                 }
             }

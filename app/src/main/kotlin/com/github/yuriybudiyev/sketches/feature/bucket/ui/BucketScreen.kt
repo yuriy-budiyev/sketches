@@ -57,7 +57,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -238,7 +237,7 @@ fun BucketScreen(
             shareManager.unregisterOnSharedListener(ShareAction)
         }
     }
-    SideEffect(Unit) {
+    LaunchedEffect(Unit) {
         if (selectedFiles.isEmpty()) {
             deleteDialogVisible = false
         }
@@ -295,7 +294,7 @@ fun BucketScreen(
     ) {
         when (uiState) {
             is BucketScreenViewModel.UiState.Empty -> {
-                SideEffect(Unit) {
+                LaunchedEffect(Unit) {
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }
@@ -326,7 +325,7 @@ fun BucketScreen(
                     thrown = uiState.thrown,
                     modifier = Modifier.matchParentSize(),
                 )
-                SideEffect(Unit) {
+                LaunchedEffect(Unit) {
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }

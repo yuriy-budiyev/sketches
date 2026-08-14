@@ -41,7 +41,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -206,7 +205,7 @@ fun ImagesScreen(
             shareManager.unregisterOnSharedListener(ShareAction)
         }
     }
-    SideEffect(Unit) {
+    LaunchedEffect(Unit) {
         if (selectedFiles.isEmpty()) {
             deleteDialogVisible = false
         }
@@ -277,7 +276,7 @@ fun ImagesScreen(
                     text = stringResource(R.string.no_images_found),
                     modifier = Modifier.matchParentSize(),
                 )
-                SideEffect(Unit) {
+                LaunchedEffect(Unit) {
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }
@@ -306,7 +305,7 @@ fun ImagesScreen(
                     thrown = uiState.thrown,
                     modifier = Modifier.matchParentSize(),
                 )
-                SideEffect(Unit) {
+                LaunchedEffect(Unit) {
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }

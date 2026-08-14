@@ -40,7 +40,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -211,7 +210,7 @@ private fun BookmarksScreen(
             shareManager.unregisterOnSharedListener(ShareAction)
         }
     }
-    SideEffect(Unit) {
+    LaunchedEffect(Unit) {
         if (selectedFiles.isEmpty()) {
             deleteFilesDialogVisible = false
             deleteBookmarksDialogVisible = false
@@ -284,7 +283,7 @@ private fun BookmarksScreen(
                     text = stringResource(R.string.no_bookmarks_found),
                     modifier = Modifier.matchParentSize(),
                 )
-                SideEffect(Unit) {
+                LaunchedEffect(Unit) {
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }
@@ -313,7 +312,7 @@ private fun BookmarksScreen(
                     thrown = uiState.thrown,
                     modifier = Modifier.matchParentSize(),
                 )
-                SideEffect(Unit) {
+                LaunchedEffect(Unit) {
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }

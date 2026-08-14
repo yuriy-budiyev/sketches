@@ -49,7 +49,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -175,7 +174,7 @@ fun BucketsScreen(
             }
         }
     }
-    SideEffect(Unit) {
+    LaunchedEffect(Unit) {
         if (selectedBuckets.isEmpty()) {
             deleteDialogMedia.clear()
         }
@@ -239,7 +238,7 @@ fun BucketsScreen(
                     text = stringResource(R.string.no_buckets_found),
                     modifier = Modifier.matchParentSize(),
                 )
-                SideEffect(Unit) {
+                LaunchedEffect(Unit) {
                     if (selectedBuckets.isNotEmpty()) {
                         selectedBuckets.clear()
                     }
@@ -270,7 +269,7 @@ fun BucketsScreen(
                     thrown = uiState.thrown,
                     modifier = Modifier.matchParentSize(),
                 )
-                SideEffect(Unit) {
+                LaunchedEffect(Unit) {
                     if (selectedBuckets.isNotEmpty()) {
                         selectedBuckets.clear()
                     }
