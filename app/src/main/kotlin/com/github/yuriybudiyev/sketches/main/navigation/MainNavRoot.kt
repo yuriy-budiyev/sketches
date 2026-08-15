@@ -126,6 +126,11 @@ fun MainNavRoot(
     val navBackStack = rememberSaveableSnapshotStateList<NavRoute> {
         add(initialRoute)
     }
+    val topRootRoute by remember {
+        derivedStateOf {
+            navBackStack.lastOrNull { route -> route is RootNavRoute } as? RootNavRoute
+        }
+    }
     val currentRouteIsRoot by remember {
         derivedStateOf {
             navBackStack.lastOrNull() is RootNavRoute
@@ -323,19 +328,21 @@ fun MainNavRoot(
                                 .fillMaxSize(),
                             horizontalArrangement = Arrangement.SpaceEvenly,
                         ) {
-                            val topRootRoute =
-                                navBackStack.lastOrNull { route -> route is RootNavRoute }
                             for (route in rootRoutes) {
-                                val selected = route == topRootRoute
+                                val routeSelected by remember {
+                                    derivedStateOf {
+                                        route == topRootRoute
+                                    }
+                                }
                                 NavigationBarItem(
-                                    selected = selected,
+                                    selected = routeSelected,
                                     colors = NavigationBarItemDefaults.colors(
                                         selectedIconColor = colorScheme.onPrimary,
                                         unselectedIconColor = colorScheme.onBackground,
                                         indicatorColor = colorScheme.primary,
                                     ),
                                     onClick = {
-                                        if (route == topRootRoute) {
+                                        if (routeSelected) {
                                             rootNavBarController.dispatchOnClick(route)
                                         } else {
                                             if (route == initialRoute) {
@@ -354,7 +361,7 @@ fun MainNavRoot(
                                     icon = {
                                         Icon(
                                             painter = painterResource(
-                                                if (selected) {
+                                                if (routeSelected) {
                                                     route.selectedIconRes
                                                 } else {
                                                     route.unselectedIconRes

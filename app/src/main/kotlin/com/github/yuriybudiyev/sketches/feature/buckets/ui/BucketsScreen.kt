@@ -49,6 +49,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -381,8 +382,12 @@ private fun BucketsMediaGrid(
             key = { index -> bucketsUpdated[index].id },
             contentType = { null },
         ) { index ->
-            val bucketUpdated by rememberUpdatedState(bucketsUpdated[index])
-            val bucketSelectedUpdated by rememberUpdatedState(selectedBucketsUpdated.contains(bucketUpdated.id))
+            val bucket by rememberUpdatedState(bucketsUpdated[index])
+            val bucketSelected by remember {
+                derivedStateOf {
+                    selectedBucketsUpdated.contains(bucket.id)
+                }
+            }
             Column(
                 modifier = Modifier
                     .animateItem()
@@ -390,20 +395,20 @@ private fun BucketsMediaGrid(
                     .combinedClickable(
                         onLongClick = {
                             if (selectedBucketsUpdated.isEmpty()) {
-                                selectedBucketsUpdated.add(bucketUpdated.id)
+                                selectedBucketsUpdated.add(bucket.id)
                             }
                         },
                         onClick = {
                             if (selectedBucketsUpdated.isNotEmpty()) {
-                                if (selectedBucketsUpdated.contains(bucketUpdated.id)) {
-                                    selectedBucketsUpdated.remove(bucketUpdated.id)
+                                if (bucketSelected) {
+                                    selectedBucketsUpdated.remove(bucket.id)
                                 } else {
-                                    selectedBucketsUpdated.add(bucketUpdated.id)
+                                    selectedBucketsUpdated.add(bucket.id)
                                 }
                             } else {
                                 onBucketClickUpdated(
                                     index,
-                                    bucketUpdated,
+                                    bucket,
                                 )
                             }
                         },
@@ -415,7 +420,7 @@ private fun BucketsMediaGrid(
                         .aspectRatio(ratio = 1F)
                         .border(
                             width = dimens.mediaItemBorderThickness,
-                            color = if (bucketSelectedUpdated) {
+                            color = if (bucketSelected) {
                                 colorScheme.onBackground.withLowTransparency()
                             } else {
                                 colorScheme.onBackground.withHighTransparency()
@@ -424,14 +429,14 @@ private fun BucketsMediaGrid(
                         )
                         .clipToBounds(),
                 ) {
-                    val coverUri = bucketUpdated.coverUri
+                    val coverUri = bucket.coverUri
                     SketchesThumbnailAsyncImage(
                         uri = coverUri,
                         memoryCacheKey = MemoryCacheKeys.thumbnail(coverUri),
                         contentDescription = stringResource(R.string.bucket_cover),
                         modifier = Modifier.matchParentSize(),
                     )
-                    if (bucketSelectedUpdated) {
+                    if (bucketSelected) {
                         Box(
                             modifier = Modifier
                                 .matchParentSize()
@@ -454,7 +459,7 @@ private fun BucketsMediaGrid(
                     }
                 }
                 Text(
-                    text = bucketUpdated.name,
+                    text = bucket.name,
                     modifier = Modifier.padding(
                         start = 4.dp,
                         top = 4.dp,
@@ -467,7 +472,7 @@ private fun BucketsMediaGrid(
                     maxLines = 1,
                 )
                 Text(
-                    text = bucketUpdated.size.toString(),
+                    text = bucket.size.toString(),
                     modifier = Modifier.padding(
                         start = 4.dp,
                         top = 0.dp,

@@ -40,6 +40,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -126,28 +127,34 @@ fun SketchesMediaGrid(
             contentType = { SketchesMediaGridContentType.MediaStoreFile },
         ) { index ->
             val file by rememberUpdatedState(filesUpdated[index])
+            val fileSelected by remember {
+                derivedStateOf {
+                    selectedFilesUpdated.contains(file.id)
+                }
+            }
             SketchesMediaGridItem(
                 file = file,
-                fileSelected = selectedFilesUpdated.contains(file.id),
+                fileSelected = fileSelected,
                 onLongClick = {
                     if (selectedFilesUpdated.isEmpty()) {
                         selectedFilesUpdated.add(file.id)
                     }
                 },
-            ) {
-                if (selectedFilesUpdated.isNotEmpty()) {
-                    if (selectedFilesUpdated.contains(file.id)) {
-                        selectedFilesUpdated.remove(file.id)
+                onClick = {
+                    if (selectedFilesUpdated.isNotEmpty()) {
+                        if (fileSelected) {
+                            selectedFilesUpdated.remove(file.id)
+                        } else {
+                            selectedFilesUpdated.add(file.id)
+                        }
                     } else {
-                        selectedFilesUpdated.add(file.id)
+                        onItemClickUpdated(
+                            index,
+                            file,
+                        )
                     }
-                } else {
-                    onItemClickUpdated(
-                        index,
-                        file,
-                    )
-                }
-            }
+                },
+            )
         }
     }
 }
@@ -233,28 +240,34 @@ fun SketchesGroupingMediaGrid(
                 contentType = { SketchesMediaGridContentType.MediaStoreFile },
             ) { index ->
                 val file by rememberUpdatedState(files[index])
+                val fileSelected by remember {
+                    derivedStateOf {
+                        selectedFilesUpdated.contains(file.id)
+                    }
+                }
                 SketchesMediaGridItem(
                     file = file,
-                    fileSelected = selectedFilesUpdated.contains(file.id),
+                    fileSelected = fileSelected,
                     onLongClick = {
                         if (selectedFilesUpdated.isEmpty()) {
                             selectedFilesUpdated.add(file.id)
                         }
                     },
-                ) {
-                    if (selectedFilesUpdated.isNotEmpty()) {
-                        if (selectedFilesUpdated.contains(file.id)) {
-                            selectedFilesUpdated.remove(file.id)
+                    onClick = {
+                        if (selectedFilesUpdated.isNotEmpty()) {
+                            if (fileSelected) {
+                                selectedFilesUpdated.remove(file.id)
+                            } else {
+                                selectedFilesUpdated.add(file.id)
+                            }
                         } else {
-                            selectedFilesUpdated.add(file.id)
+                            onItemClickUpdated(
+                                index,
+                                file,
+                            )
                         }
-                    } else {
-                        onItemClickUpdated(
-                            index,
-                            file,
-                        )
-                    }
-                }
+                    },
+                )
             }
         }
     }
