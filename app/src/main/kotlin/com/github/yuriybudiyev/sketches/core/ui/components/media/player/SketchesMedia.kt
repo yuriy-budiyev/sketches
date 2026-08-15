@@ -201,7 +201,7 @@ fun SketchesMediaDisplay(
             } else {
                 if (enablePlaceholder) {
                     if (placeholderMemoryCacheKey != null || placeholderMemoryCacheFallback != null) {
-                        val context = LocalContext.current
+                        val context by rememberUpdatedState(LocalContext.current)
                         val painter = remember(
                             context,
                             placeholderMemoryCacheKey,

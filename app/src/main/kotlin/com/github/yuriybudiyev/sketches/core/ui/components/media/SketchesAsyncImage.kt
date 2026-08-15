@@ -46,6 +46,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -53,7 +54,6 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImagePainter
-import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
 import coil3.imageLoader
@@ -76,7 +76,7 @@ fun SketchesThumbnailAsyncImage(
     contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalPlatformContext.current
+    val context by rememberUpdatedState(LocalContext.current)
     val sizeResolver = rememberConstraintsSizeResolver()
     val request = remember(
         uri,
@@ -149,7 +149,7 @@ fun SketchesPreviewAsyncImage(
     zoomState: ZoomState = rememberZoomState(),
     onTap: (() -> Unit)? = null,
 ) {
-    val context = LocalPlatformContext.current
+    val context by rememberUpdatedState(LocalContext.current)
     val request = remember(
         uri,
         context,
