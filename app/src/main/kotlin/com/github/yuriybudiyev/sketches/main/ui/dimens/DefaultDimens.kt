@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Yuriy Budiyev
+ * Copyright (c) 2026 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,29 +22,25 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.dimens
+package com.github.yuriybudiyev.sketches.main.ui.dimens
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.github.yuriybudiyev.sketches.core.ui.dimens.Dimens
 
 @Immutable
-interface Dimens {
-
-    val material3AppBarHeight: Dp
-    val bottomBarHeight: Dp
-    val lazyGridOverlayTop: Dp
-    val lazyGridOverlayBottom: Dp
-    val lazyGridItemSize: Dp
-    val lazyGridItemSpacing: Dp
-    val mediaGridIconPadding: Dp
-    val mediaBarItemSize: Dp
-    val mediaItemBorderThickness: Dp
-    val mediaBarItemSpacing: Dp
-    val mediaBarVideoIconPadding: Dp
-    val asyncImageStateIconSize: Dp
-}
-
-val LocalDimens: ProvidableCompositionLocal<Dimens> =
-    staticCompositionLocalOf { error("CompositionLocal LocalDimens not present") }
+data class DefaultDimens(
+    override val material3AppBarHeight: Dp = 64.dp,
+    override val bottomBarHeight: Dp = material3AppBarHeight,
+    override val lazyGridOverlayTop: Dp = material3AppBarHeight,
+    override val lazyGridOverlayBottom: Dp = bottomBarHeight,
+    override val lazyGridItemSize: Dp = 108.dp,
+    override val lazyGridItemSpacing: Dp = 1.dp,
+    override val mediaGridIconPadding: Dp = 4.dp,
+    override val mediaBarItemSize: Dp = 56.dp,
+    override val mediaItemBorderThickness: Dp = 1.dp,
+    override val mediaBarItemSpacing: Dp = 1.dp,
+    override val mediaBarVideoIconPadding: Dp = 2.dp,
+    override val asyncImageStateIconSize: Dp = 48.dp,
+): Dimens

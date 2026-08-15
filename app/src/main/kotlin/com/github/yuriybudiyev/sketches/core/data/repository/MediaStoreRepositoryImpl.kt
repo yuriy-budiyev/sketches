@@ -128,13 +128,13 @@ class MediaStoreRepositoryImpl @Inject constructor(
 
     override suspend fun deleteMedia(uris: Collection<Uri>) {
         withContext(ioDispatcher) {
-            val operations = ArrayList<ContentProviderOperation>(uris.size)
+            val ops = ArrayList<ContentProviderOperation>(uris.size)
             for (uri in uris) {
-                operations.add(ContentProviderOperation.newDelete(uri).build())
+                ops.add(ContentProviderOperation.newDelete(uri).build())
             }
             appContext.contentResolver.applyBatch(
                 MediaStore.AUTHORITY,
-                operations,
+                ops,
             )
         }
     }
