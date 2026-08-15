@@ -51,6 +51,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -248,7 +249,7 @@ fun MainNavRoot(
         entryDecorators = listOf(navEntryDecorator),
         entryProvider = navEntryProvider,
     )
-    val colorScheme = MaterialTheme.colorScheme
+    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
     SharedTransitionScope { transitionModifier ->
         val sceneState = rememberSceneState(
             entries = navEntries,
@@ -306,94 +307,94 @@ fun MainNavRoot(
                         )
                     },
                 )
-                Column(
+            }
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .fillMaxWidth(),
+            ) {
+                AnimatedVisibility(
+                    visible = currentRouteIsRoot && rootNavBarController.isRootNavBarVisible,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
                     modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .height(LocalDimens.current.material3AppBarHeight),
                 ) {
-                    AnimatedVisibility(
-                        visible = currentRouteIsRoot && rootNavBarController.isRootNavBarVisible,
-                        enter = fadeIn(),
-                        exit = fadeOut(),
+                    Row(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(LocalDimens.current.material3AppBarHeight),
+                            .background(
+                                color = colorScheme.background.withLowTransparency(),
+                                shape = RectangleShape,
+                            )
+                            .fillMaxSize(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .background(
-                                    color = colorScheme.background.withLowTransparency(),
-                                    shape = RectangleShape,
-                                )
-                                .fillMaxSize(),
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                        ) {
-                            for (route in rootRoutes) {
-                                val routeSelected by remember {
-                                    derivedStateOf {
-                                        route == topRootRoute
-                                    }
+                        for (route in rootRoutes) {
+                            val routeSelected by remember {
+                                derivedStateOf {
+                                    route == topRootRoute
                                 }
-                                NavigationBarItem(
-                                    selected = routeSelected,
-                                    colors = NavigationBarItemDefaults.colors(
-                                        selectedIconColor = colorScheme.onPrimary,
-                                        unselectedIconColor = colorScheme.onBackground,
-                                        indicatorColor = colorScheme.primary,
-                                    ),
-                                    onClick = {
-                                        if (routeSelected) {
-                                            rootNavBarController.dispatchOnClick(route)
+                            }
+                            NavigationBarItem(
+                                selected = routeSelected,
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = colorScheme.onPrimary,
+                                    unselectedIconColor = colorScheme.onBackground,
+                                    indicatorColor = colorScheme.primary,
+                                ),
+                                onClick = {
+                                    if (routeSelected) {
+                                        rootNavBarController.dispatchOnClick(route)
+                                    } else {
+                                        if (route == initialRoute) {
+                                            navBackStack.clear()
                                         } else {
-                                            if (route == initialRoute) {
-                                                navBackStack.clear()
-                                            } else {
-                                                val iterator = navBackStack.iterator()
-                                                while (iterator.hasNext()) {
-                                                    if (iterator.next() == route) {
-                                                        iterator.remove()
-                                                    }
+                                            val iterator = navBackStack.iterator()
+                                            while (iterator.hasNext()) {
+                                                if (iterator.next() == route) {
+                                                    iterator.remove()
                                                 }
                                             }
-                                            navBackStack.add(route)
                                         }
-                                    },
-                                    icon = {
-                                        Icon(
-                                            painter = painterResource(
-                                                if (routeSelected) {
-                                                    route.selectedIconRes
-                                                } else {
-                                                    route.unselectedIconRes
-                                                },
-                                            ),
-                                            contentDescription = stringResource(route.titleRes),
-                                        )
-                                    },
-                                )
-                            }
+                                        navBackStack.add(route)
+                                    }
+                                },
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(
+                                            if (routeSelected) {
+                                                route.selectedIconRes
+                                            } else {
+                                                route.unselectedIconRes
+                                            },
+                                        ),
+                                        contentDescription = stringResource(route.titleRes),
+                                    )
+                                },
+                            )
                         }
                     }
-                    AnimatedVisibility(
-                        visible = LocalSystemBarsController.current.isSystemBarsVisible,
-                        enter = fadeIn(),
-                        exit = fadeOut(),
+                }
+                AnimatedVisibility(
+                    visible = LocalSystemBarsController.current.isSystemBarsVisible,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(
+                            WindowInsets.navigationBars.asPaddingValues()
+                                .calculateBottomPadding(),
+                        ),
+                ) {
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(
-                                WindowInsets.navigationBars.asPaddingValues()
-                                    .calculateBottomPadding(),
-                            ),
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .background(
-                                    color = colorScheme.background.withLowTransparency(),
-                                    shape = RectangleShape,
-                                )
-                                .fillMaxSize(),
-                        )
-                    }
+                            .background(
+                                color = colorScheme.background.withLowTransparency(),
+                                shape = RectangleShape,
+                            )
+                            .fillMaxSize(),
+                    )
                 }
             }
         }

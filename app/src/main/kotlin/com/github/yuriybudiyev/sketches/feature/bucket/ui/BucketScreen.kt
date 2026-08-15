@@ -286,7 +286,7 @@ fun BucketScreen(
     val onBackPressedDispatcher by rememberUpdatedState(
         LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher,
     )
-    val colorScheme = MaterialTheme.colorScheme
+    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
     Box(
         modifier = Modifier
             .fillMaxSize()

@@ -81,7 +81,7 @@ fun MainScreen() {
         mediaAccess = appContext.checkMediaAccess()
         onRequestMediaAccess.isEnabled = mediaAccess == MediaAccess.UserSelected
     }
-    val colorScheme = MaterialTheme.colorScheme
+    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
     CompositionLocalProvider(LocalContentColor provides colorScheme.onSurface) {
         Box(
             modifier = Modifier

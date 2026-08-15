@@ -266,8 +266,8 @@ private fun ImageScreenLayout(
             }
         }
     }
-    val colorScheme = MaterialTheme.colorScheme
-    val dimens = LocalDimens.current
+    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
+    val dimens by rememberUpdatedState(LocalDimens.current)
     Box(modifier = modifier) {
         val layoutDirection = LocalLayoutDirection.current
         var contentInsets = WindowInsets.navigationBars
@@ -655,8 +655,8 @@ private fun MediaBar(
     val currentIndexUpdated by rememberUpdatedState(currentIndex)
     val itemsUpdated by rememberUpdatedState(items)
     val onItemClickUpdated by rememberUpdatedState(onItemClick)
-    val colorScheme = MaterialTheme.colorScheme
-    val dimens = LocalDimens.current
+    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
+    val dimens by rememberUpdatedState(LocalDimens.current)
     LazyRow(
         state = state,
         modifier = modifier,

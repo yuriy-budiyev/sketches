@@ -30,6 +30,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
@@ -40,7 +42,7 @@ fun SketchesFilledButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
-    val colorScheme = MaterialTheme.colorScheme
+    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
     FilledTonalButton(
         onClick = onClick,
         modifier = modifier,
@@ -63,7 +65,7 @@ fun SketchesOutlinedButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
-    val colorScheme = MaterialTheme.colorScheme
+    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
     OutlinedButton(
         onClick = onClick,
         modifier = modifier,

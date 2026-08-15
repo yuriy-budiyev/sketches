@@ -44,6 +44,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.layout.LazyLayoutCacheWindow
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.coerceAtLeast
@@ -77,7 +79,7 @@ fun SketchesLazyGrid(
         .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
         .union(WindowInsets.waterfall.only(WindowInsetsSides.Horizontal))
         .asPaddingValues()
-    val dimens = LocalDimens.current
+    val dimens by rememberUpdatedState(LocalDimens.current)
     val contentPaddingStart = contentPaddings
         .calculateStartPadding(layoutDirection)
         .coerceAtLeast(dimens.lazyGridItemSpacing)
