@@ -713,6 +713,7 @@ private fun MediaBar(
                             .matchParentSize()
                             .background(
                                 color = colorScheme.background.withMediumTransparency(),
+                                shape = RectangleShape,
                             ),
                     )
                 }

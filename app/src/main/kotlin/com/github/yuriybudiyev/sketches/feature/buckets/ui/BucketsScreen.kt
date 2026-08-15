@@ -442,6 +442,7 @@ private fun BucketsMediaGrid(
                                 .matchParentSize()
                                 .background(
                                     color = colorScheme.background.withMediumTransparency(),
+                                    shape = RectangleShape,
                                 ),
                         )
                         Icon(

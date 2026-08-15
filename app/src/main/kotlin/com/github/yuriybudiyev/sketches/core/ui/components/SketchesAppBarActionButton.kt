@@ -56,7 +56,6 @@ fun SketchesAppBarActionButton(
             painter = painterResource(iconRes),
             contentDescription = description,
             tint = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.size(size = 24.dp),
         )
     }
 }

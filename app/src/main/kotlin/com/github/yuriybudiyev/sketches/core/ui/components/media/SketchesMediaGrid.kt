@@ -352,6 +352,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                     .matchParentSize()
                     .background(
                         color = colorScheme.background.withMediumTransparency(),
+                        shape = RectangleShape,
                     ),
             )
             Icon(

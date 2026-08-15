@@ -28,7 +28,6 @@ import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -67,7 +66,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.MemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
-import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
 @Composable
 fun SketchesThumbnailAsyncImage(
@@ -132,9 +130,7 @@ fun SketchesThumbnailAsyncImage(
             Icon(
                 painter = painterResource(R.drawable.ic_image_error),
                 contentDescription = contentDescription,
-                modifier = Modifier
-                    .size(LocalDimens.current.asyncImageStateIconSize)
-                    .align(Alignment.Center),
+                modifier = Modifier.align(Alignment.Center),
                 tint = colorScheme.onBackground,
             )
         }
@@ -231,9 +227,7 @@ fun SketchesPreviewAsyncImage(
                 Icon(
                     painter = painterResource(R.drawable.ic_image_error),
                     contentDescription = contentDescription,
-                    modifier = Modifier
-                        .size(LocalDimens.current.asyncImageStateIconSize)
-                        .align(Alignment.Center),
+                    modifier = Modifier.align(Alignment.Center),
                     tint = MaterialTheme.colorScheme.onBackground,
                 )
             }

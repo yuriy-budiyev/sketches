@@ -192,9 +192,7 @@ fun SketchesMediaDisplay(
                     Icon(
                         painter = painterResource(R.drawable.ic_image_error),
                         contentDescription = stringResource(R.string.image_error),
-                        modifier = Modifier
-                            .size(48.dp)
-                            .align(Alignment.Center),
+                        modifier = Modifier.align(Alignment.Center),
                         tint = indicatorColor,
                     )
                 }
@@ -250,9 +248,7 @@ fun SketchesMediaDisplay(
                         Icon(
                             painter = painterResource(R.drawable.ic_image_loading),
                             contentDescription = stringResource(R.string.image),
-                            modifier = Modifier
-                                .size(48.dp)
-                                .align(Alignment.Center),
+                            modifier = Modifier.align(Alignment.Center),
                             tint = indicatorColor,
                         )
                     }
@@ -303,7 +299,6 @@ fun SketchesMediaController(
                     },
                 ),
                 tint = color,
-                modifier = Modifier.size(size = 24.dp),
             )
         }
         val position = state.position
@@ -382,7 +377,6 @@ fun SketchesMediaController(
                     },
                 ),
                 tint = color,
-                modifier = Modifier.size(size = 24.dp),
             )
         }
     }

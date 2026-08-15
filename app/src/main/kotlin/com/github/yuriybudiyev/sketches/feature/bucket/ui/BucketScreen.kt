@@ -448,6 +448,7 @@ fun BucketScreen(
                     Icon(
                         painter = painterResource(R.drawable.ic_scroll_to_start),
                         contentDescription = stringResource(R.string.scroll_to_start),
+                        tint = colorScheme.onPrimary,
                     )
                 }
             }
