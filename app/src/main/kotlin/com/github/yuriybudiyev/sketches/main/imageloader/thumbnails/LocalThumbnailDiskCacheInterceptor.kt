@@ -57,8 +57,8 @@ class LocalThumbnailDiskCacheInterceptor(
         val size = chain.size
         val widthDimension = size.width as? Dimension.Pixels ?: return chain.proceed()
         val heightDimension = size.height as? Dimension.Pixels ?: return chain.proceed()
-        val cacheKey = "${data}/s/${widthDimension.px}x${heightDimension.px}"
-        diskCache.openSnapshot(cacheKey)?.use { snapshot ->
+        val diskCacheKey = "${data}/s/${widthDimension.px}x${heightDimension.px}"
+        diskCache.openSnapshot(diskCacheKey)?.use { snapshot ->
             val bitmap = diskCache.fileSystem.read(snapshot.data) {
                 BitmapFactory.decodeStream(inputStream())
             }
@@ -77,7 +77,7 @@ class LocalThumbnailDiskCacheInterceptor(
                     request = request,
                     dataSource = DataSource.DISK,
                     memoryCacheKey = memoryCacheKey,
-                    diskCacheKey = cacheKey,
+                    diskCacheKey = diskCacheKey,
                     isSampled = true,
                     isPlaceholderCached = request
                         .placeholderMemoryCacheKey
@@ -89,7 +89,7 @@ class LocalThumbnailDiskCacheInterceptor(
         val result = chain.proceed()
         if (result is SuccessResult) {
             val bitmap = result.image.toBitmap()
-            diskCache.openEditor(cacheKey)?.let { editor ->
+            diskCache.openEditor(diskCacheKey)?.let { editor ->
                 diskCache.fileSystem.write(editor.metadata) {
                     writeUtf8("$data\n")
                 }
@@ -113,7 +113,7 @@ class LocalThumbnailDiskCacheInterceptor(
             }
             return result.copy(
                 image = bitmap.asImage(shareable = true),
-                diskCacheKey = cacheKey,
+                diskCacheKey = diskCacheKey,
             )
         }
         return result
