@@ -338,11 +338,6 @@ fun MainNavRoot(
                             }
                             NavigationBarItem(
                                 selected = routeSelected,
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = colorScheme.onPrimary,
-                                    unselectedIconColor = colorScheme.onBackground,
-                                    indicatorColor = colorScheme.primary,
-                                ),
                                 onClick = {
                                     if (routeSelected) {
                                         rootNavBarController.dispatchOnClick(route)
@@ -372,6 +367,11 @@ fun MainNavRoot(
                                         contentDescription = stringResource(route.titleRes),
                                     )
                                 },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = colorScheme.onPrimary,
+                                    unselectedIconColor = colorScheme.onBackground,
+                                    indicatorColor = colorScheme.primary,
+                                ),
                             )
                         }
                     }
