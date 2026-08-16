@@ -325,7 +325,10 @@ private fun ImageScreenLayout(
                 files = filesUpdated,
                 onItemClick = { index, _ ->
                     coroutineScope.launch {
-                        pagerState.animateScrollToPage(index)
+                        pagerState.animateScrollToPage(
+                            page = index,
+                            animationSpec = defaultAnimationSpec(),
+                        )
                     }
                 },
                 modifier = Modifier
