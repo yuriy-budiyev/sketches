@@ -41,6 +41,7 @@ import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.dao.BookmarksDao
 import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
@@ -57,7 +58,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -84,6 +84,13 @@ class MediaStoreRepositoryImpl @Inject constructor(
     override fun getFiles(): Flow<List<MediaStoreFile>> =
         allFilesFlow
 
+    override fun getBuckets(): Flow<List<MediaStoreBucket>> =
+        allBucketsFlow
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getBookmarks(): Flow<Map<Long, Bookmark>> =
+        allBookmarksFlow
+
     override fun updateMediaAccess() {
         defaultCoroutineScope.launch {
             updateMediaAccessMutex.withLock {
@@ -96,20 +103,6 @@ class MediaStoreRepositoryImpl @Inject constructor(
             }
         }
     }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getBookmarks(): Flow<Map<Long, Bookmark>> =
-        bookmarksDao.getAll().transformLatest { entities ->
-            val bookmarks = newLinkedHashMap<Long, Bookmark>(entities.size)
-            for (entity in entities) {
-                val mediaId = entity.mediaId
-                bookmarks[mediaId] = Bookmark(
-                    mediaId = mediaId,
-                    dateAdded = entity.dateAdded,
-                )
-            }
-            emit(bookmarks)
-        }.flowOn(defaultDispatcher)
 
     override suspend fun createBookmark(mediaId: Long) {
         bookmarksDao.upsert(
@@ -231,10 +224,82 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun startBucketsCollection() {
+        defaultCoroutineScope.launch {
+            allFilesFlow.transformLatest { files ->
+                val bucketsInfo = LinkedHashMap<Long, MediaStoreBucketInfo>()
+                for (file in files) {
+                    val bucketId = file.bucketId
+                    val coverUri = file.uri
+                    val coverDateAdded = file.dateAdded
+                    val bucketInfo = bucketsInfo.getOrPut(bucketId) {
+                        MediaStoreBucketInfo(
+                            id = bucketId,
+                            name = file.bucketName,
+                            coverUri = coverUri,
+                            coverDateAdded = coverDateAdded,
+                            size = 0,
+                        )
+                    }
+                    bucketInfo.size++
+                }
+                val buckets = ArrayList<MediaStoreBucket>(bucketsInfo.size)
+                for ((_, bucketInfo) in bucketsInfo) {
+                    buckets.add(
+                        MediaStoreBucket(
+                            id = bucketInfo.id,
+                            name = bucketInfo.name,
+                            size = bucketInfo.size,
+                            coverUri = bucketInfo.coverUri,
+                            coverDateAdded = bucketInfo.coverDateAdded,
+                        ),
+                    )
+                }
+                emit(buckets)
+            }.collect { buckets ->
+                allBucketsFlow.emit(buckets)
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun startBookmarksCollection() {
+        defaultCoroutineScope.launch {
+            bookmarksDao.getAll().transformLatest { entities ->
+                val bookmarks = newLinkedHashMap<Long, Bookmark>(entities.size)
+                for (entity in entities) {
+                    val mediaId = entity.mediaId
+                    bookmarks[mediaId] = Bookmark(
+                        mediaId = mediaId,
+                        dateAdded = entity.dateAdded,
+                    )
+                }
+                emit(bookmarks)
+            }.collect { bookmarks ->
+                allBookmarksFlow.emit(bookmarks)
+            }
+        }
+    }
+
     private val defaultCoroutineScope: CoroutineScope =
         CoroutineScope(defaultDispatcher + SupervisorJob())
 
     private val allFilesFlow: MutableSharedFlow<List<MediaStoreFile>> =
+        MutableSharedFlow(
+            replay = 1,
+            extraBufferCapacity = 0,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
+
+    private val allBucketsFlow: MutableSharedFlow<List<MediaStoreBucket>> =
+        MutableSharedFlow(
+            replay = 1,
+            extraBufferCapacity = 0,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
+
+    private val allBookmarksFlow: MutableSharedFlow<Map<Long, Bookmark>> =
         MutableSharedFlow(
             replay = 1,
             extraBufferCapacity = 0,
@@ -255,6 +320,8 @@ class MediaStoreRepositoryImpl @Inject constructor(
 
     init {
         updateAllFiles()
+        startBucketsCollection()
+        startBookmarksCollection()
         val mediaObserver = MediaObserver()
         with(appContext.contentResolver) {
             registerContentObserver(
@@ -269,6 +336,14 @@ class MediaStoreRepositoryImpl @Inject constructor(
             )
         }
     }
+
+    private data class MediaStoreBucketInfo(
+        val id: Long,
+        val name: String,
+        val coverUri: Uri,
+        val coverDateAdded: LocalDateTime,
+        var size: Int,
+    )
 
     private inner class MediaObserver: ContentObserver(Handler(Looper.getMainLooper())) {
 

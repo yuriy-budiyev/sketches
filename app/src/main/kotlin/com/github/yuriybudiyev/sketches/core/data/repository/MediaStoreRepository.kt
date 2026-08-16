@@ -26,6 +26,7 @@ package com.github.yuriybudiyev.sketches.core.data.repository
 
 import android.net.Uri
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import kotlinx.coroutines.flow.Flow
 
@@ -33,9 +34,11 @@ interface MediaStoreRepository {
 
     fun getFiles(): Flow<List<MediaStoreFile>>
 
-    fun updateMediaAccess()
+    fun getBuckets(): Flow<List<MediaStoreBucket>>
 
     fun getBookmarks(): Flow<Map<Long, Bookmark>>
+
+    fun updateMediaAccess()
 
     suspend fun createBookmark(mediaId: Long)
 
