@@ -109,7 +109,6 @@ import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsContro
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
-import com.github.yuriybudiyev.sketches.core.ui.animation.transitionAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
@@ -301,22 +300,22 @@ fun MainNavRoot(
                     modifier = Modifier.matchParentSize(),
                     transitionSpec = {
                         ContentTransform(
-                            targetContentEnter = fadeIn(animationSpec = transitionAnimationSpec()),
-                            initialContentExit = fadeOut(animationSpec = transitionAnimationSpec()),
+                            targetContentEnter = fadeIn(animationSpec = defaultAnimationSpec()),
+                            initialContentExit = fadeOut(animationSpec = defaultAnimationSpec()),
                             sizeTransform = null,
                         )
                     },
                     popTransitionSpec = {
                         ContentTransform(
-                            targetContentEnter = fadeIn(animationSpec = transitionAnimationSpec()),
-                            initialContentExit = fadeOut(animationSpec = transitionAnimationSpec()),
+                            targetContentEnter = fadeIn(animationSpec = defaultAnimationSpec()),
+                            initialContentExit = fadeOut(animationSpec = defaultAnimationSpec()),
                             sizeTransform = null,
                         )
                     },
                     predictivePopTransitionSpec = {
                         ContentTransform(
-                            targetContentEnter = fadeIn(animationSpec = transitionAnimationSpec()),
-                            initialContentExit = fadeOut(animationSpec = transitionAnimationSpec()),
+                            targetContentEnter = fadeIn(animationSpec = defaultAnimationSpec()),
+                            initialContentExit = fadeOut(animationSpec = defaultAnimationSpec()),
                             sizeTransform = null,
                         )
                     },
@@ -334,7 +333,7 @@ fun MainNavRoot(
                         } else {
                             0F
                         },
-                    animationSpec = transitionAnimationSpec(),
+                    animationSpec = defaultAnimationSpec(),
                 )
                 val navBarVisible by remember {
                     derivedStateOf(structuralEqualityPolicy()) {
@@ -348,7 +347,7 @@ fun MainNavRoot(
                         } else {
                             0F
                         },
-                    animationSpec = transitionAnimationSpec(),
+                    animationSpec = defaultAnimationSpec(),
                 )
                 val systemNavBarVisible by remember {
                     derivedStateOf(structuralEqualityPolicy()) {

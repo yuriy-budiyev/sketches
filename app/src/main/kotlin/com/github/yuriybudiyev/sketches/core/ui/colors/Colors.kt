@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.Color
 
 @Stable
 fun Color.withLowTransparency(): Color =
-    this.copy(alpha = 0.65F)
+    this.copy(alpha = 0.75F)
 
 @Stable
 fun Color.withMediumTransparency(): Color =

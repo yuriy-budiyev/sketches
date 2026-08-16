@@ -103,7 +103,7 @@ import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsContro
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
-import com.github.yuriybudiyev.sketches.core.ui.animation.transitionAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withMediumTransparency
@@ -311,7 +311,7 @@ private fun ImageScreenLayout(
         )
         val uiAlpha by animateFloatAsState(
             targetValue = if (systemBarsController.isSystemBarsVisible) 1F else 0F,
-            animationSpec = transitionAnimationSpec(),
+            animationSpec = defaultAnimationSpec(),
         )
         val uiVisible by remember {
             derivedStateOf(structuralEqualityPolicy()) {
@@ -327,7 +327,7 @@ private fun ImageScreenLayout(
                     coroutineScope.launch {
                         pagerState.animateScrollToPage(
                             page = index,
-                            animationSpec = transitionAnimationSpec(),
+                            animationSpec = defaultAnimationSpec(),
                         )
                     }
                 },
@@ -473,7 +473,7 @@ private fun MediaPager(
         key = { page -> filesUpdated[page].id },
         flingBehavior = PagerDefaults.flingBehavior(
             state = state,
-            snapAnimationSpec = transitionAnimationSpec(),
+            snapAnimationSpec = defaultAnimationSpec(),
         ),
         modifier = modifier,
     ) { page ->
