@@ -27,24 +27,34 @@ package com.github.yuriybudiyev.sketches.main.navigation
 import android.os.Parcelable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
@@ -59,9 +69,13 @@ import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.SAVED_STATE_REGISTRY_OWNER_KEY
 import androidx.lifecycle.SavedStateViewModelFactory
@@ -287,22 +301,22 @@ fun MainNavRoot(
                     modifier = Modifier.matchParentSize(),
                     transitionSpec = {
                         ContentTransform(
-                            targetContentEnter = fadeIn(),
-                            initialContentExit = fadeOut(),
+                            targetContentEnter = fadeIn(animationSpec = navAnimationSpec()),
+                            initialContentExit = fadeOut(animationSpec = navAnimationSpec()),
                             sizeTransform = null,
                         )
                     },
                     popTransitionSpec = {
                         ContentTransform(
-                            targetContentEnter = fadeIn(),
-                            initialContentExit = fadeOut(),
+                            targetContentEnter = fadeIn(animationSpec = navAnimationSpec()),
+                            initialContentExit = fadeOut(animationSpec = navAnimationSpec()),
                             sizeTransform = null,
                         )
                     },
                     predictivePopTransitionSpec = {
                         ContentTransform(
-                            targetContentEnter = fadeIn(),
-                            initialContentExit = fadeOut(),
+                            targetContentEnter = fadeIn(animationSpec = navAnimationSpec()),
+                            initialContentExit = fadeOut(animationSpec = navAnimationSpec()),
                             sizeTransform = null,
                         )
                     },
@@ -336,43 +350,88 @@ fun MainNavRoot(
                                     route == topRootRoute
                                 }
                             }
-                            NavigationBarItem(
-                                selected = routeSelected,
-                                onClick = {
-                                    if (routeSelected) {
-                                        rootNavBarController.dispatchOnClick(route)
-                                    } else {
-                                        if (route == initialRoute) {
-                                            navBackStack.clear()
-                                        } else {
-                                            val iterator = navBackStack.iterator()
-                                            while (iterator.hasNext()) {
-                                                if (iterator.next() == route) {
-                                                    iterator.remove()
-                                                }
-                                            }
-                                        }
-                                        navBackStack.add(route)
-                                    }
-                                },
-                                icon = {
-                                    Icon(
-                                        painter = painterResource(
+                            val interactionSource = remember { MutableInteractionSource() }
+                            Box(
+                                modifier = Modifier
+                                    .weight(1F)
+                                    .fillMaxHeight()
+                                    .selectable(
+                                        selected = routeSelected,
+                                        interactionSource = interactionSource,
+                                        indication = null,
+                                        role = Role.Tab,
+                                        onClick = {
                                             if (routeSelected) {
-                                                route.selectedIconRes
+                                                rootNavBarController.dispatchOnClick(route)
                                             } else {
-                                                route.unselectedIconRes
-                                            },
+                                                if (route == initialRoute) {
+                                                    navBackStack.clear()
+                                                } else {
+                                                    val iterator = navBackStack.iterator()
+                                                    while (iterator.hasNext()) {
+                                                        if (iterator.next() == route) {
+                                                            iterator.remove()
+                                                        }
+                                                    }
+                                                }
+                                                navBackStack.add(route)
+                                            }
+                                        },
+                                    ),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                val backgroundColor by animateColorAsState(
+                                    targetValue = if (routeSelected) {
+                                        colorScheme.primary
+                                    } else {
+                                        Color.Transparent
+                                    },
+                                    animationSpec = navAnimationSpec(),
+                                )
+                                val indicationColor by animateColorAsState(
+                                    targetValue = if (routeSelected) {
+                                        colorScheme.onPrimary
+                                    } else {
+                                        colorScheme.onBackground
+                                    },
+                                    animationSpec = navAnimationSpec(),
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .size(
+                                            width = 56.dp,
+                                            height = 32.dp,
+                                        )
+                                        .clip(CircleShape)
+                                        .background(
+                                            color = backgroundColor,
+                                            shape = RectangleShape,
+                                        )
+                                        .indication(
+                                            interactionSource = interactionSource,
+                                            indication = ripple(color = indicationColor),
                                         ),
-                                        contentDescription = stringResource(route.titleRes),
-                                    )
-                                },
-                                colors = NavigationBarItemDefaults.colors(
-                                    selectedIconColor = colorScheme.onPrimary,
-                                    unselectedIconColor = colorScheme.onBackground,
-                                    indicatorColor = colorScheme.primary,
-                                ),
-                            )
+                                )
+                                Crossfade(
+                                    targetState = routeSelected,
+                                    animationSpec = navAnimationSpec(),
+                                ) { routeSelected ->
+                                    if (routeSelected) {
+                                        Icon(
+                                            painter = painterResource(route.selectedIconRes),
+                                            contentDescription = stringResource(route.titleRes),
+                                            tint = colorScheme.onPrimary,
+                                        )
+                                    } else {
+                                        Icon(
+                                            painter = painterResource(route.unselectedIconRes),
+                                            contentDescription = stringResource(route.titleRes),
+                                            tint = colorScheme.onBackground,
+                                        )
+                                    }
+
+                                }
+                            }
                         }
                     }
                 }
@@ -400,6 +459,13 @@ fun MainNavRoot(
         }
     }
 }
+
+@Suppress("UNCHECKED_CAST")
+private fun <T> navAnimationSpec(): FiniteAnimationSpec<T> =
+    NavAnimationSpec as FiniteAnimationSpec<T>
+
+private val NavAnimationSpec: FiniteAnimationSpec<Any> =
+    spring(stiffness = Spring.StiffnessMediumLow)
 
 private class ViewModelStoreViewModel: ViewModel() {
 
