@@ -58,6 +58,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateSet
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -384,7 +385,7 @@ private fun BucketsMediaGrid(
         ) { index ->
             val bucket by rememberUpdatedState(bucketsUpdated[index])
             val bucketSelected by remember {
-                derivedStateOf {
+                derivedStateOf(structuralEqualityPolicy()) {
                     selectedBucketsUpdated.contains(bucket.id)
                 }
             }

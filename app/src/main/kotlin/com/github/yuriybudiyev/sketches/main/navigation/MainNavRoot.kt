@@ -27,11 +27,11 @@ package com.github.yuriybudiyev.sketches.main.navigation
 import android.os.Parcelable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -67,15 +67,17 @@ import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.SAVED_STATE_REGISTRY_OWNER_KEY
 import androidx.lifecycle.SavedStateViewModelFactory
@@ -142,12 +144,12 @@ fun MainNavRoot(
         add(initialRoute)
     }
     val topRootRoute by remember {
-        derivedStateOf {
+        derivedStateOf(structuralEqualityPolicy()) {
             navBackStack.lastOrNull { route -> route is RootNavRoute } as? RootNavRoute
         }
     }
     val currentRouteIsRoot by remember {
-        derivedStateOf {
+        derivedStateOf(structuralEqualityPolicy()) {
             navBackStack.lastOrNull() is RootNavRoute
         }
     }
@@ -264,6 +266,7 @@ fun MainNavRoot(
         entryProvider = navEntryProvider,
     )
     val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
+    val dimens by rememberUpdatedState(LocalDimens.current)
     SharedTransitionScope { transitionModifier ->
         val sceneState = rememberSceneState(
             entries = navEntries,
@@ -333,7 +336,7 @@ fun MainNavRoot(
                     exit = fadeOut(),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(LocalDimens.current.material3AppBarHeight),
+                        .height(dimens.material3AppBarHeight),
                 ) {
                     Row(
                         modifier = Modifier
@@ -346,7 +349,7 @@ fun MainNavRoot(
                     ) {
                         for (route in rootRoutes) {
                             val routeSelected by remember {
-                                derivedStateOf {
+                                derivedStateOf(structuralEqualityPolicy()) {
                                     route == topRootRoute
                                 }
                             }
@@ -396,40 +399,58 @@ fun MainNavRoot(
                                     },
                                     animationSpec = navAnimationSpec(),
                                 )
+                                val selectedIconAlpha by animateFloatAsState(
+                                    targetValue = if (routeSelected) 1F else 0F,
+                                    animationSpec = navAnimationSpec(),
+                                )
+                                val selectedIconVisible by remember {
+                                    derivedStateOf(structuralEqualityPolicy()) {
+                                        selectedIconAlpha > 0F
+                                    }
+                                }
+                                val unselectedIconAlpha by animateFloatAsState(
+                                    targetValue = if (routeSelected) 0F else 1F,
+                                    animationSpec = navAnimationSpec(),
+                                )
+                                val unselectedIconVisible by remember {
+                                    derivedStateOf(structuralEqualityPolicy()) {
+                                        unselectedIconAlpha > 0F
+                                    }
+                                }
                                 Box(
                                     modifier = Modifier
                                         .size(
-                                            width = 56.dp,
-                                            height = 32.dp,
+                                            width = dimens.material3NavBarIndicatorWidth,
+                                            height = dimens.material3NavBarIndicatorHeight,
                                         )
                                         .clip(CircleShape)
-                                        .background(
-                                            color = backgroundColor,
-                                            shape = RectangleShape,
-                                        )
+                                        .drawBehind {
+                                            drawRect(color = backgroundColor)
+                                        }
                                         .indication(
                                             interactionSource = interactionSource,
-                                            indication = ripple(color = indicationColor),
+                                            indication = ripple(color = { indicationColor }),
                                         ),
                                 )
-                                Crossfade(
-                                    targetState = routeSelected,
-                                    animationSpec = navAnimationSpec(),
-                                ) { routeSelected ->
-                                    if (routeSelected) {
-                                        Icon(
-                                            painter = painterResource(route.selectedIconRes),
-                                            contentDescription = stringResource(route.titleRes),
-                                            tint = colorScheme.onPrimary,
-                                        )
-                                    } else {
-                                        Icon(
-                                            painter = painterResource(route.unselectedIconRes),
-                                            contentDescription = stringResource(route.titleRes),
-                                            tint = colorScheme.onBackground,
-                                        )
-                                    }
-
+                                if (selectedIconVisible) {
+                                    Icon(
+                                        painter = painterResource(route.selectedIconRes),
+                                        contentDescription = stringResource(route.titleRes),
+                                        tint = colorScheme.onPrimary,
+                                        modifier = Modifier.graphicsLayer {
+                                            alpha = selectedIconAlpha
+                                        },
+                                    )
+                                }
+                                if (unselectedIconVisible) {
+                                    Icon(
+                                        painter = painterResource(route.unselectedIconRes),
+                                        contentDescription = stringResource(route.titleRes),
+                                        tint = colorScheme.onBackground,
+                                        modifier = Modifier.graphicsLayer {
+                                            alpha = unselectedIconAlpha
+                                        },
+                                    )
                                 }
                             }
                         }

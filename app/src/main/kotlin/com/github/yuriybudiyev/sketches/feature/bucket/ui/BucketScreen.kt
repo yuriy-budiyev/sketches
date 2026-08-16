@@ -66,6 +66,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
@@ -248,7 +249,7 @@ fun BucketScreen(
         }
     }
     val scrollToStartButtonVisible by remember {
-        derivedStateOf {
+        derivedStateOf(structuralEqualityPolicy()) {
             with(mediaGridState) {
                 lastScrolledBackward && canScrollBackward
             }

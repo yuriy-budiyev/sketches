@@ -33,6 +33,8 @@ import androidx.compose.ui.unit.Dp
 interface Dimens {
 
     val material3AppBarHeight: Dp
+    val material3NavBarIndicatorWidth: Dp
+    val material3NavBarIndicatorHeight: Dp
     val bottomBarHeight: Dp
     val lazyGridOverlayTop: Dp
     val lazyGridOverlayBottom: Dp
@@ -43,7 +45,6 @@ interface Dimens {
     val mediaItemBorderThickness: Dp
     val mediaBarItemSpacing: Dp
     val mediaBarVideoIconPadding: Dp
-    val asyncImageStateIconSize: Dp
 }
 
 val LocalDimens: ProvidableCompositionLocal<Dimens> =

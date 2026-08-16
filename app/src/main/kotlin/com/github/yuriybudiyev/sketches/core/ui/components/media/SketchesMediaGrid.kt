@@ -45,6 +45,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshots.SnapshotStateSet
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -128,7 +129,7 @@ fun SketchesMediaGrid(
         ) { index ->
             val file by rememberUpdatedState(filesUpdated[index])
             val fileSelected by remember {
-                derivedStateOf {
+                derivedStateOf(structuralEqualityPolicy()) {
                     selectedFilesUpdated.contains(file.id)
                 }
             }
@@ -241,7 +242,7 @@ fun SketchesGroupingMediaGrid(
             ) { index ->
                 val file by rememberUpdatedState(files[index])
                 val fileSelected by remember {
-                    derivedStateOf {
+                    derivedStateOf(structuralEqualityPolicy()) {
                         selectedFilesUpdated.contains(file.id)
                     }
                 }
