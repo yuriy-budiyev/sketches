@@ -34,9 +34,9 @@ data class MediaStoreFile(
     val id: Long,
     val bucketId: Long,
     val name: String,
-    val bucketName: String,
     val dateAdded: LocalDateTime,
     val mediaType: MediaType,
     val mimeType: String,
     val uri: Uri,
+    val bookmark: Bookmark?,
 )

@@ -30,7 +30,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
-import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.CreateBookmarkUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarksUseCase
@@ -44,13 +43,14 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = ImageScreenViewModel.Factory::class)
@@ -71,15 +71,15 @@ class ImageScreenViewModel @AssistedInject constructor(
     val uiState: StateFlow<UiState>
 
     private suspend fun FlowCollector<UiState>.checkIndexAndEmitItems(
-        items: List<ImageItem>,
+        items: List<MediaStoreFile>,
         fileIndex: Int = currentFileIndex,
         fileId: Long? = currentFileId,
     ) {
         val itemsSize = items.size
-        if (fileIndex < itemsSize && items[fileIndex].file.id == fileId) {
+        if (fileIndex < itemsSize && items[fileIndex].id == fileId) {
             emit(
                 UiState.Image(
-                    items = items,
+                    files = items,
                     index = fileIndex,
                 ),
             )
@@ -89,14 +89,14 @@ class ImageScreenViewModel @AssistedInject constructor(
             var actualIndex = fileIndex
             while (backwardIndex > -1 || forwardIndex < itemsSize) {
                 if (backwardIndex > -1) {
-                    if (items[backwardIndex].file.id == fileId) {
+                    if (items[backwardIndex].id == fileId) {
                         actualIndex = backwardIndex
                         break
                     }
                     backwardIndex--
                 }
                 if (forwardIndex < itemsSize) {
-                    if (items[forwardIndex].file.id == fileId) {
+                    if (items[forwardIndex].id == fileId) {
                         actualIndex = forwardIndex
                         break
                     }
@@ -105,7 +105,7 @@ class ImageScreenViewModel @AssistedInject constructor(
             }
             emit(
                 UiState.Image(
-                    items = items,
+                    files = items,
                     index = actualIndex.coerceIn(
                         minimumValue = 0,
                         maximumValue = itemsSize - 1,
@@ -179,56 +179,15 @@ class ImageScreenViewModel @AssistedInject constructor(
                 mode = Mode.Images
             }
         }
-        uiState = combineTransform(
-            getMediaFiles(currentBucketId),
-            getBookmarks(),
-        ) { files, bookmarks ->
+        @OptIn(ExperimentalCoroutinesApi::class)
+        uiState = when (mode) {
+            Mode.Images -> getMediaFiles(currentBucketId)
+            Mode.Bookmarks -> getBookmarks()
+        }.transformLatest { files ->
             if (files.isEmpty()) {
                 emit(UiState.Empty)
             } else {
-                when (mode) {
-                    Mode.Images -> {
-                        checkIndexAndEmitItems(
-                            files.map { file ->
-                                ImageItem(
-                                    file = file,
-                                    isMarked = bookmarks.containsKey(file.id),
-                                )
-                            },
-                        )
-                    }
-                    Mode.Bookmarks -> {
-                        if (bookmarks.isEmpty()) {
-                            emit(UiState.Empty)
-                        } else {
-                            val temp = ArrayList<FileWithBookmark>(bookmarks.size)
-                            for (file in files) {
-                                val bookmark = bookmarks[file.id]
-                                if (bookmark != null) {
-                                    temp.add(
-                                        FileWithBookmark(
-                                            file = file,
-                                            bookmark = bookmark,
-                                        ),
-                                    )
-                                }
-                            }
-                            if (temp.isEmpty()) {
-                                emit(UiState.Empty)
-                            } else {
-                                temp.sortByDescending { item -> item.bookmark.dateAdded }
-                                checkIndexAndEmitItems(
-                                    temp.map { item ->
-                                        ImageItem(
-                                            file = item.file,
-                                            isMarked = true,
-                                        )
-                                    },
-                                )
-                            }
-                        }
-                    }
-                }
+                checkIndexAndEmitItems(files)
             }
         }.catch { t ->
             emit(UiState.Error(t))
@@ -246,7 +205,7 @@ class ImageScreenViewModel @AssistedInject constructor(
         data object Loading: UiState
 
         data class Image(
-            val items: List<ImageItem>,
+            val files: List<MediaStoreFile>,
             val index: Int,
         ): UiState
 
@@ -258,11 +217,6 @@ class ImageScreenViewModel @AssistedInject constructor(
         Images,
         Bookmarks,
     }
-
-    private data class FileWithBookmark(
-        val file: MediaStoreFile,
-        val bookmark: Bookmark,
-    )
 
     @AssistedFactory
     interface Factory {

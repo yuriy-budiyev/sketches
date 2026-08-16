@@ -85,11 +85,11 @@ class MediaStoreRepositoryImpl @Inject constructor(
     override fun getFiles(): Flow<List<MediaStoreFile>> =
         allFilesFlow
 
+    override fun getBookmarks(): Flow<List<MediaStoreFile>> =
+        allFilesInBookmarksFlow
+
     override fun getBuckets(): Flow<List<MediaStoreBucket>> =
         allBucketsFlow
-
-    override fun getBookmarks(): Flow<Map<Long, Bookmark>> =
-        allBookmarksFlow
 
     override fun updateMediaAccess() {
         defaultCoroutineScope.launch {
@@ -98,7 +98,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
                 val updated = appContext.checkMediaAccess()
                 currentMediaAccess = updated
                 if (current != updated || updated == MediaAccess.UserSelected) {
-                    updateAllFiles()
+                    updateMediaStoreEntities()
                 }
             }
         }
@@ -132,7 +132,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun updateAllFiles(
+    private fun updateMediaStoreEntities(
         delayMillis: Long = 0L,
         nonCancellable: Boolean = false,
     ) {
@@ -142,23 +142,25 @@ class MediaStoreRepositoryImpl @Inject constructor(
                 updateAllFilesJob = defaultCoroutineScope.launch {
                     withContext(if (nonCancellable) NonCancellable else EmptyCoroutineContext) {
                         delay(delayMillis)
-                        val imageFiles = withContext(ioDispatcher) { getFiles(MediaType.Image) }
-                        val videoFiles = withContext(ioDispatcher) { getFiles(MediaType.Video) }
-                        val allFilesSize = imageFiles.size + videoFiles.size
-                        val allFiles = ArrayList<MediaStoreFile>(allFilesSize)
-                        allFiles.addAll(imageFiles)
-                        allFiles.addAll(videoFiles)
-                        allFiles.sortByDescending { file -> file.dateAdded }
-                        val allFilesIds = newLinkedHashSet<Long>(allFilesSize)
-                        allFiles.mapTo(allFilesIds) { file -> file.id }
+                        val imageEntities =
+                            withContext(ioDispatcher) { queryEntities(MediaType.Image) }
+                        val videoEntities =
+                            withContext(ioDispatcher) { queryEntities(MediaType.Video) }
+                        val allEntitiesSize = imageEntities.size + videoEntities.size
+                        val allEntities = ArrayList<MediaStoreEntity>(allEntitiesSize)
+                        allEntities.addAll(imageEntities)
+                        allEntities.addAll(videoEntities)
+                        allEntities.sortByDescending { entity -> entity.dateAdded }
+                        val allEntitiesIds = newLinkedHashSet<Long>(allEntitiesSize)
+                        allEntities.mapTo(allEntitiesIds) { file -> file.id }
                         val allBookmarks = bookmarksDao.getAll().first()
                         val deletedBookmarksIds = allBookmarks.asSequence()
-                            .filter { entity -> !allFilesIds.contains(entity.mediaId) }
+                            .filter { entity -> !allEntitiesIds.contains(entity.mediaId) }
                             .map { entity -> entity.mediaId }
                             .toList()
                         publishAllFilesMutex.withLock {
                             withContext(NonCancellable) {
-                                allFilesFlow.emit(allFiles)
+                                allEntitiesFlow.emit(allEntities)
                                 if (deletedBookmarksIds.isNotEmpty()) {
                                     bookmarksDao.delete(deletedBookmarksIds)
                                 }
@@ -170,7 +172,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun getFiles(mediaType: MediaType): List<MediaStoreFile> {
+    private fun queryEntities(mediaType: MediaType): List<MediaStoreEntity> {
         val contentUri = mediaType.contentUri
         val cursor = appContext.contentResolver.query(
             contentUri,
@@ -187,7 +189,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
             null,
         ) ?: return emptyList()
         cursor.use { cursor ->
-            val files = ArrayList<MediaStoreFile>(cursor.count)
+            val files = ArrayList<MediaStoreEntity>(cursor.count)
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
             val bucketIdColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_ID)
             val displayNameColumn =
@@ -200,7 +202,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
                 val id = cursor.getLong(idColumn)
                 val bucketId = cursor.getLong(bucketIdColumn)
                 files.add(
-                    MediaStoreFile(
+                    MediaStoreEntity(
                         id = id,
                         bucketId = bucketId,
                         name = cursor.getStringOrNull(displayNameColumn) ?: id.toString(),
@@ -225,18 +227,53 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
+    private fun startFilesCollection() {
+        defaultCoroutineScope.launch {
+            combineTransform(
+                allEntitiesFlow,
+                allBookmarksFlow,
+            ) { entities, bookmarks ->
+                emit(entities to bookmarks)
+            }.transformLatest { (entities, bookmarks) ->
+                if (entities.isEmpty()) {
+                    emit(emptyList())
+                } else {
+                    val files = ArrayList<MediaStoreFile>(entities.size)
+                    for (entity in entities) {
+                        files.add(
+                            MediaStoreFile(
+                                id = entity.id,
+                                bucketId = entity.bucketId,
+                                name = entity.name,
+                                dateAdded = entity.dateAdded,
+                                mediaType = entity.mediaType,
+                                mimeType = entity.mimeType,
+                                uri = entity.uri,
+                                bookmark = bookmarks[entity.id],
+                            ),
+                        )
+                    }
+                    emit(files)
+                }
+            }.collect { files ->
+                allFilesFlow.emit(files)
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun startBucketsCollection() {
         defaultCoroutineScope.launch {
-            allFilesFlow.transformLatest { files ->
+            allEntitiesFlow.transformLatest { entities ->
                 val bucketsInfo = LinkedHashMap<Long, MediaStoreBucketInfo>()
-                for (file in files) {
-                    val bucketId = file.bucketId
-                    val coverUri = file.uri
-                    val coverDateAdded = file.dateAdded
+                for (entity in entities) {
+                    val bucketId = entity.bucketId
+                    val coverUri = entity.uri
+                    val coverDateAdded = entity.dateAdded
                     val bucketInfo = bucketsInfo.getOrPut(bucketId) {
                         MediaStoreBucketInfo(
                             id = bucketId,
-                            name = file.bucketName,
+                            name = entity.bucketName,
                             coverUri = coverUri,
                             coverDateAdded = coverDateAdded,
                             size = 0,
@@ -285,34 +322,10 @@ class MediaStoreRepositoryImpl @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun startFilesInBookmarksCollection() {
         defaultCoroutineScope.launch {
-            combineTransform(
-                allFilesFlow,
-                allBookmarksFlow,
-            ) { files, bookmarks ->
-                emit(files to bookmarks)
-            }.transformLatest { (files, bookmarks) ->
-                if (files.isEmpty() || bookmarks.isEmpty()) {
-                    emit(emptyList())
-                } else {
-                    val temp = ArrayList<MediaStoreFileWithBookmark>(bookmarks.size)
-                    for (file in files) {
-                        val bookmark = bookmarks[file.id]
-                        if (bookmark != null) {
-                            temp.add(
-                                MediaStoreFileWithBookmark(
-                                    file = file,
-                                    bookmark = bookmark,
-                                ),
-                            )
-                        }
-                    }
-                    if (temp.isEmpty()) {
-                        emit(emptyList())
-                    } else {
-                        temp.sortByDescending { item -> item.bookmark.dateAdded }
-                        emit(temp.mapTo(ArrayList(temp.size)) { item -> item.file })
-                    }
-                }
+            allFilesFlow.transformLatest { files ->
+                val bookmarks = files.filterTo(ArrayList()) { file -> file.bookmark != null }
+                bookmarks.sortByDescending { file -> file.bookmark!!.dateAdded }
+                emit(bookmarks)
             }.collect { files ->
                 allFilesInBookmarksFlow.emit(files)
             }
@@ -321,6 +334,13 @@ class MediaStoreRepositoryImpl @Inject constructor(
 
     private val defaultCoroutineScope: CoroutineScope =
         CoroutineScope(defaultDispatcher + SupervisorJob())
+
+    private val allEntitiesFlow: MutableSharedFlow<List<MediaStoreEntity>> =
+        MutableSharedFlow(
+            replay = 1,
+            extraBufferCapacity = 0,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
 
     private val allFilesFlow: MutableSharedFlow<List<MediaStoreFile>> =
         MutableSharedFlow(
@@ -363,7 +383,8 @@ class MediaStoreRepositoryImpl @Inject constructor(
     private val updateMediaAccessMutex: Mutex = Mutex()
 
     init {
-        updateAllFiles()
+        updateMediaStoreEntities()
+        startFilesCollection()
         startBucketsCollection()
         startBookmarksCollection()
         startFilesInBookmarksCollection()
@@ -382,9 +403,15 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
     }
 
-    private data class MediaStoreFileWithBookmark(
-        val file: MediaStoreFile,
-        val bookmark: Bookmark,
+    private data class MediaStoreEntity(
+        val id: Long,
+        val bucketId: Long,
+        val name: String,
+        val bucketName: String,
+        val dateAdded: LocalDateTime,
+        val mediaType: MediaType,
+        val mimeType: String,
+        val uri: Uri,
     )
 
     private data class MediaStoreBucketInfo(
@@ -401,9 +428,9 @@ class MediaStoreRepositoryImpl @Inject constructor(
             val currentCallTime = SystemClock.uptimeMillis()
             if (currentCallTime - lastCallTime > 1000L) {
                 lastCallTime = currentCallTime
-                updateAllFiles(nonCancellable = true)
+                updateMediaStoreEntities(nonCancellable = true)
             } else {
-                updateAllFiles(delayMillis = 1000L)
+                updateMediaStoreEntities(delayMillis = 1000L)
             }
         }
 

@@ -29,21 +29,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
-import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
-import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -54,43 +53,24 @@ class BookmarksScreenViewModel @Inject constructor(
     private val deleteMedia: DeleteMediaUseCase,
     private val deleteBookmarks: DeleteBookmarksUseCase,
     private val updateMediaAccess: UpdateMediaAccessUseCase,
-    getMediaFiles: GetMediaFilesUseCase,
     getBookmarks: GetBookmarksUseCase,
 ): ViewModel() {
 
-    val uiState: StateFlow<UiState> = combineTransform(
-        getMediaFiles(),
-        getBookmarks(),
-    ) { files, bookmarks ->
-        if (files.isEmpty() || bookmarks.isEmpty()) {
-            emit(UiState.Empty)
-        } else {
-            val temp = ArrayList<FileWithBookmark>(bookmarks.size)
-            for (file in files) {
-                val bookmark = bookmarks[file.id]
-                if (bookmark != null) {
-                    temp.add(
-                        FileWithBookmark(
-                            file = file,
-                            bookmark = bookmark,
-                        ),
-                    )
-                }
-            }
-            if (temp.isEmpty()) {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val uiState: StateFlow<UiState> = getBookmarks()
+        .transformLatest { bookmarks ->
+            if (bookmarks.isEmpty()) {
                 emit(UiState.Empty)
             } else {
-                temp.sortByDescending { item -> item.bookmark.dateAdded }
-                emit(UiState.Bookmarks(temp.map { item -> item.file }))
+                emit(UiState.Bookmarks(bookmarks))
             }
-        }
-    }.catch { thrown ->
-        emit(UiState.Error(thrown))
-    }.flowOn(defaultDispatcher).stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Lazily,
-        initialValue = UiState.Loading,
-    )
+        }.catch { thrown ->
+            emit(UiState.Error(thrown))
+        }.flowOn(defaultDispatcher).stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = UiState.Loading,
+        )
 
     fun deleteMedia(files: Collection<Uri>) {
         viewModelScope.launch {
@@ -120,9 +100,4 @@ class BookmarksScreenViewModel @Inject constructor(
 
         data object Loading: UiState
     }
-
-    private data class FileWithBookmark(
-        val file: MediaStoreFile,
-        val bookmark: Bookmark,
-    )
 }

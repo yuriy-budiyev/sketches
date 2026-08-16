@@ -24,7 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.domain
 
-import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
+import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.Reusable
 import kotlinx.coroutines.flow.Flow
@@ -33,6 +33,6 @@ import javax.inject.Inject
 @Reusable
 class GetBookmarksUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    operator fun invoke(): Flow<Map<Long, Bookmark>> =
+    operator fun invoke(): Flow<List<MediaStoreFile>> =
         repository.getBookmarks()
 }
