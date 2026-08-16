@@ -36,3 +36,11 @@ fun <T> defaultAnimationSpec(): FiniteAnimationSpec<T> =
 
 private val DefaultAnimationSpec: FiniteAnimationSpec<Any?> =
     spring(stiffness = Spring.StiffnessMedium)
+
+@Stable
+@Suppress("UNCHECKED_CAST")
+fun <T> transitionAnimationSpec(): FiniteAnimationSpec<T> =
+    TransitionAnimationSpec as FiniteAnimationSpec<T>
+
+private val TransitionAnimationSpec: FiniteAnimationSpec<Any?> =
+    spring(stiffness = Spring.StiffnessMediumLow)
