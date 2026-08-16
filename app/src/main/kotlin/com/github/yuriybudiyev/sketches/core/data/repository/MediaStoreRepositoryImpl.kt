@@ -57,6 +57,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
@@ -87,7 +88,6 @@ class MediaStoreRepositoryImpl @Inject constructor(
     override fun getBuckets(): Flow<List<MediaStoreBucket>> =
         allBucketsFlow
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getBookmarks(): Flow<Map<Long, Bookmark>> =
         allBookmarksFlow
 
@@ -282,6 +282,43 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun startFilesInBookmarksCollection() {
+        defaultCoroutineScope.launch {
+            combineTransform(
+                allFilesFlow,
+                allBookmarksFlow,
+            ) { files, bookmarks ->
+                emit(files to bookmarks)
+            }.transformLatest { (files, bookmarks) ->
+                if (files.isEmpty() || bookmarks.isEmpty()) {
+                    emit(emptyList())
+                } else {
+                    val temp = ArrayList<MediaStoreFileWithBookmark>(bookmarks.size)
+                    for (file in files) {
+                        val bookmark = bookmarks[file.id]
+                        if (bookmark != null) {
+                            temp.add(
+                                MediaStoreFileWithBookmark(
+                                    file = file,
+                                    bookmark = bookmark,
+                                ),
+                            )
+                        }
+                    }
+                    if (temp.isEmpty()) {
+                        emit(emptyList())
+                    } else {
+                        temp.sortByDescending { item -> item.bookmark.dateAdded }
+                        emit(temp.mapTo(ArrayList(temp.size)) { item -> item.file })
+                    }
+                }
+            }.collect { files ->
+                allFilesInBookmarksFlow.emit(files)
+            }
+        }
+    }
+
     private val defaultCoroutineScope: CoroutineScope =
         CoroutineScope(defaultDispatcher + SupervisorJob())
 
@@ -306,6 +343,13 @@ class MediaStoreRepositoryImpl @Inject constructor(
             onBufferOverflow = BufferOverflow.DROP_OLDEST,
         )
 
+    private val allFilesInBookmarksFlow: MutableSharedFlow<List<MediaStoreFile>> =
+        MutableSharedFlow(
+            replay = 1,
+            extraBufferCapacity = 0,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
+
     @Volatile
     private var updateAllFilesJob: Job? = null
 
@@ -322,6 +366,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         updateAllFiles()
         startBucketsCollection()
         startBookmarksCollection()
+        startFilesInBookmarksCollection()
         val mediaObserver = MediaObserver()
         with(appContext.contentResolver) {
             registerContentObserver(
@@ -336,6 +381,11 @@ class MediaStoreRepositoryImpl @Inject constructor(
             )
         }
     }
+
+    private data class MediaStoreFileWithBookmark(
+        val file: MediaStoreFile,
+        val bookmark: Bookmark,
+    )
 
     private data class MediaStoreBucketInfo(
         val id: Long,

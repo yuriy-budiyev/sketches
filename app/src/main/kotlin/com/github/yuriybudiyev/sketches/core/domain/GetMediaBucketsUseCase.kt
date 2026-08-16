@@ -27,14 +27,12 @@ package com.github.yuriybudiyev.sketches.core.domain
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.Reusable
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 @Reusable
 class GetMediaBucketsUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke(): Flow<List<MediaStoreBucket>> =
         repository.getBuckets()
 }
