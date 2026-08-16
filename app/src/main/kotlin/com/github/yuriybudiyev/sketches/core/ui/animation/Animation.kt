@@ -35,4 +35,8 @@ fun <T> defaultAnimationSpec(): FiniteAnimationSpec<T> =
     DefaultAnimationSpec as FiniteAnimationSpec<T>
 
 private val DefaultAnimationSpec: FiniteAnimationSpec<Any?> =
-    spring(stiffness = Spring.StiffnessMedium)
+    spring(
+        dampingRatio = Spring.DampingRatioNoBouncy,
+        stiffness = Spring.StiffnessMediumLow,
+        visibilityThreshold = null,
+    )
