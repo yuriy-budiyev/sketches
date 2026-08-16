@@ -34,5 +34,5 @@ import androidx.compose.runtime.Stable
 fun <T> defaultAnimationSpec(): FiniteAnimationSpec<T> =
     DefaultAnimationSpec as FiniteAnimationSpec<T>
 
-private val DefaultAnimationSpec: FiniteAnimationSpec<Any> =
+private val DefaultAnimationSpec: FiniteAnimationSpec<Any?> =
     spring(stiffness = Spring.StiffnessMediumLow)
