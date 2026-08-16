@@ -25,14 +25,10 @@
 package com.github.yuriybudiyev.sketches.main.navigation
 
 import android.os.Parcelable
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FiniteAnimationSpec
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -45,7 +41,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
@@ -113,6 +108,7 @@ import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
@@ -304,22 +300,22 @@ fun MainNavRoot(
                     modifier = Modifier.matchParentSize(),
                     transitionSpec = {
                         ContentTransform(
-                            targetContentEnter = fadeIn(animationSpec = navAnimationSpec()),
-                            initialContentExit = fadeOut(animationSpec = navAnimationSpec()),
+                            targetContentEnter = fadeIn(animationSpec = defaultAnimationSpec()),
+                            initialContentExit = fadeOut(animationSpec = defaultAnimationSpec()),
                             sizeTransform = null,
                         )
                     },
                     popTransitionSpec = {
                         ContentTransform(
-                            targetContentEnter = fadeIn(animationSpec = navAnimationSpec()),
-                            initialContentExit = fadeOut(animationSpec = navAnimationSpec()),
+                            targetContentEnter = fadeIn(animationSpec = defaultAnimationSpec()),
+                            initialContentExit = fadeOut(animationSpec = defaultAnimationSpec()),
                             sizeTransform = null,
                         )
                     },
                     predictivePopTransitionSpec = {
                         ContentTransform(
-                            targetContentEnter = fadeIn(animationSpec = navAnimationSpec()),
-                            initialContentExit = fadeOut(animationSpec = navAnimationSpec()),
+                            targetContentEnter = fadeIn(animationSpec = defaultAnimationSpec()),
+                            initialContentExit = fadeOut(animationSpec = defaultAnimationSpec()),
                             sizeTransform = null,
                         )
                     },
@@ -330,21 +326,46 @@ fun MainNavRoot(
                     .align(Alignment.BottomStart)
                     .fillMaxWidth(),
             ) {
-                AnimatedVisibility(
-                    visible = currentRouteIsRoot && rootNavBarController.isRootNavBarVisible,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(dimens.material3AppBarHeight),
-                ) {
+                val navBarAlpha by animateFloatAsState(
+                    targetValue =
+                        if (currentRouteIsRoot && rootNavBarController.isRootNavBarVisible) {
+                            1F
+                        } else {
+                            0F
+                        },
+                    animationSpec = defaultAnimationSpec(),
+                )
+                val navBarVisible by remember {
+                    derivedStateOf(structuralEqualityPolicy()) {
+                        navBarAlpha > 0F
+                    }
+                }
+                val systemNavBarAlpha by animateFloatAsState(
+                    targetValue =
+                        if (LocalSystemBarsController.current.isSystemBarsVisible) {
+                            1F
+                        } else {
+                            0F
+                        },
+                    animationSpec = defaultAnimationSpec(),
+                )
+                val systemNavBarVisible by remember {
+                    derivedStateOf(structuralEqualityPolicy()) {
+                        systemNavBarAlpha > 0F
+                    }
+                }
+                if (navBarVisible) {
                     Row(
                         modifier = Modifier
+                            .fillMaxWidth()
+                            .height(dimens.material3AppBarHeight)
+                            .graphicsLayer {
+                                alpha = navBarAlpha
+                            }
                             .background(
                                 color = colorScheme.background.withLowTransparency(),
                                 shape = RectangleShape,
-                            )
-                            .fillMaxSize(),
+                            ),
                         horizontalArrangement = Arrangement.SpaceEvenly,
                     ) {
                         for (route in rootRoutes) {
@@ -389,7 +410,7 @@ fun MainNavRoot(
                                     } else {
                                         Color.Transparent
                                     },
-                                    animationSpec = navAnimationSpec(),
+                                    animationSpec = defaultAnimationSpec(),
                                 )
                                 val indicationColor by animateColorAsState(
                                     targetValue = if (routeSelected) {
@@ -397,11 +418,11 @@ fun MainNavRoot(
                                     } else {
                                         colorScheme.onBackground
                                     },
-                                    animationSpec = navAnimationSpec(),
+                                    animationSpec = defaultAnimationSpec(),
                                 )
                                 val selectedIconAlpha by animateFloatAsState(
                                     targetValue = if (routeSelected) 1F else 0F,
-                                    animationSpec = navAnimationSpec(),
+                                    animationSpec = defaultAnimationSpec(),
                                 )
                                 val selectedIconVisible by remember {
                                     derivedStateOf(structuralEqualityPolicy()) {
@@ -410,7 +431,7 @@ fun MainNavRoot(
                                 }
                                 val unselectedIconAlpha by animateFloatAsState(
                                     targetValue = if (routeSelected) 0F else 1F,
-                                    animationSpec = navAnimationSpec(),
+                                    animationSpec = defaultAnimationSpec(),
                                 )
                                 val unselectedIconVisible by remember {
                                     derivedStateOf(structuralEqualityPolicy()) {
@@ -456,37 +477,27 @@ fun MainNavRoot(
                         }
                     }
                 }
-                AnimatedVisibility(
-                    visible = LocalSystemBarsController.current.isSystemBarsVisible,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(
-                            WindowInsets.navigationBars.asPaddingValues()
-                                .calculateBottomPadding(),
-                        ),
-                ) {
+                if (systemNavBarVisible) {
                     Box(
                         modifier = Modifier
+                            .fillMaxWidth()
+                            .height(
+                                WindowInsets.navigationBars.asPaddingValues()
+                                    .calculateBottomPadding(),
+                            )
+                            .graphicsLayer {
+                                alpha = systemNavBarAlpha
+                            }
                             .background(
                                 color = colorScheme.background.withLowTransparency(),
                                 shape = RectangleShape,
-                            )
-                            .fillMaxSize(),
+                            ),
                     )
                 }
             }
         }
     }
 }
-
-@Suppress("UNCHECKED_CAST")
-private fun <T> navAnimationSpec(): FiniteAnimationSpec<T> =
-    NavAnimationSpec as FiniteAnimationSpec<T>
-
-private val NavAnimationSpec: FiniteAnimationSpec<Any> =
-    spring(stiffness = Spring.StiffnessMediumLow)
 
 private class ViewModelStoreViewModel: ViewModel() {
 

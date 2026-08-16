@@ -27,7 +27,6 @@ package com.github.yuriybudiyev.sketches.core.ui.components
 import android.os.Parcelable
 import androidx.annotation.FloatRange
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculateCentroid
@@ -68,6 +67,7 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastCoerceIn
 import androidx.compose.ui.util.fastForEach
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -176,19 +176,19 @@ fun SketchesZoomableBox(
                 val scaleJob = launch {
                     currentScale.animateTo(
                         newScale,
-                        tween(),
+                        defaultAnimationSpec(),
                     )
                 }
                 val offsetXJob = launch {
                     currentOffsetX.animateTo(
                         newOffsetX,
-                        tween(),
+                        defaultAnimationSpec(),
                     )
                 }
                 val offsetYJob = launch {
                     currentOffsetY.animateTo(
                         newOffsetY,
-                        tween(),
+                        defaultAnimationSpec(),
                     )
                 }
                 scaleJob.join()
@@ -336,7 +336,7 @@ private class SketchesZoomableBoxScopeImpl(
 
     @Stable
     override fun Modifier.zoomable(): Modifier =
-        this
+        Modifier
             .align(Alignment.Center)
             .onSizeChanged { size ->
                 contentSize = size.toSize()
@@ -347,6 +347,7 @@ private class SketchesZoomableBoxScopeImpl(
                 scaleX = scale
                 scaleY = scale
             }
+            .then(this)
 
     @Stable
     override fun Modifier.align(alignment: Alignment): Modifier =

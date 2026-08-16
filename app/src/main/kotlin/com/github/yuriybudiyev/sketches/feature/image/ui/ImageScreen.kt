@@ -32,9 +32,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -72,6 +70,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -81,10 +80,12 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -101,6 +102,7 @@ import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsContro
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withMediumTransparency
@@ -306,12 +308,16 @@ private fun ImageScreenLayout(
                     end = contentPaddingEnd,
                 ),
         )
-        AnimatedVisibility(
-            visible = systemBarsController.isSystemBarsVisible,
-            enter = fadeIn(),
-            exit = fadeOut(),
-            modifier = Modifier.align(Alignment.BottomStart),
-        ) {
+        val uiAlpha by animateFloatAsState(
+            targetValue = if (systemBarsController.isSystemBarsVisible) 1F else 0F,
+            animationSpec = defaultAnimationSpec(),
+        )
+        val uiVisible by remember {
+            derivedStateOf(structuralEqualityPolicy()) {
+                uiAlpha > 0F
+            }
+        }
+        if (uiVisible) {
             MediaBar(
                 currentIndex = currentIndex,
                 state = barState,
@@ -322,11 +328,15 @@ private fun ImageScreenLayout(
                     }
                 },
                 modifier = Modifier
+                    .align(Alignment.BottomStart)
                     .padding(
                         start = contentPaddingStart,
                         end = contentPaddingEnd,
                         bottom = contentPaddingBottom,
                     )
+                    .graphicsLayer {
+                        alpha = uiAlpha
+                    }
                     .background(
                         color = colorScheme.background.withLowTransparency(),
                         shape = RectangleShape,
@@ -334,15 +344,13 @@ private fun ImageScreenLayout(
                     .height(dimens.bottomBarHeight)
                     .fillMaxWidth(),
             )
-        }
-        AnimatedVisibility(
-            visible = systemBarsController.isSystemBarsVisible,
-            enter = fadeIn(),
-            exit = fadeOut(),
-            modifier = Modifier.align(Alignment.TopStart),
-        ) {
             SketchesTopAppBar(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .fillMaxWidth()
+                    .graphicsLayer {
+                        alpha = uiAlpha
+                    },
                 text = itemsUpdated[currentIndex].file.name,
                 backgroundColor = colorScheme.background.withLowTransparency(),
             ) {
