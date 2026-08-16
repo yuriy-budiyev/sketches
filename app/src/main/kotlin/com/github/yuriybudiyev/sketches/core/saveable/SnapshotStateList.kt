@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.saveable
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -43,6 +44,7 @@ inline fun <T: Any> rememberSaveableSnapshotStateList(
         SnapshotStateList<T>().apply(onInit)
     }
 
+@Stable
 @Suppress("UNCHECKED_CAST")
 fun <T: Any> snapshotStateListSaver(): Saver<SnapshotStateList<T>, ArrayList<T>> =
     SnapshotStateListSaver as Saver<SnapshotStateList<T>, ArrayList<T>>

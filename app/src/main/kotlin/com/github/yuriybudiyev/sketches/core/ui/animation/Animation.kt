@@ -27,10 +27,12 @@ package com.github.yuriybudiyev.sketches.core.ui.animation
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.runtime.Stable
 
+@Stable
 @Suppress("UNCHECKED_CAST")
 fun <T> defaultAnimationSpec(): FiniteAnimationSpec<T> =
     DefaultAnimationSpec as FiniteAnimationSpec<T>
 
-private val DefaultAnimationSpec: FiniteAnimationSpec<Any> =
+private val DefaultAnimationSpec: FiniteAnimationSpec<Any?> =
     spring(stiffness = Spring.StiffnessMediumLow)
