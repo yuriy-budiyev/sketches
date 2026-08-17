@@ -42,6 +42,7 @@ import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.platform.content.MediaStoreBatchSize
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
@@ -121,7 +122,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
 
     override suspend fun deleteMedia(uris: Collection<Uri>) {
         withContext(ioDispatcher) {
-            val chunkSize = uris.size.coerceAtMost(500)
+            val chunkSize = uris.size.coerceAtMost(MediaStoreBatchSize)
             val ops = ArrayList<ContentProviderOperation>(chunkSize)
             val contentResolver = appContext.contentResolver
             for (uri in uris) {

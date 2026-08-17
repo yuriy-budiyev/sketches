@@ -37,6 +37,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.github.yuriybudiyev.sketches.core.collections.newLinkedHashSet
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.platform.content.MediaStoreBatchSize
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -123,7 +124,7 @@ sealed interface MediaBatchState {
 
     companion object {
 
-        const val BatchSize: Int = 500
+        const val BatchSize: Int = MediaStoreBatchSize
     }
 }
 
