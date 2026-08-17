@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.coil
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -32,6 +33,7 @@ import coil3.Extras
 import coil3.asImage
 import coil3.decode.DataSource
 import coil3.disk.DiskCache
+import coil3.imageLoader
 import coil3.intercept.Interceptor
 import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
@@ -45,6 +47,35 @@ fun ImageRequest.Builder.requestTarget(requestTarget: RequestTarget): ImageReque
     return this
 }
 
+fun ImageRequest.Builder.placeholder(
+    uri: Uri,
+    context: Context,
+): ImageRequest.Builder {
+    val memoryCache = context.imageLoader.memoryCache ?: return this
+    val primaryKey = primaryPlaceholderKey(uri)
+    val secondaryKey = secondaryPlaceholderKey(uri)
+    placeholder {
+        memoryCache[primaryKey]?.image ?: memoryCache[secondaryKey]?.image
+    }
+    return this
+}
+
+fun primaryPlaceholderKey(uri: Uri): MemoryCache.Key =
+    MemoryCache.Key(
+        key = uri.toString(),
+        extras = buildMap {
+            this[Target] = GalleryTarget
+        },
+    )
+
+fun secondaryPlaceholderKey(uri: Uri): MemoryCache.Key =
+    MemoryCache.Key(
+        key = uri.toString(),
+        extras = buildMap {
+            this[Target] = MediaBarTarget
+        },
+    )
+
 enum class RequestTarget {
     Preview,
     Gallery,
@@ -52,6 +83,10 @@ enum class RequestTarget {
 }
 
 private val RequestTargetKey: Extras.Key<RequestTarget?> = Extras.Key(default = null)
+
+private const val Target: String = "target"
+private const val GalleryTarget: String = "gallery"
+private const val MediaBarTarget: String = "media-bar"
 
 class LocalCacheInterceptor(
     private val memoryCache: MemoryCache,
@@ -69,8 +104,8 @@ class LocalCacheInterceptor(
         val requestTarget = extras[RequestTargetKey] ?: return chain.proceed()
         val cacheTarget = when (requestTarget) {
             RequestTarget.Preview -> return chain.proceed()
-            RequestTarget.Gallery -> "gallery"
-            RequestTarget.MediaBar -> "media-bar"
+            RequestTarget.Gallery -> GalleryTarget
+            RequestTarget.MediaBar -> MediaBarTarget
         }
         val size = chain.size
         val width = (size.width as? Dimension.Pixels)?.px ?: return chain.proceed()
@@ -79,16 +114,23 @@ class LocalCacheInterceptor(
         val memoryCacheKey = MemoryCache.Key(
             key = uriString,
             extras = buildMap {
-                this["target"] = cacheTarget
+                this[Target] = cacheTarget
                 this["width"] = width.toString()
                 this["height"] = height.toString()
             },
         )
+        val previewMemoryCacheKey = MemoryCache.Key(
+            key = uriString,
+            extras = buildMap {
+                this[Target] = cacheTarget
+            },
+        )
         val diskCacheKey = "$uriString/$cacheTarget/$width/$height"
-        val memoryImage = memoryCache[memoryCacheKey]?.image
-        if (memoryImage != null) {
+        val memoryCacheValue = memoryCache[memoryCacheKey]
+        if (memoryCacheValue != null) {
+            memoryCache[previewMemoryCacheKey] = memoryCacheValue
             return SuccessResult(
-                image = memoryImage,
+                image = memoryCacheValue.image,
                 request = request,
                 dataSource = DataSource.MEMORY_CACHE,
                 memoryCacheKey = memoryCacheKey,
@@ -103,7 +145,9 @@ class LocalCacheInterceptor(
             }
             if (bitmap != null) {
                 val diskImage = bitmap.asImage(shareable = true)
-                memoryCache[memoryCacheKey] = MemoryCache.Value(diskImage)
+                val cacheValue = MemoryCache.Value(diskImage)
+                memoryCache[memoryCacheKey] = cacheValue
+                memoryCache[previewMemoryCacheKey] = cacheValue
                 return SuccessResult(
                     image = diskImage,
                     request = request,
@@ -144,7 +188,9 @@ class LocalCacheInterceptor(
                 editor.commit()
             }
             val resultImage = bitmap.asImage(shareable = true)
-            memoryCache[memoryCacheKey] = MemoryCache.Value(resultImage)
+            val cacheValue = MemoryCache.Value(resultImage)
+            memoryCache[memoryCacheKey] = cacheValue
+            memoryCache[previewMemoryCacheKey] = cacheValue
             return SuccessResult(
                 image = resultImage,
                 request = request,
