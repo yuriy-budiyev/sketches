@@ -325,6 +325,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
             allFilesFlow.transformLatest { files ->
                 val bookmarks = files.filterTo(ArrayList()) { file -> file.bookmark != null }
                 bookmarks.sortByDescending { file -> file.bookmark!!.dateAdded }
+                bookmarks.trimToSize()
                 emit(bookmarks)
             }.collect { files ->
                 allFilesInBookmarksFlow.emit(files)
