@@ -35,9 +35,9 @@ import coil3.request.allowHardware
 import coil3.serviceLoaderEnabled
 import coil3.svg.SvgDecoder
 import coil3.video.VideoFrameDecoder
+import com.github.yuriybudiyev.sketches.core.coil.LocalCacheInterceptor
 import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
 import com.github.yuriybudiyev.sketches.main.imageloader.executor.ImageLoaderExecutor
-import com.github.yuriybudiyev.sketches.main.imageloader.thumbnails.LocalThumbnailDiskCacheInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -76,7 +76,7 @@ object ImageLoaderModule {
             .diskCache(diskCache)
             .components {
                 add(
-                    LocalThumbnailDiskCacheInterceptor(
+                    LocalCacheInterceptor(
                         memoryCache = memoryCache,
                         diskCache = diskCache,
                     ),

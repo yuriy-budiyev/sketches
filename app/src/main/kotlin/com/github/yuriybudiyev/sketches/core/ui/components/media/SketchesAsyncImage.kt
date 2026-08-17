@@ -55,22 +55,26 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
-import coil3.imageLoader
-import coil3.memory.MemoryCache
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.size.Scale
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.coil.RequestTarget
+import com.github.yuriybudiyev.sketches.core.coil.requestTarget
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
-import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.MemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
+
+enum class ThumbnailTarget {
+    Gallery,
+    MediaBar
+}
 
 @Composable
 fun SketchesThumbnailAsyncImage(
     uri: Uri,
-    memoryCacheKey: MemoryCache.Key,
+    target: ThumbnailTarget,
     contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
@@ -78,16 +82,26 @@ fun SketchesThumbnailAsyncImage(
     val sizeResolver = rememberConstraintsSizeResolver()
     val request = remember(
         uri,
-        memoryCacheKey,
+        target,
         context,
         sizeResolver,
     ) {
         ImageRequest.Builder(context)
             .diskCachePolicy(CachePolicy.DISABLED)
-            .memoryCacheKey(memoryCacheKey)
+            .memoryCachePolicy(CachePolicy.DISABLED)
             .data(uri)
             .size(sizeResolver)
             .scale(Scale.FILL)
+            .apply {
+                when (target) {
+                    ThumbnailTarget.Gallery -> {
+                        requestTarget(RequestTarget.Gallery)
+                    }
+                    ThumbnailTarget.MediaBar -> {
+                        requestTarget(RequestTarget.MediaBar)
+                    }
+                }
+            }
             .build()
     }
     var painterState by remember {
@@ -150,21 +164,14 @@ fun SketchesPreviewAsyncImage(
         uri,
         context,
     ) {
-        val memoryCache = context.imageLoader.memoryCache
-        val thumbnailKey1 = MemoryCacheKeys.thumbnail(uri)
-        val thumbnailKey2 = MemoryCacheKeys.mediaBar(uri)
         ImageRequest
             .Builder(context)
             .diskCachePolicy(CachePolicy.DISABLED)
             .memoryCachePolicy(CachePolicy.DISABLED)
-            .placeholder {
-                memoryCache?.let { memoryCache ->
-                    memoryCache[thumbnailKey1]?.image
-                        ?: memoryCache[thumbnailKey2]?.image
-                }
-            }
+            .placeholder { null }
             .data(uri)
             .size(coil3.size.Size.ORIGINAL)
+            .requestTarget(RequestTarget.Preview)
             .build()
     }
     var painterState by remember {
@@ -239,3 +246,4 @@ fun SketchesPreviewAsyncImage(
         }
     }
 }
+

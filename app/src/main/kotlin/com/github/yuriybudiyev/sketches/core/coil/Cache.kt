@@ -22,67 +22,96 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.main.imageloader.thumbnails
+package com.github.yuriybudiyev.sketches.core.coil
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
+import coil3.Extras
 import coil3.asImage
 import coil3.decode.DataSource
 import coil3.disk.DiskCache
 import coil3.intercept.Interceptor
 import coil3.memory.MemoryCache
+import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import coil3.request.SuccessResult
 import coil3.size.Dimension
 import coil3.toBitmap
-import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.MemoryCacheKeys
 
-class LocalThumbnailDiskCacheInterceptor(
+fun ImageRequest.Builder.requestTarget(requestTarget: RequestTarget): ImageRequest.Builder {
+    extras[RequestTargetKey] = requestTarget
+    return this
+}
+
+enum class RequestTarget {
+    Preview,
+    Gallery,
+    MediaBar,
+}
+
+private val RequestTargetKey: Extras.Key<RequestTarget?> = Extras.Key(default = null)
+
+class LocalCacheInterceptor(
     private val memoryCache: MemoryCache,
     private val diskCache: DiskCache,
 ): Interceptor {
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val request = chain.request
-        if (!MemoryCacheKeys.LocalDiskCache.checkAllow(request.memoryCacheKeyExtras)) {
+        val uri = request.data as? Uri ?: return chain.proceed()
+        val uriScheme = uri.scheme
+        if (uriScheme != "content" && uriScheme != "file") {
             return chain.proceed()
         }
-        val data = request.data as? Uri ?: return chain.proceed()
-        val dataScheme = data.scheme
-        if (dataScheme != "content" && dataScheme != "file") {
-            return chain.proceed()
+        val extras = request.extras
+        val requestTarget = extras[RequestTargetKey] ?: return chain.proceed()
+        val cacheTarget = when (requestTarget) {
+            RequestTarget.Preview -> return chain.proceed()
+            RequestTarget.Gallery -> "gallery"
+            RequestTarget.MediaBar -> "media-bar"
         }
         val size = chain.size
-        val widthDimension = size.width as? Dimension.Pixels ?: return chain.proceed()
-        val heightDimension = size.height as? Dimension.Pixels ?: return chain.proceed()
-        val diskCacheKey = "${data}/s/${widthDimension.px}x${heightDimension.px}"
+        val width = (size.width as? Dimension.Pixels)?.px ?: return chain.proceed()
+        val height = (size.height as? Dimension.Pixels)?.px ?: return chain.proceed()
+        val uriString = uri.toString()
+        val memoryCacheKey = MemoryCache.Key(
+            key = uriString,
+            extras = buildMap {
+                this["target"] = cacheTarget
+                this["width"] = width.toString()
+                this["height"] = height.toString()
+            },
+        )
+        val diskCacheKey = "$uriString/$cacheTarget/$width/$height"
+        val memoryImage = memoryCache[memoryCacheKey]?.image
+        if (memoryImage != null) {
+            return SuccessResult(
+                image = memoryImage,
+                request = request,
+                dataSource = DataSource.MEMORY_CACHE,
+                memoryCacheKey = memoryCacheKey,
+                diskCacheKey = diskCacheKey,
+                isSampled = false,
+                isPlaceholderCached = false,
+            )
+        }
         diskCache.openSnapshot(diskCacheKey)?.use { snapshot ->
             val bitmap = diskCache.fileSystem.read(snapshot.data) {
                 BitmapFactory.decodeStream(inputStream())
             }
             if (bitmap != null) {
-                val image = bitmap.asImage(shareable = true)
-                val memoryCacheKey = request.memoryCacheKey?.let { memoryCacheKey ->
-                    val key = MemoryCache.Key(
-                        memoryCacheKey,
-                        request.memoryCacheKeyExtras,
-                    )
-                    memoryCache[key] = MemoryCache.Value(image)
-                    return@let key
-                }
+                val diskImage = bitmap.asImage(shareable = true)
+                memoryCache[memoryCacheKey] = MemoryCache.Value(diskImage)
                 return SuccessResult(
-                    image = image,
+                    image = diskImage,
                     request = request,
-                    dataSource = DataSource.DISK,
+                    dataSource = DataSource.MEMORY_CACHE,
                     memoryCacheKey = memoryCacheKey,
                     diskCacheKey = diskCacheKey,
-                    isSampled = true,
-                    isPlaceholderCached = request
-                        .placeholderMemoryCacheKey
-                        ?.let { key -> memoryCache[key] != null }
-                        ?: false,
+                    isSampled = false,
+                    isPlaceholderCached = false,
                 )
             }
         }
@@ -91,7 +120,10 @@ class LocalThumbnailDiskCacheInterceptor(
             val bitmap = result.image.toBitmap()
             diskCache.openEditor(diskCacheKey)?.let { editor ->
                 diskCache.fileSystem.write(editor.metadata) {
-                    writeUtf8("$data\n")
+                    writeUtf8("$uriString\n")
+                    writeUtf8("$cacheTarget\n")
+                    writeUtf8("$width\n")
+                    writeUtf8("$height\n")
                 }
                 diskCache.fileSystem.write(editor.data) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -111,9 +143,16 @@ class LocalThumbnailDiskCacheInterceptor(
                 }
                 editor.commit()
             }
-            return result.copy(
-                image = bitmap.asImage(shareable = true),
+            val resultImage = bitmap.asImage(shareable = true)
+            memoryCache[memoryCacheKey] = MemoryCache.Value(resultImage)
+            return SuccessResult(
+                image = resultImage,
+                request = request,
+                dataSource = DataSource.MEMORY_CACHE,
+                memoryCacheKey = memoryCacheKey,
                 diskCacheKey = diskCacheKey,
+                isSampled = false,
+                isPlaceholderCached = false,
             )
         }
         return result

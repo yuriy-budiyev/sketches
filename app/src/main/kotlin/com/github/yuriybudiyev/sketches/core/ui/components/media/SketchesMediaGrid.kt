@@ -63,7 +63,6 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withMediumTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
-import com.github.yuriybudiyev.sketches.core.ui.components.media.cache.MemoryCacheKeys
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import kotlinx.parcelize.Parcelize
@@ -338,7 +337,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
         val fileUri = fileUpdated.uri
         SketchesThumbnailAsyncImage(
             uri = fileUri,
-            memoryCacheKey = MemoryCacheKeys.thumbnail(fileUri),
+            target = ThumbnailTarget.Gallery,
             contentDescription = stringResource(
                 id = when (fileUpdated.mediaType) {
                     MediaType.Image -> R.string.image
