@@ -97,8 +97,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.coil.primaryPlaceholderKey
-import com.github.yuriybudiyev.sketches.core.coil.secondaryPlaceholderKey
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
@@ -645,8 +643,8 @@ private fun VideoPage(
         modifier = modifier,
         zoomState = zoomState,
         enablePlaceholder = true,
-        placeholderMemoryCacheKey = primaryPlaceholderKey(fileUri),
-        placeholderMemoryCacheFallback = secondaryPlaceholderKey(fileUri),
+        placeholderMemoryCacheKey = null,
+        placeholderMemoryCacheFallback = null,
         enableErrorIndicator = true,
     )
 }

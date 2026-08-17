@@ -60,7 +60,6 @@ import coil3.request.ImageRequest
 import coil3.size.Scale
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.coil.RequestTarget
-import com.github.yuriybudiyev.sketches.core.coil.placeholder
 import com.github.yuriybudiyev.sketches.core.coil.requestTarget
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
@@ -169,10 +168,6 @@ fun SketchesPreviewAsyncImage(
             .Builder(context)
             .diskCachePolicy(CachePolicy.DISABLED)
             .memoryCachePolicy(CachePolicy.DISABLED)
-            .placeholder(
-                uri,
-                context,
-            )
             .data(uri)
             .size(coil3.size.Size.ORIGINAL)
             .requestTarget(RequestTarget.Preview)
