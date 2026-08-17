@@ -470,7 +470,7 @@ private fun BucketsMediaGrid(
                     ),
                     color = colorScheme.onBackground,
                     fontSize = 16.sp,
-                    overflow = TextOverflow.MiddleEllipsis,
+                    overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
                 )
                 Text(
