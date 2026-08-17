@@ -150,14 +150,19 @@ fun SketchesPreviewAsyncImage(
         uri,
         context,
     ) {
+        val memoryCache = context.imageLoader.memoryCache
+        val thumbnailKey1 = MemoryCacheKeys.thumbnail(uri)
+        val thumbnailKey2 = MemoryCacheKeys.mediaBar(uri)
         ImageRequest
             .Builder(context)
             .diskCachePolicy(CachePolicy.DISABLED)
+            .memoryCachePolicy(CachePolicy.DISABLED)
             .placeholder {
-                context.imageLoader.memoryCache?.get(MemoryCacheKeys.mediaBar(uri))?.image
+                memoryCache?.let { memoryCache ->
+                    memoryCache[thumbnailKey1]?.image
+                        ?: memoryCache[thumbnailKey2]?.image
+                }
             }
-            .placeholderMemoryCacheKey(MemoryCacheKeys.thumbnail(uri))
-            .memoryCacheKey(MemoryCacheKeys.preview(uri))
             .data(uri)
             .size(coil3.size.Size.ORIGINAL)
             .build()
