@@ -69,6 +69,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
+import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import kotlinx.coroutines.launch
 import kotlin.math.roundToLong
 
@@ -216,7 +217,7 @@ fun SketchesMediaDisplay(
                                         ratio = ratio,
                                         matchHeightConstraintsFirst = ratio < 1F,
                                     )
-                                    .blur(radius = 16.dp),
+                                    .blur(radius = LocalDimens.current.placeholderBlurRadius),
                             ) {
                                 Box(
                                     modifier = Modifier

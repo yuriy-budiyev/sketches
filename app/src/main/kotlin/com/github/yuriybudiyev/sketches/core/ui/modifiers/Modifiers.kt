@@ -22,31 +22,32 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.dimens
+package com.github.yuriybudiyev.sketches.core.ui.modifiers
 
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.Modifier
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
-@Immutable
-interface Dimens {
-
-    val material3AppBarHeight: Dp
-    val material3NavBarIndicatorWidth: Dp
-    val material3NavBarIndicatorHeight: Dp
-    val bottomBarHeight: Dp
-    val lazyGridOverlayTop: Dp
-    val lazyGridOverlayBottom: Dp
-    val lazyGridItemSize: Dp
-    val lazyGridItemSpacing: Dp
-    val mediaGridIconPadding: Dp
-    val mediaBarItemSize: Dp
-    val mediaItemBorderThickness: Dp
-    val mediaBarItemSpacing: Dp
-    val mediaBarVideoIconPadding: Dp
-    val placeholderBlurRadius: Dp
+@OptIn(ExperimentalContracts::class)
+inline fun Modifier.applyIf(
+    condition: Boolean,
+    onNotSatisfy: Modifier.() -> Modifier = { this },
+    onSatisfy: Modifier.() -> Modifier,
+): Modifier {
+    contract {
+        callsInPlace(
+            onNotSatisfy,
+            InvocationKind.AT_MOST_ONCE,
+        )
+        callsInPlace(
+            onSatisfy,
+            InvocationKind.AT_MOST_ONCE,
+        )
+    }
+    return if (condition) {
+        this.onSatisfy()
+    } else {
+        this.onNotSatisfy()
+    }
 }
-
-val LocalDimens: ProvidableCompositionLocal<Dimens> =
-    staticCompositionLocalOf { error("CompositionLocal LocalDimens not present") }

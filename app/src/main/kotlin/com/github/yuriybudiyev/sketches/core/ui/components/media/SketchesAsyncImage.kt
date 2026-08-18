@@ -51,7 +51,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
@@ -64,6 +63,8 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
+import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.modifiers.applyIf
 
 @Composable
 fun SketchesThumbnailAsyncImage(
@@ -193,12 +194,9 @@ fun SketchesPreviewAsyncImage(
                                 .aspectRatio(
                                     ratio = ratio,
                                     matchHeightConstraintsFirst = ratio < 1F,
-                                ).let { modifier ->
-                                    if (state is AsyncImagePainter.State.Loading) {
-                                        modifier.blur(radius = 16.dp)
-                                    } else {
-                                        modifier
-                                    }
+                                )
+                                .applyIf(state is AsyncImagePainter.State.Loading) {
+                                    blur(radius = LocalDimens.current.placeholderBlurRadius)
                                 },
                         ) {
                             Box(
@@ -225,4 +223,3 @@ fun SketchesPreviewAsyncImage(
         }
     }
 }
-
