@@ -42,6 +42,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -97,7 +98,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaDesc
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
-import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
 import kotlinx.coroutines.launch
@@ -138,7 +138,7 @@ fun BucketsScreen(
     val selectedBuckets = rememberSaveableSnapshotStateSet<Long>()
     val deleteDialogMedia = rememberSaveableSnapshotStateList<MediaDescriptor>()
     val mediaBatchState = rememberMediaBatchState()
-    val bucketsGridState = rememberSketchesLazyGridState()
+    val bucketsGridState = rememberLazyGridState()
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->

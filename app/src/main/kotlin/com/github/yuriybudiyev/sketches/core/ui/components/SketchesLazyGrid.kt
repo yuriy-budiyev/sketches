@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -42,7 +41,6 @@ import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.layout.LazyLayoutCacheWindow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
@@ -52,24 +50,9 @@ import androidx.compose.ui.unit.coerceAtLeast
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
-fun rememberSketchesLazyGridState(
-    initialFirstVisibleItemIndex: Int = 0,
-    initialFirstVisibleItemScrollOffset: Int = 0,
-): LazyGridState =
-    rememberLazyGridState(
-        cacheWindow = LazyLayoutCacheWindow(
-            aheadFraction = 0.5F,
-            behindFraction = 0.5F,
-        ),
-        initialFirstVisibleItemIndex = initialFirstVisibleItemIndex,
-        initialFirstVisibleItemScrollOffset = initialFirstVisibleItemScrollOffset,
-    )
-
-@Composable
 fun SketchesLazyGrid(
     modifier: Modifier = Modifier,
-    state: LazyGridState = rememberSketchesLazyGridState(),
+    state: LazyGridState = rememberLazyGridState(),
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
     content: LazyGridScope.() -> Unit,

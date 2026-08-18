@@ -36,6 +36,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -81,7 +82,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberM
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
-import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
@@ -124,7 +124,7 @@ private fun BookmarksScreen(
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteFilesDialogVisible by rememberSaveable { mutableStateOf(false) }
     var deleteBookmarksDialogVisible by rememberSaveable { mutableStateOf(false) }
-    val mediaGridState = rememberSketchesLazyGridState()
+    val mediaGridState = rememberLazyGridState()
     val mediaBatchState = rememberMediaBatchState()
     var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(

@@ -49,6 +49,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -103,7 +104,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberM
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
-import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
@@ -141,7 +141,7 @@ fun BucketScreen(
     var allFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptyList()) }
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
-    val mediaGridState = rememberSketchesLazyGridState()
+    val mediaGridState = rememberLazyGridState()
     val mediaBatchState = rememberMediaBatchState()
     var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(

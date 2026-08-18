@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -63,7 +64,6 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withMediumTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
-import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
@@ -108,7 +108,7 @@ fun SketchesMediaGrid(
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
-    state: LazyGridState = rememberSketchesLazyGridState(),
+    state: LazyGridState = rememberLazyGridState(),
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
@@ -165,7 +165,7 @@ fun SketchesGroupingMediaGrid(
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
     modifier: Modifier = Modifier,
-    state: LazyGridState = rememberSketchesLazyGridState(),
+    state: LazyGridState = rememberLazyGridState(),
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
