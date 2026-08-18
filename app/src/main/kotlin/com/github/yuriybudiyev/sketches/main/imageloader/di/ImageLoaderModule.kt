@@ -73,7 +73,7 @@ object ImageLoaderModule {
                         diskCache = DiskCache.Builder()
                             .cleanupCoroutineContext(imageLoaderDispatcher)
                             .directory(context.cacheDir.resolve("images").absolutePath.toPath())
-                            .maxSizeBytes(1073741824L)
+                            .maxSizeBytes(536870912L)
                             .build(),
                     ),
                 )
