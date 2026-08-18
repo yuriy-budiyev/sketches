@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicLong
 import kotlin.math.ceil
 
 class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
-    closestEven(ceil(Runtime.getRuntime().availableProcessors().toDouble() * 1.5F).toInt()),
+    closestEven(ceil(Runtime.getRuntime().availableProcessors().toDouble() * 1.5).toInt()),
     ImageLoaderThreadFactory(),
     AbortPolicy(),
 ) {
