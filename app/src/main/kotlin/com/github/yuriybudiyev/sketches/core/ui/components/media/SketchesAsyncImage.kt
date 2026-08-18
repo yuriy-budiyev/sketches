@@ -55,11 +55,11 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
-import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.size.Scale
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.coil.allowLocalCacheIntercept
+import com.github.yuriybudiyev.sketches.core.coil.imageMemoryCache
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
@@ -79,8 +79,6 @@ fun SketchesThumbnailAsyncImage(
         sizeResolver,
     ) {
         ImageRequest.Builder(context)
-            .diskCachePolicy(CachePolicy.DISABLED)
-            .memoryCachePolicy(CachePolicy.DISABLED)
             .data(uri)
             .size(sizeResolver)
             .scale(Scale.FILL)
@@ -149,9 +147,8 @@ fun SketchesPreviewAsyncImage(
     ) {
         ImageRequest
             .Builder(context)
-            .diskCachePolicy(CachePolicy.DISABLED)
-            .memoryCachePolicy(CachePolicy.DISABLED)
             .data(uri)
+            .placeholder { context.imageMemoryCache[uri.toString()] }
             .size(coil3.size.Size.ORIGINAL)
             .allowLocalCacheIntercept(false)
             .build()

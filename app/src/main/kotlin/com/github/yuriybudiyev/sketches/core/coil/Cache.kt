@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.coil
 
 import android.content.ComponentCallbacks2
+import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -42,6 +43,7 @@ import coil3.request.ImageResult
 import coil3.request.SuccessResult
 import coil3.size.Dimension
 import coil3.toBitmap
+import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
 
 fun ImageRequest.Builder.allowLocalCacheIntercept(allow: Boolean): ImageRequest.Builder {
     extras[AllowLocalCacheInterceptKey] = allow
@@ -50,7 +52,10 @@ fun ImageRequest.Builder.allowLocalCacheIntercept(allow: Boolean): ImageRequest.
 
 private val AllowLocalCacheInterceptKey: Extras.Key<Boolean> = Extras.Key(default = false)
 
-class LocalCacheInterceptor(private val diskCache: DiskCache): Interceptor {
+class LocalCacheInterceptor(
+    private val memoryCache: LruMemoryCache,
+    private val diskCache: DiskCache,
+): Interceptor {
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val request = chain.request
@@ -66,40 +71,37 @@ class LocalCacheInterceptor(private val diskCache: DiskCache): Interceptor {
         val width = (size.width as? Dimension.Pixels)?.px ?: return chain.proceed()
         val height = (size.height as? Dimension.Pixels)?.px ?: return chain.proceed()
         val uriString = uri.toString()
-        /*val memoryCacheKey = MemoryCache.Key(
-            key = uriString,
-            extras = buildMap {
-                this[Target] = cacheTarget
-                this["width"] = width.toString()
-                this["height"] = height.toString()
-            },
-        )*/
+        val memoryCacheKey = LruMemoryCache.Key(
+            uri = uriString,
+            width = width,
+            height = height,
+        )
         val diskCacheKey = "$uriString/$width/$height"
-        /*val memoryImage = memoryCache[memoryCacheKey]?.image
+        val memoryImage = memoryCache[memoryCacheKey]
         if (memoryImage != null) {
             return SuccessResult(
                 image = memoryImage,
                 request = request,
                 dataSource = DataSource.MEMORY_CACHE,
-                memoryCacheKey = memoryCacheKey,
-                diskCacheKey = diskCacheKey,
+                memoryCacheKey = null,
+                diskCacheKey = null,
                 isSampled = false,
                 isPlaceholderCached = false,
             )
-        }*/
+        }
         diskCache.openSnapshot(diskCacheKey)?.use { snapshot ->
             val bitmap = diskCache.fileSystem.read(snapshot.data) {
                 BitmapFactory.decodeStream(inputStream())
             }
             if (bitmap != null) {
                 val diskImage = bitmap.asImage(shareable = true)
-                //memoryCache[memoryCacheKey] = MemoryCache.Value(diskImage)
+                memoryCache[memoryCacheKey] = diskImage
                 return SuccessResult(
                     image = diskImage,
                     request = request,
                     dataSource = DataSource.DISK,
                     memoryCacheKey = null,
-                    diskCacheKey = diskCacheKey,
+                    diskCacheKey = null,
                     isSampled = false,
                     isPlaceholderCached = false,
                 )
@@ -118,14 +120,14 @@ class LocalCacheInterceptor(private val diskCache: DiskCache): Interceptor {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         bitmap.compress(
                             Bitmap.CompressFormat.WEBP_LOSSY,
-                            90,
+                            95,
                             outputStream(),
                         )
                     } else {
                         @Suppress("DEPRECATION")
                         bitmap.compress(
                             Bitmap.CompressFormat.WEBP,
-                            90,
+                            95,
                             outputStream(),
                         )
                     }
@@ -133,13 +135,13 @@ class LocalCacheInterceptor(private val diskCache: DiskCache): Interceptor {
                 editor.commit()
             }
             val resultImage = bitmap.asImage(shareable = true)
-            //memoryCache[memoryCacheKey] = MemoryCache.Value(resultImage)
+            memoryCache[memoryCacheKey] = resultImage
             return SuccessResult(
                 image = resultImage,
                 request = request,
                 dataSource = DataSource.DISK,
                 memoryCacheKey = null,
-                diskCacheKey = diskCacheKey,
+                diskCacheKey = null,
                 isSampled = false,
                 isPlaceholderCached = false,
             )
@@ -148,47 +150,36 @@ class LocalCacheInterceptor(private val diskCache: DiskCache): Interceptor {
     }
 }
 
-class LruMemoryCache(private val maxSizeBytes: Long): ComponentCallbacks2 {
+inline val Context.imageMemoryCache: LruMemoryCache
+    get() = LruMemoryCache.instance(this)
 
-    fun put(
-        uri: String,
-        width: Int,
-        height: Int,
+class LruMemoryCache private constructor(private val maxSizeBytes: Long): ComponentCallbacks2 {
+
+    operator fun set(
+        key: Key,
         image: Image,
     ) {
-        val key = Key(
-            uri = uri,
-            width = width,
-            height = height,
-        )
+        if (image.size >= imageCache.maxSize()) {
+            return
+        }
         imageCache[key] = image
         synchronized(placeholderKeyCache) {
-            val placeholder = placeholderKeyCache[uri]
+            val placeholder = placeholderKeyCache[key.uri]
             if (placeholder == null || key.width * key.height > placeholder.width * placeholder.height) {
-                placeholderKeyCache[uri] = key
+                placeholderKeyCache[key.uri] = key
             }
         }
     }
 
-    fun getPlaceholder(uri: String): Image? {
+    operator fun get(uri: String): Image? {
         val placeholderKey = synchronized(placeholderKeyCache) {
             placeholderKeyCache[uri]
         } ?: return null
         return imageCache[placeholderKey]
     }
 
-    fun getImage(
-        uri: String,
-        width: Int,
-        height: Int,
-    ): Image? {
-        val key = Key(
-            uri = uri,
-            width = width,
-            height = height,
-        )
-        return imageCache[key]
-    }
+    operator fun get(key: Key): Image? =
+        imageCache[key]
 
     @Suppress("DEPRECATION")
     override fun onTrimMemory(level: Int) {
@@ -230,12 +221,13 @@ class LruMemoryCache(private val maxSizeBytes: Long): ComponentCallbacks2 {
         val height: Int,
     )
 
-    private inner class CacheImpl: LruCache<Key, Image>((maxSizeBytes / 8L).toInt()) {
+    private inner class CacheImpl: LruCache<Key, Image>(checkOverflow(maxSizeBytes)) {
 
         override fun sizeOf(
             key: Key,
             value: Image,
-        ): Int = (value.size / 8L).toInt()
+        ): Int =
+            checkOverflow(value.size)
 
         override fun entryRemoved(
             evicted: Boolean,
@@ -249,5 +241,35 @@ class LruMemoryCache(private val maxSizeBytes: Long): ComponentCallbacks2 {
                 }
             }
         }
+    }
+
+    private fun checkOverflow(value: Long): Int =
+        if (value > Int.MAX_VALUE) {
+            Int.MAX_VALUE
+        } else {
+            value.toInt()
+        }
+
+    companion object {
+
+        fun instance(context: Context): LruMemoryCache {
+            var value = instance
+            if (value !== null) {
+                return value
+            }
+            synchronized(this) {
+                value = instance
+                if (value === null) {
+                    val appContext = context.applicationContext
+                    value = LruMemoryCache(appContext.getMaxMemory() / 4L)
+                    appContext.registerComponentCallbacks(value)
+                    instance = value
+                }
+                return value
+            }
+        }
+
+        @Volatile
+        private var instance: LruMemoryCache? = null
     }
 }
