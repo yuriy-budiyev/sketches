@@ -61,11 +61,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import coil3.Image
 import coil3.compose.asPainter
-import coil3.imageLoader
-import coil3.memory.MemoryCache
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.coil.imageMemoryCache
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
@@ -88,8 +86,6 @@ fun SketchesMediaPlayer(
     controlsBackgroundColor: Color = backgroundColor.withLowTransparency(),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
     enablePlaceholder: Boolean = true,
-    placeholderMemoryCacheKey: MemoryCache.Key? = null,
-    placeholderMemoryCacheFallback: MemoryCache.Key? = null,
     enableErrorIndicator: Boolean = true,
 ) {
     val controllerVisibleUpdated by rememberUpdatedState(controllerVisible)
@@ -105,8 +101,6 @@ fun SketchesMediaPlayer(
             backgroundColor = backgroundColor,
             indicatorColor = controlsColor,
             enablePlaceholder = enablePlaceholder,
-            placeholderMemoryCacheKey = placeholderMemoryCacheKey,
-            placeholderMemoryCacheFallback = placeholderMemoryCacheFallback,
             enableErrorIndicator = enableErrorIndicator,
         )
         AnimatedVisibility(
@@ -149,8 +143,6 @@ fun SketchesMediaDisplay(
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     indicatorColor: Color = MaterialTheme.colorScheme.onBackground,
     enablePlaceholder: Boolean = true,
-    placeholderMemoryCacheKey: MemoryCache.Key? = null,
-    placeholderMemoryCacheFallback: MemoryCache.Key? = null,
     enableErrorIndicator: Boolean = true,
 ) {
     Box(modifier = modifier) {
@@ -198,50 +190,43 @@ fun SketchesMediaDisplay(
                 }
             } else {
                 if (enablePlaceholder) {
-                    if (placeholderMemoryCacheKey != null || placeholderMemoryCacheFallback != null) {
-                        val context by rememberUpdatedState(LocalContext.current)
-                        val painter = remember(
-                            context,
-                            placeholderMemoryCacheKey,
-                            placeholderMemoryCacheFallback,
-                        ) {
-                            val memoryCache =
-                                context.imageLoader.memoryCache ?: return@remember null
-                            var image: Image? = null
-                            if (placeholderMemoryCacheKey != null) {
-                                image = memoryCache[placeholderMemoryCacheKey]?.image
-                            }
-                            if (image == null && placeholderMemoryCacheFallback != null) {
-                                image = memoryCache[placeholderMemoryCacheFallback]?.image
-                            }
-                            return@remember image?.asPainter(
+                    val context = LocalContext.current
+                    val stateUri = state.uri
+                    val painter = remember(
+                        context,
+                        stateUri,
+                    ) {
+                        if (stateUri != null) {
+                            context.imageMemoryCache[stateUri.toString()]?.asPainter(
                                 context = context,
                                 filterQuality = FilterQuality.High,
                             )
+                        } else {
+                            null
                         }
-                        if (painter != null) {
-                            val size = painter.intrinsicSize
-                            if (size != Size.Zero && size != Size.Unspecified) {
-                                val ratio = size.width / size.height
+                    }
+                    if (painter != null) {
+                        val size = painter.intrinsicSize
+                        if (size != Size.Zero && size != Size.Unspecified) {
+                            val ratio = size.width / size.height
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .aspectRatio(
+                                        ratio = ratio,
+                                        matchHeightConstraintsFirst = ratio < 1F,
+                                    )
+                                    .blur(radius = 16.dp),
+                            ) {
                                 Box(
                                     modifier = Modifier
-                                        .align(Alignment.Center)
-                                        .aspectRatio(
-                                            ratio = ratio,
-                                            matchHeightConstraintsFirst = ratio < 1F,
-                                        )
-                                        .blur(radius = 16.dp),
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .matchParentSize()
-                                            .paint(
-                                                painter = painter,
-                                                alignment = Alignment.Center,
-                                                contentScale = ContentScale.Fit,
-                                            ),
-                                    )
-                                }
+                                        .matchParentSize()
+                                        .paint(
+                                            painter = painter,
+                                            alignment = Alignment.Center,
+                                            contentScale = ContentScale.Fit,
+                                        ),
+                                )
                             }
                         }
                     } else {

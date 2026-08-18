@@ -642,8 +642,6 @@ private fun VideoPage(
         modifier = modifier,
         zoomState = zoomState,
         enablePlaceholder = true,
-        placeholderMemoryCacheKey = null,
-        placeholderMemoryCacheFallback = null,
         enableErrorIndicator = true,
     )
 }
