@@ -31,7 +31,7 @@ import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.ThreadFactory
-import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.ceil
 
 class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
@@ -71,7 +71,7 @@ class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
                 "image-loader-${counter.getAndIncrement()}",
             )
 
-        private val counter: AtomicLong = AtomicLong(1L)
+        private val counter: AtomicInteger = AtomicInteger(1)
     }
 
     private class ImageLoaderThread(
