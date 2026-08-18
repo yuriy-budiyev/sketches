@@ -24,6 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.core.coil
 
+import android.content.ComponentCallbacks2
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -146,7 +148,7 @@ class LocalCacheInterceptor(private val diskCache: DiskCache): Interceptor {
     }
 }
 
-class LruMemoryCache(private val maxSizeBytes: Long) {
+class LruMemoryCache(private val maxSizeBytes: Long): ComponentCallbacks2 {
 
     fun put(
         uri: String,
@@ -186,6 +188,26 @@ class LruMemoryCache(private val maxSizeBytes: Long) {
             height = height,
         )
         return imageCache[key]
+    }
+
+    @Suppress("DEPRECATION")
+    override fun onTrimMemory(level: Int) {
+        when {
+            level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND -> {
+                imageCache.evictAll()
+            }
+            level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW -> {
+                imageCache.trimToSize(imageCache.size() / 2)
+            }
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {}
+
+    @Suppress("DEPRECATION")
+    @Deprecated("Deprecated in Java")
+    override fun onLowMemory() {
+        onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
     }
 
     @Suppress("NOTHING_TO_INLINE")
