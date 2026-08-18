@@ -91,7 +91,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
-import com.github.yuriybudiyev.sketches.core.ui.components.media.ThumbnailTarget
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaDescriptor
@@ -433,7 +432,6 @@ private fun BucketsMediaGrid(
                     val coverUri = bucket.coverUri
                     SketchesThumbnailAsyncImage(
                         uri = coverUri,
-                        target = ThumbnailTarget.Gallery,
                         contentDescription = stringResource(R.string.bucket_cover),
                         modifier = Modifier.matchParentSize(),
                     )

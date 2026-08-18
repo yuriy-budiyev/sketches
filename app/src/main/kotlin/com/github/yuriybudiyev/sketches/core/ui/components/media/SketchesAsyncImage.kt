@@ -59,22 +59,15 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.size.Scale
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.coil.RequestTarget
-import com.github.yuriybudiyev.sketches.core.coil.requestTarget
+import com.github.yuriybudiyev.sketches.core.coil.allowLocalCacheIntercept
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
 
-enum class ThumbnailTarget {
-    Gallery,
-    MediaBar
-}
-
 @Composable
 fun SketchesThumbnailAsyncImage(
     uri: Uri,
-    target: ThumbnailTarget,
     contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
@@ -82,7 +75,6 @@ fun SketchesThumbnailAsyncImage(
     val sizeResolver = rememberConstraintsSizeResolver()
     val request = remember(
         uri,
-        target,
         context,
         sizeResolver,
     ) {
@@ -92,16 +84,7 @@ fun SketchesThumbnailAsyncImage(
             .data(uri)
             .size(sizeResolver)
             .scale(Scale.FILL)
-            .apply {
-                when (target) {
-                    ThumbnailTarget.Gallery -> {
-                        requestTarget(RequestTarget.Gallery)
-                    }
-                    ThumbnailTarget.MediaBar -> {
-                        requestTarget(RequestTarget.MediaBar)
-                    }
-                }
-            }
+            .allowLocalCacheIntercept(true)
             .build()
     }
     var painterState by remember {
@@ -170,7 +153,7 @@ fun SketchesPreviewAsyncImage(
             .memoryCachePolicy(CachePolicy.DISABLED)
             .data(uri)
             .size(coil3.size.Size.ORIGINAL)
-            .requestTarget(RequestTarget.Preview)
+            .allowLocalCacheIntercept(false)
             .build()
     }
     var painterState by remember {

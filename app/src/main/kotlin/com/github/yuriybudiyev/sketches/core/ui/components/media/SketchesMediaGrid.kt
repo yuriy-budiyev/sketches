@@ -337,7 +337,6 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
         val fileUri = fileUpdated.uri
         SketchesThumbnailAsyncImage(
             uri = fileUri,
-            target = ThumbnailTarget.Gallery,
             contentDescription = stringResource(
                 id = when (fileUpdated.mediaType) {
                     MediaType.Image -> R.string.image

@@ -116,7 +116,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesPreviewAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
-import com.github.yuriybudiyev.sketches.core.ui.components.media.ThumbnailTarget
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
@@ -719,7 +718,6 @@ private fun MediaBar(
                 val fileUri = file.uri
                 SketchesThumbnailAsyncImage(
                     uri = fileUri,
-                    target = ThumbnailTarget.MediaBar,
                     contentDescription = stringResource(
                         id = when (file.mediaType) {
                             MediaType.Image -> R.string.image

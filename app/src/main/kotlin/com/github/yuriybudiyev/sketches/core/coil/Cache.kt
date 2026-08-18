@@ -41,38 +41,24 @@ import coil3.request.SuccessResult
 import coil3.size.Dimension
 import coil3.toBitmap
 
-fun ImageRequest.Builder.requestTarget(requestTarget: RequestTarget): ImageRequest.Builder {
-    extras[RequestTargetKey] = requestTarget
+fun ImageRequest.Builder.allowLocalCacheIntercept(allow: Boolean): ImageRequest.Builder {
+    extras[AllowLocalCacheInterceptKey] = allow
     return this
 }
 
-enum class RequestTarget {
-    Preview,
-    Gallery,
-    MediaBar,
-}
-
-private val RequestTargetKey: Extras.Key<RequestTarget?> = Extras.Key(default = null)
-
-private const val Target: String = "target"
-private const val GalleryTarget: String = "gallery"
-private const val MediaBarTarget: String = "media-bar"
+private val AllowLocalCacheInterceptKey: Extras.Key<Boolean> = Extras.Key(default = false)
 
 class LocalCacheInterceptor(private val diskCache: DiskCache): Interceptor {
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val request = chain.request
+        if (request.extras[AllowLocalCacheInterceptKey] != true) {
+            return chain.proceed()
+        }
         val uri = request.data as? Uri ?: return chain.proceed()
         val uriScheme = uri.scheme
         if (uriScheme != "content" && uriScheme != "file") {
             return chain.proceed()
-        }
-        val extras = request.extras
-        val requestTarget = extras[RequestTargetKey] ?: return chain.proceed()
-        val cacheTarget = when (requestTarget) {
-            RequestTarget.Preview -> return chain.proceed()
-            RequestTarget.Gallery -> GalleryTarget
-            RequestTarget.MediaBar -> MediaBarTarget
         }
         val size = chain.size
         val width = (size.width as? Dimension.Pixels)?.px ?: return chain.proceed()
@@ -86,7 +72,7 @@ class LocalCacheInterceptor(private val diskCache: DiskCache): Interceptor {
                 this["height"] = height.toString()
             },
         )*/
-        val diskCacheKey = "$uriString/$cacheTarget/$width/$height"
+        val diskCacheKey = "$uriString/$width/$height"
         /*val memoryImage = memoryCache[memoryCacheKey]?.image
         if (memoryImage != null) {
             return SuccessResult(
@@ -123,7 +109,6 @@ class LocalCacheInterceptor(private val diskCache: DiskCache): Interceptor {
             diskCache.openEditor(diskCacheKey)?.let { editor ->
                 diskCache.fileSystem.write(editor.metadata) {
                     writeUtf8("$uriString\n")
-                    writeUtf8("$cacheTarget\n")
                     writeUtf8("$width\n")
                     writeUtf8("$height\n")
                 }
