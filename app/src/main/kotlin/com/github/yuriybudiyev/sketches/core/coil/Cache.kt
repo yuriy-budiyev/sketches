@@ -28,12 +28,13 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
+import androidx.collection.LruCache
 import coil3.Extras
+import coil3.Image
 import coil3.asImage
 import coil3.decode.DataSource
 import coil3.disk.DiskCache
 import coil3.intercept.Interceptor
-import coil3.memory.MemoryCache
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import coil3.request.SuccessResult
@@ -57,10 +58,7 @@ private const val Target: String = "target"
 private const val GalleryTarget: String = "gallery"
 private const val MediaBarTarget: String = "media-bar"
 
-class LocalCacheInterceptor(
-    private val memoryCache: MemoryCache,
-    private val diskCache: DiskCache,
-): Interceptor {
+class LocalCacheInterceptor(private val diskCache: DiskCache): Interceptor {
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val request = chain.request
@@ -80,16 +78,16 @@ class LocalCacheInterceptor(
         val width = (size.width as? Dimension.Pixels)?.px ?: return chain.proceed()
         val height = (size.height as? Dimension.Pixels)?.px ?: return chain.proceed()
         val uriString = uri.toString()
-        val memoryCacheKey = MemoryCache.Key(
+        /*val memoryCacheKey = MemoryCache.Key(
             key = uriString,
             extras = buildMap {
                 this[Target] = cacheTarget
                 this["width"] = width.toString()
                 this["height"] = height.toString()
             },
-        )
+        )*/
         val diskCacheKey = "$uriString/$cacheTarget/$width/$height"
-        val memoryImage = memoryCache[memoryCacheKey]?.image
+        /*val memoryImage = memoryCache[memoryCacheKey]?.image
         if (memoryImage != null) {
             return SuccessResult(
                 image = memoryImage,
@@ -100,19 +98,19 @@ class LocalCacheInterceptor(
                 isSampled = false,
                 isPlaceholderCached = false,
             )
-        }
+        }*/
         diskCache.openSnapshot(diskCacheKey)?.use { snapshot ->
             val bitmap = diskCache.fileSystem.read(snapshot.data) {
                 BitmapFactory.decodeStream(inputStream())
             }
             if (bitmap != null) {
                 val diskImage = bitmap.asImage(shareable = true)
-                memoryCache[memoryCacheKey] = MemoryCache.Value(diskImage)
+                //memoryCache[memoryCacheKey] = MemoryCache.Value(diskImage)
                 return SuccessResult(
                     image = diskImage,
                     request = request,
-                    dataSource = DataSource.MEMORY_CACHE,
-                    memoryCacheKey = memoryCacheKey,
+                    dataSource = DataSource.DISK,
+                    memoryCacheKey = null,
                     diskCacheKey = diskCacheKey,
                     isSampled = false,
                     isPlaceholderCached = false,
@@ -148,17 +146,101 @@ class LocalCacheInterceptor(
                 editor.commit()
             }
             val resultImage = bitmap.asImage(shareable = true)
-            memoryCache[memoryCacheKey] = MemoryCache.Value(resultImage)
+            //memoryCache[memoryCacheKey] = MemoryCache.Value(resultImage)
             return SuccessResult(
                 image = resultImage,
                 request = request,
-                dataSource = DataSource.MEMORY_CACHE,
-                memoryCacheKey = memoryCacheKey,
+                dataSource = DataSource.DISK,
+                memoryCacheKey = null,
                 diskCacheKey = diskCacheKey,
                 isSampled = false,
                 isPlaceholderCached = false,
             )
         }
         return result
+    }
+}
+
+class LruMemoryCache(private val maxSizeBytes: Long) {
+
+    fun put(
+        uri: String,
+        width: Int,
+        height: Int,
+        image: Image,
+    ) {
+        val key = Key(
+            uri = uri,
+            width = width,
+            height = height,
+        )
+        imageCache[key] = image
+        synchronized(placeholderKeyCache) {
+            val placeholder = placeholderKeyCache[uri]
+            if (placeholder == null || key.width * key.height > placeholder.width * placeholder.height) {
+                placeholderKeyCache[uri] = key
+            }
+        }
+    }
+
+    fun getPlaceholder(uri: String): Image? {
+        val placeholderKey = synchronized(placeholderKeyCache) {
+            placeholderKeyCache[uri]
+        } ?: return null
+        return imageCache[placeholderKey]
+    }
+
+    fun getImage(
+        uri: String,
+        width: Int,
+        height: Int,
+    ): Image? {
+        val key = Key(
+            uri = uri,
+            width = width,
+            height = height,
+        )
+        return imageCache[key]
+    }
+
+    @Suppress("NOTHING_TO_INLINE")
+    private inline operator fun LruCache<Key, Image>.set(
+        key: Key,
+        image: Image,
+    ) {
+        put(
+            key,
+            image,
+        )
+    }
+
+    private val imageCache: LruCache<Key, Image> = CacheImpl()
+    private val placeholderKeyCache: MutableMap<String, Key> = HashMap()
+
+    data class Key(
+        val uri: String,
+        val width: Int,
+        val height: Int,
+    )
+
+    private inner class CacheImpl: LruCache<Key, Image>((maxSizeBytes / 8L).toInt()) {
+
+        override fun sizeOf(
+            key: Key,
+            value: Image,
+        ): Int = (value.size / 8L).toInt()
+
+        override fun entryRemoved(
+            evicted: Boolean,
+            key: Key,
+            oldValue: Image,
+            newValue: Image?,
+        ) {
+            synchronized(placeholderKeyCache) {
+                if (placeholderKeyCache[key.uri] == key) {
+                    placeholderKeyCache.remove(key.uri)
+                }
+            }
+        }
     }
 }

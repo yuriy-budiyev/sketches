@@ -30,13 +30,11 @@ import coil3.ImageLoader
 import coil3.disk.DiskCache
 import coil3.gif.AnimatedImageDecoder
 import coil3.gif.GifDecoder
-import coil3.memory.MemoryCache
 import coil3.request.allowHardware
 import coil3.serviceLoaderEnabled
 import coil3.svg.SvgDecoder
 import coil3.video.VideoFrameDecoder
 import com.github.yuriybudiyev.sketches.core.coil.LocalCacheInterceptor
-import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
 import com.github.yuriybudiyev.sketches.main.imageloader.executor.ImageLoaderExecutor
 import dagger.Module
 import dagger.Provides
@@ -58,11 +56,6 @@ object ImageLoaderModule {
         context: Context,
     ): ImageLoader {
         val imageLoaderDispatcher = ImageLoaderExecutor().asCoroutineDispatcher()
-        val memoryCache = MemoryCache.Builder()
-            .maxSizeBytes(context.getMaxMemory() / 4L)
-            .strongReferencesEnabled(true)
-            .weakReferencesEnabled(true)
-            .build()
         val diskCache = DiskCache.Builder()
             .cleanupCoroutineContext(imageLoaderDispatcher)
             .directory(context.cacheDir.resolve("images").absolutePath.toPath())
@@ -71,16 +64,11 @@ object ImageLoaderModule {
         return ImageLoader.Builder(context)
             .serviceLoaderEnabled(false)
             .allowHardware(true)
-            .coroutineContext(imageLoaderDispatcher)
-            .memoryCache(memoryCache)
+            .memoryCache(null)
             .diskCache(diskCache)
+            .coroutineContext(imageLoaderDispatcher)
             .components {
-                add(
-                    LocalCacheInterceptor(
-                        memoryCache = memoryCache,
-                        diskCache = diskCache,
-                    ),
-                )
+                add(LocalCacheInterceptor(diskCache))
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     add(AnimatedImageDecoder.Factory())
                 } else {
