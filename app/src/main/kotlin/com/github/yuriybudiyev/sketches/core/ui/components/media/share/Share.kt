@@ -35,41 +35,6 @@ import kotlin.contracts.contract
 
 @OptIn(ExperimentalContracts::class)
 inline fun Collection<MediaStoreFile>.prepareForSharing(
-    mediaSizeLimit: Int,
-    onDataReady: (media: List<MediaDescriptor>, mimeType: String) -> Unit,
-) {
-    contract {
-        callsInPlace(
-            onDataReady,
-            InvocationKind.EXACTLY_ONCE,
-        )
-    }
-    val size = this.size.coerceAtMost(mediaSizeLimit)
-    if (size == 0) {
-        onDataReady(
-            emptyList(),
-            "*/*",
-        )
-        return
-    }
-    val media = ArrayList<MediaDescriptor>(size)
-    val mediaTypes = EnumSet.noneOf(MediaType::class.java)
-    for (file in this) {
-        media.add(file.toMediaDescriptor())
-        mediaTypes.add(file.mediaType)
-    }
-    onDataReady(
-        media,
-        if (mediaTypes.size == 1) {
-            mediaTypes.first().mimeType
-        } else {
-            "*/*"
-        },
-    )
-}
-
-@OptIn(ExperimentalContracts::class)
-inline fun Collection<MediaStoreFile>.prepareForSharing(
     filterIds: Set<Long>,
     mediaSizeLimit: Int,
     onDataReady: (media: List<MediaDescriptor>, mimeType: String) -> Unit,
