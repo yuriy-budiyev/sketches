@@ -339,9 +339,9 @@ class MediaStoreRepositoryImpl @Inject constructor(
     private fun startBookmarksGarbageCollection() {
         defaultCoroutineScope.launch {
             entitiesFlow.collectLatest { entities ->
-                val entitiesIds = entities.associateBy { entity -> entity.id }
+                val entitiesByIds = entities.associateBy { entity -> entity.id }
                 val idsToDelete = bookmarksByMediaIdsFlow.first().asSequence()
-                    .filter { entry -> entitiesIds.contains(entry.key) }
+                    .filter { entry -> !entitiesByIds.containsKey(entry.key) }
                     .map { entry -> entry.key }
                     .toList()
                 if (idsToDelete.isNotEmpty()) {
