@@ -35,9 +35,11 @@ import android.os.SystemClock
 import android.provider.MediaStore
 import androidx.core.database.getStringOrNull
 import com.github.yuriybudiyev.sketches.core.collections.newLinkedHashMap
+import com.github.yuriybudiyev.sketches.core.collections.newLinkedHashSet
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.dao.BookmarksDao
+import com.github.yuriybudiyev.sketches.core.data.dao.HiddenBucketsDao
 import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
@@ -81,6 +83,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     @Dispatcher(Dispatchers.IO)
     private val ioDispatcher: CoroutineDispatcher,
     private val bookmarksDao: BookmarksDao,
+    private val hiddenBucketsDao: HiddenBucketsDao,
 ): MediaStoreRepository {
 
     override fun getFiles(): Flow<List<MediaStoreFile>> =
@@ -351,6 +354,17 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
     }
 
+    private fun startHiddenBucketsFlow() {
+        defaultCoroutineScope.launch {
+            hiddenBucketsDao.getAll()
+                .collectLatest { entities ->
+                    hiddenBucketsFlow.emit(
+                        entities.mapTo(newLinkedHashSet(entities.size)) { entity -> entity.bucketId },
+                    )
+                }
+        }
+    }
+
     private val defaultCoroutineScope: CoroutineScope =
         CoroutineScope(defaultDispatcher + SupervisorJob())
 
@@ -389,6 +403,13 @@ class MediaStoreRepositoryImpl @Inject constructor(
             onBufferOverflow = BufferOverflow.DROP_OLDEST,
         )
 
+    private val hiddenBucketsFlow: MutableSharedFlow<Set<Long>> =
+        MutableSharedFlow(
+            replay = 1,
+            extraBufferCapacity = 0,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
+
     @Volatile
     private var updateAllFilesJob: Job? = null
 
@@ -407,6 +428,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         startBookmarksFlow()
         startBookmarksByMediaIdsFlow()
         startBookmarksGarbageCollection()
+        startHiddenBucketsFlow()
         updateMediaStoreEntities()
         val mediaObserver = MediaObserver()
         with(appContext.contentResolver) {
