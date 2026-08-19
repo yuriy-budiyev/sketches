@@ -35,7 +35,10 @@ import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
 import com.github.yuriybudiyev.sketches.core.data.entity.HiddenBucketEntity
 
 @Database(
-    entities = [BookmarkEntity::class, HiddenBucketEntity::class],
+    entities = [
+        BookmarkEntity::class,
+        HiddenBucketEntity::class
+    ],
     version = 2,
     exportSchema = true,
     autoMigrations = [
