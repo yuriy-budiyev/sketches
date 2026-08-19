@@ -52,6 +52,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import coil3.compose.AsyncImagePainter
+import coil3.compose.asPainter
 import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
 import coil3.request.ImageRequest
@@ -64,7 +65,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.modifiers.applyIf
 
 @Composable
 fun SketchesThumbnailAsyncImage(
@@ -149,7 +149,6 @@ fun SketchesPreviewAsyncImage(
         ImageRequest
             .Builder(context)
             .data(uri)
-            .placeholder { context.imageMemoryCache[uri.toString()] }
             .size(coil3.size.Size.ORIGINAL)
             .allowLocalCacheIntercept(false)
             .build()
@@ -174,11 +173,40 @@ fun SketchesPreviewAsyncImage(
             .then(modifier),
         contentAlignment = Alignment.Center,
     ) {
-        when (val state = painterState) {
-            is AsyncImagePainter.State.Empty -> {
-                // Do nothing
+        when (painterState) {
+            is AsyncImagePainter.State.Empty,
+            is AsyncImagePainter.State.Loading -> {
+                val painter = remember(
+                    uri,
+                    context,
+                ) {
+                    context.imageMemoryCache[uri.toString()]?.asPainter(context)
+                }
+                if (painter != null) {
+                    val size = painter.intrinsicSize
+                    if (size != Size.Zero && size != Size.Unspecified) {
+                        val ratio = size.width / size.height
+                        Box(
+                            modifier = Modifier
+                                .aspectRatio(
+                                    ratio = ratio,
+                                    matchHeightConstraintsFirst = ratio < 1F,
+                                )
+                                .blur(radius = LocalDimens.current.placeholderBlurRadius),
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .paint(
+                                        painter = painter,
+                                        alignment = Alignment.Center,
+                                        contentScale = ContentScale.Fit,
+                                    ),
+                            )
+                        }
+                    }
+                }
             }
-            is AsyncImagePainter.State.Loading,
             is AsyncImagePainter.State.Success -> {
                 SketchesZoomableBox(
                     modifier = Modifier.matchParentSize(),
@@ -195,20 +223,12 @@ fun SketchesPreviewAsyncImage(
                                     ratio = ratio,
                                     matchHeightConstraintsFirst = ratio < 1F,
                                 )
-                                .applyIf(state is AsyncImagePainter.State.Loading) {
-                                    blur(radius = LocalDimens.current.placeholderBlurRadius)
-                                },
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .matchParentSize()
-                                    .paint(
-                                        painter = painter,
-                                        contentScale = ContentScale.Fit,
-                                        alignment = Alignment.Center,
-                                    ),
-                            )
-                        }
+                                .paint(
+                                    painter = painter,
+                                    contentScale = ContentScale.Fit,
+                                    alignment = Alignment.Center,
+                                ),
+                        )
                     }
                 }
             }
@@ -216,7 +236,6 @@ fun SketchesPreviewAsyncImage(
                 Icon(
                     painter = painterResource(R.drawable.ic_image_error),
                     contentDescription = contentDescription,
-                    modifier = Modifier.align(Alignment.Center),
                     tint = MaterialTheme.colorScheme.onBackground,
                 )
             }
