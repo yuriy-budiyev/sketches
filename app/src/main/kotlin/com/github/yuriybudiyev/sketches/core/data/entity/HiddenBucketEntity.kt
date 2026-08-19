@@ -22,33 +22,16 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.db
+package com.github.yuriybudiyev.sketches.core.data.entity
 
-import androidx.room3.AutoMigration
-import androidx.room3.ColumnTypeConverters
-import androidx.room3.Database
-import androidx.room3.RoomDatabase
-import com.github.yuriybudiyev.sketches.core.data.dao.BookmarksDao
-import com.github.yuriybudiyev.sketches.core.data.dao.HiddenBucketsDao
-import com.github.yuriybudiyev.sketches.core.data.db.converters.LocalDateTimeConverter
-import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
-import com.github.yuriybudiyev.sketches.core.data.entity.HiddenBucketEntity
+import androidx.room3.ColumnInfo
+import androidx.room3.Entity
+import androidx.room3.PrimaryKey
 
-@Database(
-    entities = [BookmarkEntity::class, HiddenBucketEntity::class],
-    version = 2,
-    exportSchema = true,
-    autoMigrations = [
-        AutoMigration(
-            from = 1,
-            to = 2,
-        )
-    ],
+@Entity(tableName = "hidden_buckets")
+data class HiddenBucketEntity(
+
+    @PrimaryKey(autoGenerate = false)
+    @ColumnInfo(name = "bucket_id")
+    val bucketId: Long,
 )
-@ColumnTypeConverters(LocalDateTimeConverter::class)
-abstract class MainDatabase: RoomDatabase() {
-
-    abstract fun bookmarksDao(): BookmarksDao
-
-    abstract fun hiddenBucketsDao(): HiddenBucketsDao
-}

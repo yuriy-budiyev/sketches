@@ -22,33 +22,23 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.db
+package com.github.yuriybudiyev.sketches.core.data.dao
 
-import androidx.room3.AutoMigration
-import androidx.room3.ColumnTypeConverters
-import androidx.room3.Database
-import androidx.room3.RoomDatabase
-import com.github.yuriybudiyev.sketches.core.data.dao.BookmarksDao
-import com.github.yuriybudiyev.sketches.core.data.dao.HiddenBucketsDao
-import com.github.yuriybudiyev.sketches.core.data.db.converters.LocalDateTimeConverter
-import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
+import androidx.room3.Dao
+import androidx.room3.Query
+import androidx.room3.Upsert
 import com.github.yuriybudiyev.sketches.core.data.entity.HiddenBucketEntity
+import kotlinx.coroutines.flow.Flow
 
-@Database(
-    entities = [BookmarkEntity::class, HiddenBucketEntity::class],
-    version = 2,
-    exportSchema = true,
-    autoMigrations = [
-        AutoMigration(
-            from = 1,
-            to = 2,
-        )
-    ],
-)
-@ColumnTypeConverters(LocalDateTimeConverter::class)
-abstract class MainDatabase: RoomDatabase() {
+@Dao
+interface HiddenBucketsDao {
 
-    abstract fun bookmarksDao(): BookmarksDao
+    @Query("SELECT * FROM hidden_buckets")
+    fun getAll(): Flow<List<HiddenBucketEntity>>
 
-    abstract fun hiddenBucketsDao(): HiddenBucketsDao
+    @Upsert
+    suspend fun upsert(value: HiddenBucketEntity)
+
+    @Query("DELETE FROM hidden_buckets WHERE bucket_id=:bucketId")
+    suspend fun delete(bucketId: Long)
 }

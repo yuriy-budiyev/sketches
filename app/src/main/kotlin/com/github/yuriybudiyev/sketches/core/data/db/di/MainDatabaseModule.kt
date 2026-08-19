@@ -22,11 +22,12 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.db
+package com.github.yuriybudiyev.sketches.core.data.db.di
 
 import android.content.Context
 import androidx.room3.Room
 import com.github.yuriybudiyev.sketches.core.data.dao.BookmarksDao
+import com.github.yuriybudiyev.sketches.core.data.db.MainDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
