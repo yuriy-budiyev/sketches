@@ -27,6 +27,7 @@ package com.github.yuriybudiyev.sketches.core.data.db.di
 import android.content.Context
 import androidx.room3.Room
 import com.github.yuriybudiyev.sketches.core.data.dao.BookmarksDao
+import com.github.yuriybudiyev.sketches.core.data.dao.HiddenBucketsDao
 import com.github.yuriybudiyev.sketches.core.data.db.MainDatabase
 import dagger.Module
 import dagger.Provides
@@ -53,4 +54,8 @@ object MainDatabaseModule {
     @Provides
     fun provideBookmarksDao(database: MainDatabase): BookmarksDao =
         database.bookmarksDao()
+
+    @Provides
+    fun provideHiddenBucketsDao(database: MainDatabase): HiddenBucketsDao =
+        database.hiddenBucketsDao()
 }
