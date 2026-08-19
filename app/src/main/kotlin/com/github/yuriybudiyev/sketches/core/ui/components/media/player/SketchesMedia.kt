@@ -230,13 +230,6 @@ fun SketchesMediaDisplay(
                                 )
                             }
                         }
-                    } else {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_image_loading),
-                            contentDescription = stringResource(R.string.image),
-                            modifier = Modifier.align(Alignment.Center),
-                            tint = indicatorColor,
-                        )
                     }
                 }
             }
