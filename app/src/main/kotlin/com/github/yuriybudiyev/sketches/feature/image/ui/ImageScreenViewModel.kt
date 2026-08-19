@@ -34,8 +34,8 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.CreateBookmarkUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetAllMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
-import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageNavRoute
 import dagger.assisted.Assisted
@@ -64,7 +64,7 @@ class ImageScreenViewModel @AssistedInject constructor(
     private val createBookmark: CreateBookmarkUseCase,
     private val deleteBookmarks: DeleteBookmarksUseCase,
     private val updateMediaAccess: UpdateMediaAccessUseCase,
-    getMediaFiles: GetMediaFilesUseCase,
+    getMediaFiles: GetAllMediaFilesUseCase,
     getBookmarks: GetBookmarksUseCase,
 ): ViewModel() {
 

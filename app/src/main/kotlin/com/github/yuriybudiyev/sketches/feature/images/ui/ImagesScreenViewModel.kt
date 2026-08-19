@@ -29,7 +29,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
-import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetGalleryMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,7 +46,7 @@ import javax.inject.Inject
 class ImagesScreenViewModel @Inject constructor(
     private val deleteMedia: DeleteMediaUseCase,
     private val updateMediaAccess: UpdateMediaAccessUseCase,
-    getMediaFiles: GetMediaFilesUseCase,
+    getMediaFiles: GetGalleryMediaFilesUseCase,
 ): ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)

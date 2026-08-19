@@ -87,8 +87,11 @@ class MediaStoreRepositoryImpl @Inject constructor(
     private val hiddenBucketsDao: HiddenBucketsDao,
 ): MediaStoreRepository {
 
-    override fun getFiles(): Flow<List<MediaStoreFile>> =
-        filesFlow
+    override fun getAllFiles(): Flow<List<MediaStoreFile>> =
+        allFilesFlow
+
+    override fun getGalleryFiles(): Flow<List<MediaStoreFile>> =
+        galleyFilesFlow
 
     override fun getBookmarks(): Flow<List<MediaStoreFile>> =
         bookmarksFlow
@@ -152,15 +155,15 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun hideBucket(bucketId: Long) {
+    override suspend fun showBucket(bucketId: Long) {
         withContext(ioDispatcher) {
-            hiddenBucketsDao.upsert(HiddenBucketEntity(bucketId))
+            hiddenBucketsDao.delete(bucketId)
         }
     }
 
-    override suspend fun unhideBucket(bucketId: Long) {
+    override suspend fun hideBucket(bucketId: Long) {
         withContext(ioDispatcher) {
-            hiddenBucketsDao.delete(bucketId)
+            hiddenBucketsDao.upsert(HiddenBucketEntity(bucketId))
         }
     }
 
@@ -249,7 +252,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun startFilesFlow() {
+    private fun startAllFilesFlow() {
         defaultCoroutineScope.launch {
             combineTransform(
                 entitiesFlow,
@@ -276,7 +279,26 @@ class MediaStoreRepositoryImpl @Inject constructor(
                     )
                 }
             }.collect { files ->
-                filesFlow.emit(files)
+                allFilesFlow.emit(files)
+            }
+        }
+    }
+
+    private fun startGalleryFilesFlow() {
+        defaultCoroutineScope.launch {
+            combineTransform(
+                allFilesFlow,
+                hiddenBucketsFlow,
+            ) { files, buckets ->
+                emit(files to buckets)
+            }.collectLatest { (files, buckets) ->
+                galleyFilesFlow.emit(
+                    if (buckets.isNotEmpty()) {
+                        files.filter { file -> !buckets.contains(file.bucketId) }
+                    } else {
+                        files
+                    },
+                )
             }
         }
     }
@@ -323,7 +345,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun startBookmarksFlow() {
         defaultCoroutineScope.launch {
-            filesFlow.transformLatest { files ->
+            allFilesFlow.transformLatest { files ->
                 val bookmarks = files.filterTo(ArrayList()) { file -> file.bookmark != null }
                 bookmarks.sortByDescending { file -> file.bookmark!!.dateAdded }
                 emit(bookmarks)
@@ -355,9 +377,10 @@ class MediaStoreRepositoryImpl @Inject constructor(
     private fun startBookmarksGarbageCollection() {
         defaultCoroutineScope.launch {
             entitiesFlow.collectLatest { entities ->
-                val entitiesByIds = entities.associateBy { entity -> entity.id }
+                val entitiesByIds =
+                    entities.mapTo(newLinkedHashSet(entities.size)) { entity -> entity.id }
                 val idsToDelete = bookmarksByMediaIdsFlow.first().asSequence()
-                    .filter { entry -> !entitiesByIds.containsKey(entry.key) }
+                    .filter { entry -> !entitiesByIds.contains(entry.key) }
                     .map { entry -> entry.key }
                     .toList()
                 if (idsToDelete.isNotEmpty()) {
@@ -388,7 +411,14 @@ class MediaStoreRepositoryImpl @Inject constructor(
             onBufferOverflow = BufferOverflow.DROP_OLDEST,
         )
 
-    private val filesFlow: MutableSharedFlow<List<MediaStoreFile>> =
+    private val allFilesFlow: MutableSharedFlow<List<MediaStoreFile>> =
+        MutableSharedFlow(
+            replay = 1,
+            extraBufferCapacity = 0,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
+
+    private val galleyFilesFlow: MutableSharedFlow<List<MediaStoreFile>> =
         MutableSharedFlow(
             replay = 1,
             extraBufferCapacity = 0,
@@ -436,7 +466,8 @@ class MediaStoreRepositoryImpl @Inject constructor(
     private val contentProviderMutex: Mutex = Mutex()
 
     init {
-        startFilesFlow()
+        startAllFilesFlow()
+        startGalleryFilesFlow()
         startBucketsFlow()
         startBookmarksFlow()
         startBookmarksByMediaIdsFlow()

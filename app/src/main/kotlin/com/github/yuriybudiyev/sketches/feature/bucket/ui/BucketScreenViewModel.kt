@@ -29,7 +29,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
-import com.github.yuriybudiyev.sketches.core.domain.GetMediaFilesUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetAllMediaFilesUseCase
+import com.github.yuriybudiyev.sketches.core.domain.HideBucketUseCase
+import com.github.yuriybudiyev.sketches.core.domain.ShowBucketUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavRoute
 import dagger.assisted.Assisted
@@ -50,7 +52,9 @@ class BucketScreenViewModel @AssistedInject constructor(
     route: BucketNavRoute,
     private val deleteMedia: DeleteMediaUseCase,
     private val updateMediaAccess: UpdateMediaAccessUseCase,
-    getMediaFiles: GetMediaFilesUseCase,
+    private val showBucket: ShowBucketUseCase,
+    private val hideBucket: HideBucketUseCase,
+    getMediaFiles: GetAllMediaFilesUseCase,
 ): ViewModel() {
 
     val bucketId: Long = route.bucketId
@@ -81,6 +85,18 @@ class BucketScreenViewModel @AssistedInject constructor(
     fun updateMediaAccess() {
         viewModelScope.launch {
             updateMediaAccess.invoke()
+        }
+    }
+
+    fun showBucket(bucketId: Long) {
+        viewModelScope.launch {
+            showBucket.invoke(bucketId)
+        }
+    }
+
+    fun hideBucket(bucketId: Long) {
+        viewModelScope.launch {
+            hideBucket.invoke(bucketId)
         }
     }
 

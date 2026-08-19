@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2025 Yuriy Budiyev
+ * Copyright (c) 2026 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,40 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.core.domain
 
-import com.github.yuriybudiyev.sketches.core.collections.newLinkedHashSet
-import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
-import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
 import dagger.Reusable
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 @Reusable
-class GetBucketsContentUseCase @Inject constructor(
-    private val repository: MediaStoreRepository,
-    @Dispatcher(Dispatchers.Default)
-    private val defaultDispatcher: CoroutineDispatcher,
-) {
+class GetGalleryMediaFilesUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    suspend operator fun invoke(buckets: Collection<MediaStoreBucket>): List<MediaStoreFile> =
-        withContext(defaultDispatcher) {
-            val allFiles = repository.getAllFiles().first()
-            val bucketIds = newLinkedHashSet<Long>(buckets.size)
-            var contentSize = 0
-            for (bucket in buckets) {
-                bucketIds.add(bucket.id)
-                contentSize += bucket.size
-            }
-            val contentFiles = ArrayList<MediaStoreFile>(contentSize)
-            for (file in allFiles) {
-                if (bucketIds.contains(file.bucketId)) {
-                    contentFiles.add(file)
-                }
-            }
-            return@withContext contentFiles
-        }
+    operator fun invoke(): Flow<List<MediaStoreFile>> =
+        repository.getGalleryFiles()
 }
