@@ -41,6 +41,7 @@ import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.dao.BookmarksDao
 import com.github.yuriybudiyev.sketches.core.data.dao.HiddenBucketsDao
 import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
+import com.github.yuriybudiyev.sketches.core.data.entity.HiddenBucketEntity
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
@@ -108,21 +109,6 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun createBookmark(mediaId: Long) {
-        bookmarksDao.upsert(
-            BookmarkEntity(
-                mediaId = mediaId,
-                dateAdded = LocalDateTime.now(),
-            ),
-        )
-    }
-
-    override suspend fun deleteBookmarks(mediaIds: Collection<Long>) {
-        withContext(ioDispatcher) {
-            bookmarksDao.delete(mediaIds)
-        }
-    }
-
     override suspend fun deleteMedia(uris: Collection<Uri>) {
         withContext(ioDispatcher) {
             val chunkSize = uris.size.coerceAtMost(MediaStoreBatchSize)
@@ -148,6 +134,33 @@ class MediaStoreRepositoryImpl @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+    override suspend fun createBookmark(mediaId: Long) {
+        bookmarksDao.upsert(
+            BookmarkEntity(
+                mediaId = mediaId,
+                dateAdded = LocalDateTime.now(),
+            ),
+        )
+    }
+
+    override suspend fun deleteBookmarks(mediaIds: Collection<Long>) {
+        withContext(ioDispatcher) {
+            bookmarksDao.delete(mediaIds)
+        }
+    }
+
+    override suspend fun hideBucket(bucketId: Long) {
+        withContext(ioDispatcher) {
+            hiddenBucketsDao.upsert(HiddenBucketEntity(bucketId))
+        }
+    }
+
+    override suspend fun unhideBucket(bucketId: Long) {
+        withContext(ioDispatcher) {
+            hiddenBucketsDao.delete(bucketId)
         }
     }
 

@@ -39,9 +39,13 @@ interface MediaStoreRepository {
 
     fun updateMediaAccess()
 
+    suspend fun deleteMedia(uris: Collection<Uri>)
+
     suspend fun createBookmark(mediaId: Long)
 
     suspend fun deleteBookmarks(mediaIds: Collection<Long>)
 
-    suspend fun deleteMedia(uris: Collection<Uri>)
+    suspend fun hideBucket(bucketId: Long)
+
+    suspend fun unhideBucket(bucketId: Long)
 }

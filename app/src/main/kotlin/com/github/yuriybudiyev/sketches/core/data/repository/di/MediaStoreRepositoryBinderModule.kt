@@ -22,8 +22,10 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.repository
+package com.github.yuriybudiyev.sketches.core.data.repository.di
 
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
