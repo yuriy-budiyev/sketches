@@ -297,28 +297,40 @@ fun BucketsScreen(
             },
             backgroundColor = MaterialTheme.colorScheme.background.withLowTransparency(),
         ) {
-            if (selectedBuckets.isNotEmpty()) {
-                if (selectedBuckets.size >= allBuckets.size) {
-                    SketchesAppBarActionButton(
-                        iconRes = R.drawable.ic_select_none,
-                        description = stringResource(R.string.select_none),
-                        onClick = {
-                            coroutineScope.launch {
-                                selectedBuckets.clear()
-                            }
+            val selectionMode by remember {
+                derivedStateOf(structuralEqualityPolicy()) {
+                    selectedBuckets.isNotEmpty()
+                }
+            }
+            if (selectionMode) {
+                val allFilesSelected by remember {
+                    derivedStateOf(structuralEqualityPolicy()) {
+                        selectedBuckets.size >= allBuckets.size
+                    }
+                }
+                SketchesAppBarActionButton(
+                    iconRes = if (allFilesSelected) {
+                        R.drawable.ic_select_none
+                    } else {
+                        R.drawable.ic_select_all
+                    },
+                    description = stringResource(
+                        if (allFilesSelected) {
+                            R.string.select_none
+                        } else {
+                            R.string.select_all
                         },
-                    )
-                } else {
-                    SketchesAppBarActionButton(
-                        iconRes = R.drawable.ic_select_all,
-                        description = stringResource(R.string.select_all),
-                        onClick = {
-                            coroutineScope.launch {
+                    ),
+                    onClick = {
+                        coroutineScope.launch {
+                            if (allFilesSelected) {
+                                selectedBuckets.clear()
+                            } else {
                                 selectedBuckets.addAll(allBuckets.map { bucket -> bucket.id })
                             }
-                        },
-                    )
-                }
+                        }
+                    },
+                )
                 SketchesAppBarActionButton(
                     iconRes = R.drawable.ic_delete,
                     description = stringResource(R.string.delete_selected),

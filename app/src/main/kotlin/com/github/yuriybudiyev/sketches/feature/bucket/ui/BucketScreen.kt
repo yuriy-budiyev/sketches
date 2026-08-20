@@ -360,28 +360,59 @@ fun BucketScreen(
             },
             backgroundColor = colorScheme.background.withLowTransparency(),
         ) {
-            if (selectedFiles.isNotEmpty()) {
-                if (selectedFiles.size >= allFiles.size) {
-                    SketchesAppBarActionButton(
-                        iconRes = R.drawable.ic_select_none,
-                        description = stringResource(R.string.select_none),
-                        onClick = {
-                            coroutineScope.launch {
-                                selectedFiles.clear()
-                            }
-                        },
-                    )
+            SketchesAppBarActionButton(
+                iconRes = if (bucketVisible) {
+                    R.drawable.ic_bucket_hide
                 } else {
-                    SketchesAppBarActionButton(
-                        iconRes = R.drawable.ic_select_all,
-                        description = stringResource(R.string.select_all),
-                        onClick = {
-                            coroutineScope.launch {
+                    R.drawable.ic_bucket_show
+                },
+                description = stringResource(
+                    if (bucketVisible) {
+                        R.string.hide_bucket
+                    } else {
+                        R.string.show_bucket
+                    },
+                ),
+                onClick = if (bucketVisible) {
+                    onHideBucket
+                } else {
+                    onShowBucket
+                },
+            )
+            val selectionMode by remember {
+                derivedStateOf(structuralEqualityPolicy()) {
+                    selectedFiles.isNotEmpty()
+                }
+            }
+            if (selectionMode) {
+                val allFilesSelected by remember {
+                    derivedStateOf(structuralEqualityPolicy()) {
+                        selectedFiles.size >= allFiles.size
+                    }
+                }
+                SketchesAppBarActionButton(
+                    iconRes = if (allFilesSelected) {
+                        R.drawable.ic_select_none
+                    } else {
+                        R.drawable.ic_select_all
+                    },
+                    description = stringResource(
+                        if (allFilesSelected) {
+                            R.string.select_none
+                        } else {
+                            R.string.select_all
+                        },
+                    ),
+                    onClick = {
+                        coroutineScope.launch {
+                            if (allFilesSelected) {
+                                selectedFiles.clear()
+                            } else {
                                 selectedFiles.addAll(allFiles.map { file -> file.id })
                             }
-                        },
-                    )
-                }
+                        }
+                    },
+                )
                 SketchesAppBarActionButton(
                     iconRes = R.drawable.ic_delete,
                     description = stringResource(R.string.delete_selected),
@@ -411,25 +442,6 @@ fun BucketScreen(
                     },
                 )
             }
-            SketchesAppBarActionButton(
-                iconRes = if (bucketVisible) {
-                    R.drawable.ic_bucket_hide
-                } else {
-                    R.drawable.ic_bucket_show
-                },
-                description = stringResource(
-                    if (bucketVisible) {
-                        R.string.hide_bucket
-                    } else {
-                        R.string.show_bucket
-                    },
-                ),
-                onClick = if (bucketVisible) {
-                    onHideBucket
-                } else {
-                    onShowBucket
-                },
-            )
         }
         var contentInsets = WindowInsets.navigationBars
             .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)

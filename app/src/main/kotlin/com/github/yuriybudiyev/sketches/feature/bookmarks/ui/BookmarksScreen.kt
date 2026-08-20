@@ -41,6 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +50,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -336,28 +338,40 @@ private fun BookmarksScreen(
             },
             backgroundColor = MaterialTheme.colorScheme.background.withLowTransparency(),
         ) {
-            if (selectedFiles.isNotEmpty()) {
-                if (selectedFiles.size >= allFiles.size) {
-                    SketchesAppBarActionButton(
-                        iconRes = R.drawable.ic_select_none,
-                        description = stringResource(R.string.select_none),
-                        onClick = {
-                            coroutineScope.launch {
-                                selectedFiles.clear()
-                            }
+            val selectionMode by remember {
+                derivedStateOf(structuralEqualityPolicy()) {
+                    selectedFiles.isNotEmpty()
+                }
+            }
+            if (selectionMode) {
+                val allFilesSelected by remember {
+                    derivedStateOf(structuralEqualityPolicy()) {
+                        selectedFiles.size >= allFiles.size
+                    }
+                }
+                SketchesAppBarActionButton(
+                    iconRes = if (allFilesSelected) {
+                        R.drawable.ic_select_none
+                    } else {
+                        R.drawable.ic_select_all
+                    },
+                    description = stringResource(
+                        if (allFilesSelected) {
+                            R.string.select_none
+                        } else {
+                            R.string.select_all
                         },
-                    )
-                } else {
-                    SketchesAppBarActionButton(
-                        iconRes = R.drawable.ic_select_all,
-                        description = stringResource(R.string.select_all),
-                        onClick = {
-                            coroutineScope.launch {
+                    ),
+                    onClick = {
+                        coroutineScope.launch {
+                            if (allFilesSelected) {
+                                selectedFiles.clear()
+                            } else {
                                 selectedFiles.addAll(allFiles.map { file -> file.id })
                             }
-                        },
-                    )
-                }
+                        }
+                    },
+                )
                 SketchesAppBarActionButton(
                     iconRes = R.drawable.ic_bookmark_delete,
                     description = stringResource(R.string.delete_bookmarks),
