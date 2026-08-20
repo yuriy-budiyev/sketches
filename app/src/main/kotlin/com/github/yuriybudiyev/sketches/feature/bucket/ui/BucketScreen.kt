@@ -101,7 +101,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGr
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
-import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaList
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItem
@@ -504,7 +504,7 @@ fun BucketScreen(
                         val snapshot = selectedFiles.toSet()
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             mediaBatchState.start(
-                                media = allFiles.toMediaList(snapshot),
+                                media = allFiles.toMediaDescriptorList(snapshot),
                                 payload = BatchAction.Delete,
                             )
                         } else {

@@ -96,7 +96,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchActi
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaDescriptor
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
-import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaList
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
@@ -197,7 +197,7 @@ fun BucketsScreen(
                         if (deleteDialogMedia.isNotEmpty()) {
                             deleteDialogMedia.clear()
                         }
-                        deleteDialogMedia.addAll(action.files.toMediaList())
+                        deleteDialogMedia.addAll(action.files.toMediaDescriptorList())
                     }
                     else -> {
                         // Do nothing
