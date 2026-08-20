@@ -160,7 +160,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
 
     override suspend fun showBucket(bucketId: Long) {
         withContext(ioDispatcher) {
-            hiddenBucketsDao.delete(bucketId)
+            hiddenBucketsDao.delete(listOf(bucketId))
         }
     }
 
@@ -380,14 +380,16 @@ class MediaStoreRepositoryImpl @Inject constructor(
     private fun startBookmarksGarbageCollection() {
         defaultCoroutineScope.launch {
             entitiesFlow.collectLatest { entities ->
-                val entitiesByIds =
+                val entitiesIds =
                     entities.mapTo(newLinkedHashSet(entities.size)) { entity -> entity.id }
-                val idsToDelete = bookmarksByMediaIdsFlow.first().asSequence()
-                    .filter { entry -> !entitiesByIds.contains(entry.key) }
-                    .map { entry -> entry.key }
+                val bookmarksToDelete = bookmarksByMediaIdsFlow.first().asSequence()
+                    .filter { (mediaId, _) -> !entitiesIds.contains(mediaId) }
+                    .map { (mediaId, _) -> mediaId }
                     .toList()
-                if (idsToDelete.isNotEmpty()) {
-                    bookmarksDao.delete(idsToDelete)
+                if (bookmarksToDelete.isNotEmpty()) {
+                    withContext(ioDispatcher) {
+                        bookmarksDao.delete(bookmarksToDelete)
+                    }
                 }
             }
         }
@@ -401,6 +403,22 @@ class MediaStoreRepositoryImpl @Inject constructor(
                         entities.mapTo(newLinkedHashSet(entities.size)) { entity -> entity.bucketId },
                     )
                 }
+        }
+    }
+
+    private fun startHiddenBucketsGarbageCollection() {
+        defaultCoroutineScope.launch {
+            bucketsFlow.collectLatest { buckets ->
+                val bucketsIds =
+                    buckets.mapTo(newLinkedHashSet(buckets.size)) { bucket -> bucket.id }
+                val hiddenBucketsToDelete =
+                    hiddenBucketsFlow.first().filter { bucketId -> !bucketsIds.contains(bucketId) }
+                if (hiddenBucketsToDelete.isNotEmpty()) {
+                    withContext(ioDispatcher) {
+                        hiddenBucketsDao.delete(hiddenBucketsToDelete)
+                    }
+                }
+            }
         }
     }
 
@@ -476,6 +494,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         startBookmarksByMediaIdsFlow()
         startBookmarksGarbageCollection()
         startHiddenBucketsFlow()
+        startHiddenBucketsGarbageCollection()
         updateMediaStoreEntities()
         val mediaObserver = MediaObserver()
         with(appContext.contentResolver) {

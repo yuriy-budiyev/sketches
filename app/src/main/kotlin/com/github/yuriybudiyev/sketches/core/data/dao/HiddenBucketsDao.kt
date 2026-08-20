@@ -39,6 +39,6 @@ interface HiddenBucketsDao {
     @Upsert
     suspend fun upsert(value: HiddenBucketEntity)
 
-    @Query("DELETE FROM hidden_buckets WHERE bucket_id=:bucketId")
-    suspend fun delete(bucketId: Long)
+    @Query("DELETE FROM hidden_buckets WHERE bucket_id IN (:bucketIds)")
+    suspend fun delete(bucketIds: Collection<Long>)
 }
