@@ -213,7 +213,7 @@ class LruMemoryCache private constructor(private val maxSizeBytes: Long): Compon
     }
 
     private val imageCache: LruCache<Key, Image> = CacheImpl()
-    private val placeholderKeyCache: MutableMap<String, Key> = HashMap()
+    private val placeholderKeyCache: MutableMap<String, Key> = LinkedHashMap()
 
     data class Key(
         val uri: String,
