@@ -24,12 +24,12 @@
 
 package com.github.yuriybudiyev.sketches.core.domain
 
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaRepository
 import dagger.Reusable
 import javax.inject.Inject
 
 @Reusable
-class HideBucketUseCase @Inject constructor(private val repository: MediaStoreRepository) {
+class HideBucketUseCase @Inject constructor(private val repository: MediaRepository) {
 
     suspend operator fun invoke(buckedId: Long) {
         repository.hideBucket(buckedId)

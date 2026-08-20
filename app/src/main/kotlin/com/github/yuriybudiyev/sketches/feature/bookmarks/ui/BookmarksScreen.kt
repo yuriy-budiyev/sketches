@@ -61,7 +61,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
@@ -92,7 +92,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun BookmarksRoute(
     viewModel: BookmarksScreenViewModel,
-    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onImageClick: (index: Int, file: MediaFile) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
@@ -113,7 +113,7 @@ fun BookmarksRoute(
 @Composable
 private fun BookmarksScreen(
     uiState: BookmarksScreenViewModel.UiState,
-    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onImageClick: (index: Int, file: MediaFile) -> Unit,
     onDeleteMedia: (files: Collection<Uri>) -> Unit,
     onDeleteBookmarks: (mediaIds: Collection<Long>) -> Unit,
 ) {
@@ -122,7 +122,7 @@ private fun BookmarksScreen(
     val shareManager by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
     val onDeleteBookmarksUpdated by rememberUpdatedState(onDeleteBookmarks)
-    var allFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptyList()) }
+    var allFiles by remember { mutableStateOf<Collection<MediaFile>>(emptyList()) }
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteFilesDialogVisible by rememberSaveable { mutableStateOf(false) }
     var deleteBookmarksDialogVisible by rememberSaveable { mutableStateOf(false) }

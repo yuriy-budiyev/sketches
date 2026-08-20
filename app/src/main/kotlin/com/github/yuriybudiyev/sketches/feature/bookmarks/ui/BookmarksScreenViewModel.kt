@@ -29,7 +29,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
@@ -92,7 +92,7 @@ class BookmarksScreenViewModel @Inject constructor(
 
     sealed interface UiState {
 
-        data class Bookmarks(val files: List<MediaStoreFile>): UiState
+        data class Bookmarks(val files: List<MediaFile>): UiState
 
         data class Error(val thrown: Throwable): UiState
 

@@ -26,13 +26,17 @@ package com.github.yuriybudiyev.sketches.core.data.model
 
 import android.net.Uri
 import androidx.compose.runtime.Immutable
+import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import java.time.LocalDateTime
 
 @Immutable
-data class MediaStoreBucket(
+data class MediaFile(
     val id: Long,
+    val bucketId: Long,
     val name: String,
-    val size: Int,
-    val coverUri: Uri,
-    val coverDateAdded: LocalDateTime,
+    val dateAdded: LocalDateTime,
+    val mediaType: MediaType,
+    val mimeType: String,
+    val uri: Uri,
+    val bookmark: Bookmark?,
 )

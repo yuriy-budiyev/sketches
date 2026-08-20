@@ -73,4 +73,4 @@ fun ActivityResultLauncher<IntentSenderRequest>.launchDeleteMediaRequest(
     )
 }
 
-const val MediaStoreBatchSize: Int = 500
+const val MediaStoreBatchSize: Int = 1000

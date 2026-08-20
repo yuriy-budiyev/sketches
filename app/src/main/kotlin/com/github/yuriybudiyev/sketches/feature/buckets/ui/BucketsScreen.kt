@@ -76,7 +76,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
+import com.github.yuriybudiyev.sketches.core.data.model.MediaBucket
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
@@ -105,7 +105,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun BucketsRoute(
     viewModel: BucketsScreenViewModel,
-    onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
+    onBucketClick: (index: Int, bucket: MediaBucket) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
@@ -126,15 +126,15 @@ fun BucketsRoute(
 @Composable
 fun BucketsScreen(
     uiState: BucketsScreenViewModel.UiState,
-    onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
-    onDeleteBuckets: (buckets: Collection<MediaStoreBucket>) -> Unit,
+    onBucketClick: (index: Int, bucket: MediaBucket) -> Unit,
+    onDeleteBuckets: (buckets: Collection<MediaBucket>) -> Unit,
     onDeleteMedia: (uris: Collection<Uri>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context by rememberUpdatedState(LocalContext.current)
     val onDeleteBucketsUpdated by rememberUpdatedState(onDeleteBuckets)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
-    var allBuckets by remember { mutableStateOf<List<MediaStoreBucket>>(emptyList()) }
+    var allBuckets by remember { mutableStateOf<List<MediaBucket>>(emptyList()) }
     val selectedBuckets = rememberSaveableSnapshotStateSet<Long>()
     val deleteDialogMedia = rememberSaveableSnapshotStateList<MediaDescriptor>()
     val mediaBatchState = rememberMediaBatchState()
@@ -373,9 +373,9 @@ fun BucketsScreen(
 @Composable
 private fun BucketsMediaGrid(
     state: LazyGridState,
-    buckets: List<MediaStoreBucket>,
+    buckets: List<MediaBucket>,
     selectedBuckets: SnapshotStateSet<Long>,
-    onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
+    onBucketClick: (index: Int, bucket: MediaBucket) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val bucketsUpdated by rememberUpdatedState(buckets)
@@ -501,12 +501,12 @@ private fun BucketsMediaGrid(
     }
 }
 
-private fun Collection<MediaStoreBucket>.filterByIds(ids: Set<Long>): List<MediaStoreBucket> {
+private fun Collection<MediaBucket>.filterByIds(ids: Set<Long>): List<MediaBucket> {
     val size = this.size.coerceAtMost(ids.size)
     if (size == 0) {
         return emptyList()
     }
-    val filtered = ArrayList<MediaStoreBucket>(size)
+    val filtered = ArrayList<MediaBucket>(size)
     for (bucket in this) {
         if (ids.contains(bucket.id)) {
             filtered.add(bucket)

@@ -26,7 +26,7 @@ package com.github.yuriybudiyev.sketches.feature.bucket.navigation
 
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.EntryProviderScope
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.registerNavRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
@@ -40,7 +40,7 @@ data class BucketNavRoute(
 ): NavRoute
 
 fun EntryProviderScope<NavRoute>.registerBucketNavRoute(
-    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onImageClick: (index: Int, file: MediaFile) -> Unit,
 ) {
     registerNavRoute<BucketNavRoute> { route ->
         BucketRoute(

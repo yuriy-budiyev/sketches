@@ -28,11 +28,11 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.consumable.Consumable
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaBucket
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBucketsContentUseCase
-import com.github.yuriybudiyev.sketches.core.domain.GetMediaBucketsUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetBucketsUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -51,7 +51,7 @@ class BucketsScreenViewModel @Inject constructor(
     private val getBucketsContent: GetBucketsContentUseCase,
     private val deleteMedia: DeleteMediaUseCase,
     private val updateMediaAccess: UpdateMediaAccessUseCase,
-    getMediaBuckets: GetMediaBucketsUseCase,
+    getMediaBuckets: GetBucketsUseCase,
 ): ViewModel() {
 
     private val action: MutableSharedFlow<Action> = MutableSharedFlow()
@@ -102,8 +102,8 @@ class BucketsScreenViewModel @Inject constructor(
         )
 
     private suspend inline fun FlowCollector<UiState>.startBucketsAction(
-        buckets: Collection<MediaStoreBucket>,
-        action: (files: List<MediaStoreFile>) -> UiState.Buckets.Action,
+        buckets: Collection<MediaBucket>,
+        action: (files: List<MediaFile>) -> UiState.Buckets.Action,
     ) {
         val files = getBucketsContent(buckets)
         if (files.isNotEmpty()) {
@@ -119,7 +119,7 @@ class BucketsScreenViewModel @Inject constructor(
         }
     }
 
-    fun startDeletingBuckets(buckets: Collection<MediaStoreBucket>) {
+    fun startDeletingBuckets(buckets: Collection<MediaBucket>) {
         viewModelScope.launch {
             action.emit(Action.StartDeletingBuckets(buckets))
         }
@@ -144,15 +144,15 @@ class BucketsScreenViewModel @Inject constructor(
         data object Loading: UiState
 
         data class Buckets(
-            val buckets: List<MediaStoreBucket>,
+            val buckets: List<MediaBucket>,
             val action: Consumable<Action>,
         ): UiState {
 
             sealed interface Action {
 
-                data class Share(val files: List<MediaStoreFile>): Action
+                data class Share(val files: List<MediaFile>): Action
 
-                data class Delete(val files: List<MediaStoreFile>): Action
+                data class Delete(val files: List<MediaFile>): Action
             }
         }
 
@@ -161,8 +161,8 @@ class BucketsScreenViewModel @Inject constructor(
 
     private sealed interface Action {
 
-        data class StartSharingBuckets(val buckets: Collection<MediaStoreBucket>): Action
+        data class StartSharingBuckets(val buckets: Collection<MediaBucket>): Action
 
-        data class StartDeletingBuckets(val buckets: Collection<MediaStoreBucket>): Action
+        data class StartDeletingBuckets(val buckets: Collection<MediaBucket>): Action
     }
 }

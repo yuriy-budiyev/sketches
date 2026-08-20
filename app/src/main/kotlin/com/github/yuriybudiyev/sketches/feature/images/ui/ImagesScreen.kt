@@ -62,7 +62,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
@@ -94,7 +94,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ImagesRoute(
     viewModel: ImagesScreenViewModel,
-    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onImageClick: (index: Int, file: MediaFile) -> Unit,
     onRequestMediaAccess: OnRequestMediaAccess,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -115,14 +115,14 @@ fun ImagesRoute(
 fun ImagesScreen(
     uiState: ImagesScreenViewModel.UiState,
     onRequestMediaAccess: OnRequestMediaAccess,
-    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onImageClick: (index: Int, file: MediaFile) -> Unit,
     onDeleteMedia: (files: Collection<Uri>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context by rememberUpdatedState(LocalContext.current)
     val shareManager by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
-    var allFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptyList()) }
+    var allFiles by remember { mutableStateOf<Collection<MediaFile>>(emptyList()) }
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val mediaGridState = rememberLazyGridState()
@@ -431,9 +431,9 @@ fun ImagesScreen(
 }
 
 private suspend inline fun LazyGridState.scrollToItem(
-    files: Collection<MediaStoreFile>,
+    files: Collection<MediaFile>,
     snapToClosestEdge: Boolean,
-    predicate: (index: Int, file: MediaStoreFile) -> Boolean,
+    predicate: (index: Int, file: MediaFile) -> Boolean,
 ) {
     if (files.isEmpty()) {
         return

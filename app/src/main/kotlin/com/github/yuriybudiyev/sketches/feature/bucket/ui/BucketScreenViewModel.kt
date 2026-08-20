@@ -27,9 +27,9 @@ package com.github.yuriybudiyev.sketches.feature.bucket.ui
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
-import com.github.yuriybudiyev.sketches.core.domain.GetAllMediaFilesUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetHiddenBucketsUseCase
 import com.github.yuriybudiyev.sketches.core.domain.HideBucketUseCase
 import com.github.yuriybudiyev.sketches.core.domain.ShowBucketUseCase
@@ -56,7 +56,7 @@ class BucketScreenViewModel @AssistedInject constructor(
     private val updateMediaAccess: UpdateMediaAccessUseCase,
     private val showBucket: ShowBucketUseCase,
     private val hideBucket: HideBucketUseCase,
-    getMediaFiles: GetAllMediaFilesUseCase,
+    getMediaFiles: GetFilesUseCase,
     getHiddenBuckets: GetHiddenBucketsUseCase,
 ): ViewModel() {
 
@@ -120,7 +120,7 @@ class BucketScreenViewModel @AssistedInject constructor(
         data object Loading: UiState
 
         data class Bucket(
-            val files: List<MediaStoreFile>,
+            val files: List<MediaFile>,
             val isVisible: Boolean,
         ): UiState
 

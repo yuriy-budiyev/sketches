@@ -29,7 +29,7 @@ import androidx.annotation.StringRes
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.EntryProviderScope
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
+import com.github.yuriybudiyev.sketches.core.data.model.MediaBucket
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.registerNavRoute
@@ -54,7 +54,7 @@ data object BucketsNavRoute: RootNavRoute {
 }
 
 fun EntryProviderScope<NavRoute>.registerBucketsNavRoute(
-    onBucketClick: (index: Int, bucket: MediaStoreBucket) -> Unit,
+    onBucketClick: (index: Int, bucket: MediaBucket) -> Unit,
 ) {
     registerNavRoute<BucketsNavRoute> {
         BucketsRoute(

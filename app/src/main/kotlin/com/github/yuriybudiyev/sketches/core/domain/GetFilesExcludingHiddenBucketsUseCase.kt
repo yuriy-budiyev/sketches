@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Yuriy Budiyev
+ * Copyright (c) 2026 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +22,19 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.model
+package com.github.yuriybudiyev.sketches.core.domain
 
-import android.net.Uri
-import androidx.compose.runtime.Immutable
-import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
-import java.time.LocalDateTime
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaRepository
+import dagger.Reusable
+import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-@Immutable
-data class MediaStoreFile(
-    val id: Long,
-    val bucketId: Long,
-    val name: String,
-    val dateAdded: LocalDateTime,
-    val mediaType: MediaType,
-    val mimeType: String,
-    val uri: Uri,
-    val bookmark: Bookmark?,
-)
+@Reusable
+class GetFilesExcludingHiddenBucketsUseCase @Inject constructor(
+    private val repository: MediaRepository,
+) {
+
+    operator fun invoke(): Flow<List<MediaFile>> =
+        repository.getFilesExcludingHiddenBuckets()
+}

@@ -22,17 +22,34 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.domain
+package com.github.yuriybudiyev.sketches.core.data.repository
 
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
-import dagger.Reusable
+import android.net.Uri
+import com.github.yuriybudiyev.sketches.core.data.model.MediaBucket
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
 
-@Reusable
-class GetMediaBucketsUseCase @Inject constructor(private val repository: MediaStoreRepository) {
+interface MediaRepository {
 
-    operator fun invoke(): Flow<List<MediaStoreBucket>> =
-        repository.getBuckets()
+    fun getFiles(): Flow<List<MediaFile>>
+
+    fun getFilesExcludingHiddenBuckets(): Flow<List<MediaFile>>
+
+    fun getBookmarks(): Flow<List<MediaFile>>
+
+    fun getBuckets(): Flow<List<MediaBucket>>
+
+    fun updateMediaAccess()
+
+    suspend fun deleteMedia(uris: Collection<Uri>)
+
+    suspend fun createBookmark(mediaId: Long)
+
+    suspend fun deleteBookmarks(mediaIds: Collection<Long>)
+
+    fun getHiddenBuckets(): Flow<Set<Long>>
+
+    suspend fun showBucket(bucketId: Long)
+
+    suspend fun hideBucket(bucketId: Long)
 }

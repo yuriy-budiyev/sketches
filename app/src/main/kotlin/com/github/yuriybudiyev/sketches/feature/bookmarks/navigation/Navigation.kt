@@ -29,7 +29,7 @@ import androidx.annotation.StringRes
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.EntryProviderScope
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.registerNavRoute
@@ -54,7 +54,7 @@ object BookmarksNavRoute: RootNavRoute {
 }
 
 fun EntryProviderScope<NavRoute>.registerBookmarksNavRoute(
-    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onImageClick: (index: Int, file: MediaFile) -> Unit,
 ) {
     registerNavRoute<BookmarksNavRoute> {
         BookmarksRoute(

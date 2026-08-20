@@ -36,7 +36,7 @@ import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import com.github.yuriybudiyev.sketches.core.collections.newLinkedHashSet
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaStoreBatchSize
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import kotlinx.coroutines.flow.Flow
@@ -47,13 +47,13 @@ import kotlinx.parcelize.Parcelize
 fun rememberMediaBatchState(): MediaBatchState =
     rememberSaveable(saver = MediaBatchStateImplSaver) { MediaBatchStateImpl() }
 
-fun MediaStoreFile.toMediaDescriptor(): MediaDescriptor =
+fun MediaFile.toMediaDescriptor(): MediaDescriptor =
     MediaDescriptor(
         id = id,
         type = mediaType.ordinal,
     )
 
-fun Collection<MediaStoreFile>.toUriList(filterIds: Set<Long>): List<Uri> {
+fun Collection<MediaFile>.toUriList(filterIds: Set<Long>): List<Uri> {
     val size = this.size.coerceAtMost(filterIds.size)
     val uris = ArrayList<Uri>(size)
     for (file in this) {
@@ -67,10 +67,10 @@ fun Collection<MediaStoreFile>.toUriList(filterIds: Set<Long>): List<Uri> {
     return uris
 }
 
-fun Collection<MediaStoreFile>.toMediaList(): List<MediaDescriptor> =
+fun Collection<MediaFile>.toMediaList(): List<MediaDescriptor> =
     mapTo(ArrayList(size)) { file -> file.toMediaDescriptor() }
 
-fun Collection<MediaStoreFile>.toMediaList(filterIds: Set<Long>): List<MediaDescriptor> {
+fun Collection<MediaFile>.toMediaList(filterIds: Set<Long>): List<MediaDescriptor> {
     val size = this.size.coerceAtMost(filterIds.size)
     val media = ArrayList<MediaDescriptor>(size)
     for (file in this) {

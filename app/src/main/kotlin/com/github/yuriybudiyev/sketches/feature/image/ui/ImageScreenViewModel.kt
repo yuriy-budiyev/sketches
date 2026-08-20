@@ -30,13 +30,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.domain.CreateBookmarkUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
-import com.github.yuriybudiyev.sketches.core.domain.GetAllMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
-import com.github.yuriybudiyev.sketches.core.domain.GetGalleryMediaFilesUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetFilesExcludingHiddenBucketsUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageNavRoute
 import dagger.assisted.Assisted
@@ -65,15 +65,15 @@ class ImageScreenViewModel @AssistedInject constructor(
     private val createBookmark: CreateBookmarkUseCase,
     private val deleteBookmarks: DeleteBookmarksUseCase,
     private val updateMediaAccess: UpdateMediaAccessUseCase,
-    getAllMediaFiles: GetAllMediaFilesUseCase,
-    getGalleryMediaFiles: GetGalleryMediaFilesUseCase,
+    getMediaFiles: GetFilesUseCase,
+    getMediaFilesExcludingHiddenBuckets: GetFilesExcludingHiddenBucketsUseCase,
     getBookmarks: GetBookmarksUseCase,
 ): ViewModel() {
 
     val uiState: StateFlow<UiState>
 
     private suspend fun FlowCollector<UiState>.checkIndexAndEmitItems(
-        items: List<MediaStoreFile>,
+        items: List<MediaFile>,
         fileIndex: Int = currentFileIndex,
         fileId: Long? = currentFileId,
     ) {
@@ -185,9 +185,9 @@ class ImageScreenViewModel @AssistedInject constructor(
         uiState = when (mode) {
             Mode.Images -> {
                 if (currentBucketId != null) {
-                    getAllMediaFiles(currentBucketId)
+                    getMediaFiles(currentBucketId)
                 } else {
-                    getGalleryMediaFiles()
+                    getMediaFilesExcludingHiddenBuckets()
                 }
             }
             Mode.Bookmarks -> {
@@ -215,7 +215,7 @@ class ImageScreenViewModel @AssistedInject constructor(
         data object Loading: UiState
 
         data class Image(
-            val files: List<MediaStoreFile>,
+            val files: List<MediaFile>,
             val index: Int,
         ): UiState
 

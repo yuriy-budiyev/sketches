@@ -84,7 +84,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
@@ -111,7 +111,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun BucketRoute(
     viewModel: BucketScreenViewModel,
-    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onImageClick: (index: Int, file: MediaFile) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
@@ -137,7 +137,7 @@ fun BucketRoute(
 fun BucketScreen(
     bucketName: String,
     uiState: BucketScreenViewModel.UiState,
-    onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onImageClick: (index: Int, file: MediaFile) -> Unit,
     onDeleteMedia: (files: Collection<Uri>) -> Unit,
     onShowBucket: () -> Unit,
     onHideBucket: () -> Unit,
@@ -146,7 +146,7 @@ fun BucketScreen(
     val context by rememberUpdatedState(LocalContext.current)
     val shareManager by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
-    var allFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptyList()) }
+    var allFiles by remember { mutableStateOf<Collection<MediaFile>>(emptyList()) }
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     var bucketVisible by rememberSaveable { mutableStateOf(false) }

@@ -24,7 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components.media.share
 
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaDescriptor
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptor
@@ -34,7 +34,7 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 @OptIn(ExperimentalContracts::class)
-inline fun Collection<MediaStoreFile>.prepareForSharing(
+inline fun Collection<MediaFile>.prepareForSharing(
     filterIds: Set<Long>,
     mediaSizeLimit: Int,
     onDataReady: (media: List<MediaDescriptor>, mimeType: String) -> Unit,

@@ -95,7 +95,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
@@ -160,8 +160,8 @@ fun ImageRoute(viewModel: ImageScreenViewModel) {
 @Composable
 fun ImageScreen(
     uiState: ImageScreenViewModel.UiState,
-    onChange: (index: Int, file: MediaStoreFile) -> Unit,
-    onDeleteImage: (index: Int, file: MediaStoreFile) -> Unit,
+    onChange: (index: Int, file: MediaFile) -> Unit,
+    onDeleteImage: (index: Int, file: MediaFile) -> Unit,
     onCreateBookmark: (mediaId: Long) -> Unit,
     onDeleteBookmark: (mediaId: Long) -> Unit,
 ) {
@@ -206,9 +206,9 @@ fun ImageScreen(
 @Composable
 private fun ImageScreenLayout(
     index: Int,
-    files: List<MediaStoreFile>,
-    onChange: (index: Int, file: MediaStoreFile) -> Unit,
-    onDeleteImage: (index: Int, file: MediaStoreFile) -> Unit,
+    files: List<MediaFile>,
+    onChange: (index: Int, file: MediaFile) -> Unit,
+    onDeleteImage: (index: Int, file: MediaFile) -> Unit,
     onCreateBookmark: (mediaId: Long) -> Unit,
     onDeleteBookmark: (mediaId: Long) -> Unit,
     modifier: Modifier = Modifier,
@@ -451,7 +451,7 @@ private fun ImageScreenLayout(
 @Composable
 private fun MediaPager(
     state: PagerState,
-    files: List<MediaStoreFile>,
+    files: List<MediaFile>,
     onPageTap: () -> Unit,
     controllerVisible: Boolean,
     controllerStartPadding: Dp,
@@ -648,8 +648,8 @@ private fun VideoPage(
 private fun MediaBar(
     currentIndex: Int,
     state: LazyListState,
-    files: List<MediaStoreFile>,
-    onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
+    files: List<MediaFile>,
+    onItemClick: (index: Int, file: MediaFile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()

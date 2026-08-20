@@ -24,13 +24,13 @@
 
 package com.github.yuriybudiyev.sketches.core.domain
 
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaRepository
 import dagger.Reusable
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 @Reusable
-class GetHiddenBucketsUseCase @Inject constructor(private val repository: MediaStoreRepository) {
+class GetHiddenBucketsUseCase @Inject constructor(private val repository: MediaRepository) {
 
     operator fun invoke(): Flow<Set<Long>> =
         repository.getHiddenBuckets()

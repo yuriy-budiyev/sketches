@@ -27,9 +27,9 @@ package com.github.yuriybudiyev.sketches.core.domain
 import com.github.yuriybudiyev.sketches.core.collections.newLinkedHashSet
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import com.github.yuriybudiyev.sketches.core.data.model.MediaBucket
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaRepository
 import dagger.Reusable
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
@@ -38,21 +38,21 @@ import javax.inject.Inject
 
 @Reusable
 class GetBucketsContentUseCase @Inject constructor(
-    private val repository: MediaStoreRepository,
+    private val repository: MediaRepository,
     @Dispatcher(Dispatchers.Default)
     private val defaultDispatcher: CoroutineDispatcher,
 ) {
 
-    suspend operator fun invoke(buckets: Collection<MediaStoreBucket>): List<MediaStoreFile> =
+    suspend operator fun invoke(buckets: Collection<MediaBucket>): List<MediaFile> =
         withContext(defaultDispatcher) {
-            val allFiles = repository.getAllFiles().first()
+            val allFiles = repository.getFiles().first()
             val bucketIds = newLinkedHashSet<Long>(buckets.size)
             var contentSize = 0
             for (bucket in buckets) {
                 bucketIds.add(bucket.id)
                 contentSize += bucket.size
             }
-            val contentFiles = ArrayList<MediaStoreFile>(contentSize)
+            val contentFiles = ArrayList<MediaFile>(contentSize)
             for (file in allFiles) {
                 if (bucketIds.contains(file.bucketId)) {
                     contentFiles.add(file)

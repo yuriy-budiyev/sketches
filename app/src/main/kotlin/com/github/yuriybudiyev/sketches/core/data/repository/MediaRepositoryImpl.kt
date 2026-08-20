@@ -43,8 +43,8 @@ import com.github.yuriybudiyev.sketches.core.data.dao.HiddenBucketsDao
 import com.github.yuriybudiyev.sketches.core.data.entity.BookmarkEntity
 import com.github.yuriybudiyev.sketches.core.data.entity.HiddenBucketEntity
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaBucket
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaStoreBatchSize
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
@@ -76,7 +76,7 @@ import javax.inject.Singleton
 import kotlin.coroutines.EmptyCoroutineContext
 
 @Singleton
-class MediaStoreRepositoryImpl @Inject constructor(
+class MediaRepositoryImpl @Inject constructor(
     @ApplicationContext
     private val appContext: Context,
     @Dispatcher(Dispatchers.Default)
@@ -85,18 +85,18 @@ class MediaStoreRepositoryImpl @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher,
     private val bookmarksDao: BookmarksDao,
     private val hiddenBucketsDao: HiddenBucketsDao,
-): MediaStoreRepository {
+): MediaRepository {
 
-    override fun getAllFiles(): Flow<List<MediaStoreFile>> =
-        allFilesFlow
+    override fun getFiles(): Flow<List<MediaFile>> =
+        mediaFilesFlow
 
-    override fun getGalleryFiles(): Flow<List<MediaStoreFile>> =
-        galleyFilesFlow
+    override fun getFilesExcludingHiddenBuckets(): Flow<List<MediaFile>> =
+        mediaFilesExcludingHiddenBucketsFlow
 
-    override fun getBookmarks(): Flow<List<MediaStoreFile>> =
+    override fun getBookmarks(): Flow<List<MediaFile>> =
         bookmarksFlow
 
-    override fun getBuckets(): Flow<List<MediaStoreBucket>> =
+    override fun getBuckets(): Flow<List<MediaBucket>> =
         bucketsFlow
 
     override fun updateMediaAccess() {
@@ -180,8 +180,8 @@ class MediaStoreRepositoryImpl @Inject constructor(
                 updateAllFilesJob = defaultCoroutineScope.launch {
                     withContext(if (nonCancellable) NonCancellable else EmptyCoroutineContext) {
                         delay(delayMillis)
-                        val imageEntities: List<MediaStoreEntity>
-                        val videoEntities: List<MediaStoreEntity>
+                        val imageEntities: List<MediaEntity>
+                        val videoEntities: List<MediaEntity>
                         withContext(ioDispatcher) {
                             contentProviderMutex.withLock {
                                 imageEntities = queryMediaStoreEntities(MediaType.Image)
@@ -189,7 +189,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
                             }
                         }
                         val allEntities =
-                            ArrayList<MediaStoreEntity>(imageEntities.size + videoEntities.size)
+                            ArrayList<MediaEntity>(imageEntities.size + videoEntities.size)
                         allEntities.addAll(imageEntities)
                         allEntities.addAll(videoEntities)
                         allEntities.sortByDescending { entity -> entity.dateAdded }
@@ -200,7 +200,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun queryMediaStoreEntities(mediaType: MediaType): List<MediaStoreEntity> {
+    private fun queryMediaStoreEntities(mediaType: MediaType): List<MediaEntity> {
         val contentUri = mediaType.contentUri
         val cursor = appContext.contentResolver.query(
             contentUri,
@@ -217,7 +217,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
             null,
         ) ?: return emptyList()
         cursor.use { cursor ->
-            val files = ArrayList<MediaStoreEntity>(cursor.count)
+            val files = ArrayList<MediaEntity>(cursor.count)
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
             val bucketIdColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_ID)
             val displayNameColumn =
@@ -230,7 +230,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
                 val id = cursor.getLong(idColumn)
                 val bucketId = cursor.getLong(bucketIdColumn)
                 files.add(
-                    MediaStoreEntity(
+                    MediaEntity(
                         id = id,
                         bucketId = bucketId,
                         name = cursor.getStringOrNull(displayNameColumn) ?: id.toString(),
@@ -255,7 +255,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun startAllFilesFlow() {
+    private fun startMediaFilesFlow() {
         defaultCoroutineScope.launch {
             combineTransform(
                 entitiesFlow,
@@ -268,7 +268,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
                 } else {
                     emit(
                         entities.map { entity ->
-                            MediaStoreFile(
+                            MediaFile(
                                 id = entity.id,
                                 bucketId = entity.bucketId,
                                 name = entity.name,
@@ -282,20 +282,20 @@ class MediaStoreRepositoryImpl @Inject constructor(
                     )
                 }
             }.collect { files ->
-                allFilesFlow.emit(files)
+                mediaFilesFlow.emit(files)
             }
         }
     }
 
-    private fun startGalleryFilesFlow() {
+    private fun startMediaFilesExcludingHiddenBucketsFlow() {
         defaultCoroutineScope.launch {
             combineTransform(
-                allFilesFlow,
+                mediaFilesFlow,
                 hiddenBucketsFlow,
             ) { files, buckets ->
                 emit(files to buckets)
             }.collectLatest { (files, buckets) ->
-                galleyFilesFlow.emit(
+                mediaFilesExcludingHiddenBucketsFlow.emit(
                     if (buckets.isNotEmpty()) {
                         files.filter { file -> !buckets.contains(file.bucketId) }
                     } else {
@@ -310,13 +310,13 @@ class MediaStoreRepositoryImpl @Inject constructor(
     private fun startBucketsFlow() {
         defaultCoroutineScope.launch {
             entitiesFlow.transformLatest { entities ->
-                val bucketsInfo = LinkedHashMap<Long, MediaStoreBucketInfo>()
+                val bucketsInfo = LinkedHashMap<Long, MediaBucketInfo>()
                 for (entity in entities) {
                     val bucketId = entity.bucketId
                     val coverUri = entity.uri
                     val coverDateAdded = entity.dateAdded
                     val bucketInfo = bucketsInfo.getOrPut(bucketId) {
-                        MediaStoreBucketInfo(
+                        MediaBucketInfo(
                             id = bucketId,
                             name = entity.bucketName,
                             coverUri = coverUri,
@@ -326,10 +326,10 @@ class MediaStoreRepositoryImpl @Inject constructor(
                     }
                     bucketInfo.size++
                 }
-                val buckets = ArrayList<MediaStoreBucket>(bucketsInfo.size)
+                val buckets = ArrayList<MediaBucket>(bucketsInfo.size)
                 for ((_, bucketInfo) in bucketsInfo) {
                     buckets.add(
-                        MediaStoreBucket(
+                        MediaBucket(
                             id = bucketInfo.id,
                             name = bucketInfo.name,
                             size = bucketInfo.size,
@@ -348,7 +348,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun startBookmarksFlow() {
         defaultCoroutineScope.launch {
-            allFilesFlow.transformLatest { files ->
+            mediaFilesFlow.transformLatest { files ->
                 val bookmarks = files.filterTo(ArrayList()) { file -> file.bookmark != null }
                 bookmarks.sortByDescending { file -> file.bookmark!!.dateAdded }
                 emit(bookmarks)
@@ -425,35 +425,35 @@ class MediaStoreRepositoryImpl @Inject constructor(
     private val defaultCoroutineScope: CoroutineScope =
         CoroutineScope(defaultDispatcher + SupervisorJob())
 
-    private val entitiesFlow: MutableSharedFlow<List<MediaStoreEntity>> =
+    private val entitiesFlow: MutableSharedFlow<List<MediaEntity>> =
         MutableSharedFlow(
             replay = 1,
             extraBufferCapacity = 0,
             onBufferOverflow = BufferOverflow.DROP_OLDEST,
         )
 
-    private val allFilesFlow: MutableSharedFlow<List<MediaStoreFile>> =
+    private val mediaFilesFlow: MutableSharedFlow<List<MediaFile>> =
         MutableSharedFlow(
             replay = 1,
             extraBufferCapacity = 0,
             onBufferOverflow = BufferOverflow.DROP_OLDEST,
         )
 
-    private val galleyFilesFlow: MutableSharedFlow<List<MediaStoreFile>> =
+    private val mediaFilesExcludingHiddenBucketsFlow: MutableSharedFlow<List<MediaFile>> =
         MutableSharedFlow(
             replay = 1,
             extraBufferCapacity = 0,
             onBufferOverflow = BufferOverflow.DROP_OLDEST,
         )
 
-    private val bucketsFlow: MutableSharedFlow<List<MediaStoreBucket>> =
+    private val bucketsFlow: MutableSharedFlow<List<MediaBucket>> =
         MutableSharedFlow(
             replay = 1,
             extraBufferCapacity = 0,
             onBufferOverflow = BufferOverflow.DROP_OLDEST,
         )
 
-    private val bookmarksFlow: MutableSharedFlow<List<MediaStoreFile>> =
+    private val bookmarksFlow: MutableSharedFlow<List<MediaFile>> =
         MutableSharedFlow(
             replay = 1,
             extraBufferCapacity = 0,
@@ -487,8 +487,8 @@ class MediaStoreRepositoryImpl @Inject constructor(
     private val contentProviderMutex: Mutex = Mutex()
 
     init {
-        startAllFilesFlow()
-        startGalleryFilesFlow()
+        startMediaFilesFlow()
+        startMediaFilesExcludingHiddenBucketsFlow()
         startBucketsFlow()
         startBookmarksFlow()
         startBookmarksByMediaIdsFlow()
@@ -511,7 +511,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
     }
 
-    private data class MediaStoreEntity(
+    private data class MediaEntity(
         val id: Long,
         val bucketId: Long,
         val name: String,
@@ -522,7 +522,7 @@ class MediaStoreRepositoryImpl @Inject constructor(
         val uri: Uri,
     )
 
-    private data class MediaStoreBucketInfo(
+    private data class MediaBucketInfo(
         val id: Long,
         val name: String,
         val coverUri: Uri,

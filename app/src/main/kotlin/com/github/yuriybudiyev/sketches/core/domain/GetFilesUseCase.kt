@@ -22,34 +22,35 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.repository
+package com.github.yuriybudiyev.sketches.core.domain
 
-import android.net.Uri
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaRepository
+import dagger.Reusable
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapLatest
+import javax.inject.Inject
 
-interface MediaStoreRepository {
+@Reusable
+class GetFilesUseCase @Inject constructor(
+    private val repository: MediaRepository,
+    @Dispatcher(Dispatchers.Default)
+    private val defaultDispatcher: CoroutineDispatcher,
+) {
 
-    fun getAllFiles(): Flow<List<MediaStoreFile>>
-
-    fun getGalleryFiles(): Flow<List<MediaStoreFile>>
-
-    fun getBookmarks(): Flow<List<MediaStoreFile>>
-
-    fun getBuckets(): Flow<List<MediaStoreBucket>>
-
-    fun updateMediaAccess()
-
-    suspend fun deleteMedia(uris: Collection<Uri>)
-
-    suspend fun createBookmark(mediaId: Long)
-
-    suspend fun deleteBookmarks(mediaIds: Collection<Long>)
-
-    fun getHiddenBuckets(): Flow<Set<Long>>
-
-    suspend fun showBucket(bucketId: Long)
-
-    suspend fun hideBucket(bucketId: Long)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    operator fun invoke(bucketId: Long? = null): Flow<List<MediaFile>> {
+        var files = repository.getFiles()
+        if (bucketId != null) {
+            files = files
+                .mapLatest { files -> files.filter { file -> file.bucketId == bucketId } }
+                .flowOn(defaultDispatcher)
+        }
+        return files
+    }
 }

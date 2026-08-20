@@ -22,21 +22,17 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.repository.di
+package com.github.yuriybudiyev.sketches.core.data.model
 
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepositoryImpl
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import android.net.Uri
+import androidx.compose.runtime.Immutable
+import java.time.LocalDateTime
 
-@Module
-@InstallIn(SingletonComponent::class)
-interface MediaStoreRepositoryBinderModule {
-
-    @Binds
-    fun bindMediaStoreRepositoryImplToMediaStoreRepository(
-        repositoryImpl: MediaStoreRepositoryImpl,
-    ): MediaStoreRepository
-}
+@Immutable
+data class MediaBucket(
+    val id: Long,
+    val name: String,
+    val size: Int,
+    val coverUri: Uri,
+    val coverDateAdded: LocalDateTime,
+)

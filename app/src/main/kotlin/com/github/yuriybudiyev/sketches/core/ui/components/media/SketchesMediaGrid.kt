@@ -57,7 +57,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
@@ -104,9 +104,9 @@ sealed interface SketchesMediaGridContentType {
 
 @Composable
 fun SketchesMediaGrid(
-    files: List<MediaStoreFile>,
+    files: List<MediaFile>,
     selectedFiles: SnapshotStateSet<Long>,
-    onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onItemClick: (index: Int, file: MediaFile) -> Unit,
     modifier: Modifier = Modifier,
     state: LazyGridState = rememberLazyGridState(),
     overlayTop: Boolean = false,
@@ -161,9 +161,9 @@ fun SketchesMediaGrid(
 
 @Composable
 fun SketchesGroupingMediaGrid(
-    items: Map<YearMonth, List<MediaStoreFile>>,
+    items: Map<YearMonth, List<MediaFile>>,
     selectedFiles: SnapshotStateSet<Long>,
-    onItemClick: (index: Int, file: MediaStoreFile) -> Unit,
+    onItemClick: (index: Int, file: MediaFile) -> Unit,
     modifier: Modifier = Modifier,
     state: LazyGridState = rememberLazyGridState(),
     overlayTop: Boolean = false,
@@ -275,8 +275,8 @@ fun SketchesGroupingMediaGrid(
 
 @OptIn(ExperimentalContracts::class)
 inline fun calculateMediaIndexWithGroups(
-    files: Collection<MediaStoreFile>,
-    predicate: (index: Int, file: MediaStoreFile) -> Boolean,
+    files: Collection<MediaFile>,
+    predicate: (index: Int, file: MediaFile) -> Boolean,
 ): Int {
     contract { callsInPlace(predicate) }
     var offset = 0
@@ -306,7 +306,7 @@ inline fun calculateMediaIndexWithGroups(
 
 @Composable
 private fun LazyGridItemScope.SketchesMediaGridItem(
-    file: MediaStoreFile,
+    file: MediaFile,
     fileSelected: Boolean,
     onLongClick: () -> Unit,
     onClick: () -> Unit,

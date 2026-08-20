@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2026 Yuriy Budiyev
+ * Copyright (c) 2024 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,17 +22,21 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.domain
+package com.github.yuriybudiyev.sketches.core.data.repository.di
 
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
-import dagger.Reusable
-import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaRepository
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaRepositoryImpl
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
-@Reusable
-class GetGalleryMediaFilesUseCase @Inject constructor(private val repository: MediaStoreRepository) {
+@Module
+@InstallIn(SingletonComponent::class)
+interface MediaRepositoryBinderModule {
 
-    operator fun invoke(): Flow<List<MediaStoreFile>> =
-        repository.getGalleryFiles()
+    @Binds
+    fun bindMediaRepositoryImplToMediaRepository(
+        repositoryImpl: MediaRepositoryImpl,
+    ): MediaRepository
 }

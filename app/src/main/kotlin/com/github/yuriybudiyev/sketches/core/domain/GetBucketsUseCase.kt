@@ -24,33 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.core.domain
 
-import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
-import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import com.github.yuriybudiyev.sketches.core.data.model.MediaBucket
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaRepository
 import dagger.Reusable
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.mapLatest
 import javax.inject.Inject
 
 @Reusable
-class GetAllMediaFilesUseCase @Inject constructor(
-    private val repository: MediaStoreRepository,
-    @Dispatcher(Dispatchers.Default)
-    private val defaultDispatcher: CoroutineDispatcher,
-) {
+class GetBucketsUseCase @Inject constructor(private val repository: MediaRepository) {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    operator fun invoke(bucketId: Long? = null): Flow<List<MediaStoreFile>> {
-        var files = repository.getAllFiles()
-        if (bucketId != null) {
-            files = files
-                .mapLatest { files -> files.filter { file -> file.bucketId == bucketId } }
-                .flowOn(defaultDispatcher)
-        }
-        return files
-    }
+    operator fun invoke(): Flow<List<MediaBucket>> =
+        repository.getBuckets()
 }

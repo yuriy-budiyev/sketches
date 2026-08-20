@@ -27,9 +27,9 @@ package com.github.yuriybudiyev.sketches.feature.images.ui
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
-import com.github.yuriybudiyev.sketches.core.domain.GetGalleryMediaFilesUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetFilesExcludingHiddenBucketsUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,7 +46,7 @@ import javax.inject.Inject
 class ImagesScreenViewModel @Inject constructor(
     private val deleteMedia: DeleteMediaUseCase,
     private val updateMediaAccess: UpdateMediaAccessUseCase,
-    getMediaFiles: GetGalleryMediaFilesUseCase,
+    getMediaFiles: GetFilesExcludingHiddenBucketsUseCase,
 ): ViewModel() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -89,8 +89,8 @@ class ImagesScreenViewModel @Inject constructor(
         data object Loading: UiState
 
         data class Images(
-            val files: List<MediaStoreFile>,
-            val groups: Map<YearMonth, List<MediaStoreFile>>,
+            val files: List<MediaFile>,
+            val groups: Map<YearMonth, List<MediaFile>>,
         ): UiState
 
         data class Error(val thrown: Throwable): UiState
