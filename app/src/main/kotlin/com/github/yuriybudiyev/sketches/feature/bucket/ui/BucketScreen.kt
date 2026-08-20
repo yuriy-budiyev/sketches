@@ -124,6 +124,12 @@ fun BucketRoute(
         onDeleteMedia = { files ->
             viewModel.deleteMedia(files)
         },
+        onShowBucket = {
+            viewModel.showBucket()
+        },
+        onHideBucket = {
+            viewModel.hideBucket()
+        },
     )
 }
 
@@ -133,6 +139,8 @@ fun BucketScreen(
     uiState: BucketScreenViewModel.UiState,
     onImageClick: (index: Int, file: MediaStoreFile) -> Unit,
     onDeleteMedia: (files: Collection<Uri>) -> Unit,
+    onShowBucket: () -> Unit,
+    onHideBucket: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context by rememberUpdatedState(LocalContext.current)
@@ -141,6 +149,7 @@ fun BucketScreen(
     var allFiles by remember { mutableStateOf<Collection<MediaStoreFile>>(emptyList()) }
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
+    var bucketVisible by rememberSaveable { mutableStateOf(false) }
     val mediaGridState = rememberLazyGridState()
     val mediaBatchState = rememberMediaBatchState()
     var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
@@ -310,6 +319,7 @@ fun BucketScreen(
             }
             is BucketScreenViewModel.UiState.Bucket -> {
                 val files = uiState.files
+                bucketVisible = uiState.isVisible
                 allFiles = files
                 SketchesMediaGrid(
                     files = files,
@@ -401,6 +411,25 @@ fun BucketScreen(
                     },
                 )
             }
+            SketchesAppBarActionButton(
+                iconRes = if (bucketVisible) {
+                    R.drawable.ic_bucket_hide
+                } else {
+                    R.drawable.ic_bucket_show
+                },
+                description = stringResource(
+                    if (bucketVisible) {
+                        R.string.hide_bucket
+                    } else {
+                        R.string.show_bucket
+                    },
+                ),
+                onClick = if (bucketVisible) {
+                    onHideBucket
+                } else {
+                    onShowBucket
+                },
+            )
         }
         var contentInsets = WindowInsets.navigationBars
             .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)

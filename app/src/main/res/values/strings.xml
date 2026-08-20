@@ -47,4 +47,6 @@
         <item quantity="one">Delete %d bookmark?</item>
         <item quantity="other">Delete %d bookmarks?</item>
     </plurals>
+    <string name="show_bucket">Show album</string>
+    <string name="hide_bucket">Hide album</string>
 </resources>

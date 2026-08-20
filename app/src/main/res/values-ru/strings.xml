@@ -51,4 +51,6 @@
         <item quantity="many">Удалить %d закладок?</item>
         <item quantity="other">Удалить %d закладок?</item>
     </plurals>
+    <string name="show_bucket">Показать альбом</string>
+    <string name="hide_bucket">Скрыть альбом</string>
 </resources>

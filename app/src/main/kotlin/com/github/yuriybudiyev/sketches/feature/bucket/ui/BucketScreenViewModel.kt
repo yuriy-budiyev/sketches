@@ -30,6 +30,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetAllMediaFilesUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetHiddenBucketsUseCase
 import com.github.yuriybudiyev.sketches.core.domain.HideBucketUseCase
 import com.github.yuriybudiyev.sketches.core.domain.ShowBucketUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
@@ -42,6 +43,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
@@ -55,6 +57,7 @@ class BucketScreenViewModel @AssistedInject constructor(
     private val showBucket: ShowBucketUseCase,
     private val hideBucket: HideBucketUseCase,
     getMediaFiles: GetAllMediaFilesUseCase,
+    getHiddenBuckets: GetHiddenBucketsUseCase,
 ): ViewModel() {
 
     val bucketId: Long = route.bucketId
@@ -62,9 +65,19 @@ class BucketScreenViewModel @AssistedInject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<UiState> =
-        getMediaFiles(bucketId).transformLatest { files ->
+        combineTransform(
+            getMediaFiles(bucketId),
+            getHiddenBuckets(),
+        ) { files, buckets ->
+            emit(files to buckets)
+        }.transformLatest { (files, buckets) ->
             if (files.isNotEmpty()) {
-                emit(UiState.Bucket(files))
+                emit(
+                    UiState.Bucket(
+                        files = files,
+                        isVisible = !buckets.contains(bucketId),
+                    ),
+                )
             } else {
                 emit(UiState.Empty)
             }
@@ -88,15 +101,15 @@ class BucketScreenViewModel @AssistedInject constructor(
         }
     }
 
-    fun showBucket(bucketId: Long) {
+    fun showBucket() {
         viewModelScope.launch {
-            showBucket.invoke(bucketId)
+            showBucket(bucketId)
         }
     }
 
-    fun hideBucket(bucketId: Long) {
+    fun hideBucket() {
         viewModelScope.launch {
-            hideBucket.invoke(bucketId)
+            hideBucket(bucketId)
         }
     }
 
@@ -106,7 +119,10 @@ class BucketScreenViewModel @AssistedInject constructor(
 
         data object Loading: UiState
 
-        data class Bucket(val files: List<MediaStoreFile>): UiState
+        data class Bucket(
+            val files: List<MediaStoreFile>,
+            val isVisible: Boolean,
+        ): UiState
 
         data class Error(val thrown: Throwable): UiState
     }

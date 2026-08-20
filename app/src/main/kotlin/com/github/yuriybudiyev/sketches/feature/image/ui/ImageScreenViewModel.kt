@@ -36,6 +36,7 @@ import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarksUseCase
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetAllMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetGalleryMediaFilesUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageNavRoute
 import dagger.assisted.Assisted
@@ -64,7 +65,8 @@ class ImageScreenViewModel @AssistedInject constructor(
     private val createBookmark: CreateBookmarkUseCase,
     private val deleteBookmarks: DeleteBookmarksUseCase,
     private val updateMediaAccess: UpdateMediaAccessUseCase,
-    getMediaFiles: GetAllMediaFilesUseCase,
+    getAllMediaFiles: GetAllMediaFilesUseCase,
+    getGalleryMediaFiles: GetGalleryMediaFilesUseCase,
     getBookmarks: GetBookmarksUseCase,
 ): ViewModel() {
 
@@ -181,8 +183,16 @@ class ImageScreenViewModel @AssistedInject constructor(
         }
         @OptIn(ExperimentalCoroutinesApi::class)
         uiState = when (mode) {
-            Mode.Images -> getMediaFiles(currentBucketId)
-            Mode.Bookmarks -> getBookmarks()
+            Mode.Images -> {
+                if (currentBucketId != null) {
+                    getAllMediaFiles(currentBucketId)
+                } else {
+                    getGalleryMediaFiles()
+                }
+            }
+            Mode.Bookmarks -> {
+                getBookmarks()
+            }
         }.transformLatest { files ->
             if (files.isEmpty()) {
                 emit(UiState.Empty)

@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Yuriy Budiyev
+ * Copyright (c) 2026 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,34 +22,16 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.data.repository
+package com.github.yuriybudiyev.sketches.core.domain
 
-import android.net.Uri
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreBucket
-import com.github.yuriybudiyev.sketches.core.data.model.MediaStoreFile
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaStoreRepository
+import dagger.Reusable
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-interface MediaStoreRepository {
+@Reusable
+class GetHiddenBucketsUseCase @Inject constructor(private val repository: MediaStoreRepository) {
 
-    fun getAllFiles(): Flow<List<MediaStoreFile>>
-
-    fun getGalleryFiles(): Flow<List<MediaStoreFile>>
-
-    fun getBookmarks(): Flow<List<MediaStoreFile>>
-
-    fun getBuckets(): Flow<List<MediaStoreBucket>>
-
-    fun updateMediaAccess()
-
-    suspend fun deleteMedia(uris: Collection<Uri>)
-
-    suspend fun createBookmark(mediaId: Long)
-
-    suspend fun deleteBookmarks(mediaIds: Collection<Long>)
-
-    fun getHiddenBuckets(): Flow<Set<Long>>
-
-    suspend fun showBucket(bucketId: Long)
-
-    suspend fun hideBucket(bucketId: Long)
+    operator fun invoke(): Flow<Set<Long>> =
+        repository.getHiddenBuckets()
 }

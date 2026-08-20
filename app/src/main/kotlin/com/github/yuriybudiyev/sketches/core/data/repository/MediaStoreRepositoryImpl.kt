@@ -155,6 +155,9 @@ class MediaStoreRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getHiddenBuckets(): Flow<Set<Long>> =
+        hiddenBucketsFlow
+
     override suspend fun showBucket(bucketId: Long) {
         withContext(ioDispatcher) {
             hiddenBucketsDao.delete(bucketId)
