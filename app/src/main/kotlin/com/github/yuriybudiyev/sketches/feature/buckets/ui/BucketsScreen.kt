@@ -476,8 +476,8 @@ private fun BucketsMediaGrid(
                     }
                     if (bucket.isHidden) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_bucket_hide),
-                            contentDescription = stringResource(R.string.selected),
+                            painter = painterResource(R.drawable.ic_bucket_hidden),
+                            contentDescription = stringResource(R.string.hidden_bucket),
                             tint = colorScheme.onBackground,
                             modifier = Modifier
                                 .align(alignment = Alignment.TopEnd)

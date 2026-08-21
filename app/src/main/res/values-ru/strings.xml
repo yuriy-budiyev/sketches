@@ -53,4 +53,5 @@
     </plurals>
     <string name="show_bucket">Показать альбом</string>
     <string name="hide_bucket">Скрыть альбом</string>
+    <string name="hidden_bucket">Скрытый альбом</string>
 </resources>

@@ -49,4 +49,5 @@
     </plurals>
     <string name="show_bucket">Show album</string>
     <string name="hide_bucket">Hide album</string>
+    <string name="hidden_bucket">Hidden album</string>
 </resources>
