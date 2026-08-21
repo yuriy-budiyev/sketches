@@ -232,9 +232,10 @@ class LruMemoryCache private constructor(private val maxSizeBytes: Long): Compon
             newValue: Image?,
         ) {
             synchronized(keyCache) {
-                if (keyCache[key.uri] == key) {
-                    keyCache.remove(key.uri)
-                }
+                keyCache.remove(
+                    key.uri,
+                    key,
+                )
             }
         }
     }
