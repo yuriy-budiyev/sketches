@@ -163,20 +163,16 @@ class LruMemoryCache private constructor(private val maxSizeBytes: Long): Compon
             return
         }
         imageCache[key] = image
-        synchronized(placeholderKeyCache) {
-            val placeholder = placeholderKeyCache[key.uri]
-            if (placeholder == null || key.width * key.height > placeholder.width * placeholder.height) {
-                placeholderKeyCache[key.uri] = key
+        synchronized(keyCache) {
+            val oldKey = keyCache[key.uri]
+            if (oldKey == null || key.width * key.height > oldKey.width * oldKey.height) {
+                keyCache[key.uri] = key
             }
         }
     }
 
-    operator fun get(uri: String): Image? {
-        val placeholderKey = synchronized(placeholderKeyCache) {
-            placeholderKeyCache[uri]
-        } ?: return null
-        return imageCache[placeholderKey]
-    }
+    operator fun get(uri: String): Image? =
+        imageCache[synchronized(keyCache) { keyCache[uri] } ?: return null]
 
     operator fun get(key: Key): Image? =
         imageCache[key]
@@ -213,7 +209,7 @@ class LruMemoryCache private constructor(private val maxSizeBytes: Long): Compon
     }
 
     private val imageCache: LruCache<Key, Image> = CacheImpl()
-    private val placeholderKeyCache: MutableMap<String, Key> = LinkedHashMap()
+    private val keyCache: MutableMap<String, Key> = LinkedHashMap()
 
     data class Key(
         val uri: String,
@@ -235,9 +231,9 @@ class LruMemoryCache private constructor(private val maxSizeBytes: Long): Compon
             oldValue: Image,
             newValue: Image?,
         ) {
-            synchronized(placeholderKeyCache) {
-                if (placeholderKeyCache[key.uri] == key) {
-                    placeholderKeyCache.remove(key.uri)
+            synchronized(keyCache) {
+                if (keyCache[key.uri] == key) {
+                    keyCache.remove(key.uri)
                 }
             }
         }
