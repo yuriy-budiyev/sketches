@@ -49,8 +49,9 @@ class GetBucketsContentUseCase @Inject constructor(
             val bucketIds = newLinkedHashSet<Long>(buckets.size)
             var contentSize = 0
             for (bucket in buckets) {
-                bucketIds.add(bucket.id)
-                contentSize += bucket.size
+                if (bucketIds.add(bucket.id)) {
+                    contentSize += bucket.size
+                }
             }
             val contentFiles = ArrayList<MediaFile>(contentSize)
             for (file in allFiles) {

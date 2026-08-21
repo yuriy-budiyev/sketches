@@ -283,13 +283,13 @@ class MediaRepositoryImpl @Inject constructor(
             combineTransform(
                 mediaFilesFlow,
                 hiddenBucketsFlow,
-            ) { files, buckets ->
-                emit(files to buckets)
-            }.collectLatest { (files, buckets) ->
+            ) { files, hiddenBuckets ->
+                emit(files to hiddenBuckets)
+            }.collectLatest { (files, hiddenBuckets) ->
                 mediaFilesExcludingHiddenBucketsFlow.emit(
-                    if (buckets.isNotEmpty()) {
+                    if (hiddenBuckets.isNotEmpty()) {
                         files
-                            .filterTo(ArrayList(files.size)) { file -> !buckets.contains(file.bucketId) }
+                            .filterTo(ArrayList(files.size)) { file -> !hiddenBuckets.contains(file.bucketId) }
                             .apply { trimToSize() }
                     } else {
                         files
@@ -307,7 +307,7 @@ class MediaRepositoryImpl @Inject constructor(
             ) { entities, hiddenBuckets ->
                 emit(entities to hiddenBuckets)
             }.collectLatest { (entities, hiddenBuckets) ->
-                val bucketsInfo = LinkedHashMap<Long, MediaBucketInfo>()
+                val bucketsInfo = newLinkedHashMap<Long, MediaBucketInfo>(entities.size)
                 for (entity in entities) {
                     val bucketId = entity.bucketId
                     val coverUri = entity.uri
@@ -404,7 +404,8 @@ class MediaRepositoryImpl @Inject constructor(
     private fun startHiddenBucketsGarbageCollection() {
         defaultCoroutineScope.launch {
             entitiesFlow.collectLatest { entities ->
-                val bucketsIds = entities.mapTo(LinkedHashSet()) { entity -> entity.bucketId }
+                val bucketsIds =
+                    entities.mapTo(newLinkedHashSet(entities.size)) { entity -> entity.bucketId }
                 val hiddenBuckets = hiddenBucketsFlow.first()
                 val hiddenBucketsToDelete = hiddenBuckets
                     .filterTo(ArrayList(hiddenBuckets.size)) { bucketId -> !bucketsIds.contains(bucketId) }

@@ -48,7 +48,11 @@ class GetFilesUseCase @Inject constructor(
         var files = repository.getFiles()
         if (bucketId != null) {
             files = files
-                .mapLatest { files -> files.filter { file -> file.bucketId == bucketId } }
+                .mapLatest { files ->
+                    files
+                        .filterTo(ArrayList(files.size)) { file -> file.bucketId == bucketId }
+                        .apply { trimToSize() }
+                }
                 .flowOn(defaultDispatcher)
         }
         return files
