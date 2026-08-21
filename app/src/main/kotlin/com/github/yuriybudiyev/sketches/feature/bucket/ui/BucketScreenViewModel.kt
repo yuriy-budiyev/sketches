@@ -68,14 +68,14 @@ class BucketScreenViewModel @AssistedInject constructor(
         combineTransform(
             getMediaFiles(bucketId),
             getHiddenBuckets(),
-        ) { files, buckets ->
-            emit(files to buckets)
-        }.transformLatest { (files, buckets) ->
+        ) { files, hiddenBuckets ->
+            emit(files to hiddenBuckets)
+        }.transformLatest { (files, hiddenBuckets) ->
             if (files.isNotEmpty()) {
                 emit(
                     UiState.Bucket(
                         files = files,
-                        isVisible = !buckets.contains(bucketId),
+                        isBucketHidden = hiddenBuckets.contains(bucketId),
                     ),
                 )
             } else {
@@ -121,7 +121,7 @@ class BucketScreenViewModel @AssistedInject constructor(
 
         data class Bucket(
             val files: List<MediaFile>,
-            val isVisible: Boolean,
+            val isBucketHidden: Boolean,
         ): UiState
 
         data class Error(val thrown: Throwable): UiState

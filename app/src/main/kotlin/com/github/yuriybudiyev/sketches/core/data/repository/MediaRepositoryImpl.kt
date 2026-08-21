@@ -333,7 +333,7 @@ class MediaRepositoryImpl @Inject constructor(
                             size = bucketInfo.size,
                             coverUri = bucketInfo.coverUri,
                             coverDateAdded = bucketInfo.coverDateAdded,
-                            isVisible = !hiddenBuckets.contains(bucketId),
+                            isHidden = hiddenBuckets.contains(bucketId),
                         ),
                     )
                 }

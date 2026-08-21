@@ -35,5 +35,5 @@ data class MediaBucket(
     val size: Int,
     val coverUri: Uri,
     val coverDateAdded: LocalDateTime,
-    val isVisible: Boolean,
+    val isHidden: Boolean,
 )

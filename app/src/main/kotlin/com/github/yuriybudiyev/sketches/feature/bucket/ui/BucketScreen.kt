@@ -149,7 +149,7 @@ fun BucketScreen(
     var allFiles by remember { mutableStateOf<Collection<MediaFile>>(emptyList()) }
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
-    var bucketVisible by rememberSaveable { mutableStateOf(false) }
+    var bucketHidden by rememberSaveable { mutableStateOf(false) }
     val mediaGridState = rememberLazyGridState()
     val mediaBatchState = rememberMediaBatchState()
     var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
@@ -319,7 +319,7 @@ fun BucketScreen(
             }
             is BucketScreenViewModel.UiState.Bucket -> {
                 val files = uiState.files
-                bucketVisible = uiState.isVisible
+                bucketHidden = uiState.isBucketHidden
                 allFiles = files
                 SketchesMediaGrid(
                     files = files,
@@ -361,22 +361,22 @@ fun BucketScreen(
             backgroundColor = colorScheme.background.withLowTransparency(),
         ) {
             SketchesAppBarActionButton(
-                iconRes = if (bucketVisible) {
-                    R.drawable.ic_bucket_hide
-                } else {
+                iconRes = if (bucketHidden) {
                     R.drawable.ic_bucket_show
+                } else {
+                    R.drawable.ic_bucket_hide
                 },
                 description = stringResource(
-                    if (bucketVisible) {
-                        R.string.hide_bucket
-                    } else {
+                    if (bucketHidden) {
                         R.string.show_bucket
+                    } else {
+                        R.string.hide_bucket
                     },
                 ),
-                onClick = if (bucketVisible) {
-                    onHideBucket
-                } else {
+                onClick = if (bucketHidden) {
                     onShowBucket
+                } else {
+                    onHideBucket
                 },
             )
             val selectionMode by remember {
