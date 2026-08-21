@@ -45,4 +45,5 @@ data class DefaultDimens(
     override val mediaBarItemSpacing: Dp = 1.dp,
     override val mediaBarVideoIconPadding: Dp = 2.dp,
     override val placeholderBlurRadius: Dp = 4.dp,
+    override val shadowBlurRadius: Dp = 8.dp,
 ): Dimens

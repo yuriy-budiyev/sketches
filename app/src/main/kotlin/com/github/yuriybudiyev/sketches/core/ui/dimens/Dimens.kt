@@ -46,6 +46,7 @@ interface Dimens {
     val mediaBarItemSpacing: Dp
     val mediaBarVideoIconPadding: Dp
     val placeholderBlurRadius: Dp
+    val shadowBlurRadius: Dp
 }
 
 val LocalDimens: ProvidableCompositionLocal<Dimens> =

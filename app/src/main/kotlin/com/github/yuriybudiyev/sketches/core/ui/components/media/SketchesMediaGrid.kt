@@ -50,7 +50,9 @@ import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -361,9 +363,12 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                 modifier = Modifier
                     .align(alignment = Alignment.TopStart)
                     .padding(all = dimens.mediaGridIconPadding)
-                    .background(
-                        color = colorScheme.background.withLowTransparency(),
+                    .dropShadow(
                         shape = CircleShape,
+                        shadow = Shadow(
+                            radius = dimens.shadowBlurRadius,
+                            color = colorScheme.background.withLowTransparency(),
+                        ),
                     ),
             )
         }
@@ -375,9 +380,12 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                 modifier = Modifier
                     .align(alignment = Alignment.BottomStart)
                     .padding(all = dimens.mediaGridIconPadding)
-                    .background(
-                        color = colorScheme.background.withLowTransparency(),
+                    .dropShadow(
                         shape = CircleShape,
+                        shadow = Shadow(
+                            radius = dimens.shadowBlurRadius,
+                            color = colorScheme.background.withLowTransparency(),
+                        ),
                     ),
             )
         }
