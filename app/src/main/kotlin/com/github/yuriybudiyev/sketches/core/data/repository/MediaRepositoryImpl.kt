@@ -52,7 +52,6 @@ import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMed
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
@@ -63,7 +62,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -254,7 +252,6 @@ class MediaRepositoryImpl @Inject constructor(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun startMediaFilesFlow() {
         defaultCoroutineScope.launch {
             combineTransform(
@@ -262,27 +259,21 @@ class MediaRepositoryImpl @Inject constructor(
                 bookmarksByMediaIdsFlow,
             ) { entities, bookmarks ->
                 emit(entities to bookmarks)
-            }.transformLatest { (entities, bookmarks) ->
-                if (entities.isEmpty()) {
-                    emit(emptyList())
-                } else {
-                    emit(
-                        entities.map { entity ->
-                            MediaFile(
-                                id = entity.id,
-                                bucketId = entity.bucketId,
-                                name = entity.name,
-                                dateAdded = entity.dateAdded,
-                                mediaType = entity.mediaType,
-                                mimeType = entity.mimeType,
-                                uri = entity.uri,
-                                bookmark = bookmarks[entity.id],
-                            )
-                        },
-                    )
-                }
-            }.collect { files ->
-                mediaFilesFlow.emit(files)
+            }.collectLatest { (entities, bookmarks) ->
+                mediaFilesFlow.emit(
+                    entities.mapTo(ArrayList(entities.size)) { entity ->
+                        MediaFile(
+                            id = entity.id,
+                            bucketId = entity.bucketId,
+                            name = entity.name,
+                            dateAdded = entity.dateAdded,
+                            mediaType = entity.mediaType,
+                            mimeType = entity.mimeType,
+                            uri = entity.uri,
+                            bookmark = bookmarks[entity.id],
+                        )
+                    },
+                )
             }
         }
     }
@@ -297,7 +288,9 @@ class MediaRepositoryImpl @Inject constructor(
             }.collectLatest { (files, buckets) ->
                 mediaFilesExcludingHiddenBucketsFlow.emit(
                     if (buckets.isNotEmpty()) {
-                        files.filter { file -> !buckets.contains(file.bucketId) }
+                        files
+                            .filterTo(ArrayList(files.size)) { file -> !buckets.contains(file.bucketId) }
+                            .apply { trimToSize() }
                     } else {
                         files
                     },
@@ -306,10 +299,14 @@ class MediaRepositoryImpl @Inject constructor(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun startBucketsFlow() {
         defaultCoroutineScope.launch {
-            entitiesFlow.transformLatest { entities ->
+            combineTransform(
+                entitiesFlow,
+                hiddenBucketsFlow,
+            ) { entities, hiddenBuckets ->
+                emit(entities to hiddenBuckets)
+            }.collectLatest { (entities, hiddenBuckets) ->
                 val bucketsInfo = LinkedHashMap<Long, MediaBucketInfo>()
                 for (entity in entities) {
                     val bucketId = entity.bucketId
@@ -328,40 +325,39 @@ class MediaRepositoryImpl @Inject constructor(
                 }
                 val buckets = ArrayList<MediaBucket>(bucketsInfo.size)
                 for ((_, bucketInfo) in bucketsInfo) {
+                    val bucketId = bucketInfo.id
                     buckets.add(
                         MediaBucket(
-                            id = bucketInfo.id,
+                            id = bucketId,
                             name = bucketInfo.name,
                             size = bucketInfo.size,
                             coverUri = bucketInfo.coverUri,
                             coverDateAdded = bucketInfo.coverDateAdded,
+                            isVisible = !hiddenBuckets.contains(bucketId),
                         ),
                     )
                 }
-                emit(buckets)
-            }.collect { buckets ->
                 bucketsFlow.emit(buckets)
             }
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun startBookmarksFlow() {
         defaultCoroutineScope.launch {
-            mediaFilesFlow.transformLatest { files ->
-                val bookmarks = files.filterTo(ArrayList()) { file -> file.bookmark != null }
-                bookmarks.sortByDescending { file -> file.bookmark!!.dateAdded }
-                emit(bookmarks)
-            }.collect { files ->
-                bookmarksFlow.emit(files)
+            mediaFilesFlow.collectLatest { files ->
+                bookmarksFlow.emit(
+                    files
+                        .filterTo(ArrayList(files.size)) { file -> file.bookmark != null }
+                        .apply { sortByDescending { file -> file.bookmark!!.dateAdded } }
+                        .apply { trimToSize() },
+                )
             }
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     private fun startBookmarksByMediaIdsFlow() {
         defaultCoroutineScope.launch {
-            bookmarksDao.getAll().transformLatest { entities ->
+            bookmarksDao.getAll().collectLatest { entities ->
                 val bookmarks = newLinkedHashMap<Long, Bookmark>(entities.size)
                 for (entity in entities) {
                     val mediaId = entity.mediaId
@@ -370,8 +366,6 @@ class MediaRepositoryImpl @Inject constructor(
                         dateAdded = entity.dateAdded,
                     )
                 }
-                emit(bookmarks)
-            }.collect { bookmarks ->
                 bookmarksByMediaIdsFlow.emit(bookmarks)
             }
         }
@@ -382,10 +376,12 @@ class MediaRepositoryImpl @Inject constructor(
             entitiesFlow.collectLatest { entities ->
                 val entitiesIds =
                     entities.mapTo(newLinkedHashSet(entities.size)) { entity -> entity.id }
-                val bookmarksToDelete = bookmarksByMediaIdsFlow.first().asSequence()
+                val bookmarksByMediaIds = bookmarksByMediaIdsFlow.first()
+                val bookmarksToDelete = bookmarksByMediaIds.asSequence()
                     .filter { (mediaId, _) -> !entitiesIds.contains(mediaId) }
                     .map { (mediaId, _) -> mediaId }
-                    .toList()
+                    .toCollection(ArrayList(bookmarksByMediaIds.size))
+                    .apply { trimToSize() }
                 if (bookmarksToDelete.isNotEmpty()) {
                     withContext(ioDispatcher) {
                         bookmarksDao.delete(bookmarksToDelete)
@@ -397,22 +393,22 @@ class MediaRepositoryImpl @Inject constructor(
 
     private fun startHiddenBucketsFlow() {
         defaultCoroutineScope.launch {
-            hiddenBucketsDao.getAll()
-                .collectLatest { entities ->
-                    hiddenBucketsFlow.emit(
-                        entities.mapTo(newLinkedHashSet(entities.size)) { entity -> entity.bucketId },
-                    )
-                }
+            hiddenBucketsDao.getAll().collectLatest { entities ->
+                hiddenBucketsFlow.emit(
+                    entities.mapTo(newLinkedHashSet(entities.size)) { entity -> entity.bucketId },
+                )
+            }
         }
     }
 
     private fun startHiddenBucketsGarbageCollection() {
         defaultCoroutineScope.launch {
-            bucketsFlow.collectLatest { buckets ->
-                val bucketsIds =
-                    buckets.mapTo(newLinkedHashSet(buckets.size)) { bucket -> bucket.id }
-                val hiddenBucketsToDelete =
-                    hiddenBucketsFlow.first().filter { bucketId -> !bucketsIds.contains(bucketId) }
+            entitiesFlow.collectLatest { entities ->
+                val bucketsIds = entities.mapTo(LinkedHashSet()) { entity -> entity.bucketId }
+                val hiddenBuckets = hiddenBucketsFlow.first()
+                val hiddenBucketsToDelete = hiddenBuckets
+                    .filterTo(ArrayList(hiddenBuckets.size)) { bucketId -> !bucketsIds.contains(bucketId) }
+                    .apply { trimToSize() }
                 if (hiddenBucketsToDelete.isNotEmpty()) {
                     withContext(ioDispatcher) {
                         hiddenBucketsDao.delete(hiddenBucketsToDelete)
