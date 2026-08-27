@@ -358,7 +358,7 @@ fun MainNavRoot(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(dimens.material3AppBarHeight)
+                            .height(dimens.material3NavBarHeight)
                             .graphicsLayer {
                                 alpha = navBarAlpha
                             }

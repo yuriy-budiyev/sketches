@@ -298,7 +298,7 @@ private fun ImageScreenLayout(
             controllerVisible = systemBarsController.isSystemBarsVisible,
             controllerStartPadding = controllerPaddings.calculateStartPadding(layoutDirection),
             controllerEndPadding = controllerPaddings.calculateEndPadding(layoutDirection),
-            controllerBottomPadding = contentPaddingBottom + dimens.bottomBarHeight,
+            controllerBottomPadding = contentPaddingBottom + dimens.mediaBarSize,
             modifier = Modifier
                 .matchParentSize()
                 .padding(
@@ -342,7 +342,7 @@ private fun ImageScreenLayout(
                         color = colorScheme.background.withLowTransparency(),
                         shape = RectangleShape,
                     )
-                    .height(dimens.bottomBarHeight)
+                    .height(dimens.mediaBarSize)
                     .fillMaxWidth(),
             )
             SketchesTopAppBar(
