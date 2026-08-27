@@ -36,15 +36,21 @@ import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -70,6 +76,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -100,9 +107,9 @@ import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.compose.LocalSavedStateRegistryOwner
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavSharedTransitionScope
-import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
+import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavMenuController
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
-import com.github.yuriybudiyev.sketches.core.navigation.RootNavBarController
+import com.github.yuriybudiyev.sketches.core.navigation.RootNavMenuController
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
@@ -111,6 +118,7 @@ import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotSt
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.wsc.isWindowWidthSizeClassExpanded
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.registerBookmarksNavRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavRoute
@@ -229,13 +237,10 @@ fun MainNavRoot(
                         object: ViewModelStoreOwner,
                             SavedStateRegistryOwner by savedStateRegistryOwner,
                             HasDefaultViewModelProviderFactory {
-
                             override val viewModelStore: ViewModelStore
                                 get() = navEntryViewModelStore
-
                             override val defaultViewModelProviderFactory: ViewModelProvider.Factory
                                 get() = SavedStateViewModelFactory()
-
                             override val defaultViewModelCreationExtras: CreationExtras
                                 get() = MutableCreationExtras().also { extras ->
                                     extras[SAVED_STATE_REGISTRY_OWNER_KEY] = this
@@ -261,8 +266,6 @@ fun MainNavRoot(
         entryDecorators = listOf(navEntryDecorator),
         entryProvider = navEntryProvider,
     )
-    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
-    val dimens by rememberUpdatedState(LocalDimens.current)
     SharedTransitionScope { transitionModifier ->
         val sceneState = rememberSceneState(
             entries = navEntries,
@@ -287,11 +290,11 @@ fun MainNavRoot(
             },
         )
         val navResultStore = rememberNavResultStore()
-        val rootNavBarController = rememberRootNavBarController()
+        val rootNavBarController = rememberRootNavMenuController()
         Box(modifier = modifier.then(transitionModifier)) {
             CompositionLocalProvider(
                 LocalNavResultStore provides navResultStore,
-                LocalRootNavBarController provides rootNavBarController,
+                LocalRootNavMenuController provides rootNavBarController,
                 LocalNavSharedTransitionScope provides this@SharedTransitionScope,
             ) {
                 NavDisplay(
@@ -321,103 +324,208 @@ fun MainNavRoot(
                     },
                 )
             }
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .fillMaxWidth(),
-            ) {
-                val navBarAlpha by animateFloatAsState(
-                    targetValue =
-                        if (currentRouteIsRoot && rootNavBarController.isRootNavBarVisible) {
-                            1F
+            NavMenu(
+                routes = rootRoutes,
+                topRootRoute = topRootRoute,
+                navVisible = currentRouteIsRoot && rootNavBarController.isRootNavBarVisible,
+                systemNavVisible = LocalSystemBarsController.current.isSystemBarsVisible,
+                onClick = { route, selected ->
+                    if (selected) {
+                        rootNavBarController.dispatchOnClick(route)
+                    } else {
+                        if (route == initialRoute) {
+                            navBackStack.clear()
                         } else {
-                            0F
-                        },
-                    animationSpec = defaultAnimationSpec(),
-                )
-                val navBarVisible by remember {
-                    derivedStateOf(structuralEqualityPolicy()) {
-                        navBarAlpha > 0F
-                    }
-                }
-                val systemNavBarAlpha by animateFloatAsState(
-                    targetValue =
-                        if (LocalSystemBarsController.current.isSystemBarsVisible) {
-                            1F
-                        } else {
-                            0F
-                        },
-                    animationSpec = defaultAnimationSpec(),
-                )
-                val systemNavBarVisible by remember {
-                    derivedStateOf(structuralEqualityPolicy()) {
-                        systemNavBarAlpha > 0F
-                    }
-                }
-                if (navBarVisible) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(dimens.navBarHeight)
-                            .graphicsLayer {
-                                alpha = navBarAlpha
-                            }
-                            .background(
-                                color = colorScheme.background.withLowTransparency(),
-                                shape = RectangleShape,
-                            ),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                    ) {
-                        for (route in rootRoutes) {
-                            val routeSelected by remember {
-                                derivedStateOf(structuralEqualityPolicy()) {
-                                    route == topRootRoute
+                            val iterator = navBackStack.iterator()
+                            while (iterator.hasNext()) {
+                                if (iterator.next() == route) {
+                                    iterator.remove()
                                 }
                             }
-                            NavItem(
-                                route = route,
-                                selected = routeSelected,
-                                onClick = {
-                                    if (routeSelected) {
-                                        rootNavBarController.dispatchOnClick(route)
-                                    } else {
-                                        if (route == initialRoute) {
-                                            navBackStack.clear()
-                                        } else {
-                                            val iterator = navBackStack.iterator()
-                                            while (iterator.hasNext()) {
-                                                if (iterator.next() == route) {
-                                                    iterator.remove()
-                                                }
-                                            }
-                                        }
-                                        navBackStack.add(route)
-                                    }
-                                },
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .weight(1F),
-                            )
                         }
+                        navBackStack.add(route)
+                    }
+                },
+            )
+        }
+    }
+}
+
+@Composable
+fun BoxScope.NavMenu(
+    routes: List<RootNavRoute>,
+    topRootRoute: RootNavRoute?,
+    navVisible: Boolean,
+    systemNavVisible: Boolean,
+    onClick: (route: RootNavRoute, selected: Boolean) -> Unit,
+) {
+    val routes by rememberUpdatedState(routes)
+    val topRootRoute by rememberUpdatedState(topRootRoute)
+    val onClick by rememberUpdatedState(onClick)
+    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
+    val dimens by rememberUpdatedState(LocalDimens.current)
+    val navAlpha by animateFloatAsState(
+        targetValue = if (navVisible) 1F else 0F,
+        animationSpec = defaultAnimationSpec(),
+    )
+    val navVisible by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            navAlpha > 0F
+        }
+    }
+    val systemNavAlpha by animateFloatAsState(
+        targetValue = if (systemNavVisible) 1F else 0F,
+        animationSpec = defaultAnimationSpec(),
+    )
+    val systemNavVisible by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            systemNavAlpha > 0F
+        }
+    }
+    if (isWindowWidthSizeClassExpanded()) {
+        val layoutDirection = LocalLayoutDirection.current
+        val navigationBarsPaddings = WindowInsets.navigationBars.asPaddingValues()
+        val startPadding = navigationBarsPaddings.calculateStartPadding(layoutDirection)
+        val endPadding = navigationBarsPaddings.calculateEndPadding(layoutDirection)
+        val alignStart = startPadding > endPadding
+        Row(
+            modifier = Modifier
+                .align(
+                    if (alignStart) {
+                        Alignment.TopStart
+                    } else {
+                        Alignment.TopEnd
+                    },
+                )
+                .padding(
+                    top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
+                        dimens.material3AppBarHeight,
+                )
+                .fillMaxHeight(),
+        ) {
+            if (systemNavVisible && alignStart) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(startPadding)
+                        .graphicsLayer {
+                            alpha = systemNavAlpha
+                        }
+                        .background(
+                            color = colorScheme.background.withLowTransparency(),
+                            shape = RectangleShape,
+                        ),
+                )
+            }
+            if (navVisible) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(dimens.navRailWidth)
+                        .graphicsLayer {
+                            alpha = navAlpha
+                        }
+                        .background(
+                            color = colorScheme.background.withLowTransparency(),
+                            shape = RectangleShape,
+                        ),
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                ) {
+                    for (route in routes) {
+                        val routeSelected by remember {
+                            derivedStateOf(structuralEqualityPolicy()) {
+                                route == topRootRoute
+                            }
+                        }
+                        NavItem(
+                            route = route,
+                            selected = routeSelected,
+                            onClick = {
+                                onClick(
+                                    route,
+                                    routeSelected,
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1F),
+                        )
                     }
                 }
-                if (systemNavBarVisible) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(
-                                WindowInsets.navigationBars.asPaddingValues()
-                                    .calculateBottomPadding(),
-                            )
-                            .graphicsLayer {
-                                alpha = systemNavBarAlpha
+            }
+            if (systemNavVisible && !alignStart) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(endPadding)
+                        .graphicsLayer {
+                            alpha = systemNavAlpha
+                        }
+                        .background(
+                            color = colorScheme.background.withLowTransparency(),
+                            shape = RectangleShape,
+                        ),
+                )
+            }
+        }
+    } else {
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .fillMaxWidth(),
+        ) {
+            if (navVisible) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(dimens.navBarHeight)
+                        .graphicsLayer {
+                            alpha = navAlpha
+                        }
+                        .background(
+                            color = colorScheme.background.withLowTransparency(),
+                            shape = RectangleShape,
+                        ),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                ) {
+                    for (route in routes) {
+                        val routeSelected by remember {
+                            derivedStateOf(structuralEqualityPolicy()) {
+                                route == topRootRoute
                             }
-                            .background(
-                                color = colorScheme.background.withLowTransparency(),
-                                shape = RectangleShape,
-                            ),
-                    )
+                        }
+                        NavItem(
+                            route = route,
+                            selected = routeSelected,
+                            onClick = {
+                                onClick(
+                                    route,
+                                    routeSelected,
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(1F),
+                        )
+                    }
                 }
+            }
+            if (systemNavVisible) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(
+                            WindowInsets.navigationBars.asPaddingValues()
+                                .calculateBottomPadding(),
+                        )
+                        .graphicsLayer {
+                            alpha = systemNavAlpha
+                        }
+                        .background(
+                            color = colorScheme.background.withLowTransparency(),
+                            shape = RectangleShape,
+                        ),
+                )
             }
         }
     }
@@ -516,7 +624,6 @@ private fun NavItem(
 }
 
 private class ViewModelStoreViewModel: ViewModel() {
-
     fun getOrCreateViewModelStore(key: Any): ViewModelStore =
         viewModelStores.getOrPut(key) { ViewModelStore() }
 
@@ -532,20 +639,17 @@ private class ViewModelStoreViewModel: ViewModel() {
 
     private val viewModelStores: MutableMap<Any, ViewModelStore> = LinkedHashMap()
 }
-
 @Composable
-private fun rememberRootNavBarController(): RootNavBarControllerImpl =
-    rememberSaveable(saver = RootNavBarControllerImplSaver) { RootNavBarControllerImpl() }
+private fun rememberRootNavMenuController(): RootNavMenuControllerImpl =
+    rememberSaveable(saver = RootNavBarControllerImplSaver) { RootNavMenuControllerImpl() }
 
-private class RootNavBarControllerImpl: RootNavBarController {
-
+private class RootNavMenuControllerImpl: RootNavMenuController {
     override var isRootNavBarVisible: Boolean by mutableStateOf(true)
-
-    override fun showRootNavBar() {
+    override fun show() {
         isRootNavBarVisible = true
     }
 
-    override fun hideRootNavBar() {
+    override fun hide() {
         isRootNavBarVisible = false
     }
 
@@ -566,17 +670,14 @@ private class RootNavBarControllerImpl: RootNavBarController {
 
     private val listeners: MutableMap<RootNavRoute, () -> Unit> = LinkedHashMap()
 }
-
 @Parcelize
 private data class RootNavBarConfig(val isVisible: Boolean): Parcelable
-
-private object RootNavBarControllerImplSaver: Saver<RootNavBarControllerImpl, RootNavBarConfig> {
-
-    override fun SaverScope.save(value: RootNavBarControllerImpl): RootNavBarConfig =
+private object RootNavBarControllerImplSaver: Saver<RootNavMenuControllerImpl, RootNavBarConfig> {
+    override fun SaverScope.save(value: RootNavMenuControllerImpl): RootNavBarConfig =
         RootNavBarConfig(isVisible = value.isRootNavBarVisible)
 
-    override fun restore(value: RootNavBarConfig): RootNavBarControllerImpl {
-        val controller = RootNavBarControllerImpl()
+    override fun restore(value: RootNavBarConfig): RootNavMenuControllerImpl {
+        val controller = RootNavMenuControllerImpl()
         controller.isRootNavBarVisible = value.isVisible
         return controller
     }

@@ -27,13 +27,13 @@ package com.github.yuriybudiyev.sketches.core.navigation
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
 
-interface RootNavBarController {
+interface RootNavMenuController {
 
     val isRootNavBarVisible: Boolean
 
-    fun showRootNavBar()
+    fun show()
 
-    fun hideRootNavBar()
+    fun hide()
 
     fun setOnClickListener(
         route: RootNavRoute,
@@ -43,5 +43,5 @@ interface RootNavBarController {
     fun clearOnClickListener(route: RootNavRoute)
 }
 
-val LocalRootNavBarController: ProvidableCompositionLocal<RootNavBarController> =
+val LocalRootNavMenuController: ProvidableCompositionLocal<RootNavMenuController> =
     staticCompositionLocalOf { error("CompositionLocal LocalRootNavBarController not present") }

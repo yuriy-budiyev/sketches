@@ -64,7 +64,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
-import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
+import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavMenuController
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
@@ -245,18 +245,18 @@ fun ImagesScreen(
             }
         }
     }
-    val rootNavBarController = LocalRootNavBarController.current
-    LaunchedEffect(rootNavBarController) {
+    val rootNavMenuController = LocalRootNavMenuController.current
+    LaunchedEffect(rootNavMenuController) {
         snapshotFlow { selectedFiles.toSet().isNotEmpty() }.collect { hasSelectedFiles ->
             if (hasSelectedFiles) {
-                rootNavBarController.hideRootNavBar()
+                rootNavMenuController.hide()
             } else {
-                rootNavBarController.showRootNavBar()
+                rootNavMenuController.show()
             }
         }
     }
-    DisposableEffect(rootNavBarController) {
-        rootNavBarController.setOnClickListener(ImagesNavRoute) {
+    DisposableEffect(rootNavMenuController) {
+        rootNavMenuController.setOnClickListener(ImagesNavRoute) {
             coroutineScope.launch {
                 if (allFiles.isNotEmpty()) {
                     mediaGridState.animateScrollToItem(index = 0)
@@ -264,7 +264,7 @@ fun ImagesScreen(
             }
         }
         onDispose {
-            rootNavBarController.clearOnClickListener(ImagesNavRoute)
+            rootNavMenuController.clearOnClickListener(ImagesNavRoute)
         }
     }
     Box(

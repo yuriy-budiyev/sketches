@@ -25,8 +25,16 @@
 package com.github.yuriybudiyev.sketches.core.ui.wsc
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 
 val LocalWindowSizeClass: ProvidableCompositionLocal<WindowSizeClass> =
     staticCompositionLocalOf { error("CompositionLocal LocalWindowSizeClass not present") }
+
+@Composable
+@ReadOnlyComposable
+fun isWindowWidthSizeClassExpanded(): Boolean =
+    LocalWindowSizeClass.current.widthSizeClass == WindowWidthSizeClass.Expanded

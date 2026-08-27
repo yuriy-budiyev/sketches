@@ -79,7 +79,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaBucket
-import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavBarController
+import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavMenuController
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
@@ -208,18 +208,18 @@ fun BucketsScreen(
             }
         }
     }
-    val rootNavBarController = LocalRootNavBarController.current
-    LaunchedEffect(rootNavBarController) {
+    val rootNavMenuController = LocalRootNavMenuController.current
+    LaunchedEffect(rootNavMenuController) {
         snapshotFlow { selectedBuckets.toSet().isNotEmpty() }.collect { hasSelectedBuckets ->
             if (hasSelectedBuckets) {
-                rootNavBarController.hideRootNavBar()
+                rootNavMenuController.hide()
             } else {
-                rootNavBarController.showRootNavBar()
+                rootNavMenuController.show()
             }
         }
     }
-    DisposableEffect(rootNavBarController) {
-        rootNavBarController.setOnClickListener(BucketsNavRoute) {
+    DisposableEffect(rootNavMenuController) {
+        rootNavMenuController.setOnClickListener(BucketsNavRoute) {
             coroutineScope.launch {
                 if (allBuckets.isNotEmpty()) {
                     bucketsGridState.animateScrollToItem(index = 0)
@@ -227,7 +227,7 @@ fun BucketsScreen(
             }
         }
         onDispose {
-            rootNavBarController.clearOnClickListener(BucketsNavRoute)
+            rootNavMenuController.clearOnClickListener(BucketsNavRoute)
         }
     }
     Box(
