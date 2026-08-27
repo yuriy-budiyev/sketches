@@ -374,106 +374,30 @@ fun MainNavRoot(
                                     route == topRootRoute
                                 }
                             }
-                            val interactionSource = remember { MutableInteractionSource() }
-                            Box(
-                                modifier = Modifier
-                                    .weight(1F)
-                                    .fillMaxHeight()
-                                    .selectable(
-                                        selected = routeSelected,
-                                        interactionSource = interactionSource,
-                                        indication = null,
-                                        role = Role.Tab,
-                                        onClick = {
-                                            if (routeSelected) {
-                                                rootNavBarController.dispatchOnClick(route)
-                                            } else {
-                                                if (route == initialRoute) {
-                                                    navBackStack.clear()
-                                                } else {
-                                                    val iterator = navBackStack.iterator()
-                                                    while (iterator.hasNext()) {
-                                                        if (iterator.next() == route) {
-                                                            iterator.remove()
-                                                        }
-                                                    }
+                            NavItem(
+                                route = route,
+                                selected = routeSelected,
+                                onClick = {
+                                    if (routeSelected) {
+                                        rootNavBarController.dispatchOnClick(route)
+                                    } else {
+                                        if (route == initialRoute) {
+                                            navBackStack.clear()
+                                        } else {
+                                            val iterator = navBackStack.iterator()
+                                            while (iterator.hasNext()) {
+                                                if (iterator.next() == route) {
+                                                    iterator.remove()
                                                 }
-                                                navBackStack.add(route)
                                             }
-                                        },
-                                    ),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                val backgroundColor by animateColorAsState(
-                                    targetValue = if (routeSelected) {
-                                        colorScheme.primary
-                                    } else {
-                                        Color.Transparent
-                                    },
-                                    animationSpec = defaultAnimationSpec(),
-                                )
-                                val indicationColor by animateColorAsState(
-                                    targetValue = if (routeSelected) {
-                                        colorScheme.onPrimary
-                                    } else {
-                                        colorScheme.onBackground
-                                    },
-                                    animationSpec = defaultAnimationSpec(),
-                                )
-                                val selectedIconAlpha by animateFloatAsState(
-                                    targetValue = if (routeSelected) 1F else 0F,
-                                    animationSpec = defaultAnimationSpec(),
-                                )
-                                val selectedIconVisible by remember {
-                                    derivedStateOf(structuralEqualityPolicy()) {
-                                        selectedIconAlpha > 0F
-                                    }
-                                }
-                                val unselectedIconAlpha by animateFloatAsState(
-                                    targetValue = if (routeSelected) 0F else 1F,
-                                    animationSpec = defaultAnimationSpec(),
-                                )
-                                val unselectedIconVisible by remember {
-                                    derivedStateOf(structuralEqualityPolicy()) {
-                                        unselectedIconAlpha > 0F
-                                    }
-                                }
-                                Box(
-                                    modifier = Modifier
-                                        .size(
-                                            width = dimens.navBarIndicatorWidth,
-                                            height = dimens.navBarIndicatorHeight,
-                                        )
-                                        .clip(CircleShape)
-                                        .drawBehind {
-                                            drawRect(color = backgroundColor)
                                         }
-                                        .indication(
-                                            interactionSource = interactionSource,
-                                            indication = ripple(color = { indicationColor }),
-                                        ),
-                                )
-                                if (selectedIconVisible) {
-                                    Icon(
-                                        painter = painterResource(route.selectedIconRes),
-                                        contentDescription = stringResource(route.titleRes),
-                                        tint = colorScheme.onPrimary,
-                                        modifier = Modifier.graphicsLayer {
-                                            alpha = selectedIconAlpha
-                                        },
-                                    )
-                                }
-                                if (unselectedIconVisible) {
-                                    Icon(
-                                        painter = painterResource(route.unselectedIconRes),
-                                        contentDescription = stringResource(route.titleRes),
-                                        tint = colorScheme.onBackground,
-                                        modifier = Modifier.graphicsLayer {
-                                            alpha = unselectedIconAlpha
-                                        },
-                                    )
-                                }
-                            }
+                                        navBackStack.add(route)
+                                    }
+                                },
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .weight(1F),
+                            )
                         }
                     }
                 }
@@ -495,6 +419,98 @@ fun MainNavRoot(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun NavItem(
+    route: RootNavRoute,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
+    val dimens by rememberUpdatedState(LocalDimens.current)
+    val interactionSource = remember { MutableInteractionSource() }
+    val backgroundColor by animateColorAsState(
+        targetValue = if (selected) {
+            colorScheme.primary
+        } else {
+            Color.Transparent
+        },
+        animationSpec = defaultAnimationSpec(),
+    )
+    val indicationColor by animateColorAsState(
+        targetValue = if (selected) {
+            colorScheme.onPrimary
+        } else {
+            colorScheme.onBackground
+        },
+        animationSpec = defaultAnimationSpec(),
+    )
+    val selectedIconAlpha by animateFloatAsState(
+        targetValue = if (selected) 1F else 0F,
+        animationSpec = defaultAnimationSpec(),
+    )
+    val selectedIconVisible by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            selectedIconAlpha > 0F
+        }
+    }
+    val unselectedIconAlpha by animateFloatAsState(
+        targetValue = if (selected) 0F else 1F,
+        animationSpec = defaultAnimationSpec(),
+    )
+    val unselectedIconVisible by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            unselectedIconAlpha > 0F
+        }
+    }
+    Box(
+        modifier = modifier.selectable(
+            selected = selected,
+            interactionSource = interactionSource,
+            indication = null,
+            role = Role.Tab,
+            onClick = onClick,
+        ),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(
+                    width = dimens.navBarIndicatorWidth,
+                    height = dimens.navBarIndicatorHeight,
+                )
+                .clip(CircleShape)
+                .drawBehind {
+                    drawRect(color = backgroundColor)
+                }
+                .indication(
+                    interactionSource = interactionSource,
+                    indication = ripple(color = { indicationColor }),
+                ),
+        )
+        if (selectedIconVisible) {
+            Icon(
+                painter = painterResource(route.selectedIconRes),
+                contentDescription = stringResource(route.titleRes),
+                tint = colorScheme.onPrimary,
+                modifier = Modifier.graphicsLayer {
+                    alpha = selectedIconAlpha
+                },
+            )
+        }
+        if (unselectedIconVisible) {
+            Icon(
+                painter = painterResource(route.unselectedIconRes),
+                contentDescription = stringResource(route.titleRes),
+                tint = colorScheme.onBackground,
+                modifier = Modifier.graphicsLayer {
+                    alpha = unselectedIconAlpha
+                },
+            )
         }
     }
 }
