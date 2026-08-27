@@ -33,10 +33,10 @@ import androidx.compose.ui.unit.Dp
 interface Dimens {
 
     val material3AppBarHeight: Dp
-    val material3NavBarHeight: Dp
-    val material3NavRailWidth: Dp
-    val material3NavBarIndicatorWidth: Dp
-    val material3NavBarIndicatorHeight: Dp
+    val navBarHeight: Dp
+    val navRailWidth: Dp
+    val navBarIndicatorWidth: Dp
+    val navBarIndicatorHeight: Dp
     val lazyGridOverlayTop: Dp
     val lazyGridOverlayBottom: Dp
     val lazyGridItemSize: Dp

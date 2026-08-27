@@ -32,12 +32,12 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.Dimens
 @Immutable
 data class DefaultDimens(
     override val material3AppBarHeight: Dp = 64.dp,
-    override val material3NavBarHeight: Dp = material3AppBarHeight,
-    override val material3NavRailWidth: Dp = 72.dp,
-    override val material3NavBarIndicatorWidth: Dp = 56.dp,
-    override val material3NavBarIndicatorHeight: Dp = 32.dp,
+    override val navBarHeight: Dp = material3AppBarHeight,
+    override val navRailWidth: Dp = 72.dp,
+    override val navBarIndicatorWidth: Dp = 56.dp,
+    override val navBarIndicatorHeight: Dp = 32.dp,
     override val lazyGridOverlayTop: Dp = material3AppBarHeight,
-    override val lazyGridOverlayBottom: Dp = material3NavBarHeight,
+    override val lazyGridOverlayBottom: Dp = navBarHeight,
     override val lazyGridItemSize: Dp = 108.dp,
     override val lazyGridItemSpacing: Dp = 1.dp,
     override val mediaGridIconPadding: Dp = 4.dp,

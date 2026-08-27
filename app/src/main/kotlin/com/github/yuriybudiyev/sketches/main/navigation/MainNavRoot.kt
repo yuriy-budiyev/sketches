@@ -358,7 +358,7 @@ fun MainNavRoot(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(dimens.material3NavBarHeight)
+                            .height(dimens.navBarHeight)
                             .graphicsLayer {
                                 alpha = navBarAlpha
                             }
@@ -441,8 +441,8 @@ fun MainNavRoot(
                                 Box(
                                     modifier = Modifier
                                         .size(
-                                            width = dimens.material3NavBarIndicatorWidth,
-                                            height = dimens.material3NavBarIndicatorHeight,
+                                            width = dimens.navBarIndicatorWidth,
+                                            height = dimens.navBarIndicatorHeight,
                                         )
                                         .clip(CircleShape)
                                         .drawBehind {
