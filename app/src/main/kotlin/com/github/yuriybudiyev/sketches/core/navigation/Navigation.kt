@@ -31,7 +31,6 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -39,18 +38,16 @@ import androidx.navigation3.runtime.EntryProviderScope
 
 @Composable
 fun rememberNavMenuSpec(): NavMenuSpec {
-    val direction = LocalLayoutDirection.current
-    val density = LocalDensity.current
-    val insets = WindowInsets.navigationBars
+    val layoutDirection = LocalLayoutDirection.current
+    val paddingValues = WindowInsets.navigationBars.asPaddingValues()
+    val bottomPadding = paddingValues.calculateBottomPadding()
+    val startPadding = paddingValues.calculateStartPadding(layoutDirection)
+    val endPadding = paddingValues.calculateEndPadding(layoutDirection)
     return remember(
-        direction,
-        density,
-        insets,
+        bottomPadding,
+        startPadding,
+        endPadding,
     ) {
-        val paddingValues = insets.asPaddingValues(density)
-        val bottomPadding = paddingValues.calculateBottomPadding()
-        val startPadding = paddingValues.calculateStartPadding(direction)
-        val endPadding = paddingValues.calculateEndPadding(direction)
         val location = when {
             bottomPadding > 0.dp -> NavMenuSpec.Location.Bottom
             startPadding > 0.dp -> NavMenuSpec.Location.Start
