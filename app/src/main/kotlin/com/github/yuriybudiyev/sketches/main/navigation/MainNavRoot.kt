@@ -41,12 +41,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -76,7 +73,6 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -108,9 +104,11 @@ import androidx.savedstate.compose.LocalSavedStateRegistryOwner
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavSharedTransitionScope
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavMenuController
+import com.github.yuriybudiyev.sketches.core.navigation.NavMenuSpec
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavMenuController
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
+import com.github.yuriybudiyev.sketches.core.navigation.rememberNavMenuSpec
 import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
@@ -118,7 +116,6 @@ import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotSt
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.wsc.isWindowWidthSizeClassExpanded
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.registerBookmarksNavRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavRoute
@@ -382,150 +379,188 @@ fun BoxScope.NavMenu(
             systemNavAlpha > 0F
         }
     }
-    if (isWindowWidthSizeClassExpanded()) {
-        val layoutDirection = LocalLayoutDirection.current
-        val navigationBarsPaddings = WindowInsets.navigationBars.asPaddingValues()
-        val startPadding = navigationBarsPaddings.calculateStartPadding(layoutDirection)
-        val endPadding = navigationBarsPaddings.calculateEndPadding(layoutDirection)
-        val alignStart = startPadding > endPadding
-        Row(
-            modifier = Modifier
-                .align(
-                    if (alignStart) {
-                        Alignment.TopStart
-                    } else {
-                        Alignment.TopEnd
-                    },
-                )
-                .padding(
-                    top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
-                        dimens.material3AppBarHeight,
-                )
-                .fillMaxHeight(),
-        ) {
-            if (systemNavVisible && alignStart) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(startPadding)
-                        .graphicsLayer {
-                            alpha = systemNavAlpha
-                        }
-                        .background(
-                            color = colorScheme.background.withLowTransparency(),
-                            shape = RectangleShape,
-                        ),
-                )
-            }
-            if (navVisible) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(dimens.navRailWidth)
-                        .graphicsLayer {
-                            alpha = navAlpha
-                        }
-                        .background(
-                            color = colorScheme.background.withLowTransparency(),
-                            shape = RectangleShape,
-                        ),
-                    verticalArrangement = Arrangement.SpaceEvenly,
-                ) {
-                    for (route in routes) {
-                        val routeSelected by remember {
-                            derivedStateOf(structuralEqualityPolicy()) {
-                                route == topRootRoute
+    val spec = rememberNavMenuSpec()
+    when (spec.location) {
+        NavMenuSpec.Location.Bottom -> {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .fillMaxWidth(),
+            ) {
+                if (navVisible) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(dimens.navBarHeight)
+                            .graphicsLayer {
+                                alpha = navAlpha
                             }
+                            .background(
+                                color = colorScheme.background.withLowTransparency(),
+                                shape = RectangleShape,
+                            ),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                    ) {
+                        for (route in routes) {
+                            val routeSelected by remember {
+                                derivedStateOf(structuralEqualityPolicy()) {
+                                    route == topRootRoute
+                                }
+                            }
+                            NavItem(
+                                route = route,
+                                selected = routeSelected,
+                                onClick = {
+                                    onClick(
+                                        route,
+                                        routeSelected,
+                                    )
+                                },
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .weight(1F),
+                            )
                         }
-                        NavItem(
-                            route = route,
-                            selected = routeSelected,
-                            onClick = {
-                                onClick(
-                                    route,
-                                    routeSelected,
-                                )
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1F),
-                        )
                     }
                 }
-            }
-            if (systemNavVisible && !alignStart) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(endPadding)
-                        .graphicsLayer {
-                            alpha = systemNavAlpha
-                        }
-                        .background(
-                            color = colorScheme.background.withLowTransparency(),
-                            shape = RectangleShape,
-                        ),
-                )
+                if (systemNavVisible) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(spec.size)
+                            .graphicsLayer {
+                                alpha = systemNavAlpha
+                            }
+                            .background(
+                                color = colorScheme.background.withLowTransparency(),
+                                shape = RectangleShape,
+                            ),
+                    )
+                }
             }
         }
-    } else {
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .fillMaxWidth(),
-        ) {
-            if (navVisible) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(dimens.navBarHeight)
-                        .graphicsLayer {
-                            alpha = navAlpha
-                        }
-                        .background(
-                            color = colorScheme.background.withLowTransparency(),
-                            shape = RectangleShape,
-                        ),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                ) {
-                    for (route in routes) {
-                        val routeSelected by remember {
-                            derivedStateOf(structuralEqualityPolicy()) {
-                                route == topRootRoute
+        NavMenuSpec.Location.Start -> {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(
+                        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
+                            dimens.material3AppBarHeight,
+                    )
+                    .fillMaxHeight(),
+            ) {
+                if (systemNavVisible) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(spec.size)
+                            .graphicsLayer {
+                                alpha = systemNavAlpha
                             }
+                            .background(
+                                color = colorScheme.background.withLowTransparency(),
+                                shape = RectangleShape,
+                            ),
+                    )
+                }
+                if (navVisible) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(dimens.navRailWidth)
+                            .graphicsLayer {
+                                alpha = navAlpha
+                            }
+                            .background(
+                                color = colorScheme.background.withLowTransparency(),
+                                shape = RectangleShape,
+                            ),
+                        verticalArrangement = Arrangement.SpaceEvenly,
+                    ) {
+                        for (route in routes) {
+                            val routeSelected by remember {
+                                derivedStateOf(structuralEqualityPolicy()) {
+                                    route == topRootRoute
+                                }
+                            }
+                            NavItem(
+                                route = route,
+                                selected = routeSelected,
+                                onClick = {
+                                    onClick(
+                                        route,
+                                        routeSelected,
+                                    )
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1F),
+                            )
                         }
-                        NavItem(
-                            route = route,
-                            selected = routeSelected,
-                            onClick = {
-                                onClick(
-                                    route,
-                                    routeSelected,
-                                )
-                            },
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .weight(1F),
-                        )
                     }
                 }
             }
-            if (systemNavVisible) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(
-                            WindowInsets.navigationBars.asPaddingValues()
-                                .calculateBottomPadding(),
-                        )
-                        .graphicsLayer {
-                            alpha = systemNavAlpha
+        }
+        NavMenuSpec.Location.End -> {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(
+                        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
+                            dimens.material3AppBarHeight,
+                    )
+                    .fillMaxHeight(),
+            ) {
+                if (navVisible) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(dimens.navRailWidth)
+                            .graphicsLayer {
+                                alpha = navAlpha
+                            }
+                            .background(
+                                color = colorScheme.background.withLowTransparency(),
+                                shape = RectangleShape,
+                            ),
+                        verticalArrangement = Arrangement.SpaceEvenly,
+                    ) {
+                        for (route in routes) {
+                            val routeSelected by remember {
+                                derivedStateOf(structuralEqualityPolicy()) {
+                                    route == topRootRoute
+                                }
+                            }
+                            NavItem(
+                                route = route,
+                                selected = routeSelected,
+                                onClick = {
+                                    onClick(
+                                        route,
+                                        routeSelected,
+                                    )
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1F),
+                            )
                         }
-                        .background(
-                            color = colorScheme.background.withLowTransparency(),
-                            shape = RectangleShape,
-                        ),
-                )
+                    }
+                }
+                if (systemNavVisible) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(spec.size)
+                            .graphicsLayer {
+                                alpha = systemNavAlpha
+                            }
+                            .background(
+                                color = colorScheme.background.withLowTransparency(),
+                                shape = RectangleShape,
+                            ),
+                    )
+                }
             }
         }
     }
