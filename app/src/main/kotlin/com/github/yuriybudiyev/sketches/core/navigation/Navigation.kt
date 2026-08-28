@@ -49,17 +49,18 @@ fun rememberNavMenuSpec(): NavMenuSpec {
         endPadding,
     ) {
         val location = when {
-            bottomPadding > 0.dp -> NavMenuSpec.Location.Bottom
             startPadding > 0.dp -> NavMenuSpec.Location.Start
             endPadding > 0.dp -> NavMenuSpec.Location.End
-            else -> NavMenuSpec.Location.Bottom
+            bottomPadding > 0.dp -> NavMenuSpec.Location.Bottom
+            else -> NavMenuSpec.Location.None
         }
         return@remember NavMenuSpec(
             location = location,
             size = when (location) {
-                NavMenuSpec.Location.Bottom -> bottomPadding
                 NavMenuSpec.Location.Start -> startPadding
                 NavMenuSpec.Location.End -> endPadding
+                NavMenuSpec.Location.Bottom -> bottomPadding
+                NavMenuSpec.Location.None -> 0.dp
             },
         )
     }
@@ -71,9 +72,10 @@ data class NavMenuSpec(
 ) {
 
     enum class Location {
-        Bottom,
         Start,
         End,
+        Bottom,
+        None,
     }
 }
 

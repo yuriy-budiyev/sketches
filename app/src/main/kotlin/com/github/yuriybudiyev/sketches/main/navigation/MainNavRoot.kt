@@ -381,6 +381,9 @@ fun BoxScope.NavMenu(
     }
     val spec = rememberNavMenuSpec()
     when (spec.location) {
+        NavMenuSpec.Location.None -> {
+            // Don't show
+        }
         NavMenuSpec.Location.Bottom -> {
             Column(
                 modifier = Modifier
