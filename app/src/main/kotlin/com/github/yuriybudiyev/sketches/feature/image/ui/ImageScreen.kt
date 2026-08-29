@@ -499,37 +499,50 @@ private fun ImageScreenLayout(
                     },
                 )
             }
-            if (landscapeScreenOrientation) {
-                if (contentPaddingStart > 0.dp) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .align(Alignment.TopStart)
-                            .width(contentPaddingStart)
-                            .graphicsLayer {
-                                alpha = uiAlpha
-                            }
-                            .background(
-                                color = colorScheme.background.withLowTransparency(),
-                                shape = RectangleShape,
-                            ),
-                    )
-                }
-                if (contentPaddingEnd > 0.dp) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .align(Alignment.TopEnd)
-                            .width(contentPaddingEnd)
-                            .graphicsLayer {
-                                alpha = uiAlpha
-                            }
-                            .background(
-                                color = colorScheme.background.withLowTransparency(),
-                                shape = RectangleShape,
-                            ),
-                    )
-                }
+            if (contentPaddingStart > 0.dp) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .fillMaxHeight()
+                        .width(contentPaddingStart)
+                        .graphicsLayer {
+                            alpha = uiAlpha
+                        }
+                        .background(
+                            color = colorScheme.background.withLowTransparency(),
+                            shape = RectangleShape,
+                        ),
+                )
+            }
+            if (contentPaddingEnd > 0.dp) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .fillMaxHeight()
+                        .width(contentPaddingEnd)
+                        .graphicsLayer {
+                            alpha = uiAlpha
+                        }
+                        .background(
+                            color = colorScheme.background.withLowTransparency(),
+                            shape = RectangleShape,
+                        ),
+                )
+            }
+            if (contentPaddingBottom > 0.dp) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth()
+                        .height(contentPaddingBottom)
+                        .graphicsLayer {
+                            alpha = uiAlpha
+                        }
+                        .background(
+                            color = colorScheme.background.withLowTransparency(),
+                            shape = RectangleShape,
+                        ),
+                )
             }
         }
         if (deleteImageDialogVisible) {
