@@ -340,7 +340,7 @@ fun MainNavRoot(
                 }
                 val navBarAlpha by animateFloatAsState(
                     targetValue =
-                        if (systemBarsController.isSystemBarsVisible) {
+                        if (currentRouteIsRoot && systemBarsController.isSystemBarsVisible) {
                             1F
                         } else {
                             0F
