@@ -212,9 +212,9 @@ fun BucketsScreen(
     LaunchedEffect(rootNavMenuController) {
         snapshotFlow { selectedBuckets.toSet().isNotEmpty() }.collect { hasSelectedBuckets ->
             if (hasSelectedBuckets) {
-                rootNavMenuController.hide()
+                rootNavMenuController.hideNavMenu()
             } else {
-                rootNavMenuController.show()
+                rootNavMenuController.showNavMenu()
             }
         }
     }

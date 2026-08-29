@@ -29,11 +29,11 @@ import androidx.compose.runtime.staticCompositionLocalOf
 
 interface RootNavMenuController {
 
-    val isRootNavBarVisible: Boolean
+    val isNavMenuVisible: Boolean
 
-    fun show()
+    fun showNavMenu()
 
-    fun hide()
+    fun hideNavMenu()
 
     fun setOnClickListener(
         route: RootNavRoute,

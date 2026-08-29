@@ -24,60 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.core.navigation
 
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.EntryProviderScope
-
-@Composable
-fun rememberNavMenuSpec(): NavMenuSpec {
-    val layoutDirection = LocalLayoutDirection.current
-    val paddingValues = WindowInsets.navigationBars.asPaddingValues()
-    val bottomPadding = paddingValues.calculateBottomPadding()
-    val startPadding = paddingValues.calculateStartPadding(layoutDirection)
-    val endPadding = paddingValues.calculateEndPadding(layoutDirection)
-    return remember(
-        bottomPadding,
-        startPadding,
-        endPadding,
-    ) {
-        val location = when {
-            startPadding > 0.dp -> NavMenuSpec.Location.Start
-            endPadding > 0.dp -> NavMenuSpec.Location.End
-            bottomPadding > 0.dp -> NavMenuSpec.Location.Bottom
-            else -> NavMenuSpec.Location.None
-        }
-        return@remember NavMenuSpec(
-            location = location,
-            size = when (location) {
-                NavMenuSpec.Location.Start -> startPadding
-                NavMenuSpec.Location.End -> endPadding
-                NavMenuSpec.Location.Bottom -> bottomPadding
-                NavMenuSpec.Location.None -> 0.dp
-            },
-        )
-    }
-}
-
-data class NavMenuSpec(
-    val location: Location,
-    val size: Dp,
-) {
-
-    enum class Location {
-        Start,
-        End,
-        Bottom,
-        None,
-    }
-}
 
 inline fun <reified T: NavRoute> EntryProviderScope<NavRoute>.registerNavRoute(
     noinline content: @Composable (T) -> Unit,

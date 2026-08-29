@@ -36,7 +36,6 @@ import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -44,10 +43,8 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -104,11 +101,9 @@ import androidx.savedstate.compose.LocalSavedStateRegistryOwner
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavSharedTransitionScope
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavMenuController
-import com.github.yuriybudiyev.sketches.core.navigation.NavMenuSpec
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavMenuController
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
-import com.github.yuriybudiyev.sketches.core.navigation.rememberNavMenuSpec
 import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
@@ -321,82 +316,48 @@ fun MainNavRoot(
                     },
                 )
             }
-            NavMenu(
-                routes = rootRoutes,
-                topRootRoute = topRootRoute,
-                navVisible = currentRouteIsRoot && rootNavBarController.isRootNavBarVisible,
-                systemNavVisible = LocalSystemBarsController.current.isSystemBarsVisible,
-                onClick = { route, selected ->
-                    if (selected) {
-                        rootNavBarController.dispatchOnClick(route)
-                    } else {
-                        if (route == initialRoute) {
-                            navBackStack.clear()
-                        } else {
-                            val iterator = navBackStack.iterator()
-                            while (iterator.hasNext()) {
-                                if (iterator.next() == route) {
-                                    iterator.remove()
-                                }
-                            }
-                        }
-                        navBackStack.add(route)
-                    }
-                },
-            )
-        }
-    }
-}
-
-@Composable
-fun BoxScope.NavMenu(
-    routes: List<RootNavRoute>,
-    topRootRoute: RootNavRoute?,
-    navVisible: Boolean,
-    systemNavVisible: Boolean,
-    onClick: (route: RootNavRoute, selected: Boolean) -> Unit,
-) {
-    val routes by rememberUpdatedState(routes)
-    val topRootRoute by rememberUpdatedState(topRootRoute)
-    val onClick by rememberUpdatedState(onClick)
-    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
-    val dimens by rememberUpdatedState(LocalDimens.current)
-    val navAlpha by animateFloatAsState(
-        targetValue = if (navVisible) 1F else 0F,
-        animationSpec = defaultAnimationSpec(),
-    )
-    val navVisible by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            navAlpha > 0F
-        }
-    }
-    val systemNavAlpha by animateFloatAsState(
-        targetValue = if (systemNavVisible) 1F else 0F,
-        animationSpec = defaultAnimationSpec(),
-    )
-    val systemNavVisible by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            systemNavAlpha > 0F
-        }
-    }
-    val spec = rememberNavMenuSpec()
-    when (spec.location) {
-        NavMenuSpec.Location.None -> {
-            // Don't show
-        }
-        NavMenuSpec.Location.Bottom -> {
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .fillMaxWidth(),
             ) {
-                if (navVisible) {
+                val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
+                val dimens by rememberUpdatedState(LocalDimens.current)
+                val navMenuAlpha by animateFloatAsState(
+                    targetValue =
+                        if (currentRouteIsRoot && rootNavBarController.isNavMenuVisible) {
+                            1F
+                        } else {
+                            0F
+                        },
+                    animationSpec = defaultAnimationSpec(),
+                )
+                val navMenuVisible by remember {
+                    derivedStateOf(structuralEqualityPolicy()) {
+                        navMenuAlpha > 0F
+                    }
+                }
+                val navBarAlpha by animateFloatAsState(
+                    targetValue =
+                        if (LocalSystemBarsController.current.isSystemBarsVisible) {
+                            1F
+                        } else {
+                            0F
+                        },
+                    animationSpec = defaultAnimationSpec(),
+                )
+                val navBarVisible by remember {
+                    derivedStateOf(structuralEqualityPolicy()) {
+                        navBarAlpha > 0F
+                    }
+                }
+                if (navMenuVisible) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(dimens.navBarHeight)
                             .graphicsLayer {
-                                alpha = navAlpha
+                                alpha = navMenuAlpha
                             }
                             .background(
                                 color = colorScheme.background.withLowTransparency(),
@@ -404,159 +365,127 @@ fun BoxScope.NavMenu(
                             ),
                         horizontalArrangement = Arrangement.SpaceEvenly,
                     ) {
-                        for (route in routes) {
+                        for (route in rootRoutes) {
                             val routeSelected by remember {
                                 derivedStateOf(structuralEqualityPolicy()) {
                                     route == topRootRoute
                                 }
                             }
-                            NavItem(
-                                route = route,
-                                selected = routeSelected,
-                                onClick = {
-                                    onClick(
-                                        route,
-                                        routeSelected,
-                                    )
-                                },
+                            val interactionSource = remember { MutableInteractionSource() }
+                            val backgroundColor by animateColorAsState(
+                                targetValue =
+                                    if (routeSelected) {
+                                        colorScheme.primary
+                                    } else {
+                                        Color.Transparent
+                                    },
+                                animationSpec = defaultAnimationSpec(),
+                            )
+                            val indicationColor by animateColorAsState(
+                                targetValue =
+                                    if (routeSelected) {
+                                        colorScheme.onPrimary
+                                    } else {
+                                        colorScheme.onBackground
+                                    },
+                                animationSpec = defaultAnimationSpec(),
+                            )
+                            val selectedIconAlpha by animateFloatAsState(
+                                targetValue = if (routeSelected) 1F else 0F,
+                                animationSpec = defaultAnimationSpec(),
+                            )
+                            val selectedIconVisible by remember {
+                                derivedStateOf(structuralEqualityPolicy()) {
+                                    selectedIconAlpha > 0F
+                                }
+                            }
+                            val unselectedIconAlpha by animateFloatAsState(
+                                targetValue = if (routeSelected) 0F else 1F,
+                                animationSpec = defaultAnimationSpec(),
+                            )
+                            val unselectedIconVisible by remember {
+                                derivedStateOf(structuralEqualityPolicy()) {
+                                    unselectedIconAlpha > 0F
+                                }
+                            }
+                            Box(
                                 modifier = Modifier
                                     .fillMaxHeight()
-                                    .weight(1F),
-                            )
+                                    .weight(1F)
+                                    .selectable(
+                                        selected = routeSelected,
+                                        interactionSource = interactionSource,
+                                        indication = null,
+                                        role = Role.Tab,
+                                        onClick = {
+                                            if (routeSelected) {
+                                                rootNavBarController.dispatchOnClick(route)
+                                            } else {
+                                                if (route == initialRoute) {
+                                                    navBackStack.clear()
+                                                } else {
+                                                    val iterator = navBackStack.iterator()
+                                                    while (iterator.hasNext()) {
+                                                        if (iterator.next() == route) {
+                                                            iterator.remove()
+                                                        }
+                                                    }
+                                                }
+                                                navBackStack.add(route)
+                                            }
+                                        },
+                                    ),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(
+                                            width = dimens.navBarIndicatorWidth,
+                                            height = dimens.navBarIndicatorHeight,
+                                        )
+                                        .clip(CircleShape)
+                                        .drawBehind {
+                                            drawRect(color = backgroundColor)
+                                        }
+                                        .indication(
+                                            interactionSource = interactionSource,
+                                            indication = ripple(color = { indicationColor }),
+                                        ),
+                                )
+                                if (selectedIconVisible) {
+                                    Icon(
+                                        painter = painterResource(route.selectedIconRes),
+                                        contentDescription = stringResource(route.titleRes),
+                                        tint = colorScheme.onPrimary,
+                                        modifier = Modifier.graphicsLayer {
+                                            alpha = selectedIconAlpha
+                                        },
+                                    )
+                                }
+                                if (unselectedIconVisible) {
+                                    Icon(
+                                        painter = painterResource(route.unselectedIconRes),
+                                        contentDescription = stringResource(route.titleRes),
+                                        tint = colorScheme.onBackground,
+                                        modifier = Modifier.graphicsLayer {
+                                            alpha = unselectedIconAlpha
+                                        },
+                                    )
+                                }
+                            }
                         }
                     }
                 }
-                if (systemNavVisible) {
+                if (navBarVisible) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(spec.size)
-                            .graphicsLayer {
-                                alpha = systemNavAlpha
-                            }
-                            .background(
-                                color = colorScheme.background.withLowTransparency(),
-                                shape = RectangleShape,
-                            ),
-                    )
-                }
-            }
-        }
-        NavMenuSpec.Location.Start -> {
-            Row(
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(
-                        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
-                            dimens.material3AppBarHeight,
-                    )
-                    .fillMaxHeight(),
-            ) {
-                if (systemNavVisible) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(spec.size)
-                            .graphicsLayer {
-                                alpha = systemNavAlpha
-                            }
-                            .background(
-                                color = colorScheme.background.withLowTransparency(),
-                                shape = RectangleShape,
-                            ),
-                    )
-                }
-                if (navVisible) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(dimens.navRailWidth)
-                            .graphicsLayer {
-                                alpha = navAlpha
-                            }
-                            .background(
-                                color = colorScheme.background.withLowTransparency(),
-                                shape = RectangleShape,
-                            ),
-                        verticalArrangement = Arrangement.SpaceEvenly,
-                    ) {
-                        for (route in routes) {
-                            val routeSelected by remember {
-                                derivedStateOf(structuralEqualityPolicy()) {
-                                    route == topRootRoute
-                                }
-                            }
-                            NavItem(
-                                route = route,
-                                selected = routeSelected,
-                                onClick = {
-                                    onClick(
-                                        route,
-                                        routeSelected,
-                                    )
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1F),
+                            .height(
+                                WindowInsets.navigationBars.asPaddingValues()
+                                    .calculateBottomPadding(),
                             )
-                        }
-                    }
-                }
-            }
-        }
-        NavMenuSpec.Location.End -> {
-            Row(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(
-                        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
-                            dimens.material3AppBarHeight,
-                    )
-                    .fillMaxHeight(),
-            ) {
-                if (navVisible) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(dimens.navRailWidth)
                             .graphicsLayer {
-                                alpha = navAlpha
-                            }
-                            .background(
-                                color = colorScheme.background.withLowTransparency(),
-                                shape = RectangleShape,
-                            ),
-                        verticalArrangement = Arrangement.SpaceEvenly,
-                    ) {
-                        for (route in routes) {
-                            val routeSelected by remember {
-                                derivedStateOf(structuralEqualityPolicy()) {
-                                    route == topRootRoute
-                                }
-                            }
-                            NavItem(
-                                route = route,
-                                selected = routeSelected,
-                                onClick = {
-                                    onClick(
-                                        route,
-                                        routeSelected,
-                                    )
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1F),
-                            )
-                        }
-                    }
-                }
-                if (systemNavVisible) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(spec.size)
-                            .graphicsLayer {
-                                alpha = systemNavAlpha
+                                alpha = navBarAlpha
                             }
                             .background(
                                 color = colorScheme.background.withLowTransparency(),
@@ -565,103 +494,12 @@ fun BoxScope.NavMenu(
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun NavItem(
-    route: RootNavRoute,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
-    val dimens by rememberUpdatedState(LocalDimens.current)
-    val interactionSource = remember { MutableInteractionSource() }
-    val backgroundColor by animateColorAsState(
-        targetValue = if (selected) {
-            colorScheme.primary
-        } else {
-            Color.Transparent
-        },
-        animationSpec = defaultAnimationSpec(),
-    )
-    val indicationColor by animateColorAsState(
-        targetValue = if (selected) {
-            colorScheme.onPrimary
-        } else {
-            colorScheme.onBackground
-        },
-        animationSpec = defaultAnimationSpec(),
-    )
-    val selectedIconAlpha by animateFloatAsState(
-        targetValue = if (selected) 1F else 0F,
-        animationSpec = defaultAnimationSpec(),
-    )
-    val selectedIconVisible by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            selectedIconAlpha > 0F
-        }
-    }
-    val unselectedIconAlpha by animateFloatAsState(
-        targetValue = if (selected) 0F else 1F,
-        animationSpec = defaultAnimationSpec(),
-    )
-    val unselectedIconVisible by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            unselectedIconAlpha > 0F
-        }
-    }
-    Box(
-        modifier = modifier.selectable(
-            selected = selected,
-            interactionSource = interactionSource,
-            indication = null,
-            role = Role.Tab,
-            onClick = onClick,
-        ),
-        contentAlignment = Alignment.Center,
-    ) {
-        Box(
-            modifier = Modifier
-                .size(
-                    width = dimens.navBarIndicatorWidth,
-                    height = dimens.navBarIndicatorHeight,
-                )
-                .clip(CircleShape)
-                .drawBehind {
-                    drawRect(color = backgroundColor)
-                }
-                .indication(
-                    interactionSource = interactionSource,
-                    indication = ripple(color = { indicationColor }),
-                ),
-        )
-        if (selectedIconVisible) {
-            Icon(
-                painter = painterResource(route.selectedIconRes),
-                contentDescription = stringResource(route.titleRes),
-                tint = colorScheme.onPrimary,
-                modifier = Modifier.graphicsLayer {
-                    alpha = selectedIconAlpha
-                },
-            )
-        }
-        if (unselectedIconVisible) {
-            Icon(
-                painter = painterResource(route.unselectedIconRes),
-                contentDescription = stringResource(route.titleRes),
-                tint = colorScheme.onBackground,
-                modifier = Modifier.graphicsLayer {
-                    alpha = unselectedIconAlpha
-                },
-            )
         }
     }
 }
 
 private class ViewModelStoreViewModel: ViewModel() {
+
     fun getOrCreateViewModelStore(key: Any): ViewModelStore =
         viewModelStores.getOrPut(key) { ViewModelStore() }
 
@@ -677,18 +515,21 @@ private class ViewModelStoreViewModel: ViewModel() {
 
     private val viewModelStores: MutableMap<Any, ViewModelStore> = LinkedHashMap()
 }
+
 @Composable
 private fun rememberRootNavMenuController(): RootNavMenuControllerImpl =
-    rememberSaveable(saver = RootNavBarControllerImplSaver) { RootNavMenuControllerImpl() }
+    rememberSaveable(saver = RootNavMenuControllerImplSaver) { RootNavMenuControllerImpl() }
 
 private class RootNavMenuControllerImpl: RootNavMenuController {
-    override var isRootNavBarVisible: Boolean by mutableStateOf(true)
-    override fun show() {
-        isRootNavBarVisible = true
+
+    override var isNavMenuVisible: Boolean by mutableStateOf(true)
+
+    override fun showNavMenu() {
+        isNavMenuVisible = true
     }
 
-    override fun hide() {
-        isRootNavBarVisible = false
+    override fun hideNavMenu() {
+        isNavMenuVisible = false
     }
 
     override fun setOnClickListener(
@@ -708,15 +549,18 @@ private class RootNavMenuControllerImpl: RootNavMenuController {
 
     private val listeners: MutableMap<RootNavRoute, () -> Unit> = LinkedHashMap()
 }
-@Parcelize
-private data class RootNavBarConfig(val isVisible: Boolean): Parcelable
-private object RootNavBarControllerImplSaver: Saver<RootNavMenuControllerImpl, RootNavBarConfig> {
-    override fun SaverScope.save(value: RootNavMenuControllerImpl): RootNavBarConfig =
-        RootNavBarConfig(isVisible = value.isRootNavBarVisible)
 
-    override fun restore(value: RootNavBarConfig): RootNavMenuControllerImpl {
+@Parcelize
+private data class RootNavMenuConfig(val isNavMenuVisible: Boolean): Parcelable
+
+private object RootNavMenuControllerImplSaver: Saver<RootNavMenuControllerImpl, RootNavMenuConfig> {
+
+    override fun SaverScope.save(value: RootNavMenuControllerImpl): RootNavMenuConfig =
+        RootNavMenuConfig(isNavMenuVisible = value.isNavMenuVisible)
+
+    override fun restore(value: RootNavMenuConfig): RootNavMenuControllerImpl {
         val controller = RootNavMenuControllerImpl()
-        controller.isRootNavBarVisible = value.isVisible
+        controller.isNavMenuVisible = value.isNavMenuVisible
         return controller
     }
 }

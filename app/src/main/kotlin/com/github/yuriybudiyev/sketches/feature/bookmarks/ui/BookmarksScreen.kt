@@ -256,9 +256,9 @@ private fun BookmarksScreen(
     LaunchedEffect(rootNavMenuController) {
         snapshotFlow { selectedFiles.toSet().isNotEmpty() }.collect { hasSelectedFiles ->
             if (hasSelectedFiles) {
-                rootNavMenuController.hide()
+                rootNavMenuController.hideNavMenu()
             } else {
-                rootNavMenuController.show()
+                rootNavMenuController.showNavMenu()
             }
         }
     }
