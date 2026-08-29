@@ -31,6 +31,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -83,6 +84,8 @@ fun SketchesMediaPlayer(
     controllerStartPadding: Dp = 0.dp,
     controllerEndPadding: Dp = 0.dp,
     controllerBottomPadding: Dp = 0.dp,
+    controlsStartPadding: Dp = 0.dp,
+    controlsEndPadding: Dp = 0.dp,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     controlsBackgroundColor: Color = backgroundColor.withLowTransparency(),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
@@ -121,14 +124,15 @@ fun SketchesMediaPlayer(
                         end = controllerEndPadding,
                         bottom = controllerBottomPadding,
                     )
+                    .fillMaxWidth()
                     .height(height = 64.dp)
                     .background(
                         color = controlsBackgroundColor,
                         shape = RectangleShape,
                     )
                     .padding(
-                        start = 4.dp,
-                        end = 4.dp,
+                        start = controlsStartPadding + 4.dp,
+                        end = controlsEndPadding + 4.dp,
                     )
                     .clickable(
                         interactionSource = null,

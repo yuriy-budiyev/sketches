@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Parcelable
@@ -91,7 +90,6 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -282,14 +280,14 @@ private fun ImageScreenLayout(
     var containerSize by remember { mutableStateOf(IntSize.Zero) }
     Box(modifier = modifier.onSizeChanged { size -> containerSize = size }) {
         val layoutDirection = LocalLayoutDirection.current
-        var contentInsets = WindowInsets.navigationBars
+        val navBarInsets = WindowInsets.navigationBars
+        val navBarPaddings = navBarInsets.asPaddingValues()
+        val navBarPaddingStart = navBarPaddings.calculateStartPadding(layoutDirection)
+        val navBarPaddingEnd = navBarPaddings.calculateEndPadding(layoutDirection)
+        val navBarPaddingBottom = navBarPaddings.calculateBottomPadding()
+        val contentInsets = navBarInsets
             .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-        val landscapeScreenOrientation =
-            LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-        if (landscapeScreenOrientation) {
-            contentInsets = contentInsets
-                .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
-        }
+            .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
         val contentPaddings = contentInsets.asPaddingValues()
         var contentPaddingStartVisible by remember { mutableStateOf(0.dp) }.apply {
             val newValue = contentPaddings.calculateStartPadding(layoutDirection)
@@ -362,8 +360,20 @@ private fun ImageScreenLayout(
                 }
             },
             controllerVisible = systemBarsVisible,
-            controllerStartPadding = contentPaddingStart,
-            controllerEndPadding = contentPaddingEnd,
+            controllerStartPadding = if (navBarPaddingStart > 0.dp) contentPaddingStart else 0.dp,
+            controllerEndPadding = if (navBarPaddingEnd > 0.dp) contentPaddingEnd else 0.dp,
+            controlsStartPadding =
+                if (navBarPaddingStart == 0.dp) {
+                    contentPaddingStartVisible
+                } else {
+                    contentPaddingStartVisible - contentPaddingStart
+                },
+            controlsEndPadding =
+                if (navBarPaddingEnd == 0.dp) {
+                    contentPaddingEndVisible
+                } else {
+                    contentPaddingEndVisible - contentPaddingEnd
+                },
             controllerBottomPadding = contentPaddingBottom + controllerPaddingBottom,
             modifier = Modifier.matchParentSize(),
         )
@@ -394,24 +404,58 @@ private fun ImageScreenLayout(
             animationSpec = defaultAnimationSpec(),
         )
         if (uiAlpha > 0F) {
-            MediaBar(
-                currentIndex = currentIndex,
-                state = barState,
-                files = files,
-                onItemClick = { index, _ ->
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(
-                            page = index,
-                            animationSpec = defaultAnimationSpec(),
-                        )
-                    }
-                },
+            if (contentPaddingStart > 0.dp && navBarPaddingStart > 0.dp) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .fillMaxHeight()
+                        .width(contentPaddingStart)
+                        .graphicsLayer {
+                            alpha = uiAlpha
+                        }
+                        .background(
+                            color = colorScheme.background.withLowTransparency(),
+                            shape = RectangleShape,
+                        ),
+                )
+            }
+            if (contentPaddingEnd > 0.dp && navBarPaddingEnd > 0.dp) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .fillMaxHeight()
+                        .width(contentPaddingEnd)
+                        .graphicsLayer {
+                            alpha = uiAlpha
+                        }
+                        .background(
+                            color = colorScheme.background.withLowTransparency(),
+                            shape = RectangleShape,
+                        ),
+                )
+            }
+            if (contentPaddingBottom > 0.dp && navBarPaddingBottom > 0.dp) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth()
+                        .height(contentPaddingBottom)
+                        .graphicsLayer {
+                            alpha = uiAlpha
+                        }
+                        .background(
+                            color = colorScheme.background.withLowTransparency(),
+                            shape = RectangleShape,
+                        ),
+                )
+            }
+            Box(
                 modifier = Modifier
                     .offset { mediaBarOffset }
                     .align(Alignment.BottomStart)
                     .padding(
-                        start = contentPaddingStart,
-                        end = contentPaddingEnd,
+                        start = if (navBarPaddingStart > 0.dp) contentPaddingStart else 0.dp,
+                        end = if (navBarPaddingEnd > 0.dp) contentPaddingEnd else 0.dp,
                         bottom = contentPaddingBottom,
                     )
                     .graphicsLayer {
@@ -424,13 +468,37 @@ private fun ImageScreenLayout(
                     .height(dimens.mediaBarHeight)
                     .fillMaxWidth(),
             )
+            MediaBar(
+                currentIndex = currentIndex,
+                state = barState,
+                files = files,
+                onItemClick = { index, _ ->
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(
+                            page = index,
+                            animationSpec = defaultAnimationSpec(),
+                        )
+                    }
+                },
+                contentPaddingStart = contentPaddingStartVisible,
+                contentPaddingEnd = contentPaddingEndVisible,
+                modifier = Modifier
+                    .offset { mediaBarOffset }
+                    .align(Alignment.BottomStart)
+                    .padding(bottom = contentPaddingBottom)
+                    .graphicsLayer {
+                        alpha = uiAlpha
+                    }
+                    .height(dimens.mediaBarHeight)
+                    .fillMaxWidth(),
+            )
             SketchesTopAppBar(
                 modifier = Modifier
                     .offset { topAppBarOffset }
                     .align(Alignment.TopStart)
                     .padding(
-                        start = contentPaddingStart,
-                        end = contentPaddingEnd,
+                        start = if (navBarPaddingStart > 0.dp) contentPaddingStart else 0.dp,
+                        end = if (navBarPaddingEnd > 0.dp) contentPaddingEnd else 0.dp,
                     )
                     .fillMaxWidth()
                     .graphicsLayer {
@@ -441,7 +509,19 @@ private fun ImageScreenLayout(
                 windowInsets =
                     WindowInsets.statusBars
                         .union(WindowInsets.displayCutout)
-                        .only(WindowInsetsSides.Top),
+                        .let { insets ->
+                            when {
+                                navBarPaddingStart > 0.dp -> {
+                                    insets.only(WindowInsetsSides.End + WindowInsetsSides.Top)
+                                }
+                                navBarPaddingEnd > 0.dp -> {
+                                    insets.only(WindowInsetsSides.Start + WindowInsetsSides.Top)
+                                }
+                                else -> {
+                                    insets.only(WindowInsetsSides.Top)
+                                }
+                            }
+                        },
             ) {
                 val hasBookmark by remember {
                     derivedStateOf(structuralEqualityPolicy()) {
@@ -492,51 +572,6 @@ private fun ImageScreenLayout(
                             )
                         }
                     },
-                )
-            }
-            if (contentPaddingStart > 0.dp) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .fillMaxHeight()
-                        .width(contentPaddingStart)
-                        .graphicsLayer {
-                            alpha = uiAlpha
-                        }
-                        .background(
-                            color = colorScheme.background.withLowTransparency(),
-                            shape = RectangleShape,
-                        ),
-                )
-            }
-            if (contentPaddingEnd > 0.dp) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .fillMaxHeight()
-                        .width(contentPaddingEnd)
-                        .graphicsLayer {
-                            alpha = uiAlpha
-                        }
-                        .background(
-                            color = colorScheme.background.withLowTransparency(),
-                            shape = RectangleShape,
-                        ),
-                )
-            }
-            if (contentPaddingBottom > 0.dp) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .fillMaxWidth()
-                        .height(contentPaddingBottom)
-                        .graphicsLayer {
-                            alpha = uiAlpha
-                        }
-                        .background(
-                            color = colorScheme.background.withLowTransparency(),
-                            shape = RectangleShape,
-                        ),
                 )
             }
         }
@@ -590,6 +625,8 @@ private fun MediaPager(
     controllerStartPadding: Dp,
     controllerEndPadding: Dp,
     controllerBottomPadding: Dp,
+    controlsStartPadding: Dp,
+    controlsEndPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
     val files by rememberUpdatedState(files)
@@ -598,6 +635,8 @@ private fun MediaPager(
     val controllerStartPadding by rememberUpdatedState(controllerStartPadding)
     val controllerEndPadding by rememberUpdatedState(controllerEndPadding)
     val controllerBottomPadding by rememberUpdatedState(controllerBottomPadding)
+    val controlsStartPadding by rememberUpdatedState(controlsStartPadding)
+    val controlsEndPadding by rememberUpdatedState(controlsEndPadding)
     HorizontalPager(
         state = state,
         key = { page -> files[page].id },
@@ -618,6 +657,8 @@ private fun MediaPager(
             controllerStartPadding = controllerStartPadding,
             controllerEndPadding = controllerEndPadding,
             controllerBottomPadding = controllerBottomPadding,
+            controlsStartPadding = controlsStartPadding,
+            controlsEndPadding = controlsEndPadding,
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -634,6 +675,8 @@ private fun MediaPage(
     controllerStartPadding: Dp,
     controllerEndPadding: Dp,
     controllerBottomPadding: Dp,
+    controlsStartPadding: Dp,
+    controlsEndPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -680,6 +723,8 @@ private fun MediaPage(
                 controllerStartPadding = controllerStartPadding,
                 controllerEndPadding = controllerEndPadding,
                 controllerBottomPadding = controllerBottomPadding,
+                controlsStartPadding = controlsStartPadding,
+                controlsEndPadding = controlsEndPadding,
                 modifier = modifier,
             )
         }
@@ -723,6 +768,8 @@ private fun VideoPage(
     controllerStartPadding: Dp,
     controllerEndPadding: Dp,
     controllerBottomPadding: Dp,
+    controlsStartPadding: Dp,
+    controlsEndPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
     val number by rememberUpdatedState(number)
@@ -770,6 +817,8 @@ private fun VideoPage(
         controllerStartPadding = controllerStartPadding,
         controllerEndPadding = controllerEndPadding,
         controllerBottomPadding = controllerBottomPadding,
+        controlsStartPadding = controlsStartPadding,
+        controlsEndPadding = controlsEndPadding,
         modifier = modifier,
         zoomState = zoomState,
         enablePlaceholder = true,
@@ -782,6 +831,8 @@ private fun MediaBar(
     currentIndex: Int,
     state: LazyListState,
     files: List<MediaFile>,
+    contentPaddingStart: Dp,
+    contentPaddingEnd: Dp,
     onItemClick: (index: Int, file: MediaFile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -794,7 +845,10 @@ private fun MediaBar(
     LazyRow(
         state = state,
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = dimens.mediaBarItemSpacing),
+        contentPadding = PaddingValues(
+            start = contentPaddingStart,
+            end = contentPaddingEnd,
+        ),
         horizontalArrangement = Arrangement.spacedBy(
             space = dimens.mediaBarItemSpacing,
             alignment = Alignment.CenterHorizontally,
