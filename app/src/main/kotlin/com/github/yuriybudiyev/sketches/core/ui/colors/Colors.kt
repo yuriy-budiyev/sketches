@@ -27,14 +27,19 @@ package com.github.yuriybudiyev.sketches.core.ui.colors
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 
+const val NoTransparencyAlpha: Float = 1F
+const val LowTransparencyAlpha: Float = 0.75F
+const val MediumTransparencyAlpha: Float = 0.35F
+const val HighTransparencyAlpha: Float = 0.15F
+
 @Stable
 fun Color.withLowTransparency(): Color =
-    this.copy(alpha = 0.75F)
+    this.copy(alpha = LowTransparencyAlpha)
 
 @Stable
 fun Color.withMediumTransparency(): Color =
-    this.copy(alpha = 0.35F)
+    this.copy(alpha = MediumTransparencyAlpha)
 
 @Stable
 fun Color.withHighTransparency(): Color =
-    this.copy(alpha = 0.15F)
+    this.copy(alpha = HighTransparencyAlpha)

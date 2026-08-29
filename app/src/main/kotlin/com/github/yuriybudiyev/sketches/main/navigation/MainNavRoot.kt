@@ -283,6 +283,7 @@ fun MainNavRoot(
         )
         val navResultStore = rememberNavResultStore()
         val rootNavBarController = rememberRootNavMenuController()
+        val systemBarsController by rememberUpdatedState(LocalSystemBarsController.current)
         Box(modifier = modifier.then(transitionModifier)) {
             CompositionLocalProvider(
                 LocalNavResultStore provides navResultStore,
@@ -339,7 +340,7 @@ fun MainNavRoot(
                 }
                 val navBarAlpha by animateFloatAsState(
                     targetValue =
-                        if (LocalSystemBarsController.current.isSystemBarsVisible) {
+                        if (systemBarsController.isSystemBarsVisible) {
                             1F
                         } else {
                             0F

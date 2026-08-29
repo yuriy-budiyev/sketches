@@ -90,6 +90,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -98,6 +99,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -110,9 +112,10 @@ import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.colors.LowTransparencyAlpha
+import com.github.yuriybudiyev.sketches.core.ui.colors.NoTransparencyAlpha
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
-import com.github.yuriybudiyev.sketches.core.ui.colors.withMediumTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteBookmarksConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
@@ -276,7 +279,8 @@ private fun ImageScreenLayout(
     }
     val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
     val dimens by rememberUpdatedState(LocalDimens.current)
-    Box(modifier = modifier) {
+    var containerSize by remember { mutableStateOf(IntSize.Zero) }
+    Box(modifier = modifier.onSizeChanged { size -> containerSize = size }) {
         val layoutDirection = LocalLayoutDirection.current
         var contentInsets = WindowInsets.navigationBars
             .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
@@ -287,49 +291,59 @@ private fun ImageScreenLayout(
                 .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
         }
         val contentPaddings = contentInsets.asPaddingValues()
-        val contentPaddingStartVisible by remember {
-            mutableStateOf(contentPaddings.calculateStartPadding(layoutDirection))
-        }.apply {
-            val padding = contentPaddings.calculateStartPadding(layoutDirection)
-            if (padding > value) {
-                value = padding
+        var contentPaddingStartVisible by remember { mutableStateOf(0.dp) }.apply {
+            val newValue = contentPaddings.calculateStartPadding(layoutDirection)
+            if (newValue > value) {
+                value = newValue
             }
         }
+        var contentPaddingEndVisible by remember { mutableStateOf(0.dp) }.apply {
+            val newValue = contentPaddings.calculateEndPadding(layoutDirection)
+            if (newValue > value) {
+                value = newValue
+            }
+        }
+        var contentPaddingBottomVisible by remember { mutableStateOf(0.dp) }.apply {
+            val newValue = contentPaddings.calculateBottomPadding()
+            if (newValue > value) {
+                value = newValue
+            }
+        }
+        LaunchedEffect(Unit) {
+            snapshotFlow { containerSize }.collect {
+                contentPaddingStartVisible = 0.dp
+                contentPaddingEndVisible = 0.dp
+                contentPaddingBottomVisible = 0.dp
+            }
+        }
+        val systemBarsVisible = systemBarsController.isSystemBarsVisible
         val contentPaddingStart by animateDpAsState(
-            targetValue = if (systemBarsController.isSystemBarsVisible) {
+            targetValue = if (systemBarsVisible) {
                 contentPaddingStartVisible
             } else {
                 0.dp
             },
             animationSpec = defaultAnimationSpec(),
         )
-        val contentPaddingEndVisible by remember {
-            mutableStateOf(contentPaddings.calculateStartPadding(layoutDirection))
-        }.apply {
-            val padding = contentPaddings.calculateEndPadding(layoutDirection)
-            if (padding > value) {
-                value = padding
-            }
-        }
         val contentPaddingEnd by animateDpAsState(
-            targetValue = if (systemBarsController.isSystemBarsVisible) {
+            targetValue = if (systemBarsVisible) {
                 contentPaddingEndVisible
             } else {
                 0.dp
             },
             animationSpec = defaultAnimationSpec(),
         )
-        val contentPaddingBottomVisible by remember {
-            mutableStateOf(contentPaddings.calculateBottomPadding())
-        }.apply {
-            val padding = contentPaddings.calculateBottomPadding()
-            if (padding > value) {
-                value = padding
-            }
-        }
         val contentPaddingBottom by animateDpAsState(
-            targetValue = if (systemBarsController.isSystemBarsVisible) {
+            targetValue = if (systemBarsVisible) {
                 contentPaddingBottomVisible
+            } else {
+                0.dp
+            },
+            animationSpec = defaultAnimationSpec(),
+        )
+        val controllerPaddingBottom by animateDpAsState(
+            targetValue = if (systemBarsVisible) {
+                dimens.mediaBarHeight
             } else {
                 0.dp
             },
@@ -340,21 +354,21 @@ private fun ImageScreenLayout(
             files = files,
             onPageTap = {
                 coroutineScope.launch {
-                    if (systemBarsController.isSystemBarsVisible) {
+                    if (systemBarsVisible) {
                         systemBarsController.hideSystemBars()
                     } else {
                         systemBarsController.showSystemBars()
                     }
                 }
             },
-            controllerVisible = systemBarsController.isSystemBarsVisible,
+            controllerVisible = systemBarsVisible,
             controllerStartPadding = contentPaddingStart,
             controllerEndPadding = contentPaddingEnd,
-            controllerBottomPadding = contentPaddingBottom + dimens.mediaBarSize,
+            controllerBottomPadding = contentPaddingBottom + controllerPaddingBottom,
             modifier = Modifier.matchParentSize(),
         )
         val uiAlpha by animateFloatAsState(
-            targetValue = if (systemBarsController.isSystemBarsVisible) 1F else 0F,
+            targetValue = if (systemBarsVisible) 1F else 0F,
             animationSpec = defaultAnimationSpec(),
         )
         val uiVisible by remember {
@@ -363,12 +377,23 @@ private fun ImageScreenLayout(
             }
         }
         val mediaBarOffset by animateIntOffsetAsState(
-            targetValue = if (systemBarsController.isSystemBarsVisible) {
+            targetValue = if (systemBarsVisible) {
                 IntOffset.Zero
             } else {
                 IntOffset(
                     x = 0,
-                    y = with(LocalDensity.current) { dimens.mediaBarSize.roundToPx() },
+                    y = with(LocalDensity.current) { dimens.mediaBarHeight.roundToPx() },
+                )
+            },
+            animationSpec = defaultAnimationSpec(),
+        )
+        val topAppBarOffset by animateIntOffsetAsState(
+            targetValue = if (systemBarsVisible) {
+                IntOffset.Zero
+            } else {
+                IntOffset(
+                    x = 0,
+                    y = with(LocalDensity.current) { -dimens.material3AppBarHeight.roundToPx() },
                 )
             },
             animationSpec = defaultAnimationSpec(),
@@ -401,11 +426,12 @@ private fun ImageScreenLayout(
                         color = colorScheme.background.withLowTransparency(),
                         shape = RectangleShape,
                     )
-                    .height(dimens.mediaBarSize)
+                    .height(dimens.mediaBarHeight)
                     .fillMaxWidth(),
             )
             SketchesTopAppBar(
                 modifier = Modifier
+                    .offset { topAppBarOffset }
                     .align(Alignment.TopStart)
                     .padding(
                         start = contentPaddingStart,
@@ -804,18 +830,16 @@ private fun MediaBar(
                             MediaType.Video -> R.string.video
                         },
                     ),
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier
+                        .graphicsLayer(
+                            alpha = if (position == currentIndex) {
+                                NoTransparencyAlpha
+                            } else {
+                                LowTransparencyAlpha
+                            },
+                        )
+                        .matchParentSize(),
                 )
-                if (position == currentIndex) {
-                    Box(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .background(
-                                color = colorScheme.background.withMediumTransparency(),
-                                shape = RectangleShape,
-                            ),
-                    )
-                }
                 if (file.mediaType == MediaType.Video) {
                     Icon(
                         painter = painterResource(R.drawable.ic_video),

@@ -41,7 +41,7 @@ data class DefaultDimens(
     override val lazyGridItemSize: Dp = 108.dp,
     override val lazyGridItemSpacing: Dp = 1.dp,
     override val mediaGridIconPadding: Dp = 4.dp,
-    override val mediaBarSize: Dp = material3AppBarHeight,
+    override val mediaBarHeight: Dp = material3AppBarHeight,
     override val mediaBarItemSize: Dp = 56.dp,
     override val mediaItemBorderThickness: Dp = 1.dp,
     override val mediaBarItemSpacing: Dp = 1.dp,

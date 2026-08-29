@@ -41,7 +41,7 @@ interface Dimens {
     val lazyGridOverlayBottom: Dp
     val lazyGridItemSize: Dp
     val lazyGridItemSpacing: Dp
-    val mediaBarSize: Dp
+    val mediaBarHeight: Dp
     val mediaGridIconPadding: Dp
     val mediaBarItemSize: Dp
     val mediaItemBorderThickness: Dp
