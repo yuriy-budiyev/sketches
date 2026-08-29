@@ -87,8 +87,10 @@ import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -910,9 +912,12 @@ private fun MediaBar(
                         modifier = Modifier
                             .align(alignment = Alignment.BottomStart)
                             .padding(all = dimens.mediaBarVideoIconPadding)
-                            .background(
-                                color = colorScheme.background.withLowTransparency(),
+                            .dropShadow(
                                 shape = CircleShape,
+                                shadow = Shadow(
+                                    radius = dimens.shadowBlurRadius,
+                                    color = colorScheme.background.withLowTransparency(),
+                                ),
                             ),
                     )
                 }
