@@ -333,11 +333,6 @@ fun MainNavRoot(
                         },
                     animationSpec = defaultAnimationSpec(),
                 )
-                val navMenuVisible by remember {
-                    derivedStateOf(structuralEqualityPolicy()) {
-                        navMenuAlpha > 0F
-                    }
-                }
                 val navBarAlpha by animateFloatAsState(
                     targetValue =
                         if (currentRouteIsRoot && systemBarsController.isSystemBarsVisible) {
@@ -347,12 +342,7 @@ fun MainNavRoot(
                         },
                     animationSpec = defaultAnimationSpec(),
                 )
-                val navBarVisible by remember {
-                    derivedStateOf(structuralEqualityPolicy()) {
-                        navBarAlpha > 0F
-                    }
-                }
-                if (navMenuVisible) {
+                if (navMenuAlpha > 0F) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -395,20 +385,10 @@ fun MainNavRoot(
                                 targetValue = if (routeSelected) 1F else 0F,
                                 animationSpec = defaultAnimationSpec(),
                             )
-                            val selectedIconVisible by remember {
-                                derivedStateOf(structuralEqualityPolicy()) {
-                                    selectedIconAlpha > 0F
-                                }
-                            }
                             val unselectedIconAlpha by animateFloatAsState(
                                 targetValue = if (routeSelected) 0F else 1F,
                                 animationSpec = defaultAnimationSpec(),
                             )
-                            val unselectedIconVisible by remember {
-                                derivedStateOf(structuralEqualityPolicy()) {
-                                    unselectedIconAlpha > 0F
-                                }
-                            }
                             Box(
                                 modifier = Modifier
                                     .fillMaxHeight()
@@ -453,7 +433,7 @@ fun MainNavRoot(
                                             indication = ripple(color = { indicationColor }),
                                         ),
                                 )
-                                if (selectedIconVisible) {
+                                if (selectedIconAlpha > 0F) {
                                     Icon(
                                         painter = painterResource(route.selectedIconRes),
                                         contentDescription = stringResource(route.titleRes),
@@ -463,7 +443,7 @@ fun MainNavRoot(
                                         },
                                     )
                                 }
-                                if (unselectedIconVisible) {
+                                if (unselectedIconAlpha > 0F) {
                                     Icon(
                                         painter = painterResource(route.unselectedIconRes),
                                         contentDescription = stringResource(route.titleRes),
@@ -477,7 +457,7 @@ fun MainNavRoot(
                         }
                     }
                 }
-                if (navBarVisible) {
+                if (navBarAlpha > 0F) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()

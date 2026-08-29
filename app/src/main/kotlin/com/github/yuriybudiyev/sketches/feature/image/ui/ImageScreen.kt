@@ -371,11 +371,6 @@ private fun ImageScreenLayout(
             targetValue = if (systemBarsVisible) 1F else 0F,
             animationSpec = defaultAnimationSpec(),
         )
-        val uiVisible by remember {
-            derivedStateOf(structuralEqualityPolicy()) {
-                uiAlpha > 0F
-            }
-        }
         val mediaBarOffset by animateIntOffsetAsState(
             targetValue = if (systemBarsVisible) {
                 IntOffset.Zero
@@ -398,7 +393,7 @@ private fun ImageScreenLayout(
             },
             animationSpec = defaultAnimationSpec(),
         )
-        if (uiVisible) {
+        if (uiAlpha > 0F) {
             MediaBar(
                 currentIndex = currentIndex,
                 state = barState,

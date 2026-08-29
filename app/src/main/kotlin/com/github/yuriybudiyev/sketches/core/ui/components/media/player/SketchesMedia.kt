@@ -38,13 +38,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -110,12 +108,7 @@ fun SketchesMediaPlayer(
             targetValue = if (controllerVisible) 1F else 0F,
             animationSpec = defaultAnimationSpec(),
         )
-        val controllerVisible by remember {
-            derivedStateOf(structuralEqualityPolicy()) {
-                controllerAlpha > 0F
-            }
-        }
-        if (controllerVisible) {
+        if (controllerAlpha > 0F) {
             SketchesMediaController(
                 state = state,
                 modifier = Modifier
