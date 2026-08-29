@@ -32,7 +32,9 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntOffsetAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -50,6 +52,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -89,10 +92,12 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -282,9 +287,54 @@ private fun ImageScreenLayout(
                 .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
         }
         val contentPaddings = contentInsets.asPaddingValues()
-        val contentPaddingStart = contentPaddings.calculateStartPadding(layoutDirection)
-        val contentPaddingEnd = contentPaddings.calculateEndPadding(layoutDirection)
-        val contentPaddingBottom = contentPaddings.calculateBottomPadding()
+        val contentPaddingStartVisible by remember {
+            mutableStateOf(contentPaddings.calculateStartPadding(layoutDirection))
+        }.apply {
+            val padding = contentPaddings.calculateStartPadding(layoutDirection)
+            if (padding > value) {
+                value = padding
+            }
+        }
+        val contentPaddingStart by animateDpAsState(
+            targetValue = if (systemBarsController.isSystemBarsVisible) {
+                contentPaddingStartVisible
+            } else {
+                0.dp
+            },
+            animationSpec = defaultAnimationSpec(),
+        )
+        val contentPaddingEndVisible by remember {
+            mutableStateOf(contentPaddings.calculateStartPadding(layoutDirection))
+        }.apply {
+            val padding = contentPaddings.calculateEndPadding(layoutDirection)
+            if (padding > value) {
+                value = padding
+            }
+        }
+        val contentPaddingEnd by animateDpAsState(
+            targetValue = if (systemBarsController.isSystemBarsVisible) {
+                contentPaddingEndVisible
+            } else {
+                0.dp
+            },
+            animationSpec = defaultAnimationSpec(),
+        )
+        val contentPaddingBottomVisible by remember {
+            mutableStateOf(contentPaddings.calculateBottomPadding())
+        }.apply {
+            val padding = contentPaddings.calculateBottomPadding()
+            if (padding > value) {
+                value = padding
+            }
+        }
+        val contentPaddingBottom by animateDpAsState(
+            targetValue = if (systemBarsController.isSystemBarsVisible) {
+                contentPaddingBottomVisible
+            } else {
+                0.dp
+            },
+            animationSpec = defaultAnimationSpec(),
+        )
         MediaPager(
             state = pagerState,
             files = files,
@@ -312,6 +362,17 @@ private fun ImageScreenLayout(
                 uiAlpha > 0F
             }
         }
+        val mediaBarOffset by animateIntOffsetAsState(
+            targetValue = if (systemBarsController.isSystemBarsVisible) {
+                IntOffset.Zero
+            } else {
+                IntOffset(
+                    x = 0,
+                    y = with(LocalDensity.current) { dimens.mediaBarSize.roundToPx() },
+                )
+            },
+            animationSpec = defaultAnimationSpec(),
+        )
         if (uiVisible) {
             MediaBar(
                 currentIndex = currentIndex,
@@ -326,6 +387,7 @@ private fun ImageScreenLayout(
                     }
                 },
                 modifier = Modifier
+                    .offset { mediaBarOffset }
                     .align(Alignment.BottomStart)
                     .padding(
                         start = contentPaddingStart,

@@ -25,9 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.ui.components.media.player
 
 import android.view.TextureView
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -40,11 +38,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -54,6 +54,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -64,6 +65,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import coil3.compose.asPainter
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.coil.imageMemoryCache
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
@@ -104,15 +106,23 @@ fun SketchesMediaPlayer(
             enablePlaceholder = enablePlaceholder,
             enableErrorIndicator = enableErrorIndicator,
         )
-        AnimatedVisibility(
-            visible = controllerVisible,
-            enter = fadeIn(),
-            exit = fadeOut(),
-            modifier = Modifier.align(alignment = Alignment.BottomStart),
-        ) {
+        val controllerAlpha by animateFloatAsState(
+            targetValue = if (controllerVisible) 1F else 0F,
+            animationSpec = defaultAnimationSpec(),
+        )
+        val controllerVisible by remember {
+            derivedStateOf(structuralEqualityPolicy()) {
+                controllerAlpha > 0F
+            }
+        }
+        if (controllerVisible) {
             SketchesMediaController(
                 state = state,
                 modifier = Modifier
+                    .graphicsLayer {
+                        alpha = controllerAlpha
+                    }
+                    .align(alignment = Alignment.BottomStart)
                     .padding(
                         start = controllerStartPadding,
                         end = controllerEndPadding,
