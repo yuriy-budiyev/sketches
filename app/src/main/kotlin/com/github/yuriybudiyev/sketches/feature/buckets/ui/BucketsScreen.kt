@@ -134,8 +134,8 @@ fun BucketsScreen(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context by rememberUpdatedState(LocalContext.current)
-    val onDeleteBucketsUpdated by rememberUpdatedState(onDeleteBuckets)
-    val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
+    val onDeleteBuckets by rememberUpdatedState(onDeleteBuckets)
+    val onDeleteMedia by rememberUpdatedState(onDeleteMedia)
     var allBuckets by remember { mutableStateOf<List<MediaBucket>>(emptyList()) }
     val selectedBuckets = rememberSaveableSnapshotStateSet<Long>()
     val deleteDialogMedia = rememberSaveableSnapshotStateList<MediaDescriptor>()
@@ -338,7 +338,7 @@ fun BucketsScreen(
                     description = stringResource(R.string.delete_selected),
                     onClick = {
                         coroutineScope.launch {
-                            onDeleteBucketsUpdated(allBuckets.filterByIds(selectedBuckets.toSet()))
+                            onDeleteBuckets(allBuckets.filterByIds(selectedBuckets.toSet()))
                         }
                     },
                 )
@@ -358,7 +358,7 @@ fun BucketsScreen(
                             )
                         } else {
                             selectedBuckets.clear()
-                            onDeleteMediaUpdated(snapshot.toUriList())
+                            onDeleteMedia(snapshot.toUriList())
                         }
                     }
                 },
@@ -380,9 +380,9 @@ private fun BucketsMediaGrid(
     onBucketClick: (index: Int, bucket: MediaBucket) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val bucketsUpdated by rememberUpdatedState(buckets)
-    val selectedBucketsUpdated by rememberUpdatedState(selectedBuckets)
-    val onBucketClickUpdated by rememberUpdatedState(onBucketClick)
+    val buckets by rememberUpdatedState(buckets)
+    val selectedBuckets by rememberUpdatedState(selectedBuckets)
+    val onBucketClick by rememberUpdatedState(onBucketClick)
     val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
     val dimens by rememberUpdatedState(LocalDimens.current)
     SketchesLazyGrid(
@@ -392,14 +392,14 @@ private fun BucketsMediaGrid(
         overlayBottom = true,
     ) {
         items(
-            count = bucketsUpdated.size,
-            key = { index -> bucketsUpdated[index].id },
+            count = buckets.size,
+            key = { index -> buckets[index].id },
             contentType = { null },
         ) { index ->
-            val bucket by rememberUpdatedState(bucketsUpdated[index])
+            val bucket by rememberUpdatedState(buckets[index])
             val bucketSelected by remember {
                 derivedStateOf(structuralEqualityPolicy()) {
-                    selectedBucketsUpdated.contains(bucket.id)
+                    selectedBuckets.contains(bucket.id)
                 }
             }
             Column(
@@ -408,19 +408,19 @@ private fun BucketsMediaGrid(
                     .clipToBounds()
                     .combinedClickable(
                         onLongClick = {
-                            if (selectedBucketsUpdated.isEmpty()) {
-                                selectedBucketsUpdated.add(bucket.id)
+                            if (selectedBuckets.isEmpty()) {
+                                selectedBuckets.add(bucket.id)
                             }
                         },
                         onClick = {
-                            if (selectedBucketsUpdated.isNotEmpty()) {
+                            if (selectedBuckets.isNotEmpty()) {
                                 if (bucketSelected) {
-                                    selectedBucketsUpdated.remove(bucket.id)
+                                    selectedBuckets.remove(bucket.id)
                                 } else {
-                                    selectedBucketsUpdated.add(bucket.id)
+                                    selectedBuckets.add(bucket.id)
                                 }
                             } else {
-                                onBucketClickUpdated(
+                                onBucketClick(
                                     index,
                                     bucket,
                                 )

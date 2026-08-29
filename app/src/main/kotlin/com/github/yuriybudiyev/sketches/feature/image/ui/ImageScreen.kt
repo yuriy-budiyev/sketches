@@ -219,15 +219,15 @@ private fun ImageScreenLayout(
             intValue = maxIndex
         }
     }
-    val filesUpdated by rememberUpdatedState(files)
+    val files by rememberUpdatedState(files)
     val context by rememberUpdatedState(LocalContext.current)
     val shareManager by rememberUpdatedState(LocalShareManager.current)
-    val onChangeUpdated by rememberUpdatedState(onChange)
-    val onDeleteImageUpdated by rememberUpdatedState(onDeleteImage)
-    val onCreateBookmarkUpdated by rememberUpdatedState(onCreateBookmark)
-    val onDeleteBookmarkUpdated by rememberUpdatedState(onDeleteBookmark)
+    val onChange by rememberUpdatedState(onChange)
+    val onDeleteImage by rememberUpdatedState(onDeleteImage)
+    val onCreateBookmark by rememberUpdatedState(onCreateBookmark)
+    val onDeleteBookmark by rememberUpdatedState(onDeleteBookmark)
     val coroutineScope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(currentIndex) { filesUpdated.size }
+    val pagerState = rememberPagerState(currentIndex) { files.size }
     val barState = rememberLazyListState(currentIndex)
     val systemBarsController by rememberUpdatedState(LocalSystemBarsController.current)
     val deleteRequestLauncher = rememberLauncherForActivityResult(
@@ -242,9 +242,9 @@ private fun ImageScreenLayout(
     LaunchedEffect(Unit) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
             currentIndex = page
-            onChangeUpdated(
+            onChange(
                 page,
-                filesUpdated[page],
+                files[page],
             )
             coroutineScope.launch {
                 barState.scrollToItemCentered(
@@ -285,7 +285,7 @@ private fun ImageScreenLayout(
             .asPaddingValues()
         MediaPager(
             state = pagerState,
-            files = filesUpdated,
+            files = files,
             onPageTap = {
                 coroutineScope.launch {
                     if (systemBarsController.isSystemBarsVisible) {
@@ -319,7 +319,7 @@ private fun ImageScreenLayout(
             MediaBar(
                 currentIndex = currentIndex,
                 state = barState,
-                files = filesUpdated,
+                files = files,
                 onItemClick = { index, _ ->
                     coroutineScope.launch {
                         pagerState.animateScrollToPage(
@@ -352,12 +352,12 @@ private fun ImageScreenLayout(
                     .graphicsLayer {
                         alpha = uiAlpha
                     },
-                text = filesUpdated[currentIndex].name,
+                text = files[currentIndex].name,
                 backgroundColor = colorScheme.background.withLowTransparency(),
             ) {
                 val hasBookmark by remember {
                     derivedStateOf(structuralEqualityPolicy()) {
-                        filesUpdated[currentIndex].bookmark != null
+                        files[currentIndex].bookmark != null
                     }
                 }
                 SketchesAppBarActionButton(
@@ -375,11 +375,11 @@ private fun ImageScreenLayout(
                         },
                     ),
                     onClick = {
-                        val file = filesUpdated[currentIndex]
+                        val file = files[currentIndex]
                         if (file.bookmark != null) {
                             deleteBookmarkDialogVisible = true
                         } else {
-                            onCreateBookmarkUpdated(file.id)
+                            onCreateBookmark(file.id)
                         }
                     },
                 )
@@ -396,7 +396,7 @@ private fun ImageScreenLayout(
                     description = shareDescription,
                     onClick = {
                         coroutineScope.launch {
-                            val file = filesUpdated[currentIndex]
+                            val file = files[currentIndex]
                             shareManager.startChooserActivity(
                                 file.uri,
                                 file.mimeType,
@@ -416,12 +416,12 @@ private fun ImageScreenLayout(
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             deleteRequestLauncher.launchDeleteMediaRequest(
                                 context,
-                                listOf(filesUpdated[currentIndex].uri),
+                                listOf(files[currentIndex].uri),
                             )
                         } else {
-                            onDeleteImageUpdated(
+                            onDeleteImage(
                                 currentIndex,
-                                filesUpdated[currentIndex],
+                                files[currentIndex],
                             )
                         }
                     }
@@ -437,7 +437,7 @@ private fun ImageScreenLayout(
                 onDelete = {
                     deleteBookmarkDialogVisible = false
                     coroutineScope.launch {
-                        onDeleteBookmarkUpdated(filesUpdated[currentIndex].id)
+                        onDeleteBookmark(files[currentIndex].id)
                     }
                 },
                 onDismiss = {
@@ -459,32 +459,32 @@ private fun MediaPager(
     controllerBottomPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
-    val filesUpdated by rememberUpdatedState(files)
-    val onPageTapUpdated by rememberUpdatedState(onPageTap)
-    val controllerVisibleUpdated by rememberUpdatedState(controllerVisible)
-    val controllerStartPaddingUpdated by rememberUpdatedState(controllerStartPadding)
-    val controllerEndPaddingUpdated by rememberUpdatedState(controllerEndPadding)
-    val controllerBottomPaddingUpdated by rememberUpdatedState(controllerBottomPadding)
+    val files by rememberUpdatedState(files)
+    val onPageTap by rememberUpdatedState(onPageTap)
+    val controllerVisible by rememberUpdatedState(controllerVisible)
+    val controllerStartPadding by rememberUpdatedState(controllerStartPadding)
+    val controllerEndPadding by rememberUpdatedState(controllerEndPadding)
+    val controllerBottomPadding by rememberUpdatedState(controllerBottomPadding)
     HorizontalPager(
         state = state,
-        key = { page -> filesUpdated[page].id },
+        key = { page -> files[page].id },
         flingBehavior = PagerDefaults.flingBehavior(
             state = state,
             snapAnimationSpec = defaultAnimationSpec(),
         ),
         modifier = modifier,
     ) { page ->
-        val file = filesUpdated[page]
+        val file = files[page]
         MediaPage(
             state = state,
             number = page,
             fileUri = file.uri,
             fileType = file.mediaType,
-            onPageTap = onPageTapUpdated,
-            controllerVisible = controllerVisibleUpdated,
-            controllerStartPadding = controllerStartPaddingUpdated,
-            controllerEndPadding = controllerEndPaddingUpdated,
-            controllerBottomPadding = controllerBottomPaddingUpdated,
+            onPageTap = onPageTap,
+            controllerVisible = controllerVisible,
+            controllerStartPadding = controllerStartPadding,
+            controllerEndPadding = controllerEndPadding,
+            controllerBottomPadding = controllerBottomPadding,
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -563,11 +563,11 @@ private fun ImagePage(
     onPageTap: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val numberUpdated by rememberUpdatedState(number)
+    val number by rememberUpdatedState(number)
     var displayedPage by remember { mutableStateOf(state.currentPage == number) }
     LaunchedEffect(state) {
         snapshotFlow { state.currentPage }.collect { currentPage ->
-            displayedPage = currentPage == numberUpdated
+            displayedPage = currentPage == number
         }
     }
     SketchesPreviewAsyncImage(
@@ -592,7 +592,7 @@ private fun VideoPage(
     controllerBottomPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
-    val numberUpdated by rememberUpdatedState(number)
+    val number by rememberUpdatedState(number)
     val mediaState = rememberSketchesMediaState()
     DisposableEffect(fileUri) {
         mediaState.open(fileUri)
@@ -603,7 +603,7 @@ private fun VideoPage(
     }
     LaunchedEffect(state) {
         snapshotFlow { state.currentPage }.collect { currentPage ->
-            if (currentPage == numberUpdated) {
+            if (currentPage == number) {
                 mediaState.coroutineScope.launch {
                     if (mediaState.isVolumeEnabled) {
                         mediaState.disableVolume()
@@ -653,9 +653,9 @@ private fun MediaBar(
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val currentIndexUpdated by rememberUpdatedState(currentIndex)
-    val filesUpdated by rememberUpdatedState(files)
-    val onItemClickUpdated by rememberUpdatedState(onItemClick)
+    val currentIndex by rememberUpdatedState(currentIndex)
+    val files by rememberUpdatedState(files)
+    val onItemClick by rememberUpdatedState(onItemClick)
     val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
     val dimens by rememberUpdatedState(LocalDimens.current)
     LazyRow(
@@ -669,17 +669,17 @@ private fun MediaBar(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         items(
-            count = filesUpdated.size,
-            key = { position -> MediaBarKey(filesUpdated[position].id) },
+            count = files.size,
+            key = { position -> MediaBarKey(files[position].id) },
         ) { position ->
-            val file = filesUpdated[position]
+            val file = files[position]
             Box(
                 modifier = Modifier
                     .animateItem()
                     .size(size = dimens.mediaBarItemSize)
                     .border(
                         width = dimens.mediaItemBorderThickness,
-                        color = if (position == currentIndexUpdated) {
+                        color = if (position == currentIndex) {
                             colorScheme.onBackground.withLowTransparency()
                         } else {
                             colorScheme.onBackground.withHighTransparency()
@@ -689,7 +689,7 @@ private fun MediaBar(
                     .clipToBounds()
                     .clickable {
                         coroutineScope.launch {
-                            onItemClickUpdated(
+                            onItemClick(
                                 position,
                                 file,
                             )
@@ -707,7 +707,7 @@ private fun MediaBar(
                     ),
                     modifier = Modifier.matchParentSize(),
                 )
-                if (position == currentIndexUpdated) {
+                if (position == currentIndex) {
                     Box(
                         modifier = Modifier
                             .matchParentSize()

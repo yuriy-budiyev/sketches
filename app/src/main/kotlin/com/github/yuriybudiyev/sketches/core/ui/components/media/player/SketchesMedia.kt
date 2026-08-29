@@ -89,10 +89,10 @@ fun SketchesMediaPlayer(
     enablePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
-    val controllerVisibleUpdated by rememberUpdatedState(controllerVisible)
-    val controllerStartPaddingUpdated by rememberUpdatedState(controllerStartPadding)
-    val controllerEndPaddingUpdated by rememberUpdatedState(controllerEndPadding)
-    val controllerBottomPaddingUpdated by rememberUpdatedState(controllerBottomPadding)
+    val controllerVisible by rememberUpdatedState(controllerVisible)
+    val controllerStartPadding by rememberUpdatedState(controllerStartPadding)
+    val controllerEndPadding by rememberUpdatedState(controllerEndPadding)
+    val controllerBottomPadding by rememberUpdatedState(controllerBottomPadding)
     Box(modifier = modifier) {
         SketchesMediaDisplay(
             state = state,
@@ -105,7 +105,7 @@ fun SketchesMediaPlayer(
             enableErrorIndicator = enableErrorIndicator,
         )
         AnimatedVisibility(
-            visible = controllerVisibleUpdated,
+            visible = controllerVisible,
             enter = fadeIn(),
             exit = fadeOut(),
             modifier = Modifier.align(alignment = Alignment.BottomStart),
@@ -113,15 +113,15 @@ fun SketchesMediaPlayer(
             SketchesMediaController(
                 state = state,
                 modifier = Modifier
-                    .padding(bottom = controllerBottomPaddingUpdated)
+                    .padding(bottom = controllerBottomPadding)
                     .height(height = 64.dp)
                     .background(
                         color = controlsBackgroundColor,
                         shape = RectangleShape,
                     )
                     .padding(
-                        start = controllerStartPaddingUpdated + 4.dp,
-                        end = controllerEndPaddingUpdated + 4.dp,
+                        start = controllerStartPadding + 4.dp,
+                        end = controllerEndPadding + 4.dp,
                     )
                     .clickable(
                         interactionSource = null,

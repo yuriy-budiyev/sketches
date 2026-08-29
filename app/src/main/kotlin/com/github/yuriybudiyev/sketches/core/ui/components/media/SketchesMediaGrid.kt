@@ -114,9 +114,9 @@ fun SketchesMediaGrid(
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
-    val filesUpdated by rememberUpdatedState(files)
-    val selectedFilesUpdated by rememberUpdatedState(selectedFiles)
-    val onItemClickUpdated by rememberUpdatedState(onItemClick)
+    val files by rememberUpdatedState(files)
+    val selectedFiles by rememberUpdatedState(selectedFiles)
+    val onItemClick by rememberUpdatedState(onItemClick)
     SketchesLazyGrid(
         modifier = modifier,
         state = state,
@@ -124,33 +124,33 @@ fun SketchesMediaGrid(
         overlayBottom = overlayBottom,
     ) {
         items(
-            count = filesUpdated.size,
-            key = { index -> SketchesMediaGridKey.MediaStoreFile(fileId = filesUpdated[index].id) },
+            count = files.size,
+            key = { index -> SketchesMediaGridKey.MediaStoreFile(fileId = files[index].id) },
             contentType = { SketchesMediaGridContentType.MediaStoreFile },
         ) { index ->
-            val file by rememberUpdatedState(filesUpdated[index])
+            val file by rememberUpdatedState(files[index])
             val fileSelected by remember {
                 derivedStateOf(structuralEqualityPolicy()) {
-                    selectedFilesUpdated.contains(file.id)
+                    selectedFiles.contains(file.id)
                 }
             }
             SketchesMediaGridItem(
                 file = file,
                 fileSelected = fileSelected,
                 onLongClick = {
-                    if (selectedFilesUpdated.isEmpty()) {
-                        selectedFilesUpdated.add(file.id)
+                    if (selectedFiles.isEmpty()) {
+                        selectedFiles.add(file.id)
                     }
                 },
                 onClick = {
-                    if (selectedFilesUpdated.isNotEmpty()) {
+                    if (selectedFiles.isNotEmpty()) {
                         if (fileSelected) {
-                            selectedFilesUpdated.remove(file.id)
+                            selectedFiles.remove(file.id)
                         } else {
-                            selectedFilesUpdated.add(file.id)
+                            selectedFiles.add(file.id)
                         }
                     } else {
-                        onItemClickUpdated(
+                        onItemClick(
                             index,
                             file,
                         )
@@ -171,9 +171,9 @@ fun SketchesGroupingMediaGrid(
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
-    val itemsUpdated by rememberUpdatedState(items)
-    val selectedFilesUpdated by rememberUpdatedState(selectedFiles)
-    val onItemClickUpdated by rememberUpdatedState(onItemClick)
+    val items by rememberUpdatedState(items)
+    val selectedFiles by rememberUpdatedState(selectedFiles)
+    val onItemClick by rememberUpdatedState(onItemClick)
     val nowDate = remember { LocalDate.now() }
     val dateFormatterMonth = remember {
         DateTimeFormatterBuilder()
@@ -203,7 +203,7 @@ fun SketchesGroupingMediaGrid(
         overlayTop = overlayTop,
         overlayBottom = overlayBottom,
     ) {
-        for ((month, files) in itemsUpdated) {
+        for ((month, files) in items) {
             item(
                 key = SketchesMediaGridKey.GroupHeader(
                     year = month.year,
@@ -244,26 +244,26 @@ fun SketchesGroupingMediaGrid(
                 val file by rememberUpdatedState(files[index])
                 val fileSelected by remember {
                     derivedStateOf(structuralEqualityPolicy()) {
-                        selectedFilesUpdated.contains(file.id)
+                        selectedFiles.contains(file.id)
                     }
                 }
                 SketchesMediaGridItem(
                     file = file,
                     fileSelected = fileSelected,
                     onLongClick = {
-                        if (selectedFilesUpdated.isEmpty()) {
-                            selectedFilesUpdated.add(file.id)
+                        if (selectedFiles.isEmpty()) {
+                            selectedFiles.add(file.id)
                         }
                     },
                     onClick = {
-                        if (selectedFilesUpdated.isNotEmpty()) {
+                        if (selectedFiles.isNotEmpty()) {
                             if (fileSelected) {
-                                selectedFilesUpdated.remove(file.id)
+                                selectedFiles.remove(file.id)
                             } else {
-                                selectedFilesUpdated.add(file.id)
+                                selectedFiles.add(file.id)
                             }
                         } else {
-                            onItemClickUpdated(
+                            onItemClick(
                                 index,
                                 file,
                             )
@@ -313,8 +313,8 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
     onLongClick: () -> Unit,
     onClick: () -> Unit,
 ) {
-    val fileUpdated by rememberUpdatedState(file)
-    val fileSelectedUpdated by rememberUpdatedState(fileSelected)
+    val file by rememberUpdatedState(file)
+    val fileSelected by rememberUpdatedState(fileSelected)
     val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
     val dimens by rememberUpdatedState(LocalDimens.current)
     Box(
@@ -323,7 +323,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
             .aspectRatio(ratio = 1F)
             .border(
                 width = dimens.mediaItemBorderThickness,
-                color = if (fileSelectedUpdated) {
+                color = if (fileSelected) {
                     colorScheme.onBackground.withLowTransparency()
                 } else {
                     colorScheme.onBackground.withHighTransparency()
@@ -336,18 +336,18 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                 onClick = onClick,
             ),
     ) {
-        val fileUri = fileUpdated.uri
+        val fileUri = file.uri
         SketchesThumbnailAsyncImage(
             uri = fileUri,
             contentDescription = stringResource(
-                id = when (fileUpdated.mediaType) {
+                id = when (file.mediaType) {
                     MediaType.Image -> R.string.image
                     MediaType.Video -> R.string.video
                 },
             ),
             modifier = Modifier.matchParentSize(),
         )
-        if (fileSelectedUpdated) {
+        if (fileSelected) {
             Box(
                 modifier = Modifier
                     .matchParentSize()
@@ -372,7 +372,7 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
                     ),
             )
         }
-        if (fileUpdated.mediaType == MediaType.Video) {
+        if (file.mediaType == MediaType.Video) {
             Icon(
                 painter = painterResource(R.drawable.ic_video),
                 contentDescription = stringResource(R.string.video),

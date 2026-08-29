@@ -121,7 +121,7 @@ fun ImagesScreen(
     val coroutineScope = rememberCoroutineScope()
     val context by rememberUpdatedState(LocalContext.current)
     val shareManager by rememberUpdatedState(LocalShareManager.current)
-    val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
+    val onDeleteMedia by rememberUpdatedState(onDeleteMedia)
     var allFiles by remember { mutableStateOf<Collection<MediaFile>>(emptyList()) }
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
@@ -418,7 +418,7 @@ fun ImagesScreen(
                             )
                         } else {
                             selectedFiles.clear()
-                            onDeleteMediaUpdated(allFiles.toUriList(snapshot))
+                            onDeleteMedia(allFiles.toUriList(snapshot))
                         }
                     }
                 },

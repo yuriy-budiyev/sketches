@@ -109,16 +109,16 @@ fun SketchesZoomableBox(
         "doubleTapZoom should be in 1.0 to maxZoom range"
     }
     val coroutineScope = rememberCoroutineScope()
-    val onTapUpdated by rememberUpdatedState(onTap)
-    val maxZoomUpdated by rememberUpdatedState(maxZoom)
-    val doubleTapZoomUpdated by rememberUpdatedState(doubleTapZoom)
+    val onTap by rememberUpdatedState(onTap)
+    val maxZoom by rememberUpdatedState(maxZoom)
+    val doubleTapZoom by rememberUpdatedState(doubleTapZoom)
     var containerSize by remember { mutableStateOf(Size.Zero) }
     var contentSize by remember { mutableStateOf(Size.Zero) }
     val currentScale = remember(zoomState) { Animatable(zoomState.scale) }
     val currentOffsetX = remember(zoomState) { Animatable(zoomState.offsetX) }
     val currentOffsetY = remember(zoomState) { Animatable(zoomState.offsetY) }
     LaunchedEffect(Unit) {
-        snapshotFlow { maxZoomUpdated }.collect { scale ->
+        snapshotFlow { maxZoom }.collect { scale ->
             currentScale.updateBounds(
                 1F,
                 scale,
@@ -155,8 +155,8 @@ fun SketchesZoomableBox(
         if (scale == 1F) {
             target = offset
             newScale = (containerSize.area / contentSize.area).fastCoerceIn(
-                minimumValue = doubleTapZoomUpdated,
-                maximumValue = maxZoomUpdated,
+                minimumValue = doubleTapZoom,
+                maximumValue = maxZoom,
             )
         } else {
             target = Offset.Zero
@@ -249,7 +249,7 @@ fun SketchesZoomableBox(
                                 currentOffsetY = currentOffsetY.value,
                                 newScale = (scale * zoom).fastCoerceIn(
                                     minimumValue = 1F,
-                                    maximumValue = maxZoomUpdated,
+                                    maximumValue = maxZoom,
                                 ),
                             ) { newScale, newOffsetX, newOffsetY ->
                                 currentScale.snapTo(newScale)
@@ -276,7 +276,7 @@ fun SketchesZoomableBox(
                         }
                     },
                     onTap = {
-                        onTapUpdated?.invoke()
+                        onTap?.invoke()
                     },
                 )
             },

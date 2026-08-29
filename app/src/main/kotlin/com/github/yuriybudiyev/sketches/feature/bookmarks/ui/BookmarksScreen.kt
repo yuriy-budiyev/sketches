@@ -120,8 +120,8 @@ private fun BookmarksScreen(
     val coroutineScope = rememberCoroutineScope()
     val context by rememberUpdatedState(LocalContext.current)
     val shareManager by rememberUpdatedState(LocalShareManager.current)
-    val onDeleteMediaUpdated by rememberUpdatedState(onDeleteMedia)
-    val onDeleteBookmarksUpdated by rememberUpdatedState(onDeleteBookmarks)
+    val onDeleteMedia by rememberUpdatedState(onDeleteMedia)
+    val onDeleteBookmarks by rememberUpdatedState(onDeleteBookmarks)
     var allFiles by remember { mutableStateOf<Collection<MediaFile>>(emptyList()) }
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteFilesDialogVisible by rememberSaveable { mutableStateOf(false) }
@@ -421,7 +421,7 @@ private fun BookmarksScreen(
                                 payload = BatchAction.Delete,
                             )
                         } else {
-                            onDeleteMediaUpdated(allFiles.toUriList(selectedFiles.toSet()))
+                            onDeleteMedia(allFiles.toUriList(selectedFiles.toSet()))
                             selectedFiles.clear()
                         }
                     }
@@ -437,7 +437,7 @@ private fun BookmarksScreen(
                 onDelete = {
                     deleteBookmarksDialogVisible = false
                     coroutineScope.launch {
-                        onDeleteBookmarksUpdated(selectedFiles.toSet())
+                        onDeleteBookmarks(selectedFiles.toSet())
                         selectedFiles.clear()
                     }
                 },
