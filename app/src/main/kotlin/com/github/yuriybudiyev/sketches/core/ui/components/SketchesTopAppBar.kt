@@ -29,9 +29,8 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.union
-import androidx.compose.foundation.layout.waterfall
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -49,6 +48,10 @@ fun SketchesTopAppBar(
     text: String? = null,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     contentColor: Color = MaterialTheme.colorScheme.onBackground,
+    windowInsets: WindowInsets =
+        WindowInsets.statusBars
+            .union(WindowInsets.displayCutout)
+            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     TopAppBar(
@@ -70,9 +73,6 @@ fun SketchesTopAppBar(
             navigationIconContentColor = contentColor,
             actionIconContentColor = contentColor,
         ),
-        windowInsets = WindowInsets.systemBars
-            .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
-            .union(WindowInsets.waterfall.only(WindowInsetsSides.Horizontal))
-            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
+        windowInsets = windowInsets,
     )
 }

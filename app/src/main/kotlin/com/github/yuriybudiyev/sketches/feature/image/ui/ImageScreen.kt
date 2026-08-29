@@ -45,6 +45,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -52,8 +53,9 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.union
-import androidx.compose.foundation.layout.waterfall
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -91,6 +93,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -272,7 +275,9 @@ private fun ImageScreenLayout(
         val layoutDirection = LocalLayoutDirection.current
         var contentInsets = WindowInsets.navigationBars
             .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-        if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        val landscapeScreenOrientation =
+            LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+        if (landscapeScreenOrientation) {
             contentInsets = contentInsets
                 .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
         }
@@ -280,9 +285,6 @@ private fun ImageScreenLayout(
         val contentPaddingStart = contentPaddings.calculateStartPadding(layoutDirection)
         val contentPaddingEnd = contentPaddings.calculateEndPadding(layoutDirection)
         val contentPaddingBottom = contentPaddings.calculateBottomPadding()
-        val controllerPaddings = WindowInsets.waterfall
-            .only(WindowInsetsSides.Horizontal)
-            .asPaddingValues()
         MediaPager(
             state = pagerState,
             files = files,
@@ -296,15 +298,10 @@ private fun ImageScreenLayout(
                 }
             },
             controllerVisible = systemBarsController.isSystemBarsVisible,
-            controllerStartPadding = controllerPaddings.calculateStartPadding(layoutDirection),
-            controllerEndPadding = controllerPaddings.calculateEndPadding(layoutDirection),
+            controllerStartPadding = contentPaddingStart,
+            controllerEndPadding = contentPaddingEnd,
             controllerBottomPadding = contentPaddingBottom + dimens.mediaBarSize,
-            modifier = Modifier
-                .matchParentSize()
-                .padding(
-                    start = contentPaddingStart,
-                    end = contentPaddingEnd,
-                ),
+            modifier = Modifier.matchParentSize(),
         )
         val uiAlpha by animateFloatAsState(
             targetValue = if (systemBarsController.isSystemBarsVisible) 1F else 0F,
@@ -348,12 +345,20 @@ private fun ImageScreenLayout(
             SketchesTopAppBar(
                 modifier = Modifier
                     .align(Alignment.TopStart)
+                    .padding(
+                        start = contentPaddingStart,
+                        end = contentPaddingEnd,
+                    )
                     .fillMaxWidth()
                     .graphicsLayer {
                         alpha = uiAlpha
                     },
                 text = files[currentIndex].name,
                 backgroundColor = colorScheme.background.withLowTransparency(),
+                windowInsets =
+                    WindowInsets.statusBars
+                        .union(WindowInsets.displayCutout)
+                        .only(WindowInsetsSides.Top),
             ) {
                 val hasBookmark by remember {
                     derivedStateOf(structuralEqualityPolicy()) {
@@ -405,6 +410,38 @@ private fun ImageScreenLayout(
                         }
                     },
                 )
+            }
+            if (landscapeScreenOrientation) {
+                if (contentPaddingStart > 0.dp) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .align(Alignment.TopStart)
+                            .width(contentPaddingStart)
+                            .graphicsLayer {
+                                alpha = uiAlpha
+                            }
+                            .background(
+                                color = colorScheme.background.withLowTransparency(),
+                                shape = RectangleShape,
+                            ),
+                    )
+                }
+                if (contentPaddingEnd > 0.dp) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .align(Alignment.TopEnd)
+                            .width(contentPaddingEnd)
+                            .graphicsLayer {
+                                alpha = uiAlpha
+                            }
+                            .background(
+                                color = colorScheme.background.withLowTransparency(),
+                                shape = RectangleShape,
+                            ),
+                    )
+                }
             }
         }
         if (deleteImageDialogVisible) {
