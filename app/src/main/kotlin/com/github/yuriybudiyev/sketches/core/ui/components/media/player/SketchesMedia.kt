@@ -34,8 +34,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -47,7 +45,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -66,6 +63,8 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.coil.imageMemoryCache
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
+import com.github.yuriybudiyev.sketches.core.ui.components.ActionButtonHintPosition
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
@@ -258,39 +257,33 @@ fun SketchesMediaController(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier
-                .size(size = 48.dp)
-                .clip(shape = CircleShape)
-                .clickable {
-                    state.coroutineScope.launch {
-                        if (state.isPlaying) {
-                            state.pause()
-                        } else {
-                            state.play()
-                        }
-                    }
+        SketchesActionButton(
+            icon = painterResource(
+                if (state.isPlaying) {
+                    R.drawable.ic_pause
+                } else {
+                    R.drawable.ic_play
                 },
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                painter = painterResource(
+            ),
+            iconColor = color,
+            hint = stringResource(
+                id = if (state.isPlaying) {
+                    R.string.pause
+                } else {
+                    R.string.play
+                },
+            ),
+            hintPosition = ActionButtonHintPosition.Above,
+            onClick = {
+                state.coroutineScope.launch {
                     if (state.isPlaying) {
-                        R.drawable.ic_pause
+                        state.pause()
                     } else {
-                        R.drawable.ic_play
-                    },
-                ),
-                contentDescription = stringResource(
-                    id = if (state.isPlaying) {
-                        R.string.pause
-                    } else {
-                        R.string.play
-                    },
-                ),
-                tint = color,
-            )
-        }
+                        state.play()
+                    }
+                }
+            },
+        )
         val position = state.position
         val duration = state.duration
         var seeking by remember { mutableStateOf(false) }
@@ -336,38 +329,32 @@ fun SketchesMediaController(
             thumbColor = color,
             trackColor = color.withLowTransparency(),
         )
-        Box(
-            modifier = Modifier
-                .size(size = 48.dp)
-                .clip(shape = CircleShape)
-                .clickable {
-                    state.coroutineScope.launch {
-                        if (state.isVolumeEnabled) {
-                            state.disableVolume()
-                        } else {
-                            state.enableVolume()
-                        }
-                    }
+        SketchesActionButton(
+            icon = painterResource(
+                if (state.isVolumeEnabled) {
+                    R.drawable.ic_volume_enabled
+                } else {
+                    R.drawable.ic_volume_disabled
                 },
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                painter = painterResource(
+            ),
+            iconColor = color,
+            hint = stringResource(
+                id = if (state.isVolumeEnabled) {
+                    R.string.disable_volume
+                } else {
+                    R.string.enable_volume
+                },
+            ),
+            hintPosition = ActionButtonHintPosition.Above,
+            onClick = {
+                state.coroutineScope.launch {
                     if (state.isVolumeEnabled) {
-                        R.drawable.ic_volume_enabled
+                        state.disableVolume()
                     } else {
-                        R.drawable.ic_volume_disabled
-                    },
-                ),
-                contentDescription = stringResource(
-                    id = if (state.isVolumeEnabled) {
-                        R.string.disable_volume
-                    } else {
-                        R.string.enable_volume
-                    },
-                ),
-                tint = color,
-            )
-        }
+                        state.enableVolume()
+                    }
+                }
+            },
+        )
     }
 }
