@@ -86,7 +86,7 @@ import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotSt
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withMediumTransparency
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
@@ -286,9 +286,6 @@ fun BucketsScreen(
             }
         }
         SketchesTopAppBar(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .fillMaxWidth(),
             text = if (selectedBuckets.isNotEmpty()) {
                 stringResource(
                     R.string.selected_count,
@@ -297,7 +294,6 @@ fun BucketsScreen(
             } else {
                 stringResource(BucketsNavRoute.titleRes)
             },
-            backgroundColor = MaterialTheme.colorScheme.background.withLowTransparency(),
         ) {
             val selectionMode by remember {
                 derivedStateOf(structuralEqualityPolicy()) {
@@ -310,13 +306,15 @@ fun BucketsScreen(
                         selectedBuckets.size >= allBuckets.size
                     }
                 }
-                SketchesAppBarActionButton(
-                    iconRes = if (allFilesSelected) {
-                        R.drawable.ic_select_none
-                    } else {
-                        R.drawable.ic_select_all
-                    },
-                    description = stringResource(
+                SketchesActionButton(
+                    icon = painterResource(
+                        if (allFilesSelected) {
+                            R.drawable.ic_select_none
+                        } else {
+                            R.drawable.ic_select_all
+                        },
+                    ),
+                    hint = stringResource(
                         if (allFilesSelected) {
                             R.string.select_none
                         } else {
@@ -333,9 +331,9 @@ fun BucketsScreen(
                         }
                     },
                 )
-                SketchesAppBarActionButton(
-                    iconRes = R.drawable.ic_delete,
-                    description = stringResource(R.string.delete_selected),
+                SketchesActionButton(
+                    icon = painterResource(R.drawable.ic_delete),
+                    hint = stringResource(R.string.delete_selected),
                     onClick = {
                         coroutineScope.launch {
                             onDeleteBuckets(allBuckets.filterByIds(selectedBuckets.toSet()))

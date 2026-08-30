@@ -40,6 +40,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -65,7 +66,10 @@ inline fun BoxScope.SketchesTopAppBar(
     actions: @Composable () -> Unit = {},
 ) {
     val layoutDirection = LocalLayoutDirection.current
-    val paddings = WindowInsets.statusBars.union(WindowInsets.displayCutout).asPaddingValues()
+    val paddings = WindowInsets.systemBars
+        .union(WindowInsets.displayCutout)
+        .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+        .asPaddingValues()
     SketchesAppBar(
         modifier = Modifier
             .align(Alignment.TopStart)

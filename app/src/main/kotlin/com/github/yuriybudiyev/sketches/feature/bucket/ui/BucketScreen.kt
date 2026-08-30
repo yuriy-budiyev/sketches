@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.feature.bucket.ui
 
 import android.app.Activity
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.BackHandler
@@ -34,21 +33,19 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.component1
 import androidx.activity.result.component2
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
@@ -71,8 +68,9 @@ import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -89,8 +87,9 @@ import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsContro
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
@@ -347,9 +346,6 @@ fun BucketScreen(
             }
         }
         SketchesTopAppBar(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .fillMaxWidth(),
             text = if (selectedFiles.isNotEmpty()) {
                 stringResource(
                     R.string.selected_count,
@@ -358,15 +354,16 @@ fun BucketScreen(
             } else {
                 bucketName
             },
-            backgroundColor = colorScheme.background.withLowTransparency(),
         ) {
-            SketchesAppBarActionButton(
-                iconRes = if (bucketHidden) {
-                    R.drawable.ic_bucket_show
-                } else {
-                    R.drawable.ic_bucket_hide
-                },
-                description = stringResource(
+            SketchesActionButton(
+                icon = painterResource(
+                    if (bucketHidden) {
+                        R.drawable.ic_bucket_show
+                    } else {
+                        R.drawable.ic_bucket_hide
+                    },
+                ),
+                hint = stringResource(
                     if (bucketHidden) {
                         R.string.show_bucket
                     } else {
@@ -390,13 +387,15 @@ fun BucketScreen(
                         selectedFiles.size >= allFiles.size
                     }
                 }
-                SketchesAppBarActionButton(
-                    iconRes = if (allFilesSelected) {
-                        R.drawable.ic_select_none
-                    } else {
-                        R.drawable.ic_select_all
-                    },
-                    description = stringResource(
+                SketchesActionButton(
+                    icon = painterResource(
+                        if (allFilesSelected) {
+                            R.drawable.ic_select_none
+                        } else {
+                            R.drawable.ic_select_all
+                        },
+                    ),
+                    hint = stringResource(
                         if (allFilesSelected) {
                             R.string.select_none
                         } else {
@@ -413,17 +412,17 @@ fun BucketScreen(
                         }
                     },
                 )
-                SketchesAppBarActionButton(
-                    iconRes = R.drawable.ic_delete,
-                    description = stringResource(R.string.delete_selected),
+                SketchesActionButton(
+                    icon = painterResource(R.drawable.ic_delete),
+                    hint = stringResource(R.string.delete_selected),
                     onClick = {
                         deleteDialogVisible = true
                     },
                 )
                 val shareTitle by rememberUpdatedState(stringResource(R.string.share_selected))
-                SketchesAppBarActionButton(
-                    iconRes = R.drawable.ic_share,
-                    description = shareTitle,
+                SketchesActionButton(
+                    icon = painterResource(R.drawable.ic_share),
+                    hint = shareTitle,
                     onClick = {
                         coroutineScope.launch {
                             allFiles.prepareForSharing(
@@ -443,22 +442,36 @@ fun BucketScreen(
                 )
             }
         }
-        var contentInsets = WindowInsets.navigationBars
-            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-        if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            contentInsets = contentInsets
-                .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
-        }
-        AnimatedVisibility(
-            visible = scrollToStartButtonVisible,
-            enter = fadeIn(),
-            exit = fadeOut(),
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(contentInsets.asPaddingValues()),
-        ) {
+        val navBarInsets = WindowInsets.navigationBars
+        val bottomNavBarHeight = navBarInsets.asPaddingValues().calculateBottomPadding()
+        if (bottomNavBarHeight > 0.dp) {
             Box(
                 modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .fillMaxWidth()
+                    .height(bottomNavBarHeight)
+                    .background(
+                        color = colorScheme.background.withLowTransparency(),
+                        shape = RectangleShape,
+                    ),
+            )
+        }
+        val scrollToStartButtonAlpha by animateFloatAsState(
+            targetValue = if (scrollToStartButtonVisible) 1F else 0F,
+            animationSpec = defaultAnimationSpec(),
+        )
+        if (scrollToStartButtonAlpha > 0F) {
+            Box(
+                modifier = Modifier
+                    .graphicsLayer {
+                        alpha = scrollToStartButtonAlpha
+                    }
+                    .align(Alignment.BottomEnd)
+                    .windowInsetsPadding(
+                        navBarInsets.only(
+                            WindowInsetsSides.Bottom + WindowInsetsSides.End,
+                        ),
+                    )
                     .padding(24.dp)
                     .dropShadow(
                         shape = CircleShape,
