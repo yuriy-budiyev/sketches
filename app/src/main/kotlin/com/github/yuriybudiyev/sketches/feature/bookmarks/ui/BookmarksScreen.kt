@@ -35,7 +35,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -51,9 +50,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.structuralEqualityPolicy
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -68,8 +67,7 @@ import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsContro
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
-import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteBookmarksConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
@@ -325,9 +323,6 @@ private fun BookmarksScreen(
             }
         }
         SketchesTopAppBar(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .fillMaxWidth(),
             text = if (selectedFiles.isNotEmpty()) {
                 stringResource(
                     R.string.selected_count,
@@ -336,7 +331,6 @@ private fun BookmarksScreen(
             } else {
                 stringResource(BookmarksNavRoute.titleRes)
             },
-            backgroundColor = MaterialTheme.colorScheme.background.withLowTransparency(),
         ) {
             val selectionMode by remember {
                 derivedStateOf(structuralEqualityPolicy()) {
@@ -349,13 +343,15 @@ private fun BookmarksScreen(
                         selectedFiles.size >= allFiles.size
                     }
                 }
-                SketchesAppBarActionButton(
-                    iconRes = if (allFilesSelected) {
-                        R.drawable.ic_select_none
-                    } else {
-                        R.drawable.ic_select_all
-                    },
-                    description = stringResource(
+                SketchesActionButton(
+                    icon = painterResource(
+                        if (allFilesSelected) {
+                            R.drawable.ic_select_none
+                        } else {
+                            R.drawable.ic_select_all
+                        },
+                    ),
+                    hint = stringResource(
                         if (allFilesSelected) {
                             R.string.select_none
                         } else {
@@ -372,24 +368,24 @@ private fun BookmarksScreen(
                         }
                     },
                 )
-                SketchesAppBarActionButton(
-                    iconRes = R.drawable.ic_bookmark_delete,
-                    description = stringResource(R.string.delete_bookmarks),
+                SketchesActionButton(
+                    icon = painterResource(R.drawable.ic_bookmark_delete),
+                    hint = stringResource(R.string.delete_bookmarks),
                     onClick = {
                         deleteBookmarksDialogVisible = true
                     },
                 )
-                SketchesAppBarActionButton(
-                    iconRes = R.drawable.ic_delete,
-                    description = stringResource(R.string.delete_selected),
+                SketchesActionButton(
+                    icon = painterResource(R.drawable.ic_delete),
+                    hint = stringResource(R.string.delete_selected),
                     onClick = {
                         deleteFilesDialogVisible = true
                     },
                 )
                 val shareTitle by rememberUpdatedState(stringResource(R.string.share_selected))
-                SketchesAppBarActionButton(
-                    iconRes = R.drawable.ic_share,
-                    description = shareTitle,
+                SketchesActionButton(
+                    icon = painterResource(R.drawable.ic_share),
+                    hint = shareTitle,
                     onClick = {
                         coroutineScope.launch {
                             allFiles.prepareForSharing(
