@@ -91,6 +91,7 @@ inline fun SketchesAppBar(
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
+@Deprecated("Use SketchesAppBar instead")
 fun SketchesTopAppBar(
     modifier: Modifier = Modifier,
     text: String? = null,

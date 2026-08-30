@@ -37,7 +37,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -81,7 +80,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 fun SketchesActionButton(
     icon: Painter,
     hint: String,
@@ -331,6 +329,7 @@ private class HintPositionProvider(
 }
 
 @Composable
+@Deprecated("Use SketchesActionButton instead")
 fun SketchesAppBarActionButton(
     @DrawableRes
     iconRes: Int,
