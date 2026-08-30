@@ -73,6 +73,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.SAVED_STATE_REGISTRY_OWNER_KEY
 import androidx.lifecycle.SavedStateViewModelFactory
@@ -458,21 +459,24 @@ fun MainNavRoot(
                     }
                 }
                 if (navBarAlpha > 0F) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(
-                                WindowInsets.navigationBars.asPaddingValues()
-                                    .calculateBottomPadding(),
-                            )
-                            .graphicsLayer {
-                                alpha = navBarAlpha
-                            }
-                            .background(
-                                color = colorScheme.background.withLowTransparency(),
-                                shape = RectangleShape,
-                            ),
-                    )
+                    val bottomNavBarHeight =
+                        WindowInsets.navigationBars
+                            .asPaddingValues()
+                            .calculateBottomPadding()
+                    if (bottomNavBarHeight > 0.dp) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(bottomNavBarHeight)
+                                .graphicsLayer {
+                                    alpha = navBarAlpha
+                                }
+                                .background(
+                                    color = colorScheme.background.withLowTransparency(),
+                                    shape = RectangleShape,
+                                ),
+                        )
+                    }
                 }
             }
         }
