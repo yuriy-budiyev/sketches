@@ -29,8 +29,10 @@ import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -45,6 +47,8 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,9 +58,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
@@ -69,6 +77,8 @@ import androidx.compose.ui.window.SecureFlagPolicy
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,15 +90,19 @@ fun SketchesActionButton(
     iconColor: Color = MaterialTheme.colorScheme.onBackground,
     hintPosition: ActionButtonHintPosition = ActionButtonHintPosition.Start,
 ) {
+    val onClick by rememberUpdatedState(onClick)
     var hintVisible by remember { mutableStateOf(false) }
     val hintAlpha by animateFloatAsState(
         targetValue = if (hintVisible) 1F else 0F,
         animationSpec = defaultAnimationSpec(),
     )
+    val coroutineScope = rememberCoroutineScope()
+    val interactionSource = remember { MutableInteractionSource() }
+    val hintPositionProvider = remember(hintPosition) { HintPositionProvider(hintPosition) }
     Box {
         if (hintAlpha > 0F) {
             Popup(
-                popupPositionProvider = remember(hintPosition) { HintPositionProvider(hintPosition) },
+                popupPositionProvider = hintPositionProvider,
                 onDismissRequest = {
                     hintVisible = false
                 },
@@ -117,7 +131,7 @@ fun SketchesActionButton(
                         .graphicsLayer {
                             alpha = hintAlpha
                         }
-                        .padding(4.dp)
+                        .padding(all = 8.dp)
                         .dropShadow(
                             shape = shapes.extraSmall,
                             shadow = Shadow(
@@ -132,7 +146,10 @@ fun SketchesActionButton(
                                 color = colors.surfaceContainerHigh,
                                 shape = shapes.extraSmall,
                             )
-                            .padding(4.dp),
+                            .padding(
+                                horizontal = 8.dp,
+                                vertical = 4.dp,
+                            ),
                     ) {
                         Text(
                             text = hint,
@@ -146,18 +163,46 @@ fun SketchesActionButton(
             Modifier
                 .size(48.dp)
                 .clip(CircleShape)
-                .combinedClickable(
-                    interactionSource = remember { MutableInteractionSource() },
+                .semantics {
+                    role = Role.Button
+                    contentDescription = hint
+                }
+                .indication(
+                    interactionSource = interactionSource,
                     indication = ripple(),
-                    enabled = true,
-                    onClickLabel = hint,
-                    onLongClickLabel = hint,
-                    role = Role.Button,
-                    onClick = onClick,
-                    onLongClick = {
-                        hintVisible = true
-                    },
                 )
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onPress = { offset ->
+                            val press = PressInteraction.Press(offset)
+                            coroutineScope.launch {
+                                interactionSource.emit(press)
+                            }
+                            val released = tryAwaitRelease()
+                            coroutineScope.launch {
+                                interactionSource.emit(
+                                    if (released) {
+                                        PressInteraction.Release(press)
+                                    } else {
+                                        PressInteraction.Cancel(press)
+                                    },
+                                )
+                                delay(timeMillis = 1500L)
+                                hintVisible = false
+                            }
+                        },
+                        onLongPress = {
+                            coroutineScope.launch {
+                                hintVisible = true
+                            }
+                        },
+                        onTap = {
+                            coroutineScope.launch {
+                                onClick()
+                            }
+                        },
+                    )
+                }
                 .then(modifier),
             Alignment.Center,
         ) {
