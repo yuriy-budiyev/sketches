@@ -46,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
@@ -60,7 +61,7 @@ fun SketchesActionButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     iconColor: Color = MaterialTheme.colorScheme.onBackground,
-    hintPosition: ActionButtonHintPosition = ActionButtonHintPosition.Below,
+    hintPosition: ActionButtonHintPosition = ActionButtonHintPosition.Start,
 ) {
     TooltipBox(
         state = rememberTooltipState(),
@@ -73,7 +74,7 @@ fun SketchesActionButton(
             },
         ),
         tooltip = {
-            PlainTooltip {
+            PlainTooltip(shape = RectangleShape) {
                 Text(
                     text = hint,
                     fontSize = 16.sp,
