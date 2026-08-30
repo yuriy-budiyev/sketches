@@ -76,6 +76,7 @@ import androidx.compose.ui.window.SecureFlagPolicy
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -170,6 +171,7 @@ fun SketchesActionButton(
                     indication = ripple(),
                 )
                 .pointerInput(Unit) {
+                    var hideJob: Job? = null
                     detectTapGestures(
                         onPress = { offset ->
                             val press = PressInteraction.Press(offset)
@@ -185,11 +187,15 @@ fun SketchesActionButton(
                                         PressInteraction.Cancel(press)
                                     },
                                 )
+                            }
+                            hideJob?.cancel()
+                            hideJob = coroutineScope.launch {
                                 delay(timeMillis = 1500L)
                                 hintVisible = false
                             }
                         },
                         onLongPress = {
+                            hideJob?.cancel()
                             coroutineScope.launch {
                                 hintVisible = true
                             }
