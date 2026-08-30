@@ -35,7 +35,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.MaterialTheme
@@ -52,9 +51,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.structuralEqualityPolicy
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -70,8 +69,7 @@ import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaR
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
-import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
@@ -318,9 +316,6 @@ fun ImagesScreen(
             }
         }
         SketchesTopAppBar(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .fillMaxWidth(),
             text = if (selectedFiles.isNotEmpty()) {
                 stringResource(
                     R.string.selected_count,
@@ -329,12 +324,11 @@ fun ImagesScreen(
             } else {
                 stringResource(ImagesNavRoute.titleRes)
             },
-            backgroundColor = MaterialTheme.colorScheme.background.withLowTransparency(),
         ) {
             if (onRequestMediaAccess.isEnabled) {
-                SketchesAppBarActionButton(
-                    iconRes = R.drawable.ic_media_permission,
-                    description = stringResource(R.string.request_media_access),
+                SketchesActionButton(
+                    icon = painterResource(R.drawable.ic_media_permission),
+                    hint = stringResource(R.string.request_media_access),
                     onClick = {
                         onRequestMediaAccess()
                     },
@@ -351,13 +345,15 @@ fun ImagesScreen(
                         selectedFiles.size >= allFiles.size
                     }
                 }
-                SketchesAppBarActionButton(
-                    iconRes = if (allFilesSelected) {
-                        R.drawable.ic_select_none
-                    } else {
-                        R.drawable.ic_select_all
-                    },
-                    description = stringResource(
+                SketchesActionButton(
+                    icon = painterResource(
+                        if (allFilesSelected) {
+                            R.drawable.ic_select_none
+                        } else {
+                            R.drawable.ic_select_all
+                        },
+                    ),
+                    hint = stringResource(
                         if (allFilesSelected) {
                             R.string.select_none
                         } else {
@@ -374,17 +370,17 @@ fun ImagesScreen(
                         }
                     },
                 )
-                SketchesAppBarActionButton(
-                    iconRes = R.drawable.ic_delete,
-                    description = stringResource(R.string.delete_selected),
+                SketchesActionButton(
+                    icon = painterResource(R.drawable.ic_delete),
+                    hint = stringResource(R.string.delete_selected),
                     onClick = {
                         deleteDialogVisible = true
                     },
                 )
                 val shareTitle by rememberUpdatedState(stringResource(R.string.share_selected))
-                SketchesAppBarActionButton(
-                    iconRes = R.drawable.ic_share,
-                    description = shareTitle,
+                SketchesActionButton(
+                    icon = painterResource(R.drawable.ic_share),
+                    hint = shareTitle,
                     onClick = {
                         coroutineScope.launch {
                             allFiles.prepareForSharing(

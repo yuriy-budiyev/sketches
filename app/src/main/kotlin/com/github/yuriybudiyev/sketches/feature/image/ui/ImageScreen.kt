@@ -286,7 +286,6 @@ private fun ImageScreenLayout(
         val navBarPaddings = navBarInsets.asPaddingValues()
         val navBarPaddingStart = navBarPaddings.calculateStartPadding(layoutDirection)
         val navBarPaddingEnd = navBarPaddings.calculateEndPadding(layoutDirection)
-        val navBarPaddingBottom = navBarPaddings.calculateBottomPadding()
         val contentInsets = navBarInsets
             .union(WindowInsets.statusBars.only(WindowInsetsSides.Top))
             .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
@@ -327,14 +326,6 @@ private fun ImageScreenLayout(
         val contentPaddingStart by animateDpAsState(
             targetValue = if (systemBarsVisible) {
                 contentPaddingStartVisible
-            } else {
-                0.dp
-            },
-            animationSpec = defaultAnimationSpec(),
-        )
-        val contentPaddingTop by animateDpAsState(
-            targetValue = if (systemBarsVisible) {
-                contentPaddingTopVisible
             } else {
                 0.dp
             },
@@ -404,7 +395,9 @@ private fun ImageScreenLayout(
             } else {
                 IntOffset(
                     x = 0,
-                    y = with(LocalDensity.current) { dimens.mediaBarHeight.roundToPx() },
+                    y = with(LocalDensity.current) {
+                        (dimens.mediaBarHeight + contentPaddingBottomVisible).roundToPx()
+                    },
                 )
             },
             animationSpec = defaultAnimationSpec(),
@@ -415,7 +408,9 @@ private fun ImageScreenLayout(
             } else {
                 IntOffset(
                     x = 0,
-                    y = with(LocalDensity.current) { -dimens.material3AppBarHeight.roundToPx() },
+                    y = with(LocalDensity.current) {
+                        -(dimens.material3AppBarHeight + contentPaddingTopVisible).roundToPx()
+                    },
                 )
             },
             animationSpec = defaultAnimationSpec(),
@@ -427,25 +422,6 @@ private fun ImageScreenLayout(
                         .align(Alignment.TopStart)
                         .fillMaxHeight()
                         .width(contentPaddingStart)
-                        .graphicsLayer {
-                            alpha = uiAlpha
-                        }
-                        .background(
-                            color = colorScheme.background.withLowTransparency(),
-                            shape = RectangleShape,
-                        ),
-                )
-            }
-            if (contentPaddingTop > 0.dp) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .fillMaxWidth()
-                        .height(contentPaddingTop)
-                        .padding(
-                            start = if (navBarPaddingStart > 0.dp) contentPaddingStart else 0.dp,
-                            end = if (navBarPaddingEnd > 0.dp) contentPaddingEnd else 0.dp,
-                        )
                         .graphicsLayer {
                             alpha = uiAlpha
                         }
@@ -470,21 +446,6 @@ private fun ImageScreenLayout(
                         ),
                 )
             }
-            if (contentPaddingBottom > 0.dp && navBarPaddingBottom > 0.dp) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .fillMaxWidth()
-                        .height(contentPaddingBottom)
-                        .graphicsLayer {
-                            alpha = uiAlpha
-                        }
-                        .background(
-                            color = colorScheme.background.withLowTransparency(),
-                            shape = RectangleShape,
-                        ),
-                )
-            }
             Box(
                 modifier = Modifier
                     .offset { mediaBarOffset }
@@ -492,7 +453,6 @@ private fun ImageScreenLayout(
                     .padding(
                         start = if (navBarPaddingStart > 0.dp) contentPaddingStart else 0.dp,
                         end = if (navBarPaddingEnd > 0.dp) contentPaddingEnd else 0.dp,
-                        bottom = contentPaddingBottom,
                     )
                     .graphicsLayer {
                         alpha = uiAlpha
@@ -501,7 +461,7 @@ private fun ImageScreenLayout(
                         color = colorScheme.background.withLowTransparency(),
                         shape = RectangleShape,
                     )
-                    .height(dimens.mediaBarHeight)
+                    .height(dimens.mediaBarHeight + contentPaddingBottomVisible)
                     .fillMaxWidth(),
             )
             MediaBar(
@@ -533,7 +493,6 @@ private fun ImageScreenLayout(
                     .offset { topAppBarOffset }
                     .align(Alignment.TopStart)
                     .padding(
-                        top = contentPaddingTop,
                         start = if (navBarPaddingStart > 0.dp) contentPaddingStart else 0.dp,
                         end = if (navBarPaddingEnd > 0.dp) contentPaddingEnd else 0.dp,
                     )
@@ -541,6 +500,7 @@ private fun ImageScreenLayout(
                     .graphicsLayer {
                         alpha = uiAlpha
                     },
+                contentPaddingTop = contentPaddingTopVisible,
                 contentPaddingStart =
                     if (navBarPaddingStart > 0.dp) {
                         contentPaddingStartVisible - contentPaddingStart
@@ -553,7 +513,7 @@ private fun ImageScreenLayout(
                     } else {
                         0.dp
                     },
-                title = files[currentIndex].name,
+                text = files[currentIndex].name,
             ) {
                 val hasBookmark by remember {
                     derivedStateOf(structuralEqualityPolicy()) {

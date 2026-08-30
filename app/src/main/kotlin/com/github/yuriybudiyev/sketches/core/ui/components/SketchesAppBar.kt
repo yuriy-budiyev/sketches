@@ -26,11 +26,16 @@ package com.github.yuriybudiyev.sketches.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -46,6 +51,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -54,11 +60,33 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
 @Composable
+inline fun BoxScope.SketchesTopAppBar(
+    text: String? = null,
+    actions: @Composable () -> Unit = {},
+) {
+    val layoutDirection = LocalLayoutDirection.current
+    val paddings = WindowInsets.statusBars.union(WindowInsets.displayCutout).asPaddingValues()
+    SketchesAppBar(
+        modifier = Modifier
+            .align(Alignment.TopStart)
+            .fillMaxWidth(),
+        text = text,
+        contentPaddingStart = paddings.calculateStartPadding(layoutDirection),
+        contentPaddingTop = paddings.calculateTopPadding(),
+        contentPaddingEnd = paddings.calculateEndPadding(layoutDirection),
+        contentPaddingBottom = paddings.calculateBottomPadding(),
+        actions = actions,
+    )
+}
+
+@Composable
 inline fun SketchesAppBar(
     modifier: Modifier = Modifier,
-    title: String? = null,
+    text: String? = null,
     contentPaddingStart: Dp = 0.dp,
+    contentPaddingTop: Dp = 0.dp,
     contentPaddingEnd: Dp = 0.dp,
+    contentPaddingBottom: Dp = 0.dp,
     actions: @Composable () -> Unit = {},
 ) {
     Row(
@@ -66,6 +94,10 @@ inline fun SketchesAppBar(
             .background(
                 color = MaterialTheme.colorScheme.background.withLowTransparency(),
                 shape = RectangleShape,
+            )
+            .padding(
+                top = contentPaddingTop,
+                bottom = contentPaddingBottom,
             )
             .height(LocalDimens.current.material3AppBarHeight)
             .padding(
@@ -75,9 +107,9 @@ inline fun SketchesAppBar(
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (!title.isNullOrEmpty()) {
+        if (!text.isNullOrEmpty()) {
             Text(
-                text = title,
+                text = text,
                 modifier = Modifier.weight(1F),
                 fontSize = 22.sp,
                 lineHeight = 28.sp,
@@ -91,7 +123,7 @@ inline fun SketchesAppBar(
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-@Deprecated("Use SketchesAppBar instead")
+@Deprecated("Use BoxScope.SketchesTopAppBar instead")
 fun SketchesTopAppBar(
     modifier: Modifier = Modifier,
     text: String? = null,

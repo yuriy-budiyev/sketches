@@ -408,7 +408,9 @@ class MediaRepositoryImpl @Inject constructor(
                     entities.mapTo(newLinkedHashSet(entities.size)) { entity -> entity.bucketId }
                 val hiddenBuckets = hiddenBucketsFlow.first()
                 val hiddenBucketsToDelete = hiddenBuckets
-                    .filterTo(ArrayList(hiddenBuckets.size)) { bucketId -> !bucketsIds.contains(bucketId) }
+                    .filterTo(ArrayList(hiddenBuckets.size)) { bucketId ->
+                        !bucketsIds.contains(bucketId)
+                    }
                     .apply { trimToSize() }
                 if (hiddenBucketsToDelete.isNotEmpty()) {
                     withContext(ioDispatcher) {
