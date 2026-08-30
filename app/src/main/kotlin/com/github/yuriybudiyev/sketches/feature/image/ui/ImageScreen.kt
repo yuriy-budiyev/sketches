@@ -116,12 +116,12 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.LowTransparencyAlpha
 import com.github.yuriybudiyev.sketches.core.ui.colors.NoTransparencyAlpha
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBarActionButton
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteBookmarksConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesPreviewAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
@@ -288,7 +288,7 @@ private fun ImageScreenLayout(
         val navBarPaddingEnd = navBarPaddings.calculateEndPadding(layoutDirection)
         val navBarPaddingBottom = navBarPaddings.calculateBottomPadding()
         val contentInsets = navBarInsets
-            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+            .union(WindowInsets.statusBars.only(WindowInsetsSides.Top))
             .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
         val contentPaddings = contentInsets.asPaddingValues()
         var contentPaddingStartVisible by remember { mutableStateOf(0.dp) }.apply {
@@ -297,6 +297,13 @@ private fun ImageScreenLayout(
                 value = newValue
             }
         }
+        var contentPaddingTopVisible by remember { mutableStateOf(0.dp) }.apply {
+            val newValue = contentPaddings.calculateTopPadding()
+            if (newValue > value) {
+                value = newValue
+            }
+        }
+
         var contentPaddingEndVisible by remember { mutableStateOf(0.dp) }.apply {
             val newValue = contentPaddings.calculateEndPadding(layoutDirection)
             if (newValue > value) {
@@ -320,6 +327,14 @@ private fun ImageScreenLayout(
         val contentPaddingStart by animateDpAsState(
             targetValue = if (systemBarsVisible) {
                 contentPaddingStartVisible
+            } else {
+                0.dp
+            },
+            animationSpec = defaultAnimationSpec(),
+        )
+        val contentPaddingTop by animateDpAsState(
+            targetValue = if (systemBarsVisible) {
+                contentPaddingTopVisible
             } else {
                 0.dp
             },
@@ -421,6 +436,25 @@ private fun ImageScreenLayout(
                         ),
                 )
             }
+            if (contentPaddingTop > 0.dp) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .fillMaxWidth()
+                        .height(contentPaddingTop)
+                        .padding(
+                            start = if (navBarPaddingStart > 0.dp) contentPaddingStart else 0.dp,
+                            end = if (navBarPaddingEnd > 0.dp) contentPaddingEnd else 0.dp,
+                        )
+                        .graphicsLayer {
+                            alpha = uiAlpha
+                        }
+                        .background(
+                            color = colorScheme.background.withLowTransparency(),
+                            shape = RectangleShape,
+                        ),
+                )
+            }
             if (contentPaddingEnd > 0.dp && navBarPaddingEnd > 0.dp) {
                 Box(
                     modifier = Modifier
@@ -494,11 +528,12 @@ private fun ImageScreenLayout(
                     .height(dimens.mediaBarHeight)
                     .fillMaxWidth(),
             )
-            SketchesTopAppBar(
+            SketchesAppBar(
                 modifier = Modifier
                     .offset { topAppBarOffset }
                     .align(Alignment.TopStart)
                     .padding(
+                        top = contentPaddingTop,
                         start = if (navBarPaddingStart > 0.dp) contentPaddingStart else 0.dp,
                         end = if (navBarPaddingEnd > 0.dp) contentPaddingEnd else 0.dp,
                     )
@@ -506,38 +541,34 @@ private fun ImageScreenLayout(
                     .graphicsLayer {
                         alpha = uiAlpha
                     },
-                text = files[currentIndex].name,
-                backgroundColor = colorScheme.background.withLowTransparency(),
-                windowInsets =
-                    WindowInsets.statusBars
-                        .union(WindowInsets.displayCutout)
-                        .let { insets ->
-                            when {
-                                navBarPaddingStart > 0.dp -> {
-                                    insets.only(WindowInsetsSides.End + WindowInsetsSides.Top)
-                                }
-                                navBarPaddingEnd > 0.dp -> {
-                                    insets.only(WindowInsetsSides.Start + WindowInsetsSides.Top)
-                                }
-                                else -> {
-                                    insets.only(WindowInsetsSides.Top)
-                                }
-                            }
-                        },
+                contentPaddingStart =
+                    if (navBarPaddingStart > 0.dp) {
+                        contentPaddingStartVisible - contentPaddingStart
+                    } else {
+                        0.dp
+                    },
+                contentPaddingEnd =
+                    if (navBarPaddingEnd > 0.dp) {
+                        contentPaddingEndVisible - contentPaddingEnd
+                    } else {
+                        0.dp
+                    },
+                title = files[currentIndex].name,
             ) {
                 val hasBookmark by remember {
                     derivedStateOf(structuralEqualityPolicy()) {
                         files[currentIndex].bookmark != null
                     }
                 }
-                SketchesAppBarActionButton(
-                    iconRes =
+                SketchesActionButton(
+                    icon = painterResource(
                         if (hasBookmark) {
                             R.drawable.ic_bookmark_delete
                         } else {
                             R.drawable.ic_bookmark_create
                         },
-                    description = stringResource(
+                    ),
+                    hint = stringResource(
                         if (hasBookmark) {
                             R.string.delete_bookmark
                         } else {
@@ -553,17 +584,17 @@ private fun ImageScreenLayout(
                         }
                     },
                 )
-                SketchesAppBarActionButton(
-                    iconRes = R.drawable.ic_delete,
-                    description = stringResource(R.string.delete_image),
+                SketchesActionButton(
+                    icon = painterResource(R.drawable.ic_delete),
+                    hint = stringResource(R.string.delete_image),
                     onClick = {
                         deleteImageDialogVisible = true
                     },
                 )
                 val shareDescription = stringResource(R.string.share_image)
-                SketchesAppBarActionButton(
-                    iconRes = R.drawable.ic_share,
-                    description = shareDescription,
+                SketchesActionButton(
+                    icon = painterResource(R.drawable.ic_share),
+                    hint = shareDescription,
                     onClick = {
                         coroutineScope.launch {
                             val file = files[currentIndex]

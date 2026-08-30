@@ -24,13 +24,16 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.displayCutout
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,20 +45,47 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
+import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
 @Composable
-fun SketchesAppBar(
+inline fun SketchesAppBar(
     modifier: Modifier = Modifier,
-    text: String? = null,
-    actions: @Composable RowScope.() -> Unit = {},
+    title: String? = null,
+    contentPaddingStart: Dp = 0.dp,
+    contentPaddingEnd: Dp = 0.dp,
+    actions: @Composable () -> Unit = {},
 ) {
     Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.Start,
+        modifier = modifier
+            .background(
+                color = MaterialTheme.colorScheme.background.withLowTransparency(),
+                shape = RectangleShape,
+            )
+            .height(LocalDimens.current.material3AppBarHeight)
+            .padding(
+                start = contentPaddingStart + 16.dp,
+                end = contentPaddingEnd + 4.dp,
+            ),
+        horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-
+        if (!title.isNullOrEmpty()) {
+            Text(
+                text = title,
+                modifier = Modifier.weight(1F),
+                fontSize = 22.sp,
+                lineHeight = 28.sp,
+                maxLines = 1,
+                overflow = TextOverflow.MiddleEllipsis,
+            )
+        }
+        actions()
     }
 }
 
