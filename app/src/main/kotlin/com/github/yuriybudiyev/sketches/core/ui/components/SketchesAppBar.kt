@@ -28,7 +28,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
@@ -39,18 +38,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextOverflow
@@ -123,41 +117,4 @@ inline fun SketchesAppBar(
         }
         actions()
     }
-}
-
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-@Deprecated("Use BoxScope.SketchesTopAppBar instead")
-fun SketchesTopAppBar(
-    modifier: Modifier = Modifier,
-    text: String? = null,
-    backgroundColor: Color = MaterialTheme.colorScheme.background,
-    contentColor: Color = MaterialTheme.colorScheme.onBackground,
-    windowInsets: WindowInsets =
-        WindowInsets.statusBars
-            .union(WindowInsets.displayCutout)
-            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
-    actions: @Composable RowScope.() -> Unit = {},
-) {
-    TopAppBar(
-        title = {
-            if (!text.isNullOrEmpty()) {
-                Text(
-                    text = text,
-                    color = contentColor,
-                    maxLines = 1,
-                    overflow = TextOverflow.MiddleEllipsis,
-                )
-            }
-        },
-        modifier = modifier,
-        actions = actions,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = backgroundColor,
-            titleContentColor = contentColor,
-            navigationIconContentColor = contentColor,
-            actionIconContentColor = contentColor,
-        ),
-        windowInsets = windowInsets,
-    )
 }

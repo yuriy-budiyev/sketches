@@ -25,10 +25,8 @@
 package com.github.yuriybudiyev.sketches.core.ui.components
 
 import android.view.View
-import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -59,7 +57,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -331,28 +328,5 @@ private class HintPositionProvider(
         }
         val y = (anchorBounds.top + anchorBounds.bottom - popupContentSize.height) / 2
         return IntOffset(x, y)
-    }
-}
-
-@Composable
-@Deprecated("Use SketchesActionButton instead")
-fun SketchesAppBarActionButton(
-    @DrawableRes
-    iconRes: Int,
-    description: String,
-    onClick: () -> Unit,
-) {
-    Box(
-        modifier = Modifier
-            .size(size = 48.dp)
-            .clip(shape = CircleShape)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            painter = painterResource(iconRes),
-            contentDescription = description,
-            tint = MaterialTheme.colorScheme.onBackground,
-        )
     }
 }
