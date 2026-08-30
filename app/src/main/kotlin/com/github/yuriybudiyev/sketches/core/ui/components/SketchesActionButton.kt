@@ -41,17 +41,28 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.PopupPositionProvider
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,7 +85,9 @@ fun SketchesActionButton(
             },
         ),
         tooltip = {
-            PlainTooltip(shape = RectangleShape) {
+            PlainTooltip(
+                shape = RectangleShape,
+            ) {
                 Text(
                     text = hint,
                     fontSize = 16.sp,
@@ -82,27 +95,33 @@ fun SketchesActionButton(
             }
         },
     ) {
-        Box(
-            Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = ripple(),
-                    enabled = true,
-                    onClickLabel = hint,
-                    role = Role.Button,
-                    onClick = onClick,
-                )
-                .then(modifier),
-            Alignment.Center,
-        ) {
-            Icon(
-                painter = icon,
-                contentDescription = hint,
-                tint = iconColor,
+    }
+
+    var hintVisible by remember { mutableStateOf(false) }
+    var anchorCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    Box(
+        Modifier
+            .onGloballyPositioned { coordinates ->
+                anchorCoordinates = coordinates
+            }
+            .size(48.dp)
+            .clip(CircleShape)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = ripple(),
+                enabled = true,
+                onClickLabel = hint,
+                role = Role.Button,
+                onClick = onClick,
             )
-        }
+            .then(modifier),
+        Alignment.Center,
+    ) {
+        Icon(
+            painter = icon,
+            contentDescription = hint,
+            tint = iconColor,
+        )
     }
 }
 
@@ -112,6 +131,120 @@ enum class ActionButtonHintPosition {
     Below,
     Start,
     End,
+}
+
+@Composable
+private fun rememberHintPositionProvider(position: ActionButtonHintPosition): HintPositionProvider {
+    val offset = with(LocalDensity.current) { 4.dp.roundToPx() }
+    return remember(position, offset) { HintPositionProvider(position, offset) }
+}
+
+private class HintPositionProvider(
+    private val position: ActionButtonHintPosition,
+    private val offset: Int,
+): PopupPositionProvider {
+
+    override fun calculatePosition(
+        anchorBounds: IntRect,
+        windowSize: IntSize,
+        layoutDirection: LayoutDirection,
+        popupContentSize: IntSize,
+    ): IntOffset =
+        when (position) {
+            ActionButtonHintPosition.Above -> {
+                calculatePositionAbove(anchorBounds, windowSize, popupContentSize)
+            }
+            ActionButtonHintPosition.Below -> {
+                calculatePositionBelow(anchorBounds, windowSize, popupContentSize)
+            }
+            ActionButtonHintPosition.Start -> {
+                when (layoutDirection) {
+                    LayoutDirection.Ltr -> {
+                        calculatePositionLeft(anchorBounds, popupContentSize)
+                    }
+                    LayoutDirection.Rtl -> {
+                        calculatePositionRight(anchorBounds, windowSize, popupContentSize)
+                    }
+                }
+            }
+            ActionButtonHintPosition.End -> {
+                when (layoutDirection) {
+                    LayoutDirection.Ltr -> {
+                        calculatePositionRight(anchorBounds, windowSize, popupContentSize)
+                    }
+                    LayoutDirection.Rtl -> {
+                        calculatePositionLeft(anchorBounds, popupContentSize)
+                    }
+                }
+            }
+        }
+
+    private fun calculatePositionAbove(
+        anchorBounds: IntRect,
+        windowSize: IntSize,
+        popupContentSize: IntSize,
+    ): IntOffset {
+        var x = anchorBounds.left + (anchorBounds.width - popupContentSize.width) / 2
+        when {
+            x < 0 -> {
+                x = anchorBounds.left
+            }
+            x + popupContentSize.width > windowSize.width -> {
+                x = anchorBounds.right - popupContentSize.width
+            }
+        }
+        var y = anchorBounds.top - popupContentSize.height - offset
+        if (y < 0) {
+            y = anchorBounds.bottom + offset
+        }
+        return IntOffset(x, y)
+    }
+
+    private fun calculatePositionBelow(
+        anchorBounds: IntRect,
+        windowSize: IntSize,
+        popupContentSize: IntSize,
+    ): IntOffset {
+        var x = anchorBounds.left + (anchorBounds.width - popupContentSize.width) / 2
+        when {
+            x < 0 -> {
+                x = anchorBounds.left
+            }
+            x + popupContentSize.width > windowSize.width -> {
+                x = anchorBounds.right - popupContentSize.width
+            }
+        }
+        var y = anchorBounds.bottom + offset
+        if (y + popupContentSize.height > windowSize.height) {
+            y = anchorBounds.top - popupContentSize.height - offset
+        }
+        return IntOffset(x, y)
+    }
+
+    private fun calculatePositionLeft(
+        anchorBounds: IntRect,
+        popupContentSize: IntSize,
+    ): IntOffset {
+        var x = anchorBounds.left - (popupContentSize.width + offset)
+        if (x < 0) {
+            x = anchorBounds.right + offset
+        }
+        val y = (anchorBounds.top + anchorBounds.bottom - popupContentSize.height) / 2
+        return IntOffset(x, y)
+    }
+
+    private fun calculatePositionRight(
+        anchorBounds: IntRect,
+        windowSize: IntSize,
+        popupContentSize: IntSize,
+    ): IntOffset {
+        var x = anchorBounds.right + offset
+        if (x + popupContentSize.width > windowSize.width) {
+            x = anchorBounds.left - (popupContentSize.width + offset)
+        }
+        val y = (anchorBounds.top + anchorBounds.bottom - popupContentSize.height) / 2
+        return IntOffset(x, y)
+    }
 }
 
 @Composable
