@@ -24,23 +24,24 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import android.view.View
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
-import androidx.compose.material3.TooltipAnchorPosition
-import androidx.compose.material3.TooltipBox
-import androidx.compose.material3.TooltipDefaults
-import androidx.compose.material3.rememberTooltipState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,12 +49,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.LayoutCoordinates
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.IntOffset
@@ -61,8 +62,13 @@ import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
+import androidx.compose.ui.window.PopupProperties
+import androidx.compose.ui.window.SecureFlagPolicy
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
+import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,54 +80,93 @@ fun SketchesActionButton(
     iconColor: Color = MaterialTheme.colorScheme.onBackground,
     hintPosition: ActionButtonHintPosition = ActionButtonHintPosition.Start,
 ) {
-    TooltipBox(
-        state = rememberTooltipState(),
-        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-            when (hintPosition) {
-                ActionButtonHintPosition.Above -> TooltipAnchorPosition.Above
-                ActionButtonHintPosition.Below -> TooltipAnchorPosition.Below
-                ActionButtonHintPosition.Start -> TooltipAnchorPosition.Start
-                ActionButtonHintPosition.End -> TooltipAnchorPosition.End
-            },
-        ),
-        tooltip = {
-            PlainTooltip(
-                shape = RectangleShape,
-            ) {
-                Text(
-                    text = hint,
-                    fontSize = 16.sp,
-                )
-            }
-        },
-    ) {
-    }
-
     var hintVisible by remember { mutableStateOf(false) }
-    var anchorCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
-    Box(
-        Modifier
-            .onGloballyPositioned { coordinates ->
-                anchorCoordinates = coordinates
+    val hintAlpha by animateFloatAsState(
+        targetValue = if (hintVisible) 1F else 0F,
+        animationSpec = defaultAnimationSpec(),
+    )
+    Box {
+        if (hintAlpha > 0F) {
+            Popup(
+                popupPositionProvider = remember(hintPosition) { HintPositionProvider(hintPosition) },
+                onDismissRequest = {
+                    hintVisible = false
+                },
+                properties = PopupProperties(
+                    focusable = false,
+                    dismissOnBackPress = true,
+                    dismissOnClickOutside = true,
+                    securePolicy = SecureFlagPolicy.Inherit,
+                    excludeFromSystemGesture = true,
+                    clippingEnabled = true,
+                ),
+            ) {
+                val popupView = LocalView.current
+                SideEffect(popupView) {
+                    var view: View? = popupView
+                    while (view != null) {
+                        view.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                        view = view.parent as? View
+                    }
+                }
+                val colors = MaterialTheme.colorScheme
+                val shapes = MaterialTheme.shapes
+                val dimens = LocalDimens.current
+                Box(
+                    modifier = Modifier
+                        .graphicsLayer {
+                            alpha = hintAlpha
+                        }
+                        .padding(4.dp)
+                        .dropShadow(
+                            shape = shapes.extraSmall,
+                            shadow = Shadow(
+                                radius = dimens.shadowBlurRadius,
+                                color = colors.scrim.withLowTransparency(),
+                            ),
+                        ),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = colors.surfaceContainerHigh,
+                                shape = shapes.extraSmall,
+                            )
+                            .padding(4.dp),
+                    ) {
+                        Text(
+                            text = hint,
+                            color = colors.onSurfaceVariant,
+                        )
+                    }
+                }
             }
-            .size(48.dp)
-            .clip(CircleShape)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = ripple(),
-                enabled = true,
-                onClickLabel = hint,
-                role = Role.Button,
-                onClick = onClick,
+        }
+        Box(
+            Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .combinedClickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = ripple(),
+                    enabled = true,
+                    onClickLabel = hint,
+                    onLongClickLabel = hint,
+                    role = Role.Button,
+                    onClick = onClick,
+                    onLongClick = {
+                        hintVisible = true
+                    },
+                )
+                .then(modifier),
+            Alignment.Center,
+        ) {
+            Icon(
+                painter = icon,
+                contentDescription = hint,
+                tint = iconColor,
             )
-            .then(modifier),
-        Alignment.Center,
-    ) {
-        Icon(
-            painter = icon,
-            contentDescription = hint,
-            tint = iconColor,
-        )
+        }
     }
 }
 
@@ -133,15 +178,8 @@ enum class ActionButtonHintPosition {
     End,
 }
 
-@Composable
-private fun rememberHintPositionProvider(position: ActionButtonHintPosition): HintPositionProvider {
-    val offset = with(LocalDensity.current) { 4.dp.roundToPx() }
-    return remember(position, offset) { HintPositionProvider(position, offset) }
-}
-
 private class HintPositionProvider(
     private val position: ActionButtonHintPosition,
-    private val offset: Int,
 ): PopupPositionProvider {
 
     override fun calculatePosition(
@@ -193,9 +231,9 @@ private class HintPositionProvider(
                 x = anchorBounds.right - popupContentSize.width
             }
         }
-        var y = anchorBounds.top - popupContentSize.height - offset
+        var y = anchorBounds.top - popupContentSize.height
         if (y < 0) {
-            y = anchorBounds.bottom + offset
+            y = anchorBounds.bottom
         }
         return IntOffset(x, y)
     }
@@ -214,9 +252,9 @@ private class HintPositionProvider(
                 x = anchorBounds.right - popupContentSize.width
             }
         }
-        var y = anchorBounds.bottom + offset
+        var y = anchorBounds.bottom
         if (y + popupContentSize.height > windowSize.height) {
-            y = anchorBounds.top - popupContentSize.height - offset
+            y = anchorBounds.top - popupContentSize.height
         }
         return IntOffset(x, y)
     }
@@ -225,9 +263,9 @@ private class HintPositionProvider(
         anchorBounds: IntRect,
         popupContentSize: IntSize,
     ): IntOffset {
-        var x = anchorBounds.left - (popupContentSize.width + offset)
+        var x = anchorBounds.left - popupContentSize.width
         if (x < 0) {
-            x = anchorBounds.right + offset
+            x = anchorBounds.right
         }
         val y = (anchorBounds.top + anchorBounds.bottom - popupContentSize.height) / 2
         return IntOffset(x, y)
@@ -238,9 +276,9 @@ private class HintPositionProvider(
         windowSize: IntSize,
         popupContentSize: IntSize,
     ): IntOffset {
-        var x = anchorBounds.right + offset
+        var x = anchorBounds.right
         if (x + popupContentSize.width > windowSize.width) {
-            x = anchorBounds.left - (popupContentSize.width + offset)
+            x = anchorBounds.left - popupContentSize.width
         }
         val y = (anchorBounds.top + anchorBounds.bottom - popupContentSize.height) / 2
         return IntOffset(x, y)
