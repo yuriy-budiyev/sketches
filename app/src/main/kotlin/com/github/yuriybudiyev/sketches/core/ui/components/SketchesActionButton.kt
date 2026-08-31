@@ -277,10 +277,10 @@ private class HintPositionProvider(
         var x = anchorBounds.left + (anchorBounds.width - popupContentSize.width) / 2
         when {
             x < 0 -> {
-                x = anchorBounds.left
+                x = 0
             }
             x + popupContentSize.width > windowSize.width -> {
-                x = anchorBounds.right - popupContentSize.width
+                x = windowSize.width - popupContentSize.width
             }
         }
         var y = anchorBounds.top - popupContentSize.height
@@ -298,10 +298,10 @@ private class HintPositionProvider(
         var x = anchorBounds.left + (anchorBounds.width - popupContentSize.width) / 2
         when {
             x < 0 -> {
-                x = anchorBounds.left
+                x = 0
             }
             x + popupContentSize.width > windowSize.width -> {
-                x = anchorBounds.right - popupContentSize.width
+                x = windowSize.width - popupContentSize.width
             }
         }
         var y = anchorBounds.bottom
@@ -317,7 +317,7 @@ private class HintPositionProvider(
     ): IntOffset {
         var x = anchorBounds.left - popupContentSize.width
         if (x < 0) {
-            x = anchorBounds.right
+            x = 0
         }
         val y = (anchorBounds.top + anchorBounds.bottom - popupContentSize.height) / 2
         return IntOffset(x, y)
@@ -330,7 +330,7 @@ private class HintPositionProvider(
     ): IntOffset {
         var x = anchorBounds.right
         if (x + popupContentSize.width > windowSize.width) {
-            x = anchorBounds.left - popupContentSize.width
+            x = windowSize.width - popupContentSize.width
         }
         val y = (anchorBounds.top + anchorBounds.bottom - popupContentSize.height) / 2
         return IntOffset(x, y)

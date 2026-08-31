@@ -649,10 +649,10 @@ private class HintPositionProvider: PopupPositionProvider {
         var x = anchorBounds.left + (anchorBounds.width - popupContentSize.width) / 2
         when {
             x < 0 -> {
-                x = anchorBounds.left
+                x = 0
             }
             x + popupContentSize.width > windowSize.width -> {
-                x = anchorBounds.right - popupContentSize.width
+                x = windowSize.width - popupContentSize.width
             }
         }
         var y = anchorBounds.top - popupContentSize.height
