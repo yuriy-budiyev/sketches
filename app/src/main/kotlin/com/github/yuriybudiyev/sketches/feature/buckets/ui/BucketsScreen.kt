@@ -287,7 +287,7 @@ fun BucketsScreen(
             }
         }
         val appBarVisible by remember {
-            derivedStateOf {
+            derivedStateOf(structuralEqualityPolicy()) {
                 bucketsGridState.findFirstVisibleItemIndex() <= 0 || selectedBuckets.isNotEmpty()
             }
         }

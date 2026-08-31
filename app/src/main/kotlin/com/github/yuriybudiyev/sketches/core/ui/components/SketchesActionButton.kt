@@ -34,6 +34,7 @@ import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -66,6 +67,7 @@ import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
@@ -95,7 +97,10 @@ fun SketchesActionButton(
     val coroutineScope = rememberCoroutineScope()
     val interactionSource = remember { MutableInteractionSource() }
     val hintPositionProvider = remember(hintPosition) { HintPositionProvider(hintPosition) }
-    Box {
+    Box(
+        modifier = Modifier.wrapContentSize(),
+        contentAlignment = Alignment.Center,
+    ) {
         if (hintAlpha > 0F) {
             Popup(
                 popupPositionProvider = hintPositionProvider,
@@ -150,6 +155,7 @@ fun SketchesActionButton(
                         Text(
                             text = hint,
                             color = colors.onSurfaceVariant,
+                            fontSize = 16.sp,
                         )
                     }
                 }
@@ -205,7 +211,7 @@ fun SketchesActionButton(
                     )
                 }
                 .then(modifier),
-            Alignment.Center,
+            contentAlignment = Alignment.Center,
         ) {
             Icon(
                 painter = icon,

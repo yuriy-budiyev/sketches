@@ -317,7 +317,7 @@ fun ImagesScreen(
             }
         }
         val appBarVisible by remember {
-            derivedStateOf {
+            derivedStateOf(structuralEqualityPolicy()) {
                 mediaGridState.findFirstVisibleItemIndex() <= 0 || selectedFiles.isNotEmpty()
             }
         }

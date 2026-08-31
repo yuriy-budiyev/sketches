@@ -257,13 +257,6 @@ fun BucketScreen(
             selectedFiles.clear()
         }
     }
-    val scrollToStartButtonVisible by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            with(mediaGridState) {
-                lastScrolledBackward && canScrollBackward
-            }
-        }
-    }
     val navResultStore = LocalNavResultStore.current
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(
@@ -347,7 +340,7 @@ fun BucketScreen(
             }
         }
         val appBarVisible by remember {
-            derivedStateOf {
+            derivedStateOf(structuralEqualityPolicy()) {
                 mediaGridState.findFirstVisibleItemIndex() <= 0 || selectedFiles.isNotEmpty()
             }
         }
@@ -462,6 +455,13 @@ fun BucketScreen(
                         shape = RectangleShape,
                     ),
             )
+        }
+        val scrollToStartButtonVisible by remember {
+            derivedStateOf(structuralEqualityPolicy()) {
+                with(mediaGridState) {
+                    lastScrolledBackward && canScrollBackward
+                }
+            }
         }
         val scrollToStartButtonAlpha by animateFloatAsState(
             targetValue = if (scrollToStartButtonVisible) 1F else 0F,
