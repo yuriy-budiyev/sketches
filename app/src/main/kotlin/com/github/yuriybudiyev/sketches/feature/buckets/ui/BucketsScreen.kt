@@ -101,6 +101,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberM
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.utils.findFirstVisibleItemIndex
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
 import kotlinx.coroutines.launch
 
@@ -285,6 +286,11 @@ fun BucketsScreen(
                 }
             }
         }
+        val appBarVisible by remember {
+            derivedStateOf {
+                bucketsGridState.findFirstVisibleItemIndex() <= 0 || selectedBuckets.isNotEmpty()
+            }
+        }
         SketchesTopAppBar(
             text = if (selectedBuckets.isNotEmpty()) {
                 stringResource(
@@ -294,6 +300,7 @@ fun BucketsScreen(
             } else {
                 stringResource(BucketsNavRoute.titleRes)
             },
+            visible = appBarVisible,
         ) {
             val selectionMode by remember {
                 derivedStateOf(structuralEqualityPolicy()) {

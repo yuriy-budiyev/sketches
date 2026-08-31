@@ -103,7 +103,8 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDe
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItem
+import com.github.yuriybudiyev.sketches.core.ui.utils.findFirstVisibleItemIndex
+import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
 
@@ -345,6 +346,11 @@ fun BucketScreen(
                 }
             }
         }
+        val appBarVisible by remember {
+            derivedStateOf {
+                mediaGridState.findFirstVisibleItemIndex() <= 0 || selectedFiles.isNotEmpty()
+            }
+        }
         SketchesTopAppBar(
             text = if (selectedFiles.isNotEmpty()) {
                 stringResource(
@@ -354,6 +360,7 @@ fun BucketScreen(
             } else {
                 bucketName
             },
+            visible = appBarVisible,
         ) {
             SketchesActionButton(
                 icon = painterResource(

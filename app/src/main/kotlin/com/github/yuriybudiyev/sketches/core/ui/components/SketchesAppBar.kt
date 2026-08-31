@@ -24,9 +24,12 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -43,20 +46,24 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
 @Composable
 inline fun BoxScope.SketchesTopAppBar(
     text: String? = null,
+    visible: Boolean = true,
     actions: @Composable () -> Unit = {},
 ) {
     val layoutDirection = LocalLayoutDirection.current
@@ -64,17 +71,42 @@ inline fun BoxScope.SketchesTopAppBar(
         .union(WindowInsets.displayCutout)
         .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
         .asPaddingValues()
-    SketchesAppBar(
+    val contentPaddingTop = paddings.calculateTopPadding()
+    val appBarAlpha by animateFloatAsState(
+        targetValue = if (visible) 1F else 0F,
+        animationSpec = defaultAnimationSpec(),
+    )
+    Column(
         modifier = Modifier
             .align(Alignment.TopStart)
             .fillMaxWidth(),
-        text = text,
-        contentPaddingStart = paddings.calculateStartPadding(layoutDirection),
-        contentPaddingTop = paddings.calculateTopPadding(),
-        contentPaddingEnd = paddings.calculateEndPadding(layoutDirection),
-        contentPaddingBottom = paddings.calculateBottomPadding(),
-        actions = actions,
-    )
+    ) {
+        if (contentPaddingTop > 0.dp) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(contentPaddingTop)
+                    .background(
+                        color = MaterialTheme.colorScheme.background.withLowTransparency(),
+                        shape = RectangleShape,
+                    ),
+            )
+        }
+        if (appBarAlpha > 0F) {
+            SketchesAppBar(
+                modifier = Modifier
+                    .graphicsLayer {
+                        alpha = appBarAlpha
+                    }
+                    .fillMaxWidth(),
+                text = text,
+                contentPaddingStart = paddings.calculateStartPadding(layoutDirection),
+                contentPaddingEnd = paddings.calculateEndPadding(layoutDirection),
+                contentPaddingBottom = paddings.calculateBottomPadding(),
+                actions = actions,
+            )
+        }
+    }
 }
 
 @Composable

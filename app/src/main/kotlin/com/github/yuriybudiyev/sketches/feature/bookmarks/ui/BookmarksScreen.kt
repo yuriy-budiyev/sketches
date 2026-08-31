@@ -82,7 +82,8 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberM
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
-import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItem
+import com.github.yuriybudiyev.sketches.core.ui.utils.findFirstVisibleItemIndex
+import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
@@ -322,6 +323,11 @@ private fun BookmarksScreen(
                 }
             }
         }
+        val appBarVisible by remember {
+            derivedStateOf {
+                mediaGridState.findFirstVisibleItemIndex() <= 0 || selectedFiles.isNotEmpty()
+            }
+        }
         SketchesTopAppBar(
             text = if (selectedFiles.isNotEmpty()) {
                 stringResource(
@@ -331,6 +337,7 @@ private fun BookmarksScreen(
             } else {
                 stringResource(BookmarksNavRoute.titleRes)
             },
+            visible = appBarVisible,
         ) {
             val selectionMode by remember {
                 derivedStateOf(structuralEqualityPolicy()) {

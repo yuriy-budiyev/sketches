@@ -129,7 +129,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.player.Sketches
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItemCentered
+import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemCentered
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize

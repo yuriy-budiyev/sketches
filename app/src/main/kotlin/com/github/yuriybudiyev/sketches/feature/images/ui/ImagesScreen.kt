@@ -84,7 +84,8 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDe
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.calculateMediaIndexWithGroups
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
-import com.github.yuriybudiyev.sketches.core.ui.scroll.scrollToItem
+import com.github.yuriybudiyev.sketches.core.ui.utils.findFirstVisibleItemIndex
+import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
 import kotlinx.coroutines.launch
@@ -315,6 +316,11 @@ fun ImagesScreen(
                 }
             }
         }
+        val appBarVisible by remember {
+            derivedStateOf {
+                mediaGridState.findFirstVisibleItemIndex() <= 0 || selectedFiles.isNotEmpty()
+            }
+        }
         SketchesTopAppBar(
             text = if (selectedFiles.isNotEmpty()) {
                 stringResource(
@@ -324,6 +330,7 @@ fun ImagesScreen(
             } else {
                 stringResource(ImagesNavRoute.titleRes)
             },
+            visible = appBarVisible,
         ) {
             if (onRequestMediaAccess.isEnabled) {
                 SketchesActionButton(
