@@ -101,7 +101,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberM
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.utils.findFirstVisibleItemIndex
+import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrolledBackward
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
 import kotlinx.coroutines.launch
 
@@ -286,9 +286,10 @@ fun BucketsScreen(
                 }
             }
         }
+        val lastScrolledBackward by rememberLastScrolledBackward(bucketsGridState)
         val appBarVisible by remember {
             derivedStateOf(structuralEqualityPolicy()) {
-                bucketsGridState.findFirstVisibleItemIndex() <= 0 || selectedBuckets.isNotEmpty()
+                lastScrolledBackward || selectedBuckets.isNotEmpty()
             }
         }
         SketchesTopAppBar(

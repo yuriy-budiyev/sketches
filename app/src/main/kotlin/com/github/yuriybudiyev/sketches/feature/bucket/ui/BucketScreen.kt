@@ -103,7 +103,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDe
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.utils.findFirstVisibleItemIndex
+import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrolledBackward
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
@@ -339,9 +339,10 @@ fun BucketScreen(
                 }
             }
         }
+        val lastScrolledBackward by rememberLastScrolledBackward(mediaGridState)
         val appBarVisible by remember {
             derivedStateOf(structuralEqualityPolicy()) {
-                mediaGridState.findFirstVisibleItemIndex() <= 0 || selectedFiles.isNotEmpty()
+                lastScrolledBackward || selectedFiles.isNotEmpty()
             }
         }
         SketchesTopAppBar(
@@ -456,13 +457,10 @@ fun BucketScreen(
                     ),
             )
         }
-        val scrollToStartButtonVisible by remember {
-            derivedStateOf(structuralEqualityPolicy()) {
-                with(mediaGridState) {
-                    lastScrolledBackward && canScrollBackward
-                }
-            }
-        }
+        val scrollToStartButtonVisible by rememberLastScrolledBackward(
+            state = mediaGridState,
+            shouldBeAbleToScrollFurther = true,
+        )
         val scrollToStartButtonAlpha by animateFloatAsState(
             targetValue = if (scrollToStartButtonVisible) 1F else 0F,
             animationSpec = defaultAnimationSpec(),

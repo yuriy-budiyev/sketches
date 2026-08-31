@@ -84,7 +84,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDe
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.calculateMediaIndexWithGroups
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
-import com.github.yuriybudiyev.sketches.core.ui.utils.findFirstVisibleItemIndex
+import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrolledBackward
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
@@ -316,9 +316,10 @@ fun ImagesScreen(
                 }
             }
         }
+        val lastScrolledBackwards by rememberLastScrolledBackward(mediaGridState)
         val appBarVisible by remember {
             derivedStateOf(structuralEqualityPolicy()) {
-                mediaGridState.findFirstVisibleItemIndex() <= 0 || selectedFiles.isNotEmpty()
+                lastScrolledBackwards || selectedFiles.isNotEmpty()
             }
         }
         SketchesTopAppBar(
