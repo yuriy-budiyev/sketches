@@ -389,8 +389,8 @@ private fun BucketsMediaGrid(
     val buckets by rememberUpdatedState(buckets)
     val selectedBuckets by rememberUpdatedState(selectedBuckets)
     val onBucketClick by rememberUpdatedState(onBucketClick)
-    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
-    val dimens by rememberUpdatedState(LocalDimens.current)
+    val colorScheme = MaterialTheme.colorScheme
+    val dimens = LocalDimens.current
     SketchesLazyGrid(
         modifier = modifier,
         state = state,

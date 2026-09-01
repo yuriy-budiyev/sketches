@@ -196,7 +196,7 @@ fun SketchesGroupingMediaGrid(
             )
             .toFormatter(Locale.getDefault())
     }
-    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
+    val colorScheme = MaterialTheme.colorScheme
     SketchesLazyGrid(
         modifier = modifier,
         state = state,
@@ -315,8 +315,8 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
 ) {
     val file by rememberUpdatedState(file)
     val fileSelected by rememberUpdatedState(fileSelected)
-    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
-    val dimens by rememberUpdatedState(LocalDimens.current)
+    val colorScheme = MaterialTheme.colorScheme
+    val dimens = LocalDimens.current
     Box(
         modifier = Modifier
             .animateItem()

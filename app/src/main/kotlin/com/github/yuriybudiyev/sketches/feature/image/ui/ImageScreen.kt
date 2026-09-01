@@ -85,7 +85,11 @@ import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
@@ -132,6 +136,7 @@ import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemCentered
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import kotlin.math.ceil
 
 @Composable
 fun ImageRoute(viewModel: ImageScreenViewModel) {
@@ -276,8 +281,8 @@ private fun ImageScreenLayout(
             }
         }
     }
-    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
-    val dimens by rememberUpdatedState(LocalDimens.current)
+    val colorScheme = MaterialTheme.colorScheme
+    val dimens = LocalDimens.current
     var containerSize by remember { mutableStateOf(IntSize.Zero) }
     Box(modifier = modifier.onSizeChanged { size -> containerSize = size }) {
         val layoutDirection = LocalLayoutDirection.current
@@ -317,6 +322,7 @@ private fun ImageScreenLayout(
         LaunchedEffect(Unit) {
             snapshotFlow { containerSize }.collect {
                 contentPaddingStartVisible = 0.dp
+                contentPaddingTopVisible = 0.dp
                 contentPaddingEndVisible = 0.dp
                 contentPaddingBottomVisible = 0.dp
             }
@@ -388,22 +394,24 @@ private fun ImageScreenLayout(
             targetValue = if (systemBarsVisible) 1F else 0F,
             animationSpec = DefaultAlphaAnimationSpec,
         )
+        val mediaBarHeight = dimens.mediaBarHeight + contentPaddingBottomVisible
         val mediaBarTranslation by animateFloatAsState(
             targetValue = if (systemBarsVisible) {
                 0F
             } else {
                 with(LocalDensity.current) {
-                    (dimens.mediaBarHeight + contentPaddingBottomVisible).toPx()
+                    mediaBarHeight.toPx()
                 }
             },
             animationSpec = DefaultPxAnimationSpec,
         )
+        val topAppBarHeight = contentPaddingTopVisible + dimens.material3AppBarHeight
         val topAppBarTranslation by animateFloatAsState(
             targetValue = if (systemBarsVisible) {
                 0F
             } else {
                 with(LocalDensity.current) {
-                    -(dimens.material3AppBarHeight + contentPaddingTopVisible).toPx()
+                    -topAppBarHeight.toPx()
                 }
             },
             animationSpec = DefaultPxAnimationSpec,
@@ -415,13 +423,17 @@ private fun ImageScreenLayout(
                         .align(Alignment.TopStart)
                         .fillMaxHeight()
                         .width(contentPaddingStart)
-                        .graphicsLayer {
-                            alpha = uiAlpha
-                        }
-                        .background(
-                            color = colorScheme.background.withLowTransparency(),
-                            shape = RectangleShape,
-                        ),
+                        .drawBehind {
+                            val top = topAppBarHeight.toPx() + topAppBarTranslation
+                            val height =
+                                size.height - top - mediaBarHeight.toPx() + mediaBarTranslation
+                            drawRect(
+                                color = colorScheme.background.withLowTransparency(),
+                                alpha = uiAlpha,
+                                topLeft = Offset(x = 0F, y = ceil(top)),
+                                size = Size(width = size.width, height = ceil(height)),
+                            )
+                        },
                 )
             }
             if (contentPaddingEnd > 0.dp && navBarPaddingEnd > 0.dp) {
@@ -430,31 +442,46 @@ private fun ImageScreenLayout(
                         .align(Alignment.TopEnd)
                         .fillMaxHeight()
                         .width(contentPaddingEnd)
-                        .graphicsLayer {
-                            alpha = uiAlpha
-                        }
-                        .background(
-                            color = colorScheme.background.withLowTransparency(),
-                            shape = RectangleShape,
-                        ),
+                        .drawBehind {
+                            val top = topAppBarHeight.toPx() + topAppBarTranslation
+                            val height =
+                                size.height - top - mediaBarHeight.toPx() + mediaBarTranslation
+                            drawRect(
+                                color = colorScheme.background.withLowTransparency(),
+                                alpha = uiAlpha,
+                                topLeft = Offset(x = 0F, y = ceil(top)),
+                                size = Size(width = size.width, height = ceil(height)),
+                            )
+                        },
                 )
             }
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
-                    .padding(
-                        start = if (navBarPaddingStart > 0.dp) contentPaddingStart else 0.dp,
-                        end = if (navBarPaddingEnd > 0.dp) contentPaddingEnd else 0.dp,
-                    )
                     .graphicsLayer {
                         alpha = uiAlpha
-                        translationY = mediaBarTranslation
+                        translationY = ceil(mediaBarTranslation)
                     }
-                    .background(
-                        color = colorScheme.background.withLowTransparency(),
-                        shape = RectangleShape,
-                    )
-                    .height(dimens.mediaBarHeight + contentPaddingBottomVisible)
+                    .run {
+                        if (contentPaddingBottomVisible > 0.dp) {
+                            background(
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        colorScheme.background.withLowTransparency(),
+                                        colorScheme.background,
+                                    ),
+                                    startY = with(LocalDensity.current) { dimens.mediaBarHeight.toPx() },
+                                ),
+                                shape = RectangleShape,
+                            )
+                        } else {
+                            background(
+                                color = colorScheme.background.withLowTransparency(),
+                                shape = RectangleShape,
+                            )
+                        }
+                    }
+                    .height(mediaBarHeight)
                     .fillMaxWidth(),
             )
             MediaBar(
@@ -476,7 +503,7 @@ private fun ImageScreenLayout(
                     .padding(bottom = contentPaddingBottom)
                     .graphicsLayer {
                         alpha = uiAlpha
-                        translationY = mediaBarTranslation
+                        translationY = ceil(mediaBarTranslation)
                     }
                     .height(dimens.mediaBarHeight)
                     .fillMaxWidth(),
@@ -484,28 +511,24 @@ private fun ImageScreenLayout(
             SketchesAppBar(
                 modifier = Modifier
                     .align(Alignment.TopStart)
-                    .padding(
-                        start = if (navBarPaddingStart > 0.dp) contentPaddingStart else 0.dp,
-                        end = if (navBarPaddingEnd > 0.dp) contentPaddingEnd else 0.dp,
-                    )
                     .fillMaxWidth()
                     .graphicsLayer {
                         alpha = uiAlpha
-                        translationY = topAppBarTranslation
-                    },
+                        translationY = ceil(topAppBarTranslation)
+                    }
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                colorScheme.background,
+                                colorScheme.background.withLowTransparency(),
+                            ),
+                            endY = with(LocalDensity.current) { contentPaddingTopVisible.toPx() },
+                        ),
+                        shape = RectangleShape,
+                    ),
                 contentPaddingTop = contentPaddingTopVisible,
-                contentPaddingStart =
-                    if (navBarPaddingStart > 0.dp) {
-                        contentPaddingStartVisible - contentPaddingStart
-                    } else {
-                        0.dp
-                    },
-                contentPaddingEnd =
-                    if (navBarPaddingEnd > 0.dp) {
-                        contentPaddingEndVisible - contentPaddingEnd
-                    } else {
-                        0.dp
-                    },
+                contentPaddingStart = contentPaddingStartVisible,
+                contentPaddingEnd = contentPaddingEndVisible,
                 text = files[currentIndex].name,
             ) {
                 val hasBookmark by remember {
@@ -826,8 +849,8 @@ private fun MediaBar(
     val currentIndex by rememberUpdatedState(currentIndex)
     val files by rememberUpdatedState(files)
     val onItemClick by rememberUpdatedState(onItemClick)
-    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
-    val dimens by rememberUpdatedState(LocalDimens.current)
+    val colorScheme = MaterialTheme.colorScheme
+    val dimens = LocalDimens.current
     LazyRow(
         state = state,
         modifier = modifier,

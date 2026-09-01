@@ -49,6 +49,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -76,6 +77,7 @@ inline fun BoxScope.SketchesTopAppBar(
         targetValue = if (visible) 1F else 0F,
         animationSpec = DefaultAlphaAnimationSpec,
     )
+    val colorScheme = MaterialTheme.colorScheme
     Column(
         modifier = Modifier
             .align(Alignment.TopStart)
@@ -87,7 +89,12 @@ inline fun BoxScope.SketchesTopAppBar(
                     .fillMaxWidth()
                     .height(contentPaddingTop)
                     .background(
-                        color = MaterialTheme.colorScheme.background.withLowTransparency(),
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                colorScheme.background,
+                                colorScheme.background.withLowTransparency(),
+                            ),
+                        ),
                         shape = RectangleShape,
                     ),
             )
@@ -98,7 +105,11 @@ inline fun BoxScope.SketchesTopAppBar(
                     .graphicsLayer {
                         alpha = appBarAlpha
                     }
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .background(
+                        color = colorScheme.background.withLowTransparency(),
+                        shape = RectangleShape,
+                    ),
                 text = text,
                 contentPaddingStart = paddings.calculateStartPadding(layoutDirection),
                 contentPaddingEnd = paddings.calculateEndPadding(layoutDirection),
@@ -121,10 +132,6 @@ inline fun SketchesAppBar(
 ) {
     Row(
         modifier = modifier
-            .background(
-                color = MaterialTheme.colorScheme.background.withLowTransparency(),
-                shape = RectangleShape,
-            )
             .padding(
                 top = contentPaddingTop,
                 bottom = contentPaddingBottom,

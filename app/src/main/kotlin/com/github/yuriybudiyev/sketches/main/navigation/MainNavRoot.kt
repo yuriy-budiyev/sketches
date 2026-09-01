@@ -75,6 +75,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
@@ -351,8 +352,8 @@ fun MainNavRoot(
                     .align(Alignment.BottomStart)
                     .fillMaxWidth(),
             ) {
-                val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
-                val dimens by rememberUpdatedState(LocalDimens.current)
+                val colorScheme = MaterialTheme.colorScheme
+                val dimens = LocalDimens.current
                 val navMenuAlpha by animateFloatAsState(
                     targetValue =
                         if (currentRouteIsRoot && rootNavBarController.isNavMenuVisible) {
@@ -432,7 +433,12 @@ fun MainNavRoot(
                                     alpha = navBarAlpha
                                 }
                                 .background(
-                                    color = colorScheme.background.withLowTransparency(),
+                                    brush = Brush.verticalGradient(
+                                        colors = listOf(
+                                            colorScheme.background.withLowTransparency(),
+                                            colorScheme.background,
+                                        ),
+                                    ),
                                     shape = RectangleShape,
                                 ),
                         )

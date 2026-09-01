@@ -97,7 +97,7 @@ fun SketchesThumbnailAsyncImage(
         contentScale = ContentScale.Crop,
         filterQuality = FilterQuality.High,
     )
-    val colorScheme by rememberUpdatedState(MaterialTheme.colorScheme)
+    val colorScheme = MaterialTheme.colorScheme
     Box(
         modifier = Modifier
             .semantics {
