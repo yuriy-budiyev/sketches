@@ -70,6 +70,7 @@ interface LastScrolledScrollConnection: NestedScrollConnection {
     fun reset()
 }
 
+@Stable
 private class LastScrolledScrollConnectionImpl: LastScrolledScrollConnection {
 
     fun update(
