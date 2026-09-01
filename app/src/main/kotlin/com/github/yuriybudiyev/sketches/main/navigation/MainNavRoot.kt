@@ -421,9 +421,7 @@ fun MainNavRoot(
                 }
                 if (navBarAlpha > 0F) {
                     val bottomNavBarHeight =
-                        WindowInsets.navigationBars
-                            .asPaddingValues()
-                            .calculateBottomPadding()
+                        WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
                     if (bottomNavBarHeight > 0.dp) {
                         Box(
                             modifier = Modifier
