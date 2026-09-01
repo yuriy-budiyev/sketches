@@ -509,8 +509,10 @@ fun BucketScreen(
                     contentColor = colorScheme.onPrimary,
                     onClick = {
                         coroutineScope.launch {
-                            mediaGridScrollConnection.reset()
-                            mediaGridState.animateScrollToItem(index = 0)
+                            if (allFiles.isNotEmpty()) {
+                                mediaGridScrollConnection.reset()
+                                mediaGridState.animateScrollToItem(index = 0)
+                            }
                         }
                     },
                 ) {
