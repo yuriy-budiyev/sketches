@@ -332,9 +332,10 @@ private fun BookmarksScreen(
         }
         val appBarVisible by remember {
             derivedStateOf(structuralEqualityPolicy()) {
-                with(mediaGridScrollConnection) {
-                    neverScrolled || lastScrolledBackward || selectedFiles.isNotEmpty()
-                }
+                !mediaGridState.canScrollForward && !mediaGridState.canScrollBackward ||
+                    mediaGridScrollConnection.neverScrolled ||
+                    mediaGridScrollConnection.lastScrolledBackward ||
+                    selectedFiles.isNotEmpty()
             }
         }
         SketchesTopAppBar(

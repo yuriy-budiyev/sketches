@@ -295,9 +295,10 @@ fun BucketsScreen(
         }
         val appBarVisible by remember {
             derivedStateOf(structuralEqualityPolicy()) {
-                with(bucketsGridScrollConnection) {
-                    neverScrolled || lastScrolledBackward || selectedBuckets.isNotEmpty()
-                }
+                !bucketsGridState.canScrollForward && !bucketsGridState.canScrollBackward ||
+                    bucketsGridScrollConnection.neverScrolled ||
+                    bucketsGridScrollConnection.lastScrolledBackward ||
+                    selectedBuckets.isNotEmpty()
             }
         }
         SketchesTopAppBar(
