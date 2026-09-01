@@ -25,11 +25,13 @@
 package com.github.yuriybudiyev.sketches.core.platform.systembars
 
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.staticCompositionLocalOf
 
+@Stable
 interface SystemBarsController {
 
-    val isInDefaultWindowMode: Boolean
+    val isInMultiWindowMode: Boolean
 
     val isSystemBarsVisible: Boolean
 

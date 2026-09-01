@@ -41,6 +41,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -63,7 +64,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
+class MainActivity: ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,8 +80,9 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
         insetsController.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { view, windowInsets ->
-            isSystemBarsVisible = windowInsets.isVisible(WindowInsetsCompat.Type.navigationBars())
-                || windowInsets.isVisible(WindowInsetsCompat.Type.statusBars())
+            systemBarsController.isSystemBarsVisible =
+                windowInsets.isVisible(WindowInsetsCompat.Type.navigationBars()) ||
+                    windowInsets.isVisible(WindowInsetsCompat.Type.statusBars())
             ViewCompat.onApplyWindowInsets(
                 view,
                 windowInsets,
@@ -107,8 +109,8 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
             @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
             CompositionLocalProvider(
                 LocalDimens provides DefaultDimens(),
-                LocalShareManager provides this,
-                LocalSystemBarsController provides this,
+                LocalShareManager provides shareManager,
+                LocalSystemBarsController provides systemBarsController,
                 LocalWindowSizeClass provides calculateWindowSizeClass(this),
             ) {
                 MainTheme {
@@ -128,133 +130,20 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
         newConfig: Configuration,
     ) {
         super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig)
-        isInDefaultWindowMode = !isInMultiWindowMode
-    }
-
-    override var isInDefaultWindowMode: Boolean by mutableStateOf(!isInMultiWindowMode)
-        private set
-
-    override var isSystemBarsVisible: Boolean by mutableStateOf(true)
-        private set
-
-    override fun showSystemBars() {
-        WindowCompat
-            .getInsetsController(
-                window,
-                window.decorView,
-            )
-            .show(WindowInsetsCompat.Type.systemBars())
-    }
-
-    override fun hideSystemBars() {
-        WindowCompat
-            .getInsetsController(
-                window,
-                window.decorView,
-            )
-            .hide(WindowInsetsCompat.Type.systemBars())
-    }
-
-    override fun startChooserActivity(
-        uri: Uri,
-        mimeType: String,
-        chooserTitle: CharSequence,
-        listenerAction: String?,
-    ) {
-        val shareIntent = Intent(Intent.ACTION_SEND)
-            .putExtra(
-                Intent.EXTRA_STREAM,
-                uri,
-            )
-            .setType(mimeType)
-        if (listenerAction != null) {
-            startChooserActivityWithCallback(
-                targetIntent = shareIntent,
-                chooserTitle = chooserTitle,
-                callbackAction = listenerAction,
-            )
-        } else {
-            startChooserActivity(
-                targetIntent = shareIntent,
-                chooserTitle = chooserTitle,
-            )
-        }
-    }
-
-    override fun startChooserActivity(
-        uris: ArrayList<Uri>,
-        mimeType: String,
-        chooserTitle: CharSequence,
-        listenerAction: String?,
-    ) {
-        val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
-            .putParcelableArrayListExtra(
-                Intent.EXTRA_STREAM,
-                uris,
-            )
-            .setType(mimeType)
-        if (listenerAction != null) {
-            startChooserActivityWithCallback(
-                targetIntent = shareIntent,
-                chooserTitle = chooserTitle,
-                callbackAction = listenerAction,
-            )
-        } else {
-            startChooserActivity(
-                targetIntent = shareIntent,
-                chooserTitle = chooserTitle,
-            )
-        }
-    }
-
-    private fun startChooserActivity(
-        targetIntent: Intent,
-        chooserTitle: CharSequence,
-    ) {
-        val chooserIntent = Intent.createChooser(
-            targetIntent,
-            chooserTitle,
-        )
-        startActivity(chooserIntent)
-    }
-
-    private fun startChooserActivityWithCallback(
-        targetIntent: Intent,
-        chooserTitle: CharSequence,
-        callbackAction: String,
-    ) {
-        val callbackIntent = PendingIntent.getBroadcast(
-            applicationContext,
-            callbackAction.hashCode(),
-            Intent(
-                applicationContext,
-                ChooserCallbackReceiver::class.java,
-            ).apply {
-                setAction(callbackAction)
-            },
-            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-        )
-        val chooserIntent = Intent.createChooser(
-            targetIntent,
-            chooserTitle,
-            callbackIntent.intentSender,
-        )
-        startActivity(chooserIntent)
-    }
-
-    override fun registerOnSharedListener(
-        listenerAction: String,
-        onShared: () -> Unit,
-    ) {
-        onSharedListeners[listenerAction] = onShared
-    }
-
-    override fun unregisterOnSharedListener(listenerAction: String) {
-        onSharedListeners.remove(listenerAction)
+        systemBarsController.isInMultiWindowMode = isInMultiWindowMode
     }
 
     private val onSharedListeners: MutableMap<String?, () -> Unit> = LinkedHashMap()
+
     private val shareReceiver: BroadcastReceiver = DynamicChooserCallbackReceiver()
+
+    private val systemBarsController: SystemBarsControllerImpl =
+        SystemBarsControllerImpl(
+            isInMultiWindowMode = isInMultiWindowMode,
+            isSystemBarsVisible = true,
+        )
+
+    private val shareManager: ShareManagerImpl = ShareManagerImpl()
 
     private companion object {
 
@@ -290,6 +179,137 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
             lifecycleScope.launch {
                 onSharedListeners[intent.getStringExtra(ChooserCallbackActionExtra)]?.invoke()
             }
+        }
+    }
+
+    @Stable
+    private inner class SystemBarsControllerImpl(
+        isInMultiWindowMode: Boolean,
+        isSystemBarsVisible: Boolean,
+    ): SystemBarsController {
+
+        override var isInMultiWindowMode: Boolean by mutableStateOf(isInMultiWindowMode)
+
+        override var isSystemBarsVisible: Boolean by mutableStateOf(isSystemBarsVisible)
+
+        override fun showSystemBars() {
+            WindowCompat
+                .getInsetsController(
+                    window,
+                    window.decorView,
+                )
+                .show(WindowInsetsCompat.Type.systemBars())
+        }
+
+        override fun hideSystemBars() {
+            WindowCompat
+                .getInsetsController(
+                    window,
+                    window.decorView,
+                )
+                .hide(WindowInsetsCompat.Type.systemBars())
+        }
+    }
+
+    @Stable
+    private inner class ShareManagerImpl: ShareManager {
+
+        override fun startChooserActivity(
+            uri: Uri,
+            mimeType: String,
+            chooserTitle: CharSequence,
+            listenerAction: String?,
+        ) {
+            val shareIntent = Intent(Intent.ACTION_SEND)
+                .putExtra(
+                    Intent.EXTRA_STREAM,
+                    uri,
+                )
+                .setType(mimeType)
+            if (listenerAction != null) {
+                startChooserActivityWithCallback(
+                    targetIntent = shareIntent,
+                    chooserTitle = chooserTitle,
+                    callbackAction = listenerAction,
+                )
+            } else {
+                startChooserActivity(
+                    targetIntent = shareIntent,
+                    chooserTitle = chooserTitle,
+                )
+            }
+        }
+
+        override fun startChooserActivity(
+            uris: ArrayList<Uri>,
+            mimeType: String,
+            chooserTitle: CharSequence,
+            listenerAction: String?,
+        ) {
+            val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
+                .putParcelableArrayListExtra(
+                    Intent.EXTRA_STREAM,
+                    uris,
+                )
+                .setType(mimeType)
+            if (listenerAction != null) {
+                startChooserActivityWithCallback(
+                    targetIntent = shareIntent,
+                    chooserTitle = chooserTitle,
+                    callbackAction = listenerAction,
+                )
+            } else {
+                startChooserActivity(
+                    targetIntent = shareIntent,
+                    chooserTitle = chooserTitle,
+                )
+            }
+        }
+
+        private fun startChooserActivity(
+            targetIntent: Intent,
+            chooserTitle: CharSequence,
+        ) {
+            val chooserIntent = Intent.createChooser(
+                targetIntent,
+                chooserTitle,
+            )
+            startActivity(chooserIntent)
+        }
+
+        private fun startChooserActivityWithCallback(
+            targetIntent: Intent,
+            chooserTitle: CharSequence,
+            callbackAction: String,
+        ) {
+            val callbackIntent = PendingIntent.getBroadcast(
+                applicationContext,
+                callbackAction.hashCode(),
+                Intent(
+                    applicationContext,
+                    ChooserCallbackReceiver::class.java,
+                ).apply {
+                    setAction(callbackAction)
+                },
+                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
+            val chooserIntent = Intent.createChooser(
+                targetIntent,
+                chooserTitle,
+                callbackIntent.intentSender,
+            )
+            startActivity(chooserIntent)
+        }
+
+        override fun registerOnSharedListener(
+            listenerAction: String,
+            onShared: () -> Unit,
+        ) {
+            onSharedListeners[listenerAction] = onShared
+        }
+
+        override fun unregisterOnSharedListener(listenerAction: String) {
+            onSharedListeners.remove(listenerAction)
         }
     }
 }

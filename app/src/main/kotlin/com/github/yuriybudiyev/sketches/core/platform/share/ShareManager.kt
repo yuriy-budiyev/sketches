@@ -26,8 +26,10 @@ package com.github.yuriybudiyev.sketches.core.platform.share
 
 import android.net.Uri
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.staticCompositionLocalOf
 
+@Stable
 interface ShareManager {
 
     fun startChooserActivity(
