@@ -26,13 +26,47 @@ package com.github.yuriybudiyev.sketches.core.ui.animation
 
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.SpringSpec
 import androidx.compose.runtime.Stable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 
 @Stable
-@Suppress("UNCHECKED_CAST")
-fun <T> defaultAnimationSpec(): FiniteAnimationSpec<T> =
-    DefaultAnimationSpec as FiniteAnimationSpec<T>
+val DefaultScaleAnimationSpec: FiniteAnimationSpec<Float> =
+    SpringSpec(
+        dampingRatio = Spring.DampingRatioNoBouncy,
+        stiffness = Spring.StiffnessMedium,
+        visibilityThreshold = 0.002F,
+    )
 
-private val DefaultAnimationSpec: FiniteAnimationSpec<Any?> =
-    spring(stiffness = Spring.StiffnessMedium)
+@Stable
+val DefaultAlphaAnimationSpec: FiniteAnimationSpec<Float> =
+    SpringSpec(
+        dampingRatio = Spring.DampingRatioNoBouncy,
+        stiffness = Spring.StiffnessMedium,
+        visibilityThreshold = 0.003921569F,
+    )
+
+@Stable
+val DefaultColorAnimationSpec: FiniteAnimationSpec<Color> =
+    SpringSpec(
+        dampingRatio = Spring.DampingRatioNoBouncy,
+        stiffness = Spring.StiffnessMedium,
+        visibilityThreshold = Color(0x01010101),
+    )
+
+@Stable
+val DefaultDpAnimationSpec: FiniteAnimationSpec<Dp> =
+    SpringSpec(
+        dampingRatio = Spring.DampingRatioNoBouncy,
+        stiffness = Spring.StiffnessMedium,
+        visibilityThreshold = Dp(0.1F),
+    )
+
+@Stable
+val DefaultPxAnimationSpec: FiniteAnimationSpec<Float> =
+    SpringSpec(
+        dampingRatio = Spring.DampingRatioNoBouncy,
+        stiffness = Spring.StiffnessMedium,
+        visibilityThreshold = 0.1F,
+    )

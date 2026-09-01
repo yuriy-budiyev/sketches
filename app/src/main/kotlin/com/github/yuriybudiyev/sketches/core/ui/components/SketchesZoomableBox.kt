@@ -67,7 +67,7 @@ import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastCoerceIn
 import androidx.compose.ui.util.fastForEach
-import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultScaleAnimationSpec
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -176,19 +176,19 @@ fun SketchesZoomableBox(
                 val scaleJob = launch {
                     currentScale.animateTo(
                         newScale,
-                        defaultAnimationSpec(),
+                        DefaultScaleAnimationSpec,
                     )
                 }
                 val offsetXJob = launch {
                     currentOffsetX.animateTo(
                         newOffsetX,
-                        defaultAnimationSpec(),
+                        DefaultScaleAnimationSpec,
                     )
                 }
                 val offsetYJob = launch {
                     currentOffsetY.animateTo(
                         newOffsetY,
-                        defaultAnimationSpec(),
+                        DefaultScaleAnimationSpec,
                     )
                 }
                 scaleJob.join()

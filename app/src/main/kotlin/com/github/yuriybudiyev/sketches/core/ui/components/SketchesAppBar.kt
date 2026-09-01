@@ -56,7 +56,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
@@ -74,7 +74,7 @@ inline fun BoxScope.SketchesTopAppBar(
     val contentPaddingTop = paddings.calculateTopPadding()
     val appBarAlpha by animateFloatAsState(
         targetValue = if (visible) 1F else 0F,
-        animationSpec = defaultAnimationSpec(),
+        animationSpec = DefaultAlphaAnimationSpec,
     )
     Column(
         modifier = Modifier

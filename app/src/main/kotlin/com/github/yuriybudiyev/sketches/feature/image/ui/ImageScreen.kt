@@ -33,7 +33,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.animateIntOffsetAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -51,7 +50,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -98,7 +96,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -111,7 +108,9 @@ import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsContro
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
-import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultDpAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultPxAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.LowTransparencyAlpha
 import com.github.yuriybudiyev.sketches.core.ui.colors.NoTransparencyAlpha
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
@@ -329,7 +328,7 @@ private fun ImageScreenLayout(
             } else {
                 0.dp
             },
-            animationSpec = defaultAnimationSpec(),
+            animationSpec = DefaultDpAnimationSpec,
         )
         val contentPaddingEnd by animateDpAsState(
             targetValue = if (systemBarsVisible) {
@@ -337,7 +336,7 @@ private fun ImageScreenLayout(
             } else {
                 0.dp
             },
-            animationSpec = defaultAnimationSpec(),
+            animationSpec = DefaultDpAnimationSpec,
         )
         val contentPaddingBottom by animateDpAsState(
             targetValue = if (systemBarsVisible) {
@@ -345,7 +344,7 @@ private fun ImageScreenLayout(
             } else {
                 0.dp
             },
-            animationSpec = defaultAnimationSpec(),
+            animationSpec = DefaultDpAnimationSpec,
         )
         val controllerPaddingBottom by animateDpAsState(
             targetValue = if (systemBarsVisible) {
@@ -353,7 +352,7 @@ private fun ImageScreenLayout(
             } else {
                 0.dp
             },
-            animationSpec = defaultAnimationSpec(),
+            animationSpec = DefaultDpAnimationSpec,
         )
         MediaPager(
             state = pagerState,
@@ -387,33 +386,27 @@ private fun ImageScreenLayout(
         )
         val uiAlpha by animateFloatAsState(
             targetValue = if (systemBarsVisible) 1F else 0F,
-            animationSpec = defaultAnimationSpec(),
+            animationSpec = DefaultAlphaAnimationSpec,
         )
-        val mediaBarOffset by animateIntOffsetAsState(
+        val mediaBarTranslation by animateFloatAsState(
             targetValue = if (systemBarsVisible) {
-                IntOffset.Zero
+                0F
             } else {
-                IntOffset(
-                    x = 0,
-                    y = with(LocalDensity.current) {
-                        (dimens.mediaBarHeight + contentPaddingBottomVisible).roundToPx()
-                    },
-                )
+                with(LocalDensity.current) {
+                    (dimens.mediaBarHeight + contentPaddingBottomVisible).toPx()
+                }
             },
-            animationSpec = defaultAnimationSpec(),
+            animationSpec = DefaultPxAnimationSpec,
         )
-        val topAppBarOffset by animateIntOffsetAsState(
+        val topAppBarTranslation by animateFloatAsState(
             targetValue = if (systemBarsVisible) {
-                IntOffset.Zero
+                0F
             } else {
-                IntOffset(
-                    x = 0,
-                    y = with(LocalDensity.current) {
-                        -(dimens.material3AppBarHeight + contentPaddingTopVisible).roundToPx()
-                    },
-                )
+                with(LocalDensity.current) {
+                    -(dimens.material3AppBarHeight + contentPaddingTopVisible).toPx()
+                }
             },
-            animationSpec = defaultAnimationSpec(),
+            animationSpec = DefaultPxAnimationSpec,
         )
         if (uiAlpha > 0F) {
             if (contentPaddingStart > 0.dp && navBarPaddingStart > 0.dp) {
@@ -448,7 +441,6 @@ private fun ImageScreenLayout(
             }
             Box(
                 modifier = Modifier
-                    .offset { mediaBarOffset }
                     .align(Alignment.BottomStart)
                     .padding(
                         start = if (navBarPaddingStart > 0.dp) contentPaddingStart else 0.dp,
@@ -456,6 +448,7 @@ private fun ImageScreenLayout(
                     )
                     .graphicsLayer {
                         alpha = uiAlpha
+                        translationY = mediaBarTranslation
                     }
                     .background(
                         color = colorScheme.background.withLowTransparency(),
@@ -472,25 +465,24 @@ private fun ImageScreenLayout(
                     coroutineScope.launch {
                         pagerState.animateScrollToPage(
                             page = index,
-                            animationSpec = defaultAnimationSpec(),
+                            animationSpec = DefaultAlphaAnimationSpec,
                         )
                     }
                 },
                 contentPaddingStart = contentPaddingStartVisible,
                 contentPaddingEnd = contentPaddingEndVisible,
                 modifier = Modifier
-                    .offset { mediaBarOffset }
                     .align(Alignment.BottomStart)
                     .padding(bottom = contentPaddingBottom)
                     .graphicsLayer {
                         alpha = uiAlpha
+                        translationY = mediaBarTranslation
                     }
                     .height(dimens.mediaBarHeight)
                     .fillMaxWidth(),
             )
             SketchesAppBar(
                 modifier = Modifier
-                    .offset { topAppBarOffset }
                     .align(Alignment.TopStart)
                     .padding(
                         start = if (navBarPaddingStart > 0.dp) contentPaddingStart else 0.dp,
@@ -499,6 +491,7 @@ private fun ImageScreenLayout(
                     .fillMaxWidth()
                     .graphicsLayer {
                         alpha = uiAlpha
+                        translationY = topAppBarTranslation
                     },
                 contentPaddingTop = contentPaddingTopVisible,
                 contentPaddingStart =
@@ -635,7 +628,7 @@ private fun MediaPager(
         key = { page -> files[page].id },
         flingBehavior = PagerDefaults.flingBehavior(
             state = state,
-            snapAnimationSpec = defaultAnimationSpec(),
+            snapAnimationSpec = DefaultAlphaAnimationSpec,
         ),
         modifier = modifier,
     ) { page ->

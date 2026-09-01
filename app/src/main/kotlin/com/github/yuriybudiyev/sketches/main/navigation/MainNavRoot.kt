@@ -133,7 +133,8 @@ import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
-import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultColorAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
@@ -324,22 +325,22 @@ fun MainNavRoot(
                     modifier = Modifier.matchParentSize(),
                     transitionSpec = {
                         ContentTransform(
-                            targetContentEnter = fadeIn(animationSpec = defaultAnimationSpec()),
-                            initialContentExit = fadeOut(animationSpec = defaultAnimationSpec()),
+                            targetContentEnter = fadeIn(animationSpec = DefaultAlphaAnimationSpec),
+                            initialContentExit = fadeOut(animationSpec = DefaultAlphaAnimationSpec),
                             sizeTransform = null,
                         )
                     },
                     popTransitionSpec = {
                         ContentTransform(
-                            targetContentEnter = fadeIn(animationSpec = defaultAnimationSpec()),
-                            initialContentExit = fadeOut(animationSpec = defaultAnimationSpec()),
+                            targetContentEnter = fadeIn(animationSpec = DefaultAlphaAnimationSpec),
+                            initialContentExit = fadeOut(animationSpec = DefaultAlphaAnimationSpec),
                             sizeTransform = null,
                         )
                     },
                     predictivePopTransitionSpec = {
                         ContentTransform(
-                            targetContentEnter = fadeIn(animationSpec = defaultAnimationSpec()),
-                            initialContentExit = fadeOut(animationSpec = defaultAnimationSpec()),
+                            targetContentEnter = fadeIn(animationSpec = DefaultAlphaAnimationSpec),
+                            initialContentExit = fadeOut(animationSpec = DefaultAlphaAnimationSpec),
                             sizeTransform = null,
                         )
                     },
@@ -359,7 +360,7 @@ fun MainNavRoot(
                         } else {
                             0F
                         },
-                    animationSpec = defaultAnimationSpec(),
+                    animationSpec = DefaultAlphaAnimationSpec,
                 )
                 val navBarAlpha by animateFloatAsState(
                     targetValue =
@@ -368,7 +369,7 @@ fun MainNavRoot(
                         } else {
                             0F
                         },
-                    animationSpec = defaultAnimationSpec(),
+                    animationSpec = DefaultAlphaAnimationSpec,
                 )
                 if (navMenuAlpha > 0F) {
                     Row(
@@ -462,7 +463,7 @@ private fun NavItem(
             } else {
                 Color.Transparent
             },
-        animationSpec = defaultAnimationSpec(),
+        animationSpec = DefaultColorAnimationSpec,
     )
     val indicationColor by animateColorAsState(
         targetValue =
@@ -471,20 +472,20 @@ private fun NavItem(
             } else {
                 colorScheme.onBackground
             },
-        animationSpec = defaultAnimationSpec(),
+        animationSpec = DefaultColorAnimationSpec,
     )
     val selectedIconAlpha by animateFloatAsState(
         targetValue = if (selected) 1F else 0F,
-        animationSpec = defaultAnimationSpec(),
+        animationSpec = DefaultAlphaAnimationSpec,
     )
     val unselectedIconAlpha by animateFloatAsState(
         targetValue = if (selected) 0F else 1F,
-        animationSpec = defaultAnimationSpec(),
+        animationSpec = DefaultAlphaAnimationSpec,
     )
     var hintVisible by remember { mutableStateOf(false) }
     val hintAlpha by animateFloatAsState(
         targetValue = if (hintVisible) 1F else 0F,
-        animationSpec = defaultAnimationSpec(),
+        animationSpec = DefaultAlphaAnimationSpec,
     )
     val title = stringResource(route.titleRes)
     Box(

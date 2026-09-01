@@ -72,7 +72,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.window.SecureFlagPolicy
-import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import kotlinx.coroutines.Job
@@ -92,7 +92,7 @@ fun SketchesActionButton(
     var hintVisible by remember { mutableStateOf(false) }
     val hintAlpha by animateFloatAsState(
         targetValue = if (hintVisible) 1F else 0F,
-        animationSpec = defaultAnimationSpec(),
+        animationSpec = DefaultAlphaAnimationSpec,
     )
     val coroutineScope = rememberCoroutineScope()
     val interactionSource = remember { MutableInteractionSource() }

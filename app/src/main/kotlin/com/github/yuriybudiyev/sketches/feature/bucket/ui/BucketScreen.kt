@@ -87,7 +87,7 @@ import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsContro
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
-import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
@@ -463,7 +463,7 @@ fun BucketScreen(
         )
         val scrollToStartButtonAlpha by animateFloatAsState(
             targetValue = if (scrollToStartButtonVisible) 1F else 0F,
-            animationSpec = defaultAnimationSpec(),
+            animationSpec = DefaultAlphaAnimationSpec,
         )
         if (scrollToStartButtonAlpha > 0F) {
             Box(

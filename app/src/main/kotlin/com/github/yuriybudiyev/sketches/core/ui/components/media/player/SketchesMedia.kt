@@ -61,7 +61,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import coil3.compose.asPainter
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.coil.imageMemoryCache
-import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.ActionButtonHintPosition
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
@@ -108,7 +108,7 @@ fun SketchesMediaPlayer(
         )
         val controllerAlpha by animateFloatAsState(
             targetValue = if (controllerVisible) 1F else 0F,
-            animationSpec = defaultAnimationSpec(),
+            animationSpec = DefaultAlphaAnimationSpec,
         )
         if (controllerAlpha > 0F) {
             SketchesMediaController(
