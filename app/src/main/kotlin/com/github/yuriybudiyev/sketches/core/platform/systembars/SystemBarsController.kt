@@ -22,12 +22,14 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.platform.bars
+package com.github.yuriybudiyev.sketches.core.platform.systembars
 
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
 
 interface SystemBarsController {
+
+    val isInSingleWindowMode: Boolean
 
     val isSystemBarsVisible: Boolean
 

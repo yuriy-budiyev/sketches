@@ -30,6 +30,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -49,10 +50,10 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
-import com.github.yuriybudiyev.sketches.core.platform.bars.LocalSystemBarsController
-import com.github.yuriybudiyev.sketches.core.platform.bars.SystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.ShareManager
+import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
+import com.github.yuriybudiyev.sketches.core.platform.systembars.SystemBarsController
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.wsc.LocalWindowSizeClass
 import com.github.yuriybudiyev.sketches.main.ui.MainScreen
@@ -121,6 +122,17 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
         unregisterReceiver(shareReceiver)
         super.onDestroy()
     }
+
+    override fun onMultiWindowModeChanged(
+        isInMultiWindowMode: Boolean,
+        newConfig: Configuration,
+    ) {
+        super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig)
+        isInSingleWindowMode = !isInMultiWindowMode
+    }
+
+    override var isInSingleWindowMode: Boolean by mutableStateOf(!isInMultiWindowMode)
+        private set
 
     override var isSystemBarsVisible: Boolean by mutableStateOf(true)
         private set
