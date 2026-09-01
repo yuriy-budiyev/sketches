@@ -509,7 +509,8 @@ fun BucketScreen(
                     contentColor = colorScheme.onPrimary,
                     onClick = {
                         coroutineScope.launch {
-                            mediaGridState.animateScrollToItem(0)
+                            mediaGridScrollConnection.reset()
+                            mediaGridState.animateScrollToItem(index = 0)
                         }
                     },
                 ) {

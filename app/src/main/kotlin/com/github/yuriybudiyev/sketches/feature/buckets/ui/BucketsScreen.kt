@@ -225,6 +225,7 @@ fun BucketsScreen(
         rootNavMenuController.setOnClickListener(BucketsNavRoute) {
             coroutineScope.launch {
                 if (allBuckets.isNotEmpty()) {
+                    bucketsGridScrollConnection.reset()
                     bucketsGridState.animateScrollToItem(index = 0)
                 }
             }

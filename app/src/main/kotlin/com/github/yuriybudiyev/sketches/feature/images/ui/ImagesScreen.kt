@@ -260,6 +260,7 @@ fun ImagesScreen(
         rootNavMenuController.setOnClickListener(ImagesNavRoute) {
             coroutineScope.launch {
                 if (allFiles.isNotEmpty()) {
+                    mediaGridScrollConnection.reset()
                     mediaGridState.animateScrollToItem(index = 0)
                 }
             }
