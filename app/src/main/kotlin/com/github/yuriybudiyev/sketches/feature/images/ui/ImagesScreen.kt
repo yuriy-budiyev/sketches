@@ -52,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -84,7 +85,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDe
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.calculateMediaIndexWithGroups
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
-import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrolledBackward
+import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrolledScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
@@ -125,6 +126,7 @@ fun ImagesScreen(
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val mediaGridState = rememberLazyGridState()
+    val mediaGridScrollConnection = rememberLastScrolledScrollConnection(mediaGridState)
     val mediaBatchState = rememberMediaBatchState()
     var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
@@ -278,6 +280,7 @@ fun ImagesScreen(
                     modifier = Modifier.matchParentSize(),
                 )
                 LaunchedEffect(Unit) {
+                    mediaGridScrollConnection.reset()
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }
@@ -295,7 +298,9 @@ fun ImagesScreen(
                     items = uiState.groups,
                     selectedFiles = selectedFiles,
                     onItemClick = onImageClick,
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier
+                        .matchParentSize()
+                        .nestedScroll(mediaGridScrollConnection),
                     state = mediaGridState,
                     overlayTop = true,
                     overlayBottom = true,
@@ -307,6 +312,7 @@ fun ImagesScreen(
                     modifier = Modifier.matchParentSize(),
                 )
                 LaunchedEffect(Unit) {
+                    mediaGridScrollConnection.reset()
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }
@@ -316,10 +322,11 @@ fun ImagesScreen(
                 }
             }
         }
-        val lastScrolledBackwards by rememberLastScrolledBackward(mediaGridState)
         val appBarVisible by remember {
             derivedStateOf(structuralEqualityPolicy()) {
-                lastScrolledBackwards || selectedFiles.isNotEmpty()
+                with(mediaGridScrollConnection) {
+                    neverScrolled || lastScrolledBackward || selectedFiles.isNotEmpty()
+                }
             }
         }
         SketchesTopAppBar(

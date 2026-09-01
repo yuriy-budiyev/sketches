@@ -26,11 +26,6 @@ package com.github.yuriybudiyev.sketches.core.ui.utils
 
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.unit.IntSize
 
 suspend fun LazyGridState.scrollToItem(
@@ -94,33 +89,3 @@ suspend fun LazyGridState.scrollToItem(
         )
     }
 }
-
-@Composable
-fun rememberLastScrolledBackward(
-    state: LazyGridState,
-    shouldBeAbleToScrollFurther: Boolean = false,
-): State<Boolean> =
-    remember(
-        state,
-        shouldBeAbleToScrollFurther,
-    ) {
-        var previousIndex = 0
-        var previousOffset = 0
-        derivedStateOf(structuralEqualityPolicy()) {
-            val currentIndex = state.firstVisibleItemIndex
-            val currentOffset = state.firstVisibleItemScrollOffset
-            val lastScrolledBackwards =
-                if (currentIndex == previousIndex) {
-                    currentOffset <= previousOffset
-                } else {
-                    currentIndex < previousIndex
-                }
-            previousIndex = currentIndex
-            previousOffset = currentOffset
-            if (shouldBeAbleToScrollFurther) {
-                lastScrolledBackwards && state.canScrollBackward
-            } else {
-                lastScrolledBackwards
-            }
-        }
-    }

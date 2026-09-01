@@ -66,6 +66,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -101,7 +102,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberM
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrolledBackward
+import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrolledScrollConnection
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
 import kotlinx.coroutines.launch
 
@@ -142,6 +143,7 @@ fun BucketsScreen(
     val deleteDialogMedia = rememberSaveableSnapshotStateList<MediaDescriptor>()
     val mediaBatchState = rememberMediaBatchState()
     val bucketsGridState = rememberLazyGridState()
+    val bucketsGridScrollConnection = rememberLastScrolledScrollConnection(bucketsGridState)
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->
@@ -243,6 +245,7 @@ fun BucketsScreen(
                     modifier = Modifier.matchParentSize(),
                 )
                 LaunchedEffect(Unit) {
+                    bucketsGridScrollConnection.reset()
                     if (selectedBuckets.isNotEmpty()) {
                         selectedBuckets.clear()
                     }
@@ -265,7 +268,9 @@ fun BucketsScreen(
                     buckets = buckets,
                     selectedBuckets = selectedBuckets,
                     onBucketClick = onBucketClick,
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier
+                        .matchParentSize()
+                        .nestedScroll(bucketsGridScrollConnection),
                 )
             }
             is BucketsScreenViewModel.UiState.Error -> {
@@ -274,6 +279,7 @@ fun BucketsScreen(
                     modifier = Modifier.matchParentSize(),
                 )
                 LaunchedEffect(Unit) {
+                    bucketsGridScrollConnection.reset()
                     if (selectedBuckets.isNotEmpty()) {
                         selectedBuckets.clear()
                     }
@@ -286,10 +292,11 @@ fun BucketsScreen(
                 }
             }
         }
-        val lastScrolledBackward by rememberLastScrolledBackward(bucketsGridState)
         val appBarVisible by remember {
             derivedStateOf(structuralEqualityPolicy()) {
-                lastScrolledBackward || selectedBuckets.isNotEmpty()
+                with(bucketsGridScrollConnection) {
+                    neverScrolled || lastScrolledBackward || selectedBuckets.isNotEmpty()
+                }
             }
         }
         SketchesTopAppBar(

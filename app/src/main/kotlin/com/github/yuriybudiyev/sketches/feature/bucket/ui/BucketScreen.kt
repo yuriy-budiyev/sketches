@@ -71,6 +71,7 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -103,7 +104,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDe
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrolledBackward
+import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrolledScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
@@ -151,6 +152,7 @@ fun BucketScreen(
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     var bucketHidden by rememberSaveable { mutableStateOf(false) }
     val mediaGridState = rememberLazyGridState()
+    val mediaGridScrollConnection = rememberLastScrolledScrollConnection(mediaGridState)
     val mediaBatchState = rememberMediaBatchState()
     var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
@@ -298,6 +300,7 @@ fun BucketScreen(
         when (uiState) {
             is BucketScreenViewModel.UiState.Empty -> {
                 LaunchedEffect(Unit) {
+                    mediaGridScrollConnection.reset()
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }
@@ -318,7 +321,9 @@ fun BucketScreen(
                     files = files,
                     selectedFiles = selectedFiles,
                     onItemClick = onImageClick,
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier
+                        .matchParentSize()
+                        .nestedScroll(mediaGridScrollConnection),
                     state = mediaGridState,
                     overlayTop = true,
                     overlayBottom = false,
@@ -330,6 +335,7 @@ fun BucketScreen(
                     modifier = Modifier.matchParentSize(),
                 )
                 LaunchedEffect(Unit) {
+                    mediaGridScrollConnection.reset()
                     if (selectedFiles.isNotEmpty()) {
                         selectedFiles.clear()
                     }
@@ -339,10 +345,11 @@ fun BucketScreen(
                 }
             }
         }
-        val lastScrolledBackward by rememberLastScrolledBackward(mediaGridState)
         val appBarVisible by remember {
             derivedStateOf(structuralEqualityPolicy()) {
-                lastScrolledBackward || selectedFiles.isNotEmpty()
+                with(mediaGridScrollConnection) {
+                    neverScrolled || lastScrolledBackward || selectedFiles.isNotEmpty()
+                }
             }
         }
         SketchesTopAppBar(
@@ -457,10 +464,13 @@ fun BucketScreen(
                     ),
             )
         }
-        val scrollToStartButtonVisible by rememberLastScrolledBackward(
-            state = mediaGridState,
-            shouldBeAbleToScrollFurther = true,
-        )
+        val scrollToStartButtonVisible by remember {
+            derivedStateOf(structuralEqualityPolicy()) {
+                mediaGridScrollConnection.lastScrolledBackward &&
+                    mediaGridState.canScrollBackward ||
+                    selectedFiles.isNotEmpty()
+            }
+        }
         val scrollToStartButtonAlpha by animateFloatAsState(
             targetValue = if (scrollToStartButtonVisible) 1F else 0F,
             animationSpec = DefaultAlphaAnimationSpec,
