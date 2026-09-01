@@ -35,7 +35,7 @@ androidx-tracing = "2.0.1"
 hilt = "2.60.1"
 guava = "33.7.1-android"
 okio = "3.18.1"
-coil = "3.6.0"
+coil = "3.6.1"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
