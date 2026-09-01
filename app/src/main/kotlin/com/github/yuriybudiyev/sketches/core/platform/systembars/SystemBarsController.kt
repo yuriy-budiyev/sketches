@@ -29,7 +29,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 
 interface SystemBarsController {
 
-    val isInSingleWindowMode: Boolean
+    val isInDefaultWindowMode: Boolean
 
     val isSystemBarsVisible: Boolean
 

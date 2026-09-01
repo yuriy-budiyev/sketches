@@ -128,10 +128,10 @@ class MainActivity: ComponentActivity(), SystemBarsController, ShareManager {
         newConfig: Configuration,
     ) {
         super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig)
-        isInSingleWindowMode = !isInMultiWindowMode
+        isInDefaultWindowMode = !isInMultiWindowMode
     }
 
-    override var isInSingleWindowMode: Boolean by mutableStateOf(!isInMultiWindowMode)
+    override var isInDefaultWindowMode: Boolean by mutableStateOf(!isInMultiWindowMode)
         private set
 
     override var isSystemBarsVisible: Boolean by mutableStateOf(true)
