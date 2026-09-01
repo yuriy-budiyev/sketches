@@ -38,7 +38,9 @@ import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalViewConfiguration
+import androidx.compose.ui.unit.LayoutDirection
 import kotlin.math.abs
 
 @Composable
@@ -55,7 +57,11 @@ fun rememberLastScrolledScrollConnection(state: LazyGridState): LastScrolledScro
 @Composable
 fun rememberLastScrolledScrollConnection(orientation: Orientation): LastScrolledScrollConnection =
     remember { LastScrolledScrollConnectionImpl() }.apply {
-        update(orientation, LocalViewConfiguration.current.touchSlop)
+        update(
+            orientation = orientation,
+            direction = LocalLayoutDirection.current,
+            threshold = LocalViewConfiguration.current.touchSlop,
+        )
     }
 
 @Stable
@@ -75,11 +81,16 @@ private class LastScrolledScrollConnectionImpl: LastScrolledScrollConnection {
 
     fun update(
         orientation: Orientation,
+        direction: LayoutDirection,
         threshold: Float,
     ) {
         var changed = false
         if (this.orientation != orientation) {
             this.orientation = orientation
+            changed = true
+        }
+        if (this.direction != direction) {
+            this.direction = direction
             changed = true
         }
         if (this.threshold != threshold) {
@@ -111,13 +122,20 @@ private class LastScrolledScrollConnectionImpl: LastScrolledScrollConnection {
         available: Offset,
         source: NestedScrollSource,
     ): Offset {
+        val orientation = orientation
         val delta = when (orientation) {
             Orientation.Vertical -> available.y
             Orientation.Horizontal -> available.x
         }
         accumulated += delta
         if (abs(accumulated) >= threshold) {
-            if (accumulated < 0F) {
+            val forward =
+                if (orientation == Orientation.Horizontal && direction == LayoutDirection.Rtl) {
+                    accumulated > 0F
+                } else {
+                    accumulated < 0F
+                }
+            if (forward) {
                 lastScrolledBackward = false
                 lastScrolledForward = true
             } else {
@@ -130,6 +148,7 @@ private class LastScrolledScrollConnectionImpl: LastScrolledScrollConnection {
     }
 
     private var orientation: Orientation = Orientation.Vertical
+    private var direction: LayoutDirection = LayoutDirection.Ltr
     private var threshold: Float = 0F
     private var accumulated: Float = 0F
 }
