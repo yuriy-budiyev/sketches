@@ -89,7 +89,6 @@ import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
-import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
@@ -104,6 +103,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDe
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrolledScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult

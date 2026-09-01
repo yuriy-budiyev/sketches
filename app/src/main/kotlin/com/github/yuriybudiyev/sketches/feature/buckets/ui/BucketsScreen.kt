@@ -84,9 +84,6 @@ import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavMenuControll
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
-import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
-import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
-import com.github.yuriybudiyev.sketches.core.ui.colors.withMediumTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
@@ -102,6 +99,9 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberM
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.theme.withHighTransparency
+import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
+import com.github.yuriybudiyev.sketches.core.ui.theme.withMediumTransparency
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrolledScrollConnection
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
 import kotlinx.coroutines.launch

@@ -75,7 +75,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
@@ -136,8 +135,9 @@ import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBars
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultColorAnimationSpec
-import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
+import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.registerBookmarksNavRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavRoute
@@ -431,12 +431,7 @@ fun MainNavRoot(
                                     alpha = navBarAlpha
                                 }
                                 .background(
-                                    brush = Brush.verticalGradient(
-                                        colors = listOf(
-                                            colorScheme.background.withLowTransparency(),
-                                            colorScheme.background,
-                                        ),
-                                    ),
+                                    brush = rememberBottomToTopBackgroundGradientBrush(colorScheme),
                                     shape = RectangleShape,
                                 ),
                         )

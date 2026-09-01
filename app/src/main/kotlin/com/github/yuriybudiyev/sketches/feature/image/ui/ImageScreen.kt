@@ -89,7 +89,6 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
@@ -115,10 +114,6 @@ import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBars
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultDpAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultPxAnimationSpec
-import com.github.yuriybudiyev.sketches.core.ui.colors.LowTransparencyAlpha
-import com.github.yuriybudiyev.sketches.core.ui.colors.NoTransparencyAlpha
-import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
-import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteBookmarksConfirmationDialog
@@ -132,6 +127,11 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.player.Sketches
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.theme.LowTransparencyAlpha
+import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
+import com.github.yuriybudiyev.sketches.core.ui.theme.rememberTopToBottomBackgroundGradientBrush
+import com.github.yuriybudiyev.sketches.core.ui.theme.withHighTransparency
+import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemCentered
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
@@ -465,11 +465,8 @@ private fun ImageScreenLayout(
                     .run {
                         if (contentPaddingBottomVisible > 0.dp) {
                             background(
-                                brush = Brush.verticalGradient(
-                                    colors = listOf(
-                                        colorScheme.background.withLowTransparency(),
-                                        colorScheme.background,
-                                    ),
+                                brush = rememberBottomToTopBackgroundGradientBrush(
+                                    colorScheme = colorScheme,
                                     startY = with(LocalDensity.current) { dimens.mediaBarHeight.toPx() },
                                 ),
                                 shape = RectangleShape,
@@ -516,16 +513,22 @@ private fun ImageScreenLayout(
                         alpha = uiAlpha
                         translationY = ceil(topAppBarTranslation)
                     }
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                colorScheme.background,
-                                colorScheme.background.withLowTransparency(),
-                            ),
-                            endY = with(LocalDensity.current) { contentPaddingTopVisible.toPx() },
-                        ),
-                        shape = RectangleShape,
-                    ),
+                    .run {
+                        if (contentPaddingTopVisible > 0.dp) {
+                            background(
+                                brush = rememberTopToBottomBackgroundGradientBrush(
+                                    colorScheme = colorScheme,
+                                    endY = with(LocalDensity.current) { contentPaddingTopVisible.toPx() },
+                                ),
+                                shape = RectangleShape,
+                            )
+                        } else {
+                            background(
+                                color = colorScheme.background.withLowTransparency(),
+                                shape = RectangleShape,
+                            )
+                        }
+                    },
                 contentPaddingTop = contentPaddingTopVisible,
                 contentPaddingStart = contentPaddingStartVisible,
                 contentPaddingEnd = contentPaddingEndVisible,
@@ -902,13 +905,9 @@ private fun MediaBar(
                         },
                     ),
                     modifier = Modifier
-                        .graphicsLayer(
-                            alpha = if (position == currentIndex) {
-                                NoTransparencyAlpha
-                            } else {
-                                LowTransparencyAlpha
-                            },
-                        )
+                        .graphicsLayer {
+                            alpha = if (position == currentIndex) 1F else LowTransparencyAlpha
+                        }
                         .matchParentSize(),
                 )
                 if (file.mediaType == MediaType.Video) {

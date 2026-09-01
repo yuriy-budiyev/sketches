@@ -49,7 +49,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -58,8 +57,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
-import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.theme.rememberTopToBottomBackgroundGradientBrush
+import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 
 @Composable
 inline fun BoxScope.SketchesTopAppBar(
@@ -89,12 +89,7 @@ inline fun BoxScope.SketchesTopAppBar(
                     .fillMaxWidth()
                     .height(contentPaddingTop)
                     .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                colorScheme.background,
-                                colorScheme.background.withLowTransparency(),
-                            ),
-                        ),
+                        brush = rememberTopToBottomBackgroundGradientBrush(colorScheme),
                         shape = RectangleShape,
                     ),
             )

@@ -22,12 +22,17 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.colors
+package com.github.yuriybudiyev.sketches.core.ui.theme
 
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TileMode
 
-const val NoTransparencyAlpha: Float = 1F
 const val LowTransparencyAlpha: Float = 0.75F
 const val MediumTransparencyAlpha: Float = 0.35F
 const val HighTransparencyAlpha: Float = 0.15F
@@ -43,3 +48,41 @@ fun Color.withMediumTransparency(): Color =
 @Stable
 fun Color.withHighTransparency(): Color =
     this.copy(alpha = HighTransparencyAlpha)
+
+@Stable
+@Composable
+fun rememberTopToBottomBackgroundGradientBrush(
+    colorScheme: ColorScheme = MaterialTheme.colorScheme,
+    startY: Float = 0F,
+    endY: Float = Float.POSITIVE_INFINITY,
+): Brush =
+    remember(colorScheme, startY, endY) {
+        Brush.verticalGradient(
+            colors = listOf(
+                colorScheme.background,
+                colorScheme.background.withLowTransparency(),
+            ),
+            startY = startY,
+            endY = endY,
+            tileMode = TileMode.Clamp,
+        )
+    }
+
+@Stable
+@Composable
+fun rememberBottomToTopBackgroundGradientBrush(
+    colorScheme: ColorScheme = MaterialTheme.colorScheme,
+    startY: Float = 0F,
+    endY: Float = Float.POSITIVE_INFINITY,
+): Brush =
+    remember(colorScheme, startY, endY) {
+        Brush.verticalGradient(
+            colors = listOf(
+                colorScheme.background.withLowTransparency(),
+                colorScheme.background,
+            ),
+            startY = startY,
+            endY = endY,
+            tileMode = TileMode.Clamp,
+        )
+    }
