@@ -169,16 +169,6 @@ fun MainNavRoot(
     val navBackStack = rememberSaveableSnapshotStateList<NavRoute> {
         add(initialRoute)
     }
-    val topRootRoute by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            navBackStack.lastOrNull { route -> route is RootNavRoute } as? RootNavRoute
-        }
-    }
-    val currentRouteIsRoot by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            navBackStack.lastOrNull() is RootNavRoute
-        }
-    }
     val navEntryProvider = remember {
         entryProvider {
             registerImagesNavRoute(
@@ -312,12 +302,12 @@ fun MainNavRoot(
             },
         )
         val navResultStore = rememberNavResultStore()
-        val rootNavBarController = rememberRootNavMenuController()
+        val navMenuController = rememberRootNavMenuController()
         val systemBarsController by rememberUpdatedState(LocalSystemBarsController.current)
         Box(modifier = modifier.then(transitionModifier)) {
             CompositionLocalProvider(
                 LocalNavResultStore provides navResultStore,
-                LocalRootNavMenuController provides rootNavBarController,
+                LocalRootNavMenuController provides navMenuController,
                 LocalNavSharedTransitionScope provides this@SharedTransitionScope,
             ) {
                 NavDisplay(
@@ -354,22 +344,24 @@ fun MainNavRoot(
             ) {
                 val colorScheme = MaterialTheme.colorScheme
                 val dimens = LocalDimens.current
+                val navMenuVisible by remember {
+                    derivedStateOf(structuralEqualityPolicy()) {
+                        navBackStack.lastOrNull() is RootNavRoute &&
+                            navMenuController.isNavMenuVisible
+                    }
+                }
                 val navMenuAlpha by animateFloatAsState(
-                    targetValue =
-                        if (currentRouteIsRoot && rootNavBarController.isNavMenuVisible) {
-                            1F
-                        } else {
-                            0F
-                        },
+                    targetValue = if (navMenuVisible) 1F else 0F,
                     animationSpec = DefaultAlphaAnimationSpec,
                 )
+                val navBarVisible by remember {
+                    derivedStateOf(structuralEqualityPolicy()) {
+                        navBackStack.lastOrNull() is RootNavRoute &&
+                            systemBarsController.isSystemBarsVisible
+                    }
+                }
                 val navBarAlpha by animateFloatAsState(
-                    targetValue =
-                        if (currentRouteIsRoot && systemBarsController.isSystemBarsVisible) {
-                            1F
-                        } else {
-                            0F
-                        },
+                    targetValue = if (navBarVisible) 1F else 0F,
                     animationSpec = DefaultAlphaAnimationSpec,
                 )
                 if (navMenuAlpha > 0F) {
@@ -389,7 +381,7 @@ fun MainNavRoot(
                         for (route in rootRoutes) {
                             val routeSelected by remember {
                                 derivedStateOf(structuralEqualityPolicy()) {
-                                    route == topRootRoute
+                                    route == navBackStack.lastOrNull()
                                 }
                             }
                             NavItem(
@@ -397,7 +389,7 @@ fun MainNavRoot(
                                 selected = routeSelected,
                                 onClick = {
                                     if (routeSelected) {
-                                        rootNavBarController.dispatchOnClick(route)
+                                        navMenuController.dispatchOnClick(route)
                                     } else {
                                         if (route == initialRoute) {
                                             navBackStack.clear()
