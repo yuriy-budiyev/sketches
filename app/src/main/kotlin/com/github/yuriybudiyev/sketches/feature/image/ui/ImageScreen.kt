@@ -327,9 +327,9 @@ private fun ImageScreenLayout(
                 contentPaddingBottomVisible = 0.dp
             }
         }
-        val systemBarsVisible = systemBarsController.isSystemBarsVisible
+        var uiVisible by remember { mutableStateOf(true) }
         val contentPaddingStart by animateDpAsState(
-            targetValue = if (systemBarsVisible) {
+            targetValue = if (uiVisible) {
                 contentPaddingStartVisible
             } else {
                 0.dp
@@ -337,7 +337,7 @@ private fun ImageScreenLayout(
             animationSpec = DefaultDpAnimationSpec,
         )
         val contentPaddingEnd by animateDpAsState(
-            targetValue = if (systemBarsVisible) {
+            targetValue = if (uiVisible) {
                 contentPaddingEndVisible
             } else {
                 0.dp
@@ -345,7 +345,7 @@ private fun ImageScreenLayout(
             animationSpec = DefaultDpAnimationSpec,
         )
         val contentPaddingBottom by animateDpAsState(
-            targetValue = if (systemBarsVisible) {
+            targetValue = if (uiVisible) {
                 contentPaddingBottomVisible
             } else {
                 0.dp
@@ -353,7 +353,7 @@ private fun ImageScreenLayout(
             animationSpec = DefaultDpAnimationSpec,
         )
         val controllerPaddingBottom by animateDpAsState(
-            targetValue = if (systemBarsVisible) {
+            targetValue = if (uiVisible) {
                 dimens.mediaBarHeight
             } else {
                 0.dp
@@ -365,14 +365,16 @@ private fun ImageScreenLayout(
             files = files,
             onPageTap = {
                 coroutineScope.launch {
-                    if (systemBarsVisible) {
+                    if (uiVisible) {
                         systemBarsController.hideSystemBars()
+                        uiVisible = false
                     } else {
                         systemBarsController.showSystemBars()
+                        uiVisible = true
                     }
                 }
             },
-            controllerVisible = systemBarsVisible,
+            controllerVisible = uiVisible,
             controllerStartPadding = if (navBarPaddingStart > 0.dp) contentPaddingStart else 0.dp,
             controllerEndPadding = if (navBarPaddingEnd > 0.dp) contentPaddingEnd else 0.dp,
             controlsStartPadding =
@@ -391,12 +393,12 @@ private fun ImageScreenLayout(
             modifier = Modifier.matchParentSize(),
         )
         val uiAlpha by animateFloatAsState(
-            targetValue = if (systemBarsVisible) 1F else 0F,
+            targetValue = if (uiVisible) 1F else 0F,
             animationSpec = DefaultAlphaAnimationSpec,
         )
         val mediaBarHeight = dimens.mediaBarHeight + contentPaddingBottomVisible
         val mediaBarTranslation by animateFloatAsState(
-            targetValue = if (systemBarsVisible) {
+            targetValue = if (uiVisible) {
                 0F
             } else {
                 with(LocalDensity.current) {
@@ -407,7 +409,7 @@ private fun ImageScreenLayout(
         )
         val topAppBarHeight = contentPaddingTopVisible + dimens.material3AppBarHeight
         val topAppBarTranslation by animateFloatAsState(
-            targetValue = if (systemBarsVisible) {
+            targetValue = if (uiVisible) {
                 0F
             } else {
                 with(LocalDensity.current) {
