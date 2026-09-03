@@ -477,7 +477,6 @@ private fun NavItem(
                     properties.selected = selected
                     properties.contentDescription = title
                     properties.onLongClick {
-                        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                         hideHintJob?.cancel()
                         coroutineScope.launch {
                             hintVisible = true

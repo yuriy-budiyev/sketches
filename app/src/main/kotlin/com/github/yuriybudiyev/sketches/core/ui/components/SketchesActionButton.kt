@@ -182,7 +182,6 @@ fun SketchesActionButton(
                     role = Role.Button
                     contentDescription = hint
                     onLongClick {
-                        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                         hideHintJob?.cancel()
                         coroutineScope.launch {
                             hintVisible = true
