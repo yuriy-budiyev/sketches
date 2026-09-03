@@ -131,11 +131,10 @@ import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
-import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
-import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultColorAnimationSpec
-import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultEnterTransition
-import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultExitTransition
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultEnterTransition
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultExitTransition
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
@@ -331,22 +330,22 @@ fun MainNavRoot(
                     modifier = Modifier.matchParentSize(),
                     transitionSpec = {
                         ContentTransform(
-                            targetContentEnter = DefaultEnterTransition,
-                            initialContentExit = DefaultExitTransition,
+                            targetContentEnter = defaultEnterTransition(),
+                            initialContentExit = defaultExitTransition(),
                             sizeTransform = null,
                         )
                     },
                     popTransitionSpec = {
                         ContentTransform(
-                            targetContentEnter = DefaultEnterTransition,
-                            initialContentExit = DefaultExitTransition,
+                            targetContentEnter = defaultEnterTransition(),
+                            initialContentExit = defaultExitTransition(),
                             sizeTransform = null,
                         )
                     },
                     predictivePopTransitionSpec = {
                         ContentTransform(
-                            targetContentEnter = DefaultEnterTransition,
-                            initialContentExit = DefaultExitTransition,
+                            targetContentEnter = defaultEnterTransition(),
+                            initialContentExit = defaultExitTransition(),
                             sizeTransform = null,
                         )
                     },
@@ -442,7 +441,7 @@ private fun NavItem(
             } else {
                 Color.Transparent
             },
-        animationSpec = DefaultColorAnimationSpec,
+        animationSpec = defaultAnimationSpec(),
     )
     val indicationColor by animateColorAsState(
         targetValue =
@@ -451,12 +450,12 @@ private fun NavItem(
             } else {
                 colorScheme.onBackground
             },
-        animationSpec = DefaultColorAnimationSpec,
+        animationSpec = defaultAnimationSpec(),
     )
     var hintVisible by remember { mutableStateOf(false) }
     val hintAlpha by animateFloatAsState(
         targetValue = if (hintVisible) 1F else 0F,
-        animationSpec = DefaultAlphaAnimationSpec,
+        animationSpec = defaultAnimationSpec(),
     )
     val hintInComposition by remember {
         derivedStateOf(structuralEqualityPolicy()) {

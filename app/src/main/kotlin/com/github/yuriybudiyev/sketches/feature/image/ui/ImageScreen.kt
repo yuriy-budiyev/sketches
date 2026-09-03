@@ -111,9 +111,7 @@ import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
-import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
-import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultDpAnimationSpec
-import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultPxAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteBookmarksConfirmationDialog
@@ -337,7 +335,7 @@ private fun ImageScreenLayout(
         } else {
             0.dp
         },
-        animationSpec = DefaultDpAnimationSpec,
+        animationSpec = defaultAnimationSpec(),
     )
     val contentPaddingEnd by animateDpAsState(
         targetValue = if (uiVisible) {
@@ -345,7 +343,7 @@ private fun ImageScreenLayout(
         } else {
             0.dp
         },
-        animationSpec = DefaultDpAnimationSpec,
+        animationSpec = defaultAnimationSpec(),
     )
     val contentPaddingBottom by animateDpAsState(
         targetValue = if (uiVisible) {
@@ -353,7 +351,7 @@ private fun ImageScreenLayout(
         } else {
             0.dp
         },
-        animationSpec = DefaultDpAnimationSpec,
+        animationSpec = defaultAnimationSpec(),
     )
     val controllerPaddingBottom by animateDpAsState(
         targetValue = if (uiVisible) {
@@ -361,11 +359,11 @@ private fun ImageScreenLayout(
         } else {
             0.dp
         },
-        animationSpec = DefaultDpAnimationSpec,
+        animationSpec = defaultAnimationSpec(),
     )
     val uiAlpha by animateFloatAsState(
         targetValue = if (uiVisible) 1F else 0F,
-        animationSpec = DefaultAlphaAnimationSpec,
+        animationSpec = defaultAnimationSpec(),
     )
     val mediaBarHeight = dimens.mediaBarHeight + contentPaddingBottomVisible
     val mediaBarTranslation by animateFloatAsState(
@@ -376,7 +374,7 @@ private fun ImageScreenLayout(
                 mediaBarHeight.toPx()
             }
         },
-        animationSpec = DefaultPxAnimationSpec,
+        animationSpec = defaultAnimationSpec(),
     )
     val topAppBarHeight = contentPaddingTopVisible + dimens.material3AppBarHeight
     val topAppBarTranslation by animateFloatAsState(
@@ -387,7 +385,7 @@ private fun ImageScreenLayout(
                 -topAppBarHeight.toPx()
             }
         },
-        animationSpec = DefaultPxAnimationSpec,
+        animationSpec = defaultAnimationSpec(),
     )
     val uiInComposition by remember {
         derivedStateOf(structuralEqualityPolicy()) {
@@ -500,7 +498,7 @@ private fun ImageScreenLayout(
                     coroutineScope.launch {
                         pagerState.animateScrollToPage(
                             page = index,
-                            animationSpec = DefaultAlphaAnimationSpec,
+                            animationSpec = defaultAnimationSpec(),
                         )
                     }
                 },
@@ -660,7 +658,7 @@ private fun MediaPager(
         key = { page -> files[page].id },
         flingBehavior = PagerDefaults.flingBehavior(
             state = state,
-            snapAnimationSpec = DefaultAlphaAnimationSpec,
+            snapAnimationSpec = defaultAnimationSpec(),
         ),
         modifier = modifier,
     ) { page ->

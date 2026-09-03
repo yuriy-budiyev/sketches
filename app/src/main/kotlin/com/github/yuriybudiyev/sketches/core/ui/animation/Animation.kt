@@ -28,70 +28,26 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FiniteAnimationSpec
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.SpringSpec
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.Dp
 
 @Stable
-val DefaultScaleAnimationSpec: FiniteAnimationSpec<Float> =
-    SpringSpec(
-        dampingRatio = Spring.DampingRatioNoBouncy,
-        stiffness = Spring.StiffnessMedium,
-        visibilityThreshold = 0.002F,
-    )
+@Suppress("UNCHECKED_CAST")
+fun <T: Any> defaultAnimationSpec(): FiniteAnimationSpec<T> =
+    DefaultAnimationSpec as FiniteAnimationSpec<T>
 
 @Stable
-val DefaultAlphaAnimationSpec: FiniteAnimationSpec<Float> =
-    SpringSpec(
-        dampingRatio = Spring.DampingRatioNoBouncy,
-        stiffness = Spring.StiffnessMedium,
-        visibilityThreshold = 0.003921569F,
-    )
+fun defaultEnterTransition(): EnterTransition =
+    DefaultEnterTransition
 
 @Stable
-val DefaultColorAnimationSpec: FiniteAnimationSpec<Color> =
-    SpringSpec(
-        dampingRatio = Spring.DampingRatioNoBouncy,
-        stiffness = Spring.StiffnessMedium,
-        visibilityThreshold = Color(0x01010101),
-    )
-
-@Stable
-val DefaultDpAnimationSpec: FiniteAnimationSpec<Dp> =
-    SpringSpec(
-        dampingRatio = Spring.DampingRatioNoBouncy,
-        stiffness = Spring.StiffnessMedium,
-        visibilityThreshold = Dp(0.1F),
-    )
-
-@Stable
-val DefaultPxAnimationSpec: FiniteAnimationSpec<Float> =
-    SpringSpec(
-        dampingRatio = Spring.DampingRatioNoBouncy,
-        stiffness = Spring.StiffnessMedium,
-        visibilityThreshold = 0.1F,
-    )
-
-@Stable
-val DefaultEnterTransition: EnterTransition =
-    fadeIn(
-        animationSpec = DefaultAlphaAnimationSpec,
-        initialAlpha = 0F,
-    )
-
-@Stable
-val DefaultExitTransition: ExitTransition =
-    fadeOut(
-        animationSpec = DefaultAlphaAnimationSpec,
-        targetAlpha = 0F,
-    )
+fun defaultExitTransition(): ExitTransition =
+    DefaultExitTransition
 
 @Composable
 @NonRestartableComposable
@@ -103,9 +59,18 @@ inline fun DefaultAnimatedVisibility(
     AnimatedVisibility(
         visible = visible,
         modifier = modifier,
-        enter = DefaultEnterTransition,
-        exit = DefaultExitTransition,
+        enter = defaultEnterTransition(),
+        exit = defaultExitTransition(),
         label = "DefaultAnimatedVisibility",
         content = { content() },
     )
 }
+
+private val DefaultAnimationSpec: FiniteAnimationSpec<Any> =
+    spring()
+
+private val DefaultEnterTransition: EnterTransition =
+    fadeIn(defaultAnimationSpec())
+
+private val DefaultExitTransition: ExitTransition =
+    fadeOut(defaultAnimationSpec())
