@@ -29,6 +29,7 @@ import android.view.View
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.indication
@@ -74,6 +75,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalView
@@ -129,6 +131,7 @@ import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultColorAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultEnterTransition
@@ -451,6 +454,15 @@ private fun NavItem(
         animationSpec = DefaultColorAnimationSpec,
     )
     var hintVisible by remember { mutableStateOf(false) }
+    val hintAlpha by animateFloatAsState(
+        targetValue = if (hintVisible) 1F else 0F,
+        animationSpec = DefaultAlphaAnimationSpec,
+    )
+    val hintInComposition by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            hintVisible || hintAlpha > 0F
+        }
+    }
     val title = stringResource(route.titleRes)
     Box(
         modifier = modifier
@@ -504,7 +516,7 @@ private fun NavItem(
             modifier = Modifier.wrapContentSize(),
             contentAlignment = Alignment.Center,
         ) {
-            DefaultAnimatedVisibility(hintVisible) {
+            if (hintInComposition) {
                 Popup(
                     popupPositionProvider = hintPositionProvider,
                     onDismissRequest = {
@@ -529,6 +541,9 @@ private fun NavItem(
                     }
                     Box(
                         modifier = Modifier
+                            .graphicsLayer {
+                                alpha = hintAlpha
+                            }
                             .padding(all = 8.dp)
                             .dropShadow(
                                 shape = shapes.extraSmall,

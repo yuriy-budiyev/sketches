@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.ui.components
 
 import android.view.View
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.indication
@@ -41,17 +42,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.pointer.pointerInput
@@ -70,7 +74,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.window.SecureFlagPolicy
-import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 import kotlinx.coroutines.Job
@@ -87,15 +91,27 @@ fun SketchesActionButton(
     hintPosition: ActionButtonHintPosition = ActionButtonHintPosition.Start,
 ) {
     val onClick by rememberUpdatedState(onClick)
-    var hintVisible by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val interactionSource = remember { MutableInteractionSource() }
     val hintPositionProvider = remember(hintPosition) { HintPositionProvider(hintPosition) }
+    var hintVisible by remember { mutableStateOf(false) }
+    val hintAlpha by animateFloatAsState(
+        targetValue = if (hintVisible) 1F else 0F,
+        animationSpec = DefaultAlphaAnimationSpec,
+    )
+    val hintInComposition by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            hintVisible || hintAlpha > 0F
+        }
+    }
+    val colorScheme = MaterialTheme.colorScheme
+    val shapes = MaterialTheme.shapes
+    val dimens = LocalDimens.current
     Box(
         modifier = Modifier.wrapContentSize(),
         contentAlignment = Alignment.Center,
     ) {
-        DefaultAnimatedVisibility(hintVisible) {
+        if (hintInComposition) {
             Popup(
                 popupPositionProvider = hintPositionProvider,
                 onDismissRequest = {
@@ -118,24 +134,24 @@ fun SketchesActionButton(
                         view = view.parent as? View
                     }
                 }
-                val colors = MaterialTheme.colorScheme
-                val shapes = MaterialTheme.shapes
-                val dimens = LocalDimens.current
                 Box(
                     modifier = Modifier
+                        .graphicsLayer {
+                            alpha = hintAlpha
+                        }
                         .padding(all = 8.dp)
                         .dropShadow(
                             shape = shapes.extraSmall,
                             shadow = Shadow(
                                 radius = dimens.shadowBlurRadius,
-                                color = colors.scrim.withLowTransparency(),
+                                color = colorScheme.scrim.withLowTransparency(),
                             ),
                         ),
                 ) {
                     Box(
                         modifier = Modifier
                             .background(
-                                color = colors.surfaceContainerHigh,
+                                color = colorScheme.surfaceContainerHigh,
                                 shape = shapes.extraSmall,
                             )
                             .padding(
@@ -145,7 +161,7 @@ fun SketchesActionButton(
                     ) {
                         Text(
                             text = hint,
-                            color = colors.onSurfaceVariant,
+                            color = colorScheme.onSurfaceVariant,
                             fontSize = 16.sp,
                         )
                     }
