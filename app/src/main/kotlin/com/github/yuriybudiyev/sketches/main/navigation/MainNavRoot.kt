@@ -472,24 +472,22 @@ private fun NavItem(
     Box(
         modifier = modifier
             .semantics {
-                also { properties ->
-                    properties.role = Role.Tab
-                    properties.selected = selected
-                    properties.contentDescription = title
-                    properties.onLongClick {
-                        hideHintJob?.cancel()
-                        coroutineScope.launch {
-                            hintVisible = true
-                        }
-                        true
+                role = Role.Tab
+                this.selected = selected
+                contentDescription = title
+                onLongClick {
+                    hideHintJob?.cancel()
+                    coroutineScope.launch {
+                        hintVisible = true
                     }
-                    properties.onClick {
-                        view.playSoundEffect(SoundEffectConstants.CLICK)
-                        coroutineScope.launch {
-                            onClick()
-                        }
-                        true
+                    true
+                }
+                onClick {
+                    view.playSoundEffect(SoundEffectConstants.CLICK)
+                    coroutineScope.launch {
+                        onClick()
                     }
+                    true
                 }
             }
             .pointerInput(Unit) {
