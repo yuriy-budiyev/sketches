@@ -64,6 +64,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.onLongClick
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
@@ -109,6 +111,7 @@ fun SketchesActionButton(
             hintVisible || hintAlpha > 0F
         }
     }
+    var hideHintJob by remember { mutableStateOf<Job?>(null) }
     val view = LocalView.current
     Box(
         modifier = Modifier.wrapContentSize(),
@@ -178,13 +181,27 @@ fun SketchesActionButton(
                 .semantics {
                     role = Role.Button
                     contentDescription = hint
+                    onLongClick {
+                        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                        hideHintJob?.cancel()
+                        coroutineScope.launch {
+                            hintVisible = true
+                        }
+                        true
+                    }
+                    onClick {
+                        view.playSoundEffect(SoundEffectConstants.CLICK)
+                        coroutineScope.launch {
+                            onClick()
+                        }
+                        true
+                    }
                 }
                 .indication(
                     interactionSource = interactionSource,
                     indication = ripple(),
                 )
                 .pointerInput(Unit) {
-                    var hideJob: Job? = null
                     detectTapGestures(
                         onPress = { offset ->
                             val press = PressInteraction.Press(offset)
@@ -201,15 +218,15 @@ fun SketchesActionButton(
                                     },
                                 )
                             }
-                            hideJob?.cancel()
-                            hideJob = coroutineScope.launch {
+                            hideHintJob?.cancel()
+                            hideHintJob = coroutineScope.launch {
                                 delay(timeMillis = 1500L)
                                 hintVisible = false
                             }
                         },
                         onLongPress = {
                             view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-                            hideJob?.cancel()
+                            hideHintJob?.cancel()
                             coroutineScope.launch {
                                 hintVisible = true
                             }
