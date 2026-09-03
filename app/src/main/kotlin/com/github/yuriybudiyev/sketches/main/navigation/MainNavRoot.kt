@@ -29,8 +29,6 @@ import android.view.View
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.indication
@@ -131,9 +129,10 @@ import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
-import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultColorAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultEnterTransition
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultExitTransition
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
@@ -277,6 +276,23 @@ fun MainNavRoot(
         entryDecorators = listOf(navEntryDecorator),
         entryProvider = navEntryProvider,
     )
+    val navResultStore = rememberNavResultStore()
+    val navMenuController = rememberRootNavMenuController()
+    val systemBarsController by rememberUpdatedState(LocalSystemBarsController.current)
+    val colorScheme = MaterialTheme.colorScheme
+    val dimens = LocalDimens.current
+    val navMenuVisible by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            navBackStack.lastOrNull() is RootNavRoute &&
+                navMenuController.isNavMenuVisible
+        }
+    }
+    val navBarVisible by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            navBackStack.lastOrNull() is RootNavRoute &&
+                systemBarsController.isSystemBarsVisible
+        }
+    }
     SharedTransitionScope { transitionModifier ->
         val sceneState = rememberSceneState(
             entries = navEntries,
@@ -300,9 +316,6 @@ fun MainNavRoot(
                 }
             },
         )
-        val navResultStore = rememberNavResultStore()
-        val navMenuController = rememberRootNavMenuController()
-        val systemBarsController by rememberUpdatedState(LocalSystemBarsController.current)
         Box(modifier = modifier.then(transitionModifier)) {
             CompositionLocalProvider(
                 LocalNavResultStore provides navResultStore,
@@ -315,22 +328,22 @@ fun MainNavRoot(
                     modifier = Modifier.matchParentSize(),
                     transitionSpec = {
                         ContentTransform(
-                            targetContentEnter = fadeIn(animationSpec = DefaultAlphaAnimationSpec),
-                            initialContentExit = fadeOut(animationSpec = DefaultAlphaAnimationSpec),
+                            targetContentEnter = DefaultEnterTransition,
+                            initialContentExit = DefaultExitTransition,
                             sizeTransform = null,
                         )
                     },
                     popTransitionSpec = {
                         ContentTransform(
-                            targetContentEnter = fadeIn(animationSpec = DefaultAlphaAnimationSpec),
-                            initialContentExit = fadeOut(animationSpec = DefaultAlphaAnimationSpec),
+                            targetContentEnter = DefaultEnterTransition,
+                            initialContentExit = DefaultExitTransition,
                             sizeTransform = null,
                         )
                     },
                     predictivePopTransitionSpec = {
                         ContentTransform(
-                            targetContentEnter = fadeIn(animationSpec = DefaultAlphaAnimationSpec),
-                            initialContentExit = fadeOut(animationSpec = DefaultAlphaAnimationSpec),
+                            targetContentEnter = DefaultEnterTransition,
+                            initialContentExit = DefaultExitTransition,
                             sizeTransform = null,
                         )
                     },
@@ -341,14 +354,6 @@ fun MainNavRoot(
                     .align(Alignment.BottomStart)
                     .fillMaxWidth(),
             ) {
-                val colorScheme = MaterialTheme.colorScheme
-                val dimens = LocalDimens.current
-                val navMenuVisible by remember {
-                    derivedStateOf(structuralEqualityPolicy()) {
-                        navBackStack.lastOrNull() is RootNavRoute &&
-                            navMenuController.isNavMenuVisible
-                    }
-                }
                 DefaultAnimatedVisibility(navMenuVisible) {
                     Row(
                         modifier = Modifier
@@ -391,12 +396,6 @@ fun MainNavRoot(
                                     .weight(1F),
                             )
                         }
-                    }
-                }
-                val navBarVisible by remember {
-                    derivedStateOf(structuralEqualityPolicy()) {
-                        navBackStack.lastOrNull() is RootNavRoute &&
-                            systemBarsController.isSystemBarsVisible
                     }
                 }
                 DefaultAnimatedVisibility(navBarVisible) {
