@@ -269,6 +269,24 @@ fun ImagesScreen(
             rootNavMenuController.clearOnClickListener(ImagesNavRoute)
         }
     }
+    val appBarVisible by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            !mediaGridState.canScrollForward && !mediaGridState.canScrollBackward ||
+                mediaGridScrollConnection.neverScrolled ||
+                mediaGridScrollConnection.lastScrolledBackward ||
+                selectedFiles.isNotEmpty()
+        }
+    }
+    val inSelectionMode by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            selectedFiles.isNotEmpty()
+        }
+    }
+    val allFilesSelected by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            selectedFiles.size >= allFiles.size
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -323,14 +341,6 @@ fun ImagesScreen(
                 }
             }
         }
-        val appBarVisible by remember {
-            derivedStateOf(structuralEqualityPolicy()) {
-                !mediaGridState.canScrollForward && !mediaGridState.canScrollBackward ||
-                    mediaGridScrollConnection.neverScrolled ||
-                    mediaGridScrollConnection.lastScrolledBackward ||
-                    selectedFiles.isNotEmpty()
-            }
-        }
         SketchesTopAppBar(
             text = if (selectedFiles.isNotEmpty()) {
                 stringResource(
@@ -351,17 +361,7 @@ fun ImagesScreen(
                     },
                 )
             }
-            val selectionMode by remember {
-                derivedStateOf(structuralEqualityPolicy()) {
-                    selectedFiles.isNotEmpty()
-                }
-            }
-            if (selectionMode) {
-                val allFilesSelected by remember {
-                    derivedStateOf(structuralEqualityPolicy()) {
-                        selectedFiles.size >= allFiles.size
-                    }
-                }
+            if (inSelectionMode) {
                 SketchesActionButton(
                     icon = painterResource(
                         if (allFilesSelected) {
@@ -394,7 +394,7 @@ fun ImagesScreen(
                         deleteDialogVisible = true
                     },
                 )
-                val shareTitle by rememberUpdatedState(stringResource(R.string.share_selected))
+                val shareTitle = stringResource(R.string.share_selected)
                 SketchesActionButton(
                     icon = painterResource(R.drawable.ic_share),
                     hint = shareTitle,

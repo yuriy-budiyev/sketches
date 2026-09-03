@@ -276,6 +276,24 @@ private fun BookmarksScreen(
             rootNavMenuController.clearOnClickListener(BookmarksNavRoute)
         }
     }
+    val appBarVisible by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            !mediaGridState.canScrollForward && !mediaGridState.canScrollBackward ||
+                mediaGridScrollConnection.neverScrolled ||
+                mediaGridScrollConnection.lastScrolledBackward ||
+                selectedFiles.isNotEmpty()
+        }
+    }
+    val inSelectionMode by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            selectedFiles.isNotEmpty()
+        }
+    }
+    val allFilesSelected by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            selectedFiles.size >= allFiles.size
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -330,14 +348,6 @@ private fun BookmarksScreen(
                 }
             }
         }
-        val appBarVisible by remember {
-            derivedStateOf(structuralEqualityPolicy()) {
-                !mediaGridState.canScrollForward && !mediaGridState.canScrollBackward ||
-                    mediaGridScrollConnection.neverScrolled ||
-                    mediaGridScrollConnection.lastScrolledBackward ||
-                    selectedFiles.isNotEmpty()
-            }
-        }
         SketchesTopAppBar(
             text = if (selectedFiles.isNotEmpty()) {
                 stringResource(
@@ -349,17 +359,7 @@ private fun BookmarksScreen(
             },
             visible = appBarVisible,
         ) {
-            val selectionMode by remember {
-                derivedStateOf(structuralEqualityPolicy()) {
-                    selectedFiles.isNotEmpty()
-                }
-            }
-            if (selectionMode) {
-                val allFilesSelected by remember {
-                    derivedStateOf(structuralEqualityPolicy()) {
-                        selectedFiles.size >= allFiles.size
-                    }
-                }
+            if (inSelectionMode) {
                 SketchesActionButton(
                     icon = painterResource(
                         if (allFilesSelected) {
@@ -399,7 +399,7 @@ private fun BookmarksScreen(
                         deleteFilesDialogVisible = true
                     },
                 )
-                val shareTitle by rememberUpdatedState(stringResource(R.string.share_selected))
+                val shareTitle = stringResource(R.string.share_selected)
                 SketchesActionButton(
                     icon = painterResource(R.drawable.ic_share),
                     hint = shareTitle,

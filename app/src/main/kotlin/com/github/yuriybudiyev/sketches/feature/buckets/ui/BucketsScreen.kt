@@ -234,6 +234,24 @@ fun BucketsScreen(
             rootNavMenuController.clearOnClickListener(BucketsNavRoute)
         }
     }
+    val appBarVisible by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            !bucketsGridState.canScrollForward && !bucketsGridState.canScrollBackward ||
+                bucketsGridScrollConnection.neverScrolled ||
+                bucketsGridScrollConnection.lastScrolledBackward ||
+                selectedBuckets.isNotEmpty()
+        }
+    }
+    val inSelectionMode by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            selectedBuckets.isNotEmpty()
+        }
+    }
+    val allBucketsSelected by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            selectedBuckets.size >= allBuckets.size
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -293,14 +311,6 @@ fun BucketsScreen(
                 }
             }
         }
-        val appBarVisible by remember {
-            derivedStateOf(structuralEqualityPolicy()) {
-                !bucketsGridState.canScrollForward && !bucketsGridState.canScrollBackward ||
-                    bucketsGridScrollConnection.neverScrolled ||
-                    bucketsGridScrollConnection.lastScrolledBackward ||
-                    selectedBuckets.isNotEmpty()
-            }
-        }
         SketchesTopAppBar(
             text = if (selectedBuckets.isNotEmpty()) {
                 stringResource(
@@ -312,27 +322,17 @@ fun BucketsScreen(
             },
             visible = appBarVisible,
         ) {
-            val selectionMode by remember {
-                derivedStateOf(structuralEqualityPolicy()) {
-                    selectedBuckets.isNotEmpty()
-                }
-            }
-            if (selectionMode) {
-                val allFilesSelected by remember {
-                    derivedStateOf(structuralEqualityPolicy()) {
-                        selectedBuckets.size >= allBuckets.size
-                    }
-                }
+            if (inSelectionMode) {
                 SketchesActionButton(
                     icon = painterResource(
-                        if (allFilesSelected) {
+                        if (allBucketsSelected) {
                             R.drawable.ic_select_none
                         } else {
                             R.drawable.ic_select_all
                         },
                     ),
                     hint = stringResource(
-                        if (allFilesSelected) {
+                        if (allBucketsSelected) {
                             R.string.select_none
                         } else {
                             R.string.select_all
@@ -340,7 +340,7 @@ fun BucketsScreen(
                     ),
                     onClick = {
                         coroutineScope.launch {
-                            if (allFilesSelected) {
+                            if (allBucketsSelected) {
                                 selectedBuckets.clear()
                             } else {
                                 selectedBuckets.addAll(allBuckets.map { bucket -> bucket.id })
