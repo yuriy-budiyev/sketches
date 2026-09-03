@@ -103,6 +103,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDe
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrolledScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
@@ -460,7 +461,7 @@ fun BucketScreen(
                     .fillMaxWidth()
                     .height(bottomNavBarHeight)
                     .background(
-                        color = colorScheme.background.withLowTransparency(),
+                        brush = rememberBottomToTopBackgroundGradientBrush(colorScheme),
                         shape = RectangleShape,
                     ),
             )
