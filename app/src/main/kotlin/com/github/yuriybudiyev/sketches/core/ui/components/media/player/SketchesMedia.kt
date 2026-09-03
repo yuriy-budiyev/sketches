@@ -99,11 +99,13 @@ fun SketchesMediaPlayer(
             enablePlaceholder = enablePlaceholder,
             enableErrorIndicator = enableErrorIndicator,
         )
-        DefaultAnimatedVisibility(controllerVisible) {
+        DefaultAnimatedVisibility(
+            visible = controllerVisible,
+            modifier = Modifier.align(Alignment.BottomStart),
+        ) {
             SketchesMediaController(
                 state = state,
                 modifier = Modifier
-                    .align(alignment = Alignment.BottomStart)
                     .padding(
                         start = controllerStartPadding,
                         end = controllerEndPadding,

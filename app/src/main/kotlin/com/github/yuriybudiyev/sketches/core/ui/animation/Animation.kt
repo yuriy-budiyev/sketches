@@ -97,11 +97,12 @@ val DefaultExitTransition: ExitTransition =
 @NonRestartableComposable
 inline fun DefaultAnimatedVisibility(
     visible: Boolean,
+    modifier: Modifier = Modifier,
     crossinline content: @Composable () -> Unit,
 ) {
     AnimatedVisibility(
         visible = visible,
-        modifier = Modifier,
+        modifier = modifier,
         enter = DefaultEnterTransition,
         exit = DefaultExitTransition,
         label = "DefaultAnimatedVisibility",

@@ -471,10 +471,12 @@ fun BucketScreen(
                     ),
             )
         }
-        DefaultAnimatedVisibility(scrollToStartButtonVisible) {
+        DefaultAnimatedVisibility(
+            visible = scrollToStartButtonVisible,
+            modifier = Modifier.align(Alignment.BottomEnd),
+        ) {
             Box(
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
                     .windowInsetsPadding(
                         navBarInsets.only(
                             WindowInsetsSides.Bottom + WindowInsetsSides.End,
