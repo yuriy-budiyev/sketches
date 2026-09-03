@@ -25,6 +25,8 @@
 package com.github.yuriybudiyev.sketches.main.navigation
 
 import android.os.Parcelable
+import android.view.HapticFeedbackConstants
+import android.view.SoundEffectConstants
 import android.view.View
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SharedTransitionScope
@@ -463,6 +465,7 @@ private fun NavItem(
         }
     }
     val title = stringResource(route.titleRes)
+    val view = LocalView.current
     Box(
         modifier = modifier
             .semantics {
@@ -497,12 +500,14 @@ private fun NavItem(
                         }
                     },
                     onLongPress = {
+                        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                         hideJob?.cancel()
                         coroutineScope.launch {
                             hintVisible = true
                         }
                     },
                     onTap = {
+                        view.playSoundEffect(SoundEffectConstants.CLICK)
                         coroutineScope.launch {
                             onClick()
                         }

@@ -24,6 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import android.view.HapticFeedbackConstants
+import android.view.SoundEffectConstants
 import android.view.View
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -93,6 +95,9 @@ fun SketchesActionButton(
     val onClick by rememberUpdatedState(onClick)
     val coroutineScope = rememberCoroutineScope()
     val interactionSource = remember { MutableInteractionSource() }
+    val colorScheme = MaterialTheme.colorScheme
+    val shapes = MaterialTheme.shapes
+    val dimens = LocalDimens.current
     val hintPositionProvider = remember(hintPosition) { HintPositionProvider(hintPosition) }
     var hintVisible by remember { mutableStateOf(false) }
     val hintAlpha by animateFloatAsState(
@@ -104,9 +109,7 @@ fun SketchesActionButton(
             hintVisible || hintAlpha > 0F
         }
     }
-    val colorScheme = MaterialTheme.colorScheme
-    val shapes = MaterialTheme.shapes
-    val dimens = LocalDimens.current
+    val view = LocalView.current
     Box(
         modifier = Modifier.wrapContentSize(),
         contentAlignment = Alignment.Center,
@@ -205,12 +208,14 @@ fun SketchesActionButton(
                             }
                         },
                         onLongPress = {
+                            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                             hideJob?.cancel()
                             coroutineScope.launch {
                                 hintVisible = true
                             }
                         },
                         onTap = {
+                            view.playSoundEffect(SoundEffectConstants.CLICK)
                             coroutineScope.launch {
                                 onClick()
                             }
