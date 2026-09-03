@@ -29,7 +29,6 @@ import android.view.View
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -77,7 +76,6 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalView
@@ -134,6 +132,7 @@ import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnReques
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultColorAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
@@ -350,28 +349,11 @@ fun MainNavRoot(
                             navMenuController.isNavMenuVisible
                     }
                 }
-                val navMenuAlpha by animateFloatAsState(
-                    targetValue = if (navMenuVisible) 1F else 0F,
-                    animationSpec = DefaultAlphaAnimationSpec,
-                )
-                val navBarVisible by remember {
-                    derivedStateOf(structuralEqualityPolicy()) {
-                        navBackStack.lastOrNull() is RootNavRoute &&
-                            systemBarsController.isSystemBarsVisible
-                    }
-                }
-                val navBarAlpha by animateFloatAsState(
-                    targetValue = if (navBarVisible) 1F else 0F,
-                    animationSpec = DefaultAlphaAnimationSpec,
-                )
-                if (navMenuAlpha > 0F) {
+                DefaultAnimatedVisibility(navMenuVisible) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(dimens.navBarHeight)
-                            .graphicsLayer {
-                                alpha = navMenuAlpha
-                            }
                             .background(
                                 color = colorScheme.background.withLowTransparency(),
                                 shape = RectangleShape,
@@ -411,7 +393,13 @@ fun MainNavRoot(
                         }
                     }
                 }
-                if (navBarAlpha > 0F) {
+                val navBarVisible by remember {
+                    derivedStateOf(structuralEqualityPolicy()) {
+                        navBackStack.lastOrNull() is RootNavRoute &&
+                            systemBarsController.isSystemBarsVisible
+                    }
+                }
+                DefaultAnimatedVisibility(navBarVisible) {
                     val bottomNavBarHeight =
                         WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
                     if (bottomNavBarHeight > 0.dp) {
@@ -419,9 +407,6 @@ fun MainNavRoot(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(bottomNavBarHeight)
-                                .graphicsLayer {
-                                    alpha = navBarAlpha
-                                }
                                 .background(
                                     brush = rememberBottomToTopBackgroundGradientBrush(colorScheme),
                                     shape = RectangleShape,
@@ -442,11 +427,12 @@ private fun NavItem(
     modifier: Modifier = Modifier,
 ) {
     val onClick by rememberUpdatedState(onClick)
-    val colorScheme = MaterialTheme.colorScheme
-    val dimens = LocalDimens.current
     val coroutineScope = rememberCoroutineScope()
     val hintPositionProvider = remember { HintPositionProvider() }
     val interactionSource = remember { MutableInteractionSource() }
+    val colorScheme = MaterialTheme.colorScheme
+    val shapes = MaterialTheme.shapes
+    val dimens = LocalDimens.current
     val backgroundColor by animateColorAsState(
         targetValue =
             if (selected) {
@@ -465,19 +451,7 @@ private fun NavItem(
             },
         animationSpec = DefaultColorAnimationSpec,
     )
-    val selectedIconAlpha by animateFloatAsState(
-        targetValue = if (selected) 1F else 0F,
-        animationSpec = DefaultAlphaAnimationSpec,
-    )
-    val unselectedIconAlpha by animateFloatAsState(
-        targetValue = if (selected) 0F else 1F,
-        animationSpec = DefaultAlphaAnimationSpec,
-    )
     var hintVisible by remember { mutableStateOf(false) }
-    val hintAlpha by animateFloatAsState(
-        targetValue = if (hintVisible) 1F else 0F,
-        animationSpec = DefaultAlphaAnimationSpec,
-    )
     val title = stringResource(route.titleRes)
     Box(
         modifier = modifier
@@ -531,7 +505,7 @@ private fun NavItem(
             modifier = Modifier.wrapContentSize(),
             contentAlignment = Alignment.Center,
         ) {
-            if (hintAlpha > 0F) {
+            DefaultAnimatedVisibility(hintVisible) {
                 Popup(
                     popupPositionProvider = hintPositionProvider,
                     onDismissRequest = {
@@ -554,27 +528,21 @@ private fun NavItem(
                             view = view.parent as? View
                         }
                     }
-                    val colors = MaterialTheme.colorScheme
-                    val shapes = MaterialTheme.shapes
-                    val dimens = LocalDimens.current
                     Box(
                         modifier = Modifier
-                            .graphicsLayer {
-                                alpha = hintAlpha
-                            }
                             .padding(all = 8.dp)
                             .dropShadow(
                                 shape = shapes.extraSmall,
                                 shadow = Shadow(
                                     radius = dimens.shadowBlurRadius,
-                                    color = colors.scrim.withLowTransparency(),
+                                    color = colorScheme.scrim.withLowTransparency(),
                                 ),
                             ),
                     ) {
                         Box(
                             modifier = Modifier
                                 .background(
-                                    color = colors.surfaceContainerHigh,
+                                    color = colorScheme.surfaceContainerHigh,
                                     shape = shapes.extraSmall,
                                 )
                                 .padding(
@@ -584,7 +552,7 @@ private fun NavItem(
                         ) {
                             Text(
                                 text = title,
-                                color = colors.onSurfaceVariant,
+                                color = colorScheme.onSurfaceVariant,
                                 fontSize = 16.sp,
                             )
                         }
@@ -606,24 +574,18 @@ private fun NavItem(
                         indication = ripple(color = { indicationColor }),
                     ),
             )
-            if (selectedIconAlpha > 0F) {
+            DefaultAnimatedVisibility(selected) {
                 Icon(
                     painter = painterResource(route.selectedIconRes),
                     contentDescription = stringResource(route.titleRes),
                     tint = colorScheme.onPrimary,
-                    modifier = Modifier.graphicsLayer {
-                        alpha = selectedIconAlpha
-                    },
                 )
             }
-            if (unselectedIconAlpha > 0F) {
+            DefaultAnimatedVisibility(!selected) {
                 Icon(
                     painter = painterResource(route.unselectedIconRes),
                     contentDescription = stringResource(route.titleRes),
                     tint = colorScheme.onBackground,
-                    modifier = Modifier.graphicsLayer {
-                        alpha = unselectedIconAlpha
-                    },
                 )
             }
         }

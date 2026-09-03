@@ -33,7 +33,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.component1
 import androidx.activity.result.component2
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
@@ -69,7 +68,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -88,7 +86,7 @@ import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaR
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
-import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
@@ -293,6 +291,33 @@ fun BucketScreen(
         LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher,
     )
     val colorScheme = MaterialTheme.colorScheme
+    val appBarVisible by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            !mediaGridState.canScrollForward && !mediaGridState.canScrollBackward ||
+                mediaGridScrollConnection.neverScrolled ||
+                mediaGridScrollConnection.lastScrolledBackward ||
+                selectedFiles.isNotEmpty()
+        }
+    }
+    val scrollToStartButtonVisible by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            mediaGridScrollConnection.lastScrolledBackward &&
+                mediaGridState.canScrollBackward ||
+                selectedFiles.isNotEmpty()
+        }
+    }
+    val inSelectionMode by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            selectedFiles.isNotEmpty()
+        }
+    }
+    val allFilesSelected by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            selectedFiles.size >= allFiles.size
+        }
+    }
+    val navBarInsets = WindowInsets.navigationBars
+    val bottomNavBarHeight = navBarInsets.asPaddingValues().calculateBottomPadding()
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -346,14 +371,6 @@ fun BucketScreen(
                 }
             }
         }
-        val appBarVisible by remember {
-            derivedStateOf(structuralEqualityPolicy()) {
-                !mediaGridState.canScrollForward && !mediaGridState.canScrollBackward ||
-                    mediaGridScrollConnection.neverScrolled ||
-                    mediaGridScrollConnection.lastScrolledBackward ||
-                    selectedFiles.isNotEmpty()
-            }
-        }
         SketchesTopAppBar(
             text = if (selectedFiles.isNotEmpty()) {
                 stringResource(
@@ -386,17 +403,7 @@ fun BucketScreen(
                     onHideBucket
                 },
             )
-            val selectionMode by remember {
-                derivedStateOf(structuralEqualityPolicy()) {
-                    selectedFiles.isNotEmpty()
-                }
-            }
-            if (selectionMode) {
-                val allFilesSelected by remember {
-                    derivedStateOf(structuralEqualityPolicy()) {
-                        selectedFiles.size >= allFiles.size
-                    }
-                }
+            if (inSelectionMode) {
                 SketchesActionButton(
                     icon = painterResource(
                         if (allFilesSelected) {
@@ -429,7 +436,7 @@ fun BucketScreen(
                         deleteDialogVisible = true
                     },
                 )
-                val shareTitle by rememberUpdatedState(stringResource(R.string.share_selected))
+                val shareTitle = stringResource(R.string.share_selected)
                 SketchesActionButton(
                     icon = painterResource(R.drawable.ic_share),
                     hint = shareTitle,
@@ -452,8 +459,6 @@ fun BucketScreen(
                 )
             }
         }
-        val navBarInsets = WindowInsets.navigationBars
-        val bottomNavBarHeight = navBarInsets.asPaddingValues().calculateBottomPadding()
         if (bottomNavBarHeight > 0.dp) {
             Box(
                 modifier = Modifier
@@ -466,23 +471,9 @@ fun BucketScreen(
                     ),
             )
         }
-        val scrollToStartButtonVisible by remember {
-            derivedStateOf(structuralEqualityPolicy()) {
-                mediaGridScrollConnection.lastScrolledBackward &&
-                    mediaGridState.canScrollBackward ||
-                    selectedFiles.isNotEmpty()
-            }
-        }
-        val scrollToStartButtonAlpha by animateFloatAsState(
-            targetValue = if (scrollToStartButtonVisible) 1F else 0F,
-            animationSpec = DefaultAlphaAnimationSpec,
-        )
-        if (scrollToStartButtonAlpha > 0F) {
+        DefaultAnimatedVisibility(scrollToStartButtonVisible) {
             Box(
                 modifier = Modifier
-                    .graphicsLayer {
-                        alpha = scrollToStartButtonAlpha
-                    }
                     .align(Alignment.BottomEnd)
                     .windowInsetsPadding(
                         navBarInsets.only(

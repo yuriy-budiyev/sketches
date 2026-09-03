@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.core.ui.components
 
 import android.view.View
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.indication
@@ -53,7 +52,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.pointer.pointerInput
@@ -72,7 +70,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.window.SecureFlagPolicy
-import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 import kotlinx.coroutines.Job
@@ -90,10 +88,6 @@ fun SketchesActionButton(
 ) {
     val onClick by rememberUpdatedState(onClick)
     var hintVisible by remember { mutableStateOf(false) }
-    val hintAlpha by animateFloatAsState(
-        targetValue = if (hintVisible) 1F else 0F,
-        animationSpec = DefaultAlphaAnimationSpec,
-    )
     val coroutineScope = rememberCoroutineScope()
     val interactionSource = remember { MutableInteractionSource() }
     val hintPositionProvider = remember(hintPosition) { HintPositionProvider(hintPosition) }
@@ -101,7 +95,7 @@ fun SketchesActionButton(
         modifier = Modifier.wrapContentSize(),
         contentAlignment = Alignment.Center,
     ) {
-        if (hintAlpha > 0F) {
+        DefaultAnimatedVisibility(hintVisible) {
             Popup(
                 popupPositionProvider = hintPositionProvider,
                 onDismissRequest = {
@@ -129,9 +123,6 @@ fun SketchesActionButton(
                 val dimens = LocalDimens.current
                 Box(
                     modifier = Modifier
-                        .graphicsLayer {
-                            alpha = hintAlpha
-                        }
                         .padding(all = 8.dp)
                         .dropShadow(
                             shape = shapes.extraSmall,

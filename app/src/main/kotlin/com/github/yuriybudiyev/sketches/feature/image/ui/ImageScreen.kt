@@ -235,6 +235,11 @@ private fun ImageScreenLayout(
         }
     }
     val files by rememberUpdatedState(files)
+    val hasBookmark by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            files[currentIndex].bookmark != null
+        }
+    }
     val context by rememberUpdatedState(LocalContext.current)
     val shareManager by rememberUpdatedState(LocalShareManager.current)
     val onChange by rememberUpdatedState(onChange)
@@ -284,82 +289,112 @@ private fun ImageScreenLayout(
     val colorScheme = MaterialTheme.colorScheme
     val dimens = LocalDimens.current
     var containerSize by remember { mutableStateOf(IntSize.Zero) }
+    val layoutDirection = LocalLayoutDirection.current
+    val navBarInsets = WindowInsets.navigationBars
+    val navBarPaddings = navBarInsets.asPaddingValues()
+    val navBarPaddingStart = navBarPaddings.calculateStartPadding(layoutDirection)
+    val navBarPaddingEnd = navBarPaddings.calculateEndPadding(layoutDirection)
+    val contentInsets = navBarInsets
+        .union(WindowInsets.statusBars.only(WindowInsetsSides.Top))
+        .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
+    val contentPaddings = contentInsets.asPaddingValues()
+    var contentPaddingStartVisible by remember { mutableStateOf(0.dp) }.apply {
+        val newValue = contentPaddings.calculateStartPadding(layoutDirection)
+        if (newValue > value) {
+            value = newValue
+        }
+    }
+    var contentPaddingTopVisible by remember { mutableStateOf(0.dp) }.apply {
+        val newValue = contentPaddings.calculateTopPadding()
+        if (newValue > value) {
+            value = newValue
+        }
+    }
+    var contentPaddingEndVisible by remember { mutableStateOf(0.dp) }.apply {
+        val newValue = contentPaddings.calculateEndPadding(layoutDirection)
+        if (newValue > value) {
+            value = newValue
+        }
+    }
+    var contentPaddingBottomVisible by remember { mutableStateOf(0.dp) }.apply {
+        val newValue = contentPaddings.calculateBottomPadding()
+        if (newValue > value) {
+            value = newValue
+        }
+    }
+    LaunchedEffect(Unit) {
+        snapshotFlow { containerSize }.collect {
+            contentPaddingStartVisible = 0.dp
+            contentPaddingTopVisible = 0.dp
+            contentPaddingEndVisible = 0.dp
+            contentPaddingBottomVisible = 0.dp
+        }
+    }
+    var uiVisible by remember { mutableStateOf(true) }
+    val contentPaddingStart by animateDpAsState(
+        targetValue = if (uiVisible) {
+            contentPaddingStartVisible
+        } else {
+            0.dp
+        },
+        animationSpec = DefaultDpAnimationSpec,
+    )
+    val contentPaddingEnd by animateDpAsState(
+        targetValue = if (uiVisible) {
+            contentPaddingEndVisible
+        } else {
+            0.dp
+        },
+        animationSpec = DefaultDpAnimationSpec,
+    )
+    val contentPaddingBottom by animateDpAsState(
+        targetValue = if (uiVisible) {
+            contentPaddingBottomVisible
+        } else {
+            0.dp
+        },
+        animationSpec = DefaultDpAnimationSpec,
+    )
+    val controllerPaddingBottom by animateDpAsState(
+        targetValue = if (uiVisible) {
+            dimens.mediaBarHeight
+        } else {
+            0.dp
+        },
+        animationSpec = DefaultDpAnimationSpec,
+    )
+    val uiAlpha by animateFloatAsState(
+        targetValue = if (uiVisible) 1F else 0F,
+        animationSpec = DefaultAlphaAnimationSpec,
+    )
+    val mediaBarHeight = dimens.mediaBarHeight + contentPaddingBottomVisible
+    val mediaBarTranslation by animateFloatAsState(
+        targetValue = if (uiVisible) {
+            0F
+        } else {
+            with(LocalDensity.current) {
+                mediaBarHeight.toPx()
+            }
+        },
+        animationSpec = DefaultPxAnimationSpec,
+    )
+    val topAppBarHeight = contentPaddingTopVisible + dimens.material3AppBarHeight
+    val topAppBarTranslation by animateFloatAsState(
+        targetValue = if (uiVisible) {
+            0F
+        } else {
+            with(LocalDensity.current) {
+                -topAppBarHeight.toPx()
+            }
+        },
+        animationSpec = DefaultPxAnimationSpec,
+    )
+    val uiInComposition by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            uiVisible || uiAlpha > 0F
+        }
+    }
     Box(modifier = modifier.onSizeChanged { size -> containerSize = size }) {
-        val layoutDirection = LocalLayoutDirection.current
-        val navBarInsets = WindowInsets.navigationBars
-        val navBarPaddings = navBarInsets.asPaddingValues()
-        val navBarPaddingStart = navBarPaddings.calculateStartPadding(layoutDirection)
-        val navBarPaddingEnd = navBarPaddings.calculateEndPadding(layoutDirection)
-        val contentInsets = navBarInsets
-            .union(WindowInsets.statusBars.only(WindowInsetsSides.Top))
-            .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
-        val contentPaddings = contentInsets.asPaddingValues()
-        var contentPaddingStartVisible by remember { mutableStateOf(0.dp) }.apply {
-            val newValue = contentPaddings.calculateStartPadding(layoutDirection)
-            if (newValue > value) {
-                value = newValue
-            }
-        }
-        var contentPaddingTopVisible by remember { mutableStateOf(0.dp) }.apply {
-            val newValue = contentPaddings.calculateTopPadding()
-            if (newValue > value) {
-                value = newValue
-            }
-        }
-
-        var contentPaddingEndVisible by remember { mutableStateOf(0.dp) }.apply {
-            val newValue = contentPaddings.calculateEndPadding(layoutDirection)
-            if (newValue > value) {
-                value = newValue
-            }
-        }
-        var contentPaddingBottomVisible by remember { mutableStateOf(0.dp) }.apply {
-            val newValue = contentPaddings.calculateBottomPadding()
-            if (newValue > value) {
-                value = newValue
-            }
-        }
-        LaunchedEffect(Unit) {
-            snapshotFlow { containerSize }.collect {
-                contentPaddingStartVisible = 0.dp
-                contentPaddingTopVisible = 0.dp
-                contentPaddingEndVisible = 0.dp
-                contentPaddingBottomVisible = 0.dp
-            }
-        }
-        var uiVisible by remember { mutableStateOf(true) }
-        val contentPaddingStart by animateDpAsState(
-            targetValue = if (uiVisible) {
-                contentPaddingStartVisible
-            } else {
-                0.dp
-            },
-            animationSpec = DefaultDpAnimationSpec,
-        )
-        val contentPaddingEnd by animateDpAsState(
-            targetValue = if (uiVisible) {
-                contentPaddingEndVisible
-            } else {
-                0.dp
-            },
-            animationSpec = DefaultDpAnimationSpec,
-        )
-        val contentPaddingBottom by animateDpAsState(
-            targetValue = if (uiVisible) {
-                contentPaddingBottomVisible
-            } else {
-                0.dp
-            },
-            animationSpec = DefaultDpAnimationSpec,
-        )
-        val controllerPaddingBottom by animateDpAsState(
-            targetValue = if (uiVisible) {
-                dimens.mediaBarHeight
-            } else {
-                0.dp
-            },
-            animationSpec = DefaultDpAnimationSpec,
-        )
         MediaPager(
             state = pagerState,
             files = files,
@@ -392,33 +427,7 @@ private fun ImageScreenLayout(
             controllerBottomPadding = contentPaddingBottom + controllerPaddingBottom,
             modifier = Modifier.matchParentSize(),
         )
-        val uiAlpha by animateFloatAsState(
-            targetValue = if (uiVisible) 1F else 0F,
-            animationSpec = DefaultAlphaAnimationSpec,
-        )
-        val mediaBarHeight = dimens.mediaBarHeight + contentPaddingBottomVisible
-        val mediaBarTranslation by animateFloatAsState(
-            targetValue = if (uiVisible) {
-                0F
-            } else {
-                with(LocalDensity.current) {
-                    mediaBarHeight.toPx()
-                }
-            },
-            animationSpec = DefaultPxAnimationSpec,
-        )
-        val topAppBarHeight = contentPaddingTopVisible + dimens.material3AppBarHeight
-        val topAppBarTranslation by animateFloatAsState(
-            targetValue = if (uiVisible) {
-                0F
-            } else {
-                with(LocalDensity.current) {
-                    -topAppBarHeight.toPx()
-                }
-            },
-            animationSpec = DefaultPxAnimationSpec,
-        )
-        if (uiAlpha > 0F) {
+        if (uiInComposition) {
             if (contentPaddingStart > 0.dp && navBarPaddingStart > 0.dp) {
                 Box(
                     modifier = Modifier
@@ -536,11 +545,6 @@ private fun ImageScreenLayout(
                 contentPaddingEnd = contentPaddingEndVisible,
                 text = files[currentIndex].name,
             ) {
-                val hasBookmark by remember {
-                    derivedStateOf(structuralEqualityPolicy()) {
-                        files[currentIndex].bookmark != null
-                    }
-                }
                 SketchesActionButton(
                     icon = painterResource(
                         if (hasBookmark) {

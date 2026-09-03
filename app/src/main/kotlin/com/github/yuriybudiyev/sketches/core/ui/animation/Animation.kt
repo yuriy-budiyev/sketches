@@ -24,10 +24,18 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.animation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.SpringSpec
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.Stable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 
@@ -70,3 +78,33 @@ val DefaultPxAnimationSpec: FiniteAnimationSpec<Float> =
         stiffness = Spring.StiffnessMedium,
         visibilityThreshold = 0.1F,
     )
+
+@Stable
+val DefaultEnterTransition: EnterTransition =
+    fadeIn(
+        animationSpec = DefaultAlphaAnimationSpec,
+        initialAlpha = 0F,
+    )
+
+@Stable
+val DefaultExitTransition: ExitTransition =
+    fadeOut(
+        animationSpec = DefaultAlphaAnimationSpec,
+        targetAlpha = 0F,
+    )
+
+@Composable
+@NonRestartableComposable
+inline fun DefaultAnimatedVisibility(
+    visible: Boolean,
+    crossinline content: @Composable () -> Unit,
+) {
+    AnimatedVisibility(
+        visible = visible,
+        modifier = Modifier,
+        enter = DefaultEnterTransition,
+        exit = DefaultExitTransition,
+        label = "DefaultAnimatedVisibility",
+        content = { content() },
+    )
+}

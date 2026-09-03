@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,17 +45,15 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAlphaAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.rememberTopToBottomBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
@@ -65,19 +62,15 @@ import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 inline fun BoxScope.SketchesTopAppBar(
     text: String? = null,
     visible: Boolean = true,
-    actions: @Composable () -> Unit = {},
+    crossinline actions: @Composable () -> Unit = {},
 ) {
     val layoutDirection = LocalLayoutDirection.current
     val paddings = WindowInsets.systemBars
         .union(WindowInsets.displayCutout)
         .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
         .asPaddingValues()
-    val contentPaddingTop = paddings.calculateTopPadding()
-    val appBarAlpha by animateFloatAsState(
-        targetValue = if (visible) 1F else 0F,
-        animationSpec = DefaultAlphaAnimationSpec,
-    )
     val colorScheme = MaterialTheme.colorScheme
+    val contentPaddingTop = paddings.calculateTopPadding()
     Column(
         modifier = Modifier
             .align(Alignment.TopStart)
@@ -94,12 +87,9 @@ inline fun BoxScope.SketchesTopAppBar(
                     ),
             )
         }
-        if (appBarAlpha > 0F) {
+        DefaultAnimatedVisibility(visible) {
             SketchesAppBar(
                 modifier = Modifier
-                    .graphicsLayer {
-                        alpha = appBarAlpha
-                    }
                     .fillMaxWidth()
                     .background(
                         color = colorScheme.background.withLowTransparency(),
