@@ -135,7 +135,7 @@ fun BucketsScreen(
     onDeleteMedia: (uris: Collection<Uri>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val context by rememberUpdatedState(LocalContext.current)
+    val context = LocalContext.current
     val onDeleteBuckets by rememberUpdatedState(onDeleteBuckets)
     val onDeleteMedia by rememberUpdatedState(onDeleteMedia)
     var allBuckets by remember { mutableStateOf<List<MediaBucket>>(emptyList()) }

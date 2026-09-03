@@ -240,7 +240,7 @@ private fun ImageScreenLayout(
             files[currentIndex].bookmark != null
         }
     }
-    val context by rememberUpdatedState(LocalContext.current)
+    val context = LocalContext.current
     val shareManager by rememberUpdatedState(LocalShareManager.current)
     val onChange by rememberUpdatedState(onChange)
     val onDeleteImage by rememberUpdatedState(onDeleteImage)

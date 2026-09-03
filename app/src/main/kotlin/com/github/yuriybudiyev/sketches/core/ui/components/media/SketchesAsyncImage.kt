@@ -34,7 +34,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,7 +71,7 @@ fun SketchesThumbnailAsyncImage(
     contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
-    val context by rememberUpdatedState(LocalContext.current)
+    val context = LocalContext.current
     val sizeResolver = rememberConstraintsSizeResolver()
     val request = remember(
         uri,
@@ -141,7 +140,7 @@ fun SketchesPreviewAsyncImage(
     zoomState: ZoomState = rememberZoomState(),
     onTap: (() -> Unit)? = null,
 ) {
-    val context by rememberUpdatedState(LocalContext.current)
+    val context = LocalContext.current
     val request = remember(
         uri,
         context,

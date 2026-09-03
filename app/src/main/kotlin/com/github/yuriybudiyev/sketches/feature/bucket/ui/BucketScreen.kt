@@ -143,7 +143,7 @@ fun BucketScreen(
     onHideBucket: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val context by rememberUpdatedState(LocalContext.current)
+    val context = LocalContext.current
     val shareManager by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMedia by rememberUpdatedState(onDeleteMedia)
     var allFiles by remember { mutableStateOf<Collection<MediaFile>>(emptyList()) }

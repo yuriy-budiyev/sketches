@@ -118,7 +118,7 @@ private fun BookmarksScreen(
     onDeleteBookmarks: (mediaIds: Collection<Long>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val context by rememberUpdatedState(LocalContext.current)
+    val context = LocalContext.current
     val shareManager by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMedia by rememberUpdatedState(onDeleteMedia)
     val onDeleteBookmarks by rememberUpdatedState(onDeleteBookmarks)
