@@ -32,6 +32,8 @@ import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.indication
@@ -137,8 +139,6 @@ import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBars
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
-import com.github.yuriybudiyev.sketches.core.ui.animation.defaultEnterTransition
-import com.github.yuriybudiyev.sketches.core.ui.animation.defaultExitTransition
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
@@ -334,22 +334,22 @@ fun MainNavRoot(
                     modifier = Modifier.matchParentSize(),
                     transitionSpec = {
                         ContentTransform(
-                            targetContentEnter = defaultEnterTransition(),
-                            initialContentExit = defaultExitTransition(),
+                            targetContentEnter = fadeIn(defaultAnimationSpec()),
+                            initialContentExit = fadeOut(defaultAnimationSpec()),
                             sizeTransform = null,
                         )
                     },
                     popTransitionSpec = {
                         ContentTransform(
-                            targetContentEnter = defaultEnterTransition(),
-                            initialContentExit = defaultExitTransition(),
+                            targetContentEnter = fadeIn(defaultAnimationSpec()),
+                            initialContentExit = fadeOut(defaultAnimationSpec()),
                             sizeTransform = null,
                         )
                     },
                     predictivePopTransitionSpec = {
                         ContentTransform(
-                            targetContentEnter = defaultEnterTransition(),
-                            initialContentExit = defaultExitTransition(),
+                            targetContentEnter = fadeIn(defaultAnimationSpec()),
+                            initialContentExit = fadeOut(defaultAnimationSpec()),
                             sizeTransform = null,
                         )
                     },

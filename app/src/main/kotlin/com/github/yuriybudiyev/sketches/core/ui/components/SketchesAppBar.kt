@@ -62,7 +62,7 @@ import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 inline fun BoxScope.SketchesTopAppBar(
     text: String? = null,
     visible: Boolean = true,
-    crossinline actions: @Composable () -> Unit = {},
+    actions: @Composable () -> Unit = {},
 ) {
     val layoutDirection = LocalLayoutDirection.current
     val paddings = WindowInsets.systemBars

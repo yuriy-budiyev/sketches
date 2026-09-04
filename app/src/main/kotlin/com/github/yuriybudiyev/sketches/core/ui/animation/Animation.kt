@@ -24,53 +24,47 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.animation
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 
 @Stable
-@Suppress("UNCHECKED_CAST")
-fun <T: Any> defaultAnimationSpec(): FiniteAnimationSpec<T> =
-    DefaultAnimationSpec as FiniteAnimationSpec<T>
-
-@Stable
-fun defaultEnterTransition(): EnterTransition =
-    DefaultEnterTransition
-
-@Stable
-fun defaultExitTransition(): ExitTransition =
-    DefaultExitTransition
+@Suppress("NOTHING_TO_INLINE")
+inline fun <T> defaultAnimationSpec(): FiniteAnimationSpec<T> =
+    spring()
 
 @Composable
-@NonRestartableComposable
 inline fun DefaultAnimatedVisibility(
     visible: Boolean,
     modifier: Modifier = Modifier,
-    crossinline content: @Composable () -> Unit,
+    content: @Composable () -> Unit,
 ) {
-    AnimatedVisibility(
-        visible = visible,
-        modifier = modifier,
-        enter = defaultEnterTransition(),
-        exit = defaultExitTransition(),
-        label = "DefaultAnimatedVisibility",
-        content = { content() },
+    val visible by rememberUpdatedState(visible)
+    val contentAlpha by animateFloatAsState(
+        targetValue = if (visible) 1F else 0F,
+        animationSpec = defaultAnimationSpec(),
     )
+    val contentInComposition by remember {
+        derivedStateOf(structuralEqualityPolicy()) {
+            visible || contentAlpha > 0F
+        }
+    }
+    if (contentInComposition) {
+        Box(
+            modifier = Modifier
+                .graphicsLayer { alpha = contentAlpha }
+                .then(modifier),
+            content = { content() },
+        )
+    }
 }
-
-private val DefaultAnimationSpec: FiniteAnimationSpec<Any> =
-    spring()
-
-private val DefaultEnterTransition: EnterTransition =
-    fadeIn(defaultAnimationSpec())
-
-private val DefaultExitTransition: ExitTransition =
-    fadeOut(defaultAnimationSpec())
