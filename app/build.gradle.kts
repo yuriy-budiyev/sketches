@@ -26,8 +26,8 @@ android {
         applicationId = "com.github.yuriybudiyev.sketches"
         minSdk = 24
         targetSdk = 37
-        versionCode = 109
-        versionName = "1.5.3"
+        versionCode = 110
+        versionName = "1.5.4"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -42,10 +42,10 @@ android {
             signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
-            )
+            proguardFiles.apply {
+                add(getDefaultProguardFile("proguard-android-optimize.txt"))
+                add(project.file("proguard-rules.pro"))
+            }
         }
     }
 
@@ -61,7 +61,7 @@ android {
 
     packaging {
         resources {
-            excludes += "/META-INF/**"
+            excludes.add("/META-INF/**")
         }
     }
 
