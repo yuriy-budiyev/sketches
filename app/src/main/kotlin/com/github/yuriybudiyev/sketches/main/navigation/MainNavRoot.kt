@@ -405,19 +405,18 @@ fun MainNavRoot(
                     }
                 }
                 DefaultAnimatedVisibility(navBarVisible) {
-                    val bottomNavBarHeight =
-                        WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-                    if (bottomNavBarHeight > 0.dp) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(bottomNavBarHeight)
-                                .background(
-                                    brush = rememberBottomToTopBackgroundGradientBrush(colorScheme),
-                                    shape = RectangleShape,
-                                ),
-                        )
-                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(
+                                WindowInsets.navigationBars.asPaddingValues()
+                                    .calculateBottomPadding(),
+                            )
+                            .background(
+                                brush = rememberBottomToTopBackgroundGradientBrush(colorScheme),
+                                shape = RectangleShape,
+                            ),
+                    )
                 }
             }
         }
