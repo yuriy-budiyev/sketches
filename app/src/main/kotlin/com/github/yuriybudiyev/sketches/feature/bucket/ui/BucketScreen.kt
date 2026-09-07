@@ -301,9 +301,7 @@ fun BucketScreen(
     }
     val scrollToStartButtonVisible by remember {
         derivedStateOf(structuralEqualityPolicy()) {
-            mediaGridScrollConnection.lastScrolledBackward &&
-                mediaGridState.canScrollBackward ||
-                selectedFiles.isNotEmpty()
+            mediaGridState.canScrollForward && mediaGridState.canScrollBackward
         }
     }
     val inSelectionMode by remember {
