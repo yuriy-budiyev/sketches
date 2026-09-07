@@ -84,7 +84,7 @@ import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavMenuControll
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
-import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
@@ -420,7 +420,11 @@ private fun BucketsMediaGrid(
             }
             Column(
                 modifier = Modifier
-                    .defaultAnimateItem()
+                    .animateItem(
+                        fadeInSpec = defaultAnimationSpec(),
+                        fadeOutSpec = defaultAnimationSpec(),
+                        placementSpec = defaultAnimationSpec(),
+                    )
                     .clipToBounds()
                     .combinedClickable(
                         onLongClick = {

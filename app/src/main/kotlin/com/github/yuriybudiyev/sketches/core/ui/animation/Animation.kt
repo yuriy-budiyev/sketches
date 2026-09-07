@@ -28,8 +28,6 @@ import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
@@ -44,28 +42,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 @Suppress("NOTHING_TO_INLINE")
 inline fun <T> defaultAnimationSpec(): FiniteAnimationSpec<T> =
     spring()
-
-@Suppress("NOTHING_TO_INLINE")
-context(scope: LazyGridItemScope)
-inline fun Modifier.defaultAnimateItem(): Modifier =
-    with(scope) {
-        animateItem(
-            fadeInSpec = defaultAnimationSpec(),
-            fadeOutSpec = defaultAnimationSpec(),
-            placementSpec = null,
-        )
-    }
-
-@Suppress("NOTHING_TO_INLINE")
-context(scope: LazyItemScope)
-inline fun Modifier.defaultAnimateItem(): Modifier =
-    with(scope) {
-        animateItem(
-            fadeInSpec = defaultAnimationSpec(),
-            fadeOutSpec = defaultAnimationSpec(),
-            placementSpec = null,
-        )
-    }
 
 @Composable
 inline fun DefaultAnimatedVisibility(

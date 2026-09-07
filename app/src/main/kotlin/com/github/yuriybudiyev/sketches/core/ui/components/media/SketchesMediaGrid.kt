@@ -62,7 +62,7 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
-import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.withHighTransparency
@@ -320,7 +320,11 @@ private fun LazyGridItemScope.SketchesMediaGridItem(
     val dimens = LocalDimens.current
     Box(
         modifier = Modifier
-            .defaultAnimateItem()
+            .animateItem(
+                fadeInSpec = defaultAnimationSpec(),
+                fadeOutSpec = defaultAnimationSpec(),
+                placementSpec = defaultAnimationSpec(),
+            )
             .aspectRatio(ratio = 1F)
             .border(
                 width = dimens.mediaItemBorderThickness,

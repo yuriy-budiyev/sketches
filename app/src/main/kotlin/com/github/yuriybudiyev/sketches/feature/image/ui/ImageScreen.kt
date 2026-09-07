@@ -111,7 +111,6 @@ import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
-import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBar
@@ -879,7 +878,11 @@ private fun MediaBar(
             val file = files[position]
             Box(
                 modifier = Modifier
-                    .defaultAnimateItem()
+                    .animateItem(
+                        fadeInSpec = defaultAnimationSpec(),
+                        fadeOutSpec = defaultAnimationSpec(),
+                        placementSpec = defaultAnimationSpec(),
+                    )
                     .size(size = dimens.mediaBarItemSize)
                     .border(
                         width = dimens.mediaItemBorderThickness,
