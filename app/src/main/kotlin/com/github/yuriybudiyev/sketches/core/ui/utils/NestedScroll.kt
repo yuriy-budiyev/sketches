@@ -73,7 +73,15 @@ interface LastScrolledScrollConnection: NestedScrollConnection {
 
     val lastScrolledBackward: Boolean
 
+    val lastScrollDirection: ScrollDirection
+
     fun reset()
+}
+
+enum class ScrollDirection {
+    None,
+    Backward,
+    Forward,
 }
 
 @Stable
@@ -102,19 +110,20 @@ private class LastScrolledScrollConnectionImpl: LastScrolledScrollConnection {
         }
     }
 
-    override val neverScrolled: Boolean by derivedStateOf(structuralEqualityPolicy()) {
-        !lastScrolledForward && !lastScrolledBackward
-    }
+    override val neverScrolled: Boolean
+        get() = lastScrollDirection == ScrollDirection.None
 
-    override var lastScrolledForward: Boolean by mutableStateOf(false)
-        private set
+    override val lastScrolledForward: Boolean
+        get() = lastScrollDirection == ScrollDirection.Forward
 
-    override var lastScrolledBackward: Boolean by mutableStateOf(false)
+    override val lastScrolledBackward: Boolean
+        get() = lastScrollDirection == ScrollDirection.Backward
+
+    override var lastScrollDirection: ScrollDirection by mutableStateOf(ScrollDirection.None)
         private set
 
     override fun reset() {
-        lastScrolledForward = false
-        lastScrolledBackward = false
+        lastScrollDirection = ScrollDirection.None
         accumulated = 0F
     }
 
@@ -135,13 +144,7 @@ private class LastScrolledScrollConnectionImpl: LastScrolledScrollConnection {
                 } else {
                     accumulated < 0F
                 }
-            if (forward) {
-                lastScrolledBackward = false
-                lastScrolledForward = true
-            } else {
-                lastScrolledForward = false
-                lastScrolledBackward = true
-            }
+            lastScrollDirection = if (forward) ScrollDirection.Forward else ScrollDirection.Backward
             accumulated = 0F
         }
         return Offset.Zero
