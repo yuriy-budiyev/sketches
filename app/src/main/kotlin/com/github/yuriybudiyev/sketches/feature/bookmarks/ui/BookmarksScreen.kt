@@ -266,7 +266,7 @@ private fun BookmarksScreen(
     DisposableEffect(rootNavMenuController) {
         rootNavMenuController.setOnClickListener(BookmarksNavRoute) {
             coroutineScope.launch {
-                if (allFiles.isNotEmpty()) {
+                if (allFiles.isNotEmpty() && !mediaGridState.isScrollInProgress) {
                     mediaGridScrollConnection.reset()
                     mediaGridState.animateScrollToItem(index = 0)
                 }

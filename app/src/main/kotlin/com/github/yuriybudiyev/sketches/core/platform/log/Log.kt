@@ -26,28 +26,33 @@ package com.github.yuriybudiyev.sketches.core.platform.log
 
 import android.util.Log
 import com.github.yuriybudiyev.sketches.BuildConfig
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 /**
- * Send a debug log [message] with given [tag] and [throwable]
+ * Send a debug log [message] with given [tag] and [throwable] if [BuildConfig.DEBUG] is `true`
  */
-@Suppress("unused")
-fun logDebug(
-    message: Any?,
-    tag: String = "SketchesDebug",
-    throwable: Throwable? = null,
+@Suppress("UNUSED")
+@OptIn(ExperimentalContracts::class)
+inline fun logDebug(
+    tag: () -> String = { "SketchesDebug" },
+    throwable: () -> Throwable? = { null },
+    message: () -> Any?,
 ) {
+    contract {
+        callsInPlace(tag, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(throwable, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(message, InvocationKind.AT_MOST_ONCE)
+    }
     if (BuildConfig.DEBUG) {
-        if (throwable == null) {
-            Log.d(
-                tag,
-                message.toString(),
-            )
+        val tag = tag()
+        val throwable = throwable()
+        val message = message().toString()
+        if (throwable != null) {
+            Log.d(tag, message, throwable)
         } else {
-            Log.d(
-                tag,
-                message.toString(),
-                throwable,
-            )
+            Log.d(tag, message)
         }
     }
 }

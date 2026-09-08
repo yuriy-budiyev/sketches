@@ -301,7 +301,7 @@ fun BucketScreen(
     }
     val scrollToStartButtonVisible by remember {
         derivedStateOf(structuralEqualityPolicy()) {
-            mediaGridState.canScrollForward && mediaGridState.canScrollBackward
+            mediaGridScrollConnection.lastScrolledBackward && mediaGridState.canScrollBackward
         }
     }
     val inSelectionMode by remember {
@@ -502,7 +502,7 @@ fun BucketScreen(
                     contentColor = colorScheme.onPrimary,
                     onClick = {
                         coroutineScope.launch {
-                            if (allFiles.isNotEmpty()) {
+                            if (allFiles.isNotEmpty() && !mediaGridState.isScrollInProgress) {
                                 mediaGridScrollConnection.reset()
                                 mediaGridState.animateScrollToItem(index = 0)
                             }
