@@ -144,7 +144,12 @@ private class LastScrolledScrollConnectionImpl: LastScrolledScrollConnection {
                 } else {
                     accumulated < 0F
                 }
-            lastScrollDirection = if (forward) ScrollDirection.Forward else ScrollDirection.Backward
+            lastScrollDirection =
+                if (forward) {
+                    ScrollDirection.Forward
+                } else {
+                    ScrollDirection.Backward
+                }
             accumulated = 0F
         }
         return Offset.Zero
