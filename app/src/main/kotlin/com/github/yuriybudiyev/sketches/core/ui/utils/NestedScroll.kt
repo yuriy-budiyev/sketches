@@ -44,19 +44,23 @@ import androidx.compose.ui.unit.LayoutDirection
 import kotlin.math.abs
 
 @Composable
-fun rememberLastScrolledScrollConnection(state: LazyGridState): LastScrolledScrollConnection {
+fun rememberLastScrollDirectionScrollConnection(
+    state: LazyGridState,
+): LastScrollDirectionScrollConnection {
     val state by rememberUpdatedState(state)
     val orientation by remember {
         derivedStateOf(structuralEqualityPolicy()) {
             state.layoutInfo.orientation
         }
     }
-    return rememberLastScrolledScrollConnection(orientation)
+    return rememberLastScrollDirectionScrollConnection(orientation)
 }
 
 @Composable
-fun rememberLastScrolledScrollConnection(orientation: Orientation): LastScrolledScrollConnection =
-    remember { LastScrolledScrollConnectionImpl() }.apply {
+fun rememberLastScrollDirectionScrollConnection(
+    orientation: Orientation,
+): LastScrollDirectionScrollConnection =
+    remember { LastScrollDirectionScrollConnectionImpl() }.apply {
         update(
             orientation = orientation,
             direction = LocalLayoutDirection.current,
@@ -65,7 +69,7 @@ fun rememberLastScrolledScrollConnection(orientation: Orientation): LastScrolled
     }
 
 @Stable
-interface LastScrolledScrollConnection: NestedScrollConnection {
+interface LastScrollDirectionScrollConnection: NestedScrollConnection {
 
     val neverScrolled: Boolean
 
@@ -85,7 +89,7 @@ enum class ScrollDirection {
 }
 
 @Stable
-private class LastScrolledScrollConnectionImpl: LastScrolledScrollConnection {
+private class LastScrollDirectionScrollConnectionImpl: LastScrollDirectionScrollConnection {
 
     fun update(
         orientation: Orientation,

@@ -103,7 +103,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareFo
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
-import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrolledScrollConnection
+import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
@@ -151,7 +151,7 @@ fun BucketScreen(
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     var bucketHidden by rememberSaveable { mutableStateOf(false) }
     val mediaGridState = rememberLazyGridState()
-    val mediaGridScrollConnection = rememberLastScrolledScrollConnection(mediaGridState)
+    val mediaGridScrollConnection = rememberLastScrollDirectionScrollConnection(mediaGridState)
     val mediaBatchState = rememberMediaBatchState()
     var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
