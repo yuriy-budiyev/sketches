@@ -91,7 +91,19 @@ class LocalCacheInterceptor(
         }
         diskCache.openSnapshot(diskCacheKey)?.use { snapshot ->
             val bitmap = diskCache.fileSystem.read(snapshot.data) {
-                BitmapFactory.decodeStream(inputStream())
+                BitmapFactory.decodeStream(
+                    inputStream(),
+                    null,
+                    BitmapFactory.Options().apply {
+                        inMutable = false
+                        inPreferredConfig =
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                Bitmap.Config.HARDWARE
+                            } else {
+                                Bitmap.Config.ARGB_8888
+                            }
+                    },
+                )
             }
             if (bitmap != null) {
                 val diskImage = bitmap.asImage(shareable = true)
@@ -118,18 +130,10 @@ class LocalCacheInterceptor(
                 }
                 diskCache.fileSystem.write(editor.data) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        bitmap.compress(
-                            Bitmap.CompressFormat.WEBP_LOSSY,
-                            95,
-                            outputStream(),
-                        )
+                        bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, 95, outputStream())
                     } else {
                         @Suppress("DEPRECATION")
-                        bitmap.compress(
-                            Bitmap.CompressFormat.WEBP,
-                            95,
-                            outputStream(),
-                        )
+                        bitmap.compress(Bitmap.CompressFormat.WEBP, 95, outputStream())
                     }
                 }
                 editor.commit()
