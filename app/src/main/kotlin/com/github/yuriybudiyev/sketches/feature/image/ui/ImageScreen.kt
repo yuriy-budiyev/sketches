@@ -287,7 +287,6 @@ private fun ImageScreenLayout(
     }
     val colorScheme = MaterialTheme.colorScheme
     val dimens = LocalDimens.current
-    var containerSize by remember { mutableStateOf(IntSize.Zero) }
     val layoutDirection = LocalLayoutDirection.current
     val navBarInsets = WindowInsets.navigationBars
     val navBarPaddings = navBarInsets.asPaddingValues()
@@ -321,6 +320,7 @@ private fun ImageScreenLayout(
             value = newValue
         }
     }
+    var containerSize by remember { mutableStateOf(IntSize.Zero) }
     LaunchedEffect(Unit) {
         snapshotFlow { containerSize }.collect {
             contentPaddingStartVisible = 0.dp
