@@ -59,15 +59,15 @@ android {
         buildConfig = true
     }
 
+    dependenciesInfo {
+        includeInApk = true
+        includeInBundle = true
+    }
+
     packaging {
         resources {
             excludes.add("/META-INF/**")
         }
-    }
-
-    dependenciesInfo {
-        includeInApk = false
-        includeInBundle = false
     }
 }
 
