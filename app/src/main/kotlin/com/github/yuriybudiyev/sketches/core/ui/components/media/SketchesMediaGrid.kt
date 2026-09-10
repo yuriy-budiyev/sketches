@@ -135,7 +135,7 @@ fun SketchesMediaGrid(
                     selectedFiles.contains(file.id)
                 }
             }
-            SketchesMediaGridItem(
+            SketchesMediaGridImageItem(
                 file = file,
                 fileSelected = fileSelected,
                 onLongClick = {
@@ -248,7 +248,7 @@ fun SketchesGroupingMediaGrid(
                         selectedFiles.contains(file.id)
                     }
                 }
-                SketchesMediaGridItem(
+                SketchesMediaGridImageItem(
                     file = file,
                     fileSelected = fileSelected,
                     onLongClick = {
@@ -308,7 +308,7 @@ inline fun calculateMediaIndexWithGroups(
 }
 
 @Composable
-private fun LazyGridItemScope.SketchesMediaGridItem(
+private fun LazyGridItemScope.SketchesMediaGridImageItem(
     file: MediaFile,
     fileSelected: Boolean,
     onLongClick: () -> Unit,
