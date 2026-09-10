@@ -32,6 +32,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import androidx.collection.LruCache
+import coil3.BitmapImage
 import coil3.Extras
 import coil3.Image
 import coil3.asImage
@@ -41,7 +42,9 @@ import coil3.intercept.Interceptor
 import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import coil3.request.SuccessResult
+import coil3.request.allowHardware
 import coil3.size.Dimension
+import coil3.target.ViewTarget
 import coil3.toBitmap
 import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
 
@@ -77,8 +80,16 @@ class LocalCacheInterceptor(
             height = height,
         )
         val diskCacheKey = "$uriString/$width/$height"
+        val hardwareAllowed = request.allowHardware && request.target.let { target ->
+            target !is ViewTarget<*> || target.view.isHardwareAccelerated
+        }
         val memoryImage = memoryCache[memoryCacheKey]
-        if (memoryImage != null) {
+        if (
+            memoryImage != null && memoryImage.let { memoryImage ->
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.O || memoryImage !is BitmapImage ||
+                    memoryImage.bitmap.config != Bitmap.Config.HARDWARE || hardwareAllowed
+            }
+        ) {
             return SuccessResult(
                 image = memoryImage,
                 request = request,
@@ -95,9 +106,8 @@ class LocalCacheInterceptor(
                     inputStream(),
                     null,
                     BitmapFactory.Options().apply {
-                        inMutable = false
                         inPreferredConfig =
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && hardwareAllowed) {
                                 Bitmap.Config.HARDWARE
                             } else {
                                 Bitmap.Config.ARGB_8888
@@ -106,7 +116,7 @@ class LocalCacheInterceptor(
                 )
             }
             if (bitmap != null) {
-                val diskImage = bitmap.asImage(shareable = true)
+                val diskImage = bitmap.asImage(shareable = !bitmap.isMutable)
                 memoryCache[memoryCacheKey] = diskImage
                 return SuccessResult(
                     image = diskImage,
