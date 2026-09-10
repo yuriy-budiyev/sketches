@@ -71,6 +71,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -93,6 +94,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -319,6 +321,12 @@ private fun ImageScreenLayout(
         if (newValue > value) {
             value = newValue
         }
+    }
+    SideEffect(LocalConfiguration.current.orientation) {
+        contentPaddingStartVisible = 0.dp
+        contentPaddingTopVisible = 0.dp
+        contentPaddingEndVisible = 0.dp
+        contentPaddingBottomVisible = 0.dp
     }
     var containerSize by remember { mutableStateOf(IntSize.Zero) }
     LaunchedEffect(Unit) {
