@@ -26,8 +26,8 @@ android {
         applicationId = "com.github.yuriybudiyev.sketches"
         minSdk = 24
         targetSdk = 37
-        versionCode = 112
-        versionName = "1.5.6"
+        versionCode = 113
+        versionName = "1.5.7"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
