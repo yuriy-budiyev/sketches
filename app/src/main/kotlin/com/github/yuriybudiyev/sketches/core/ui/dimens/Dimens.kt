@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.Dp
 
 @Immutable
 interface Dimens {
-
     val material3AppBarHeight: Dp
     val navBarHeight: Dp
     val navRailWidth: Dp

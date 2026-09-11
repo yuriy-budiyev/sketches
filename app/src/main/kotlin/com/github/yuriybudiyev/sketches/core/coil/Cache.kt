@@ -106,6 +106,7 @@ class LocalCacheInterceptor(
                     inputStream(),
                     null,
                     BitmapFactory.Options().apply {
+                        inMutable = false
                         inPreferredConfig =
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && hardwareAllowed) {
                                 Bitmap.Config.HARDWARE
