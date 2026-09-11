@@ -32,6 +32,7 @@ import coil3.gif.AnimatedImageDecoder
 import coil3.gif.GifDecoder
 import coil3.request.CachePolicy
 import coil3.request.allowHardware
+import coil3.request.allowRgb565
 import coil3.serviceLoaderEnabled
 import coil3.svg.SvgDecoder
 import coil3.video.VideoFrameDecoder
@@ -61,6 +62,7 @@ object ImageLoaderModule {
         return ImageLoader.Builder(context)
             .serviceLoaderEnabled(false)
             .allowHardware(true)
+            .allowRgb565(false)
             .memoryCache(null)
             .diskCache(null)
             .memoryCachePolicy(CachePolicy.DISABLED)

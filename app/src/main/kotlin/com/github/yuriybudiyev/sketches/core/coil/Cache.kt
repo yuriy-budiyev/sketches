@@ -102,19 +102,26 @@ class LocalCacheInterceptor(
         }
         diskCache.openSnapshot(diskCacheKey)?.use { snapshot ->
             val bitmap = diskCache.fileSystem.read(snapshot.data) {
-                BitmapFactory.decodeStream(
-                    inputStream(),
-                    null,
-                    BitmapFactory.Options().apply {
-                        inMutable = false
-                        inPreferredConfig =
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && hardwareAllowed) {
-                                Bitmap.Config.HARDWARE
+                val options = BitmapFactory.Options()
+                options.inJustDecodeBounds = true
+                BitmapFactory.decodeStream(peek().inputStream(), null, options)
+                options.inJustDecodeBounds = false
+                options.inMutable = false
+                options.inPreferredConfig =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        if (hardwareAllowed) {
+                            Bitmap.Config.HARDWARE
+                        } else {
+                            if (options.outConfig == Bitmap.Config.RGBA_F16) {
+                                Bitmap.Config.RGBA_F16
                             } else {
                                 Bitmap.Config.ARGB_8888
                             }
-                    },
-                )
+                        }
+                    } else {
+                        Bitmap.Config.ARGB_8888
+                    }
+                BitmapFactory.decodeStream(inputStream(), null, options)
             }
             if (bitmap != null) {
                 val diskImage = bitmap.asImage(shareable = !bitmap.isMutable)
