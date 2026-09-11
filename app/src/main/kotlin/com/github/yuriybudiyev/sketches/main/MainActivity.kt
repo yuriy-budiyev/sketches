@@ -98,6 +98,8 @@ class MainActivity: ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             window.colorMode = ActivityInfo.COLOR_MODE_HDR
             window.desiredHdrHeadroom = 1.5F
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            window.colorMode = ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT
         }
         ContextCompat.registerReceiver(
             this,
