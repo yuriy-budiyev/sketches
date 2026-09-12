@@ -225,7 +225,7 @@ fun BucketsScreen(
     DisposableEffect(rootNavMenuController) {
         rootNavMenuController.setOnClickListener(BucketsNavRoute) {
             coroutineScope.launch {
-                if (allBuckets.isNotEmpty() && !bucketsGridState.isScrollInProgress) {
+                if (allBuckets.isNotEmpty()) {
                     bucketsGridScrollConnection.reset()
                     bucketsGridState.animateScrollToItem(index = 0)
                 }
