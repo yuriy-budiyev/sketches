@@ -139,3 +139,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit)
     androidTestImplementation(libs.hilt.test)
 }
+
+tasks.named<Delete>("clean") {
+    delete("release")
+}
