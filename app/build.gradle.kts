@@ -23,7 +23,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.github.yuriybudiyev.sketches"
+        applicationId = "com.github.yuriybudiyev.sketches.verified"
         minSdk = 24
         targetSdk = 37
         versionCode = 114
@@ -39,7 +39,6 @@ android {
             applicationIdSuffix = ".debug"
         }
         release {
-            signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles.apply {
