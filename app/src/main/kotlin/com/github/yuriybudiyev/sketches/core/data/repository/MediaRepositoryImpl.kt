@@ -288,9 +288,11 @@ class MediaRepositoryImpl @Inject constructor(
             }.collectLatest { (files, hiddenBuckets) ->
                 mediaFilesExcludingHiddenBucketsFlow.emit(
                     if (hiddenBuckets.isNotEmpty()) {
-                        files
-                            .filterTo(ArrayList(files.size)) { file -> !hiddenBuckets.contains(file.bucketId) }
-                            .apply { trimToSize() }
+                        files.filterTo(ArrayList(files.size)) { file ->
+                            !hiddenBuckets.contains(file.bucketId)
+                        }.apply {
+                            trimToSize()
+                        }
                     } else {
                         files
                     },
