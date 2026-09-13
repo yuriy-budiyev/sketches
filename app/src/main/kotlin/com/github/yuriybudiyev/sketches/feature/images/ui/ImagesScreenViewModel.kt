@@ -27,15 +27,19 @@ package com.github.yuriybudiyev.sketches.feature.images.ui
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetFilesExcludingHiddenBucketsUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
@@ -46,6 +50,8 @@ import javax.inject.Inject
 class ImagesScreenViewModel @Inject constructor(
     private val deleteMedia: DeleteMediaUseCase,
     private val updateMediaAccess: UpdateMediaAccessUseCase,
+    @Dispatcher(Dispatchers.Default)
+    defaultDispatcher: CoroutineDispatcher,
     getMediaFiles: GetFilesExcludingHiddenBucketsUseCase,
 ): ViewModel() {
 
@@ -62,7 +68,7 @@ class ImagesScreenViewModel @Inject constructor(
                     ),
                 )
             }
-        }.catch { e ->
+        }.flowOn(defaultDispatcher).catch { e ->
             emit(UiState.Error(e))
         }.stateIn(
             scope = viewModelScope,
