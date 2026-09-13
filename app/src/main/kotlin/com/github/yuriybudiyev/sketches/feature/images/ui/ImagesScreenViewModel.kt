@@ -68,9 +68,9 @@ class ImagesScreenViewModel @Inject constructor(
                     ),
                 )
             }
-        }.flowOn(defaultDispatcher).catch { e ->
+        }.catch { e ->
             emit(UiState.Error(e))
-        }.stateIn(
+        }.flowOn(defaultDispatcher).stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
             initialValue = UiState.Loading,
