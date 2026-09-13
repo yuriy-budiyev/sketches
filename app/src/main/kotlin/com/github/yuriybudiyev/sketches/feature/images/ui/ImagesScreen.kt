@@ -314,7 +314,7 @@ fun ImagesScreen(
             is ImagesScreenViewModel.UiState.Images -> {
                 allFiles = uiState.files
                 SketchesGroupingMediaGrid(
-                    items = uiState.groups,
+                    groups = uiState.groups,
                     selectedFiles = selectedFiles,
                     onItemClick = onImageClick,
                     modifier = Modifier

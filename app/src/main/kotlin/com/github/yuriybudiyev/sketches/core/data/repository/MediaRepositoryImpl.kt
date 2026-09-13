@@ -177,7 +177,7 @@ class MediaRepositoryImpl @Inject constructor(
                 updateAllFilesJob?.cancel()
                 updateAllFilesJob = defaultCoroutineScope.launch {
                     withContext(if (nonCancellable) NonCancellable else EmptyCoroutineContext) {
-                        delay(delayMillis)
+                        delay(timeMillis = delayMillis)
                         val imageEntities: List<MediaEntity>
                         val videoEntities: List<MediaEntity>
                         withContext(ioDispatcher) {

@@ -164,7 +164,7 @@ fun SketchesMediaGrid(
 
 @Composable
 fun SketchesGroupingMediaGrid(
-    items: Map<YearMonth, List<MediaFile>>,
+    groups: Map<YearMonth, List<MediaFile>>,
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaFile) -> Unit,
     modifier: Modifier = Modifier,
@@ -172,7 +172,7 @@ fun SketchesGroupingMediaGrid(
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
-    val items by rememberUpdatedState(items)
+    val groups by rememberUpdatedState(groups)
     val selectedFiles by rememberUpdatedState(selectedFiles)
     val onItemClick by rememberUpdatedState(onItemClick)
     val nowDate = remember { LocalDate.now() }
@@ -204,7 +204,7 @@ fun SketchesGroupingMediaGrid(
         overlayTop = overlayTop,
         overlayBottom = overlayBottom,
     ) {
-        for ((month, files) in items) {
+        for ((month, files) in groups) {
             item(
                 key = SketchesMediaGridKey.GroupHeader(
                     year = month.year,
