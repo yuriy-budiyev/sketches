@@ -71,15 +71,15 @@ class BucketScreenViewModel @AssistedInject constructor(
         ) { files, hiddenBuckets ->
             emit(files to hiddenBuckets)
         }.transformLatest { (files, hiddenBuckets) ->
-            if (files.isNotEmpty()) {
+            if (files.isEmpty()) {
+                emit(UiState.Empty)
+            } else {
                 emit(
                     UiState.Bucket(
                         files = files,
                         isBucketHidden = hiddenBuckets.contains(bucketId),
                     ),
                 )
-            } else {
-                emit(UiState.Empty)
             }
         }.catch { e ->
             emit(UiState.Error(e))
