@@ -235,6 +235,7 @@ fun SketchesGroupingMediaGrid(
                     Text(
                         text = text.capitalizeFirstChar(),
                         modifier = Modifier
+                            .defaultAnimateItem()
                             .background(
                                 color = colorScheme.background,
                                 shape = RectangleShape,
