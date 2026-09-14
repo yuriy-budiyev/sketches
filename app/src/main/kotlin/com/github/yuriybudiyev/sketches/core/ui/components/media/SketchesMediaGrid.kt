@@ -31,12 +31,14 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.derivedStateOf
@@ -53,10 +55,13 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
-import com.github.yuriybudiyev.sketches.core.platform.log.logDebug
+import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
@@ -196,99 +201,90 @@ fun SketchesGroupingMediaGrid(
         overlayTop = overlayTop,
         overlayBottom = overlayBottom,
     ) {
-        var date = LocalDateTime.MAX
-        var offset = 0
-        var start = 0
-        var index = 0
         val size = files.size
-        while (index < size) {
-            if (index == 0) {
-                date = files[0].dateAdded
-            }
-            var groupSize = 0
-            var tempDate = files[index].dateAdded
-            while (date.year == tempDate.year && date.monthValue == tempDate.monthValue) {
-                groupSize++
-                if (index + groupSize > size - 1) {
-                    break
-                }
-                logDebug { "before test $index $groupSize ${index + groupSize} $size" }
-                tempDate = files[index + groupSize].dateAdded
-            }
-            logDebug { "add header $date" }
-            logDebug { "add items $index $groupSize" }
-            date = tempDate
-            index += groupSize
-        }
-        /*for ((month, files) in files) {
-            item(
-                key = SketchesMediaGridKey.GroupHeader(
-                    year = month.year,
-                    month = month.monthValue,
-                ),
-                contentType = SketchesMediaGridContentType.GroupHeader,
-                span = { GridItemSpan(maxLineSpan) },
-            ) {
-                val text = if (nowDate.year == month.year) {
-                    dateFormatterMonth.format(month)
-                } else {
-                    dateFormatterMonthYear.format(month)
-                }
-                Text(
-                    text = text.capitalizeFirstChar(),
-                    modifier = Modifier
-                        .background(
-                            color = colorScheme.background,
-                            shape = RectangleShape,
-                        )
-                        .padding(
-                            start = 4.dp,
-                            top = 8.dp,
-                            end = 4.dp,
-                            bottom = 0.dp,
-                        ),
-                    color = colorScheme.onBackground,
-                    fontSize = 16.sp,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                )
-            }
-            items(
-                count = files.size,
-                key = { index -> SketchesMediaGridKey.MediaFile(files[index].id) },
-                contentType = { SketchesMediaGridContentType.MediaFile },
-            ) { index ->
-                val file by rememberUpdatedState(files[index])
-                val fileSelected by remember {
-                    derivedStateOf(structuralEqualityPolicy()) {
-                        selectedFiles.contains(file.id)
+        if (size > 0) {
+            var index = 0
+            var date = files[0].dateAdded
+            while (index < size) {
+                var groupSize = 0
+                var nextDate = files[index].dateAdded
+                while (date.year == nextDate.year && date.monthValue == nextDate.monthValue) {
+                    groupSize++
+                    if (index + groupSize > size - 1) {
+                        break
                     }
+                    nextDate = files[index + groupSize].dateAdded
                 }
-                SketchesMediaGridImageItem(
-                    file = file,
-                    fileSelected = fileSelected,
-                    onLongClick = {
-                        if (selectedFiles.isEmpty()) {
-                            selectedFiles.add(file.id)
+                val groupDate = date
+                date = nextDate
+                val groupOffset = index
+                index += groupSize
+                item(
+                    key = SketchesMediaGridKey.GroupHeader(
+                        year = groupDate.year,
+                        month = groupDate.monthValue,
+                    ),
+                    contentType = SketchesMediaGridContentType.GroupHeader,
+                    span = { GridItemSpan(maxLineSpan) },
+                ) {
+                    val text = if (nowDate.year == groupDate.year) {
+                        dateFormatterMonth.format(groupDate)
+                    } else {
+                        dateFormatterMonthYear.format(groupDate)
+                    }
+                    Text(
+                        text = text.capitalizeFirstChar(),
+                        modifier = Modifier
+                            .background(
+                                color = colorScheme.background,
+                                shape = RectangleShape,
+                            )
+                            .padding(
+                                start = 4.dp,
+                                top = 8.dp,
+                                end = 4.dp,
+                                bottom = 0.dp,
+                            ),
+                        color = colorScheme.onBackground,
+                        fontSize = 16.sp,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                    )
+                }
+                items(
+                    count = groupSize,
+                    key = { index -> SketchesMediaGridKey.MediaFile(files[index + groupOffset].id) },
+                    contentType = { SketchesMediaGridContentType.MediaFile },
+                ) { index ->
+                    val file by rememberUpdatedState(files[index + groupOffset])
+                    val fileSelected by remember {
+                        derivedStateOf(structuralEqualityPolicy()) {
+                            selectedFiles.contains(file.id)
                         }
-                    },
-                    onClick = {
-                        if (selectedFiles.isNotEmpty()) {
-                            if (fileSelected) {
-                                selectedFiles.remove(file.id)
-                            } else {
+                    }
+                    SketchesMediaGridImageItem(
+                        file = file,
+                        fileSelected = fileSelected,
+                        onLongClick = {
+                            if (selectedFiles.isEmpty()) {
                                 selectedFiles.add(file.id)
                             }
-                        } else {
-                            onItemClick(
-                                index,
-                                file,
-                            )
-                        }
-                    },
-                )
+                        },
+                        onClick = {
+                            if (selectedFiles.isNotEmpty()) {
+                                if (fileSelected) {
+                                    selectedFiles.remove(file.id)
+                                } else {
+                                    selectedFiles.add(file.id)
+                                }
+                            } else {
+                                onItemClick(index, file)
+                            }
+                        },
+                    )
+                }
             }
-        }*/
+        }
     }
 }
 
