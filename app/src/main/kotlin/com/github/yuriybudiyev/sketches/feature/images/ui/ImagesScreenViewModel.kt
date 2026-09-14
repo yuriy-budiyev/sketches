@@ -27,14 +27,11 @@ package com.github.yuriybudiyev.sketches.feature.images.ui
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
-import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
 import com.github.yuriybudiyev.sketches.core.domain.GetFilesExcludingHiddenBucketsUseCase
 import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -42,16 +39,12 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.time.YearMonth
 import javax.inject.Inject
 
 @HiltViewModel
 class ImagesScreenViewModel @Inject constructor(
     private val deleteMedia: DeleteMediaUseCase,
     private val updateMediaAccess: UpdateMediaAccessUseCase,
-    @Dispatcher(Dispatchers.Default)
-    defaultDispatcher: CoroutineDispatcher,
     getMediaFiles: GetFilesExcludingHiddenBucketsUseCase,
 ): ViewModel() {
 
@@ -61,14 +54,7 @@ class ImagesScreenViewModel @Inject constructor(
             if (files.isEmpty()) {
                 emit(UiState.Empty)
             } else {
-                emit(
-                    UiState.Images(
-                        files = files,
-                        groups = withContext(defaultDispatcher) {
-                            files.groupBy { file -> YearMonth.from(file.dateAdded) }
-                        },
-                    ),
-                )
+                emit(UiState.Images(files))
             }
         }.catch { e ->
             emit(UiState.Error(e))
@@ -96,10 +82,7 @@ class ImagesScreenViewModel @Inject constructor(
 
         data object Loading: UiState
 
-        data class Images(
-            val files: List<MediaFile>,
-            val groups: Map<YearMonth, List<MediaFile>>,
-        ): UiState
+        data class Images(val files: List<MediaFile>): UiState
 
         data class Error(val thrown: Throwable): UiState
     }

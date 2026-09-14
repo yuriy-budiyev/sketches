@@ -234,7 +234,7 @@ private fun BookmarksScreen(
             navResultStore.collectNavResult<ImageScreenNavResult> { result ->
                 mediaGridState.scrollToItem(
                     index = result.fileIndex,
-                    itemType = SketchesMediaGridContentType.MediaStoreFile,
+                    itemType = SketchesMediaGridContentType.MediaFile,
                     animate = false,
                     snapToClosestEdge = true,
                     onlyIfItemAtIndexIsNotVisible = true,

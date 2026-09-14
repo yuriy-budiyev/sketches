@@ -314,7 +314,7 @@ fun ImagesScreen(
             is ImagesScreenViewModel.UiState.Images -> {
                 allFiles = uiState.files
                 SketchesGroupingMediaGrid(
-                    groups = uiState.groups,
+                    files = uiState.files,
                     selectedFiles = selectedFiles,
                     onItemClick = onImageClick,
                     modifier = Modifier
@@ -458,7 +458,7 @@ private suspend inline fun LazyGridState.scrollToItem(
     if (itemIndex != -1) {
         scrollToItem(
             index = itemIndex,
-            itemType = SketchesMediaGridContentType.MediaStoreFile,
+            itemType = SketchesMediaGridContentType.MediaFile,
             animate = false,
             snapToClosestEdge = snapToClosestEdge,
             onlyIfItemAtIndexIsNotVisible = true,

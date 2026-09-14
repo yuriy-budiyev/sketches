@@ -31,14 +31,12 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.derivedStateOf
@@ -55,13 +53,10 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
-import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
+import com.github.yuriybudiyev.sketches.core.platform.log.logDebug
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
@@ -70,7 +65,7 @@ import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.theme.withMediumTransparency
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
-import java.time.YearMonth
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatterBuilder
 import java.time.format.TextStyle
 import java.time.temporal.ChronoField
@@ -90,7 +85,7 @@ sealed interface SketchesMediaGridKey: Parcelable {
 
     @Parcelize
     @Immutable
-    data class MediaStoreFile(
+    data class MediaFile(
         val fileId: Long,
     ): SketchesMediaGridKey
 }
@@ -102,7 +97,7 @@ sealed interface SketchesMediaGridContentType {
     data object GroupHeader: SketchesMediaGridContentType
 
     @Immutable
-    data object MediaStoreFile: SketchesMediaGridContentType
+    data object MediaFile: SketchesMediaGridContentType
 }
 
 @Composable
@@ -126,8 +121,8 @@ fun SketchesMediaGrid(
     ) {
         items(
             count = files.size,
-            key = { index -> SketchesMediaGridKey.MediaStoreFile(fileId = files[index].id) },
-            contentType = { SketchesMediaGridContentType.MediaStoreFile },
+            key = { index -> SketchesMediaGridKey.MediaFile(fileId = files[index].id) },
+            contentType = { SketchesMediaGridContentType.MediaFile },
         ) { index ->
             val file by rememberUpdatedState(files[index])
             val fileSelected by remember {
@@ -151,10 +146,7 @@ fun SketchesMediaGrid(
                             selectedFiles.add(file.id)
                         }
                     } else {
-                        onItemClick(
-                            index,
-                            file,
-                        )
+                        onItemClick(index, file)
                     }
                 },
             )
@@ -164,7 +156,7 @@ fun SketchesMediaGrid(
 
 @Composable
 fun SketchesGroupingMediaGrid(
-    groups: Map<YearMonth, List<MediaFile>>,
+    files: List<MediaFile>,
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaFile) -> Unit,
     modifier: Modifier = Modifier,
@@ -172,7 +164,7 @@ fun SketchesGroupingMediaGrid(
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
-    val groups by rememberUpdatedState(groups)
+    val files by rememberUpdatedState(files)
     val selectedFiles by rememberUpdatedState(selectedFiles)
     val onItemClick by rememberUpdatedState(onItemClick)
     val nowDate = remember { LocalDate.now() }
@@ -204,7 +196,31 @@ fun SketchesGroupingMediaGrid(
         overlayTop = overlayTop,
         overlayBottom = overlayBottom,
     ) {
-        for ((month, files) in groups) {
+        var date = LocalDateTime.MAX
+        var offset = 0
+        var start = 0
+        var index = 0
+        val size = files.size
+        while (index < size) {
+            if (index == 0) {
+                date = files[0].dateAdded
+            }
+            var groupSize = 0
+            var tempDate = files[index].dateAdded
+            while (date.year == tempDate.year && date.monthValue == tempDate.monthValue) {
+                groupSize++
+                if (index + groupSize > size - 1) {
+                    break
+                }
+                logDebug { "before test $index $groupSize ${index + groupSize} $size" }
+                tempDate = files[index + groupSize].dateAdded
+            }
+            logDebug { "add header $date" }
+            logDebug { "add items $index $groupSize" }
+            date = tempDate
+            index += groupSize
+        }
+        /*for ((month, files) in files) {
             item(
                 key = SketchesMediaGridKey.GroupHeader(
                     year = month.year,
@@ -239,8 +255,8 @@ fun SketchesGroupingMediaGrid(
             }
             items(
                 count = files.size,
-                key = { index -> SketchesMediaGridKey.MediaStoreFile(files[index].id) },
-                contentType = { SketchesMediaGridContentType.MediaStoreFile },
+                key = { index -> SketchesMediaGridKey.MediaFile(files[index].id) },
+                contentType = { SketchesMediaGridContentType.MediaFile },
             ) { index ->
                 val file by rememberUpdatedState(files[index])
                 val fileSelected by remember {
@@ -272,7 +288,7 @@ fun SketchesGroupingMediaGrid(
                     },
                 )
             }
-        }
+        }*/
     }
 }
 
@@ -284,9 +300,9 @@ inline fun calculateMediaIndexWithGroups(
     contract { callsInPlace(predicate) }
     var offset = 0
     var fileIndex = -1
-    var previousDate = LocalDate.MAX
+    var previousDate = LocalDateTime.MAX
     for ((index, file) in files.withIndex()) {
-        val currentDate = file.dateAdded.toLocalDate()
+        val currentDate = file.dateAdded
         if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
             offset++
         }
