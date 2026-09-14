@@ -28,6 +28,7 @@ import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.runtime.Composable
@@ -73,7 +74,7 @@ inline fun Modifier.defaultAnimateItem(): Modifier =
 inline fun DefaultAnimatedVisibility(
     visible: Boolean,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
+    content: @Composable BoxScope.() -> Unit,
 ) {
     val visible by rememberUpdatedState(visible)
     val contentAlpha by animateFloatAsState(
@@ -90,7 +91,7 @@ inline fun DefaultAnimatedVisibility(
             modifier = Modifier
                 .graphicsLayer { alpha = contentAlpha }
                 .then(modifier),
-            content = { content() },
+            content = content,
         )
     }
 }
