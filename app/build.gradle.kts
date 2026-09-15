@@ -45,8 +45,6 @@ android {
                 add(getDefaultProguardFile("proguard-android-optimize.txt"))
                 add(project.file("proguard-rules.pro"))
             }
-            @Suppress("UnstableApiUsage")
-            vcsInfo.include = true
         }
     }
 
