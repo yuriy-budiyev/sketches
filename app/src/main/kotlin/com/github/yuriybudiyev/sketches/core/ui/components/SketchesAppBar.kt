@@ -53,7 +53,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
+import com.github.yuriybudiyev.sketches.core.ui.animation.AnimatedVisibilityBox
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.rememberTopToBottomBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
@@ -87,7 +87,7 @@ inline fun BoxScope.SketchesTopAppBar(
                     ),
             )
         }
-        DefaultAnimatedVisibility(visible) {
+        AnimatedVisibilityBox(visible) {
             SketchesAppBar(
                 modifier = Modifier
                     .fillMaxWidth()
