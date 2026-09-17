@@ -90,6 +90,7 @@ inline fun DefaultAnimatedVisibility(
             modifier = Modifier
                 .graphicsLayer { alpha = contentAlpha }
                 .then(modifier),
+            propagateMinConstraints = true,
             content = { content() },
         )
     }
