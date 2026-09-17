@@ -86,7 +86,7 @@ import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaR
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
-import com.github.yuriybudiyev.sketches.core.ui.animation.AnimatedVisibilityBox
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
@@ -469,7 +469,7 @@ fun BucketScreen(
                     ),
             )
         }
-        AnimatedVisibilityBox(
+        DefaultAnimatedVisibility(
             visible = scrollToStartButtonVisible,
             modifier = Modifier.align(Alignment.BottomEnd),
         ) {

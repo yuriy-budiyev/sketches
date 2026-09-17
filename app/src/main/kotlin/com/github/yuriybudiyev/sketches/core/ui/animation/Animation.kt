@@ -28,7 +28,6 @@ import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.runtime.Composable
@@ -38,7 +37,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.structuralEqualityPolicy
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 
@@ -72,23 +70,19 @@ inline fun Modifier.defaultAnimateItem(): Modifier =
     }
 
 @Composable
-inline fun AnimatedVisibilityBox(
+inline fun DefaultAnimatedVisibility(
     visible: Boolean,
     modifier: Modifier = Modifier,
-    contentAlignment: Alignment = Alignment.TopStart,
-    retainInvisible: Boolean = false,
-    propagateMinConstraints: Boolean = false,
-    content: @Composable BoxScope.() -> Unit,
+    content: @Composable () -> Unit,
 ) {
     val visible by rememberUpdatedState(visible)
-    val retainInvisible by rememberUpdatedState(retainInvisible)
     val contentAlpha by animateFloatAsState(
         targetValue = if (visible) 1F else 0F,
         animationSpec = defaultAnimationSpec(),
     )
     val contentInComposition by remember {
         derivedStateOf(structuralEqualityPolicy()) {
-            retainInvisible || visible || contentAlpha > 0F
+            visible || contentAlpha > 0F
         }
     }
     if (contentInComposition) {
@@ -96,9 +90,7 @@ inline fun AnimatedVisibilityBox(
             modifier = Modifier
                 .graphicsLayer { alpha = contentAlpha }
                 .then(modifier),
-            contentAlignment = contentAlignment,
-            propagateMinConstraints = propagateMinConstraints,
-            content = content,
+            content = { content() },
         )
     }
 }

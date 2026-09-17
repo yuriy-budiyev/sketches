@@ -58,7 +58,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import coil3.compose.asPainter
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.coil.imageMemoryCache
-import com.github.yuriybudiyev.sketches.core.ui.animation.AnimatedVisibilityBox
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.components.ActionButtonHintPosition
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
@@ -99,7 +99,7 @@ fun SketchesMediaPlayer(
             enablePlaceholder = enablePlaceholder,
             enableErrorIndicator = enableErrorIndicator,
         )
-        AnimatedVisibilityBox(
+        DefaultAnimatedVisibility(
             visible = controllerVisible,
             modifier = Modifier.align(Alignment.BottomStart),
         ) {

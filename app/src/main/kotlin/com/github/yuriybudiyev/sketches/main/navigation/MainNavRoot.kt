@@ -137,7 +137,7 @@ import com.github.yuriybudiyev.sketches.core.navigation.rememberNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
-import com.github.yuriybudiyev.sketches.core.ui.animation.AnimatedVisibilityBox
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
@@ -360,7 +360,7 @@ fun MainNavRoot(
                     .align(Alignment.BottomStart)
                     .fillMaxWidth(),
             ) {
-                AnimatedVisibilityBox(navMenuVisible) {
+                DefaultAnimatedVisibility(navMenuVisible) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -404,7 +404,7 @@ fun MainNavRoot(
                         }
                     }
                 }
-                AnimatedVisibilityBox(navBarVisible) {
+                DefaultAnimatedVisibility(navBarVisible) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -605,14 +605,14 @@ private fun NavItem(
                         indication = ripple(color = { indicationColor }),
                     ),
             )
-            AnimatedVisibilityBox(selected) {
+            DefaultAnimatedVisibility(selected) {
                 Icon(
                     painter = painterResource(route.selectedIconRes),
                     contentDescription = stringResource(route.titleRes),
                     tint = colorScheme.onPrimary,
                 )
             }
-            AnimatedVisibilityBox(!selected) {
+            DefaultAnimatedVisibility(!selected) {
                 Icon(
                     painter = painterResource(route.unselectedIconRes),
                     contentDescription = stringResource(route.titleRes),
