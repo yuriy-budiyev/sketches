@@ -14,6 +14,7 @@ androidx-concurrent = "1.3.0"
 androidx-lifecycle = "2.11.0"
 androidx-savedstate = "1.5.0"
 androidx-activity = "1.13.0"
+androidx-dynamicanimation = "1.1.0"
 androidx-compose = "1.12.1"
 androidx-compose-material3 = "1.4.0"
 androidx-navigation3 = "1.1.7"
@@ -92,6 +93,8 @@ androidx-savedstate-compose = { group = "androidx.savedstate", name = "savedstat
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "androidx-activity" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity" }
 androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "androidx-activity" }
+androidx-dynamicanimation = { group = "androidx.dynamicanimation", name = "dynamicanimation", version.ref = "androidx-dynamicanimation" }
+androidx-dynamicanimation-ktx = { group = "androidx.dynamicanimation", name = "dynamicanimation-ktx", version.ref = "androidx-dynamicanimation" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "androidx-compose" }
 androidx-compose-runtime-annotation = { group = "androidx.compose.runtime", name = "runtime-annotation", version.ref = "androidx-compose" }
 androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "androidx-compose" }
@@ -223,6 +226,10 @@ androidx-activity = [
     "androidx-activity",
     "androidx-activity-compose",
     "androidx-activity-ktx",
+]
+androidx-dynamicanimation = [
+    "androidx-dynamicanimation",
+    "androidx-dynamicanimation-ktx",
 ]
 androidx-compose = [
     "androidx-compose-runtime",

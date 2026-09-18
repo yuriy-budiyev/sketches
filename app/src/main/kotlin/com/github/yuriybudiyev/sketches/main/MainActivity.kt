@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.main
 
-import android.animation.ObjectAnimator
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -35,10 +34,8 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import android.view.animation.AccelerateInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -48,12 +45,13 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.lifecycleScope
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.ShareManager
@@ -106,14 +104,19 @@ class MainActivity: ComponentActivity() {
             window.colorMode = ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            splashScreen.setOnExitAnimationListener { view ->
-                val animator = ObjectAnimator.ofFloat(view, View.ALPHA, 1F, 0F)
-                animator.interpolator = AccelerateInterpolator()
-                animator.duration = 250L
-                animator.doOnEnd {
-                    view.remove()
+            splashScreen.setOnExitAnimationListener { splashScreenView ->
+                val animation = SpringAnimation(splashScreenView, SpringAnimation.ALPHA)
+                animation.spring = SpringForce().apply {
+                    stiffness = SpringForce.STIFFNESS_MEDIUM
+                    dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+                    finalPosition = 0F
                 }
-                animator.start()
+                animation.addEndListener { _, canceled, _, _ ->
+                    if (!canceled) {
+                        splashScreenView.remove()
+                    }
+                }
+                animation.start()
             }
         }
         ContextCompat.registerReceiver(

@@ -109,6 +109,7 @@ dependencies {
     implementation(libs.bundles.androidx.lifecycle)
     implementation(libs.bundles.androidx.savedstate)
     implementation(libs.bundles.androidx.activity)
+    implementation(libs.bundles.androidx.dynamicanimation)
     implementation(libs.bundles.androidx.compose)
     implementation(libs.bundles.androidx.navigation3)
     implementation(libs.bundles.androidx.navigationevent)
