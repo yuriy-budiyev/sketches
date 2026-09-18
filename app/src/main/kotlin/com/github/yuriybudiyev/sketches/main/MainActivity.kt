@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.main
 
+import android.animation.ObjectAnimator
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -34,8 +35,10 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import android.view.animation.AccelerateInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -45,6 +48,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -100,6 +104,17 @@ class MainActivity: ComponentActivity() {
             window.desiredHdrHeadroom = 1.5F
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             window.colorMode = ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            splashScreen.setOnExitAnimationListener { view ->
+                val animator = ObjectAnimator.ofFloat(view, View.ALPHA, 1F, 0F)
+                animator.interpolator = AccelerateInterpolator()
+                animator.duration = 250L
+                animator.doOnEnd {
+                    view.remove()
+                }
+                animator.start()
+            }
         }
         ContextCompat.registerReceiver(
             this,
