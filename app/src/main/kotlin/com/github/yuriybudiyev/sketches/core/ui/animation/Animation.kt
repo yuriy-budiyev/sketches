@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.ui.animation
 
 import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Box
@@ -43,7 +44,11 @@ import androidx.compose.ui.graphics.graphicsLayer
 @Stable
 @Suppress("NOTHING_TO_INLINE")
 inline fun <T> defaultAnimationSpec(): FiniteAnimationSpec<T> =
-    spring()
+    spring(
+        dampingRatio = Spring.DampingRatioNoBouncy,
+        stiffness = Spring.StiffnessMedium,
+        visibilityThreshold = null,
+    )
 
 @Stable
 @Suppress("NOTHING_TO_INLINE")
