@@ -34,23 +34,29 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.ViewTreeObserver
 import android.view.Window
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.core.view.postDelayed
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.lifecycleScope
@@ -104,7 +110,9 @@ class MainActivity: ComponentActivity() {
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             window.colorMode = ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT
         }
+        var contentVisible by mutableStateOf(true)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            contentVisible = false
             splashScreen.setOnExitAnimationListener { splashScreenView ->
                 val animation = SpringAnimation(splashScreenView, SpringAnimation.ALPHA)
                 animation.spring = SpringForce().apply {
@@ -117,16 +125,25 @@ class MainActivity: ComponentActivity() {
                         splashScreenView.remove()
                     }
                 }
-                splashScreenView.postDelayed(300L) {
+                splashScreenView.post {
+                    contentVisible = true
                     animation.start()
                 }
             }
         }
-        ContextCompat.registerReceiver(
-            this,
-            shareReceiver,
-            IntentFilter(ChooserCallbackResendAction),
-            ContextCompat.RECEIVER_NOT_EXPORTED,
+        var contentReady by mutableStateOf(false)
+        val contentView = findViewById<View>(android.R.id.content)!!
+        contentView.viewTreeObserver.addOnPreDrawListener(
+            object: ViewTreeObserver.OnPreDrawListener {
+                override fun onPreDraw(): Boolean {
+                    if (contentReady) {
+                        contentView.viewTreeObserver.removeOnPreDrawListener(this)
+                        return true
+                    } else {
+                        return false
+                    }
+                }
+            },
         )
         setContent {
             @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -137,10 +154,27 @@ class MainActivity: ComponentActivity() {
                 LocalWindowSizeClass provides calculateWindowSizeClass(this),
             ) {
                 MainTheme {
-                    MainScreen()
+                    Box(
+                        modifier = Modifier
+                            .graphicsLayer {
+                                alpha = if (contentVisible) 1F else 0F
+                            }
+                            .fillMaxSize(),
+                    ) {
+                        MainScreen()
+                    }
                 }
             }
+            SideEffect(Unit) {
+                contentReady = true
+            }
         }
+        ContextCompat.registerReceiver(
+            this,
+            shareReceiver,
+            IntentFilter(ChooserCallbackResendAction),
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
     }
 
     override fun onDestroy() {

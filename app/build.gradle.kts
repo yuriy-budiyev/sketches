@@ -46,6 +46,11 @@ android {
                 add(project.file("proguard-rules.pro"))
             }
         }
+        create("releaseTest") {
+            initWith(getByName("release"))
+            signingConfig = getByName("debug").signingConfig
+            applicationIdSuffix = ".releasetest"
+        }
     }
 
     compileOptions {

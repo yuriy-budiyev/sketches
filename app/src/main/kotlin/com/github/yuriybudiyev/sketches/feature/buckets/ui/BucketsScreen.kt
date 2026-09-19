@@ -496,7 +496,7 @@ private fun BucketsMediaGrid(
                             contentDescription = stringResource(R.string.hidden_bucket),
                             tint = colorScheme.onBackground,
                             modifier = Modifier
-                                .align(alignment = Alignment.TopEnd)
+                                .align(alignment = Alignment.BottomStart)
                                 .padding(all = dimens.mediaGridIconPadding)
                                 .dropShadow(
                                     shape = CircleShape,
