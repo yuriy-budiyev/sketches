@@ -50,6 +50,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.postDelayed
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.lifecycleScope
@@ -116,7 +117,9 @@ class MainActivity: ComponentActivity() {
                         splashScreenView.remove()
                     }
                 }
-                animation.start()
+                splashScreenView.postDelayed(500L) {
+                    animation.start()
+                }
             }
         }
         ContextCompat.registerReceiver(
