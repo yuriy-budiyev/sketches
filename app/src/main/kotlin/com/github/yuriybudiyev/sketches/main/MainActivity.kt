@@ -117,7 +117,7 @@ class MainActivity: ComponentActivity() {
                         splashScreenView.remove()
                     }
                 }
-                splashScreenView.postDelayed(delayInMillis = 500L) {
+                splashScreenView.postDelayed(500L) {
                     animation.start()
                 }
             }
