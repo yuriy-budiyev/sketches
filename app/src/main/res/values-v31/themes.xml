@@ -1,0 +1,10 @@
+<resources>
+
+    <style name="Theme.Sketches.Base.V31" parent="Theme.Sketches.Base.V29">
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/ic_launcher_background</item>
+        <item name="android:windowSplashScreenBackground">#FFFFFFFF</item>
+    </style>
+
+    <style name="Theme.Sketches" parent="Theme.Sketches.Base.V31" />
+</resources>
