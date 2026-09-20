@@ -43,17 +43,17 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.core.view.postDelayed
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.lifecycleScope
@@ -67,6 +67,8 @@ import com.github.yuriybudiyev.sketches.main.ui.MainScreen
 import com.github.yuriybudiyev.sketches.main.ui.dimens.DefaultDimens
 import com.github.yuriybudiyev.sketches.main.ui.theme.MainTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -112,6 +114,20 @@ class MainActivity: ComponentActivity() {
                 }
             },
         )
+        var splashScreenExitCalled by mutableStateOf(false)
+        lifecycleScope.launch {
+            snapshotFlow { contentReady }.collect { contentReady ->
+                if (contentReady) {
+                    lifecycleScope.launch {
+                        delay(timeMillis = 1000L)
+                        if (!splashScreenExitCalled) {
+                            contentView.alpha = 1F
+                        }
+                    }
+                    cancel()
+                }
+            }
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 val darkMode =
@@ -135,6 +151,7 @@ class MainActivity: ComponentActivity() {
             }
             contentView.alpha = if (savedInstanceState != null) 1F else 0F
             splashScreen.setOnExitAnimationListener { splashScreenView ->
+                splashScreenExitCalled = true
                 val animation = SpringAnimation(splashScreenView, SpringAnimation.ALPHA)
                 animation.spring = SpringForce().apply {
                     stiffness = SpringForce.STIFFNESS_MEDIUM
@@ -146,7 +163,8 @@ class MainActivity: ComponentActivity() {
                         splashScreenView.remove()
                     }
                 }
-                splashScreenView.postDelayed(delayInMillis = 100L) {
+                lifecycleScope.launch {
+                    delay(timeMillis = 200L)
                     contentView.alpha = 1F
                     animation.start()
                 }
@@ -164,7 +182,7 @@ class MainActivity: ComponentActivity() {
                     MainScreen()
                 }
             }
-            SideEffect(Unit) {
+            LaunchedEffect(Unit) {
                 contentReady = true
             }
         }
