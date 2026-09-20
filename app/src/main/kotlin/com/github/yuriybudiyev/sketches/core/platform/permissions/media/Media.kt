@@ -151,25 +151,45 @@ inline fun rememberMediaAccessRequestLauncher(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
         onResult = { grantResults ->
             val mediaAccess = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                if (grantResults[Manifest.permission.READ_MEDIA_IMAGES] == true
+                if (
+                    grantResults[Manifest.permission.READ_MEDIA_IMAGES] == true
                     && grantResults[Manifest.permission.READ_MEDIA_VIDEO] == true
+                    && grantResults[Manifest.permission.ACCESS_MEDIA_LOCATION] == true
                 ) {
                     MediaAccess.Full
-                } else if (grantResults[Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED] == true) {
+                } else if (
+                    grantResults[Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED] == true
+                    && grantResults[Manifest.permission.ACCESS_MEDIA_LOCATION] == true
+                ) {
                     MediaAccess.UserSelected
                 } else {
                     MediaAccess.None
                 }
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                if (grantResults[Manifest.permission.READ_MEDIA_IMAGES] == true
+                if (
+                    grantResults[Manifest.permission.READ_MEDIA_IMAGES] == true
                     && grantResults[Manifest.permission.READ_MEDIA_VIDEO] == true
+                    && grantResults[Manifest.permission.ACCESS_MEDIA_LOCATION] == true
                 ) {
                     MediaAccess.Full
                 } else {
                     MediaAccess.None
                 }
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                if (grantResults[Manifest.permission.READ_EXTERNAL_STORAGE] == true) {
+                if (
+                    grantResults[Manifest.permission.READ_EXTERNAL_STORAGE] == true
+                    && grantResults[Manifest.permission.ACCESS_MEDIA_LOCATION] == true
+                ) {
+                    MediaAccess.Full
+                } else {
+                    MediaAccess.None
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                if (
+                    grantResults[Manifest.permission.READ_EXTERNAL_STORAGE] == true
+                    && grantResults[Manifest.permission.WRITE_EXTERNAL_STORAGE] == true
+                    && grantResults[Manifest.permission.ACCESS_MEDIA_LOCATION] == true
+                ) {
                     MediaAccess.Full
                 } else {
                     MediaAccess.None
