@@ -164,7 +164,7 @@ class MainActivity: ComponentActivity() {
                     }
                 }
                 lifecycleScope.launch {
-                    delay(timeMillis = 250L)
+                    delay(timeMillis = 100L)
                     contentView.alpha = 1F
                     animation.start()
                 }
