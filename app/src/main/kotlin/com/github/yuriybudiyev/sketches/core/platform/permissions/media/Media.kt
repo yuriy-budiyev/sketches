@@ -81,6 +81,16 @@ fun Context.checkMediaAccess(): MediaAccess =
         } else {
             MediaAccess.None
         }
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (
+            checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)
+            && checkPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            && checkPermissionGranted(Manifest.permission.ACCESS_MEDIA_LOCATION)
+        ) {
+            MediaAccess.Full
+        } else {
+            MediaAccess.None
+        }
     } else {
         if (
             checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -115,6 +125,12 @@ value class MediaAccessRequestLauncher(
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 arrayOf(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.ACCESS_MEDIA_LOCATION,
+                )
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.ACCESS_MEDIA_LOCATION,
                 )
             } else {
