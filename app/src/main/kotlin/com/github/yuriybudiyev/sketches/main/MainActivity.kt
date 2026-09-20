@@ -36,12 +36,10 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewTreeObserver
-import android.view.Window
+import android.view.WindowInsetsController
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
@@ -50,8 +48,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
@@ -78,25 +74,16 @@ class MainActivity: ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val window: Window = window!!
-        WindowCompat.setDecorFitsSystemWindows(
-            window,
-            false,
-        )
-        val insetsController = WindowCompat.getInsetsController(
-            window,
-            window.decorView,
-        )
-        insetsController.systemBarsBehavior =
+        val window = window!!
+        val decorView = window.decorView
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowCompat.getInsetsController(window, decorView).systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { view, windowInsets ->
+        ViewCompat.setOnApplyWindowInsetsListener(decorView) { view, windowInsets ->
             systemBarsController.isSystemBarsVisible =
                 windowInsets.isVisible(WindowInsetsCompat.Type.navigationBars()) ||
                     windowInsets.isVisible(WindowInsetsCompat.Type.statusBars())
-            ViewCompat.onApplyWindowInsets(
-                view,
-                windowInsets,
-            )
+            ViewCompat.onApplyWindowInsets(view, windowInsets)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.attributes.layoutInDisplayCutoutMode =
@@ -110,27 +97,6 @@ class MainActivity: ComponentActivity() {
             window.desiredHdrHeadroom = 1.5F
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             window.colorMode = ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT
-        }
-        var contentVisible by mutableStateOf(true)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            contentVisible = false
-            splashScreen.setOnExitAnimationListener { splashScreenView ->
-                val animation = SpringAnimation(splashScreenView, SpringAnimation.ALPHA)
-                animation.spring = SpringForce().apply {
-                    stiffness = SpringForce.STIFFNESS_MEDIUM
-                    dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
-                    finalPosition = 0F
-                }
-                animation.addEndListener { _, canceled, _, _ ->
-                    if (!canceled) {
-                        splashScreenView.remove()
-                    }
-                }
-                splashScreenView.postDelayed(delayInMillis = 100L) {
-                    contentVisible = true
-                    animation.start()
-                }
-            }
         }
         var contentReady by mutableStateOf(false)
         val contentView = findViewById<View>(android.R.id.content)!!
@@ -146,6 +112,46 @@ class MainActivity: ComponentActivity() {
                 }
             },
         )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                val darkMode =
+                    resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
+                        Configuration.UI_MODE_NIGHT_YES
+                val insetsController = decorView.windowInsetsController!!
+                if (darkMode) {
+                    insetsController.setSystemBarsAppearance(
+                        0,
+                        WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or
+                            WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS,
+                    )
+                } else {
+                    insetsController.setSystemBarsAppearance(
+                        WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or
+                            WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS,
+                        WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or
+                            WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS,
+                    )
+                }
+            }
+            contentView.alpha = if (savedInstanceState != null) 1F else 0F
+            splashScreen.setOnExitAnimationListener { splashScreenView ->
+                val animation = SpringAnimation(splashScreenView, SpringAnimation.ALPHA)
+                animation.spring = SpringForce().apply {
+                    stiffness = SpringForce.STIFFNESS_MEDIUM
+                    dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+                    finalPosition = 0F
+                }
+                animation.addEndListener { _, canceled, _, _ ->
+                    if (!canceled) {
+                        splashScreenView.remove()
+                    }
+                }
+                splashScreenView.postDelayed(delayInMillis = 100L) {
+                    contentView.alpha = 1F
+                    animation.start()
+                }
+            }
+        }
         setContent {
             @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
             CompositionLocalProvider(
@@ -155,15 +161,7 @@ class MainActivity: ComponentActivity() {
                 LocalWindowSizeClass provides calculateWindowSizeClass(this),
             ) {
                 MainTheme {
-                    Box(
-                        modifier = Modifier
-                            .graphicsLayer {
-                                alpha = if (contentVisible) 1F else 0F
-                            }
-                            .fillMaxSize(),
-                    ) {
-                        MainScreen()
-                    }
+                    MainScreen()
                 }
             }
             SideEffect(Unit) {
@@ -251,20 +249,12 @@ class MainActivity: ComponentActivity() {
         override var isSystemBarsVisible: Boolean by mutableStateOf(isSystemBarsVisible)
 
         override fun showSystemBars() {
-            WindowCompat
-                .getInsetsController(
-                    window,
-                    window.decorView,
-                )
+            WindowCompat.getInsetsController(window, window.decorView)
                 .show(WindowInsetsCompat.Type.systemBars())
         }
 
         override fun hideSystemBars() {
-            WindowCompat
-                .getInsetsController(
-                    window,
-                    window.decorView,
-                )
+            WindowCompat.getInsetsController(window, window.decorView)
                 .hide(WindowInsetsCompat.Type.systemBars())
         }
     }
@@ -279,10 +269,7 @@ class MainActivity: ComponentActivity() {
             listenerAction: String?,
         ) {
             val shareIntent = Intent(Intent.ACTION_SEND)
-                .putExtra(
-                    Intent.EXTRA_STREAM,
-                    uri,
-                )
+                .putExtra(Intent.EXTRA_STREAM, uri)
                 .setType(mimeType)
             if (listenerAction != null) {
                 startChooserActivityWithCallback(
@@ -305,10 +292,7 @@ class MainActivity: ComponentActivity() {
             listenerAction: String?,
         ) {
             val shareIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
-                .putParcelableArrayListExtra(
-                    Intent.EXTRA_STREAM,
-                    uris,
-                )
+                .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
                 .setType(mimeType)
             if (listenerAction != null) {
                 startChooserActivityWithCallback(
