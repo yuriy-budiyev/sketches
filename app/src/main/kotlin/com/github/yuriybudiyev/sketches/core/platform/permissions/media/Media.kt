@@ -48,31 +48,42 @@ enum class MediaAccess {
 
 fun Context.checkMediaAccess(): MediaAccess =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-        if (checkPermissionGranted(Manifest.permission.READ_MEDIA_IMAGES)
+        if (
+            checkPermissionGranted(Manifest.permission.READ_MEDIA_IMAGES)
             && checkPermissionGranted(Manifest.permission.READ_MEDIA_VIDEO)
+            && checkPermissionGranted(Manifest.permission.ACCESS_MEDIA_LOCATION)
         ) {
             MediaAccess.Full
-        } else if (checkPermissionGranted(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)) {
+        } else if (
+            checkPermissionGranted(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
+            && checkPermissionGranted(Manifest.permission.ACCESS_MEDIA_LOCATION)
+        ) {
             MediaAccess.UserSelected
         } else {
             MediaAccess.None
         }
     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        if (checkPermissionGranted(Manifest.permission.READ_MEDIA_IMAGES)
+        if (
+            checkPermissionGranted(Manifest.permission.READ_MEDIA_IMAGES)
             && checkPermissionGranted(Manifest.permission.READ_MEDIA_VIDEO)
+            && checkPermissionGranted(Manifest.permission.ACCESS_MEDIA_LOCATION)
         ) {
             MediaAccess.Full
         } else {
             MediaAccess.None
         }
     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        if (checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+        if (
+            checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)
+            && checkPermissionGranted(Manifest.permission.ACCESS_MEDIA_LOCATION)
+        ) {
             MediaAccess.Full
         } else {
             MediaAccess.None
         }
     } else {
-        if (checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (
+            checkPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)
             && checkPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         ) {
             MediaAccess.Full
@@ -93,14 +104,19 @@ value class MediaAccessRequestLauncher(
                     Manifest.permission.READ_MEDIA_IMAGES,
                     Manifest.permission.READ_MEDIA_VIDEO,
                     Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED,
+                    Manifest.permission.ACCESS_MEDIA_LOCATION,
                 )
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 arrayOf(
                     Manifest.permission.READ_MEDIA_IMAGES,
                     Manifest.permission.READ_MEDIA_VIDEO,
+                    Manifest.permission.ACCESS_MEDIA_LOCATION,
                 )
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.ACCESS_MEDIA_LOCATION,
+                )
             } else {
                 arrayOf(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
