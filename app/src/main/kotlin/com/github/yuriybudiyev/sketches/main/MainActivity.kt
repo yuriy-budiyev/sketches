@@ -35,6 +35,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.WindowInsetsController
 import android.view.WindowManager
@@ -103,7 +104,7 @@ class MainActivity: ComponentActivity() {
             window.colorMode = ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT
         }
         var contentReady by mutableStateOf(false)
-        val contentView = findViewById<View>(android.R.id.content)!!
+        val contentView = decorView.findViewById<ViewGroup>(android.R.id.content)!!
         contentView.viewTreeObserver.addOnPreDrawListener(
             object: ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
@@ -116,7 +117,7 @@ class MainActivity: ComponentActivity() {
                 }
             },
         )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (savedInstanceState == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 val darkMode =
                     resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
@@ -138,17 +139,17 @@ class MainActivity: ComponentActivity() {
                 }
             }
             var splashScreenExitCalled by mutableStateOf(false)
-            contentView.alpha = if (savedInstanceState != null) 1F else 0F
+            contentView.alpha = 0F
             lifecycleScope.launch {
                 snapshotFlow { contentReady }.collect { contentReady ->
                     if (contentReady) {
+                        cancel()
                         lifecycleScope.launch {
                             delay(timeMillis = 1000L)
                             if (!splashScreenExitCalled) {
                                 contentView.alpha = 1F
                             }
                         }
-                        cancel()
                     }
                 }
             }
@@ -186,6 +187,39 @@ class MainActivity: ComponentActivity() {
             }
             LaunchedEffect(Unit) {
                 contentReady = true
+            }
+        }
+        if (savedInstanceState == null && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            val splashScreenView = View(this)
+            splashScreenView.setBackgroundResource(R.drawable.bg_splash_screen)
+            contentView.addView(
+                splashScreenView,
+                ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                ),
+            )
+            lifecycleScope.launch {
+                snapshotFlow { contentReady }.collect { contentReady ->
+                    if (contentReady) {
+                        cancel()
+                        val animation = SpringAnimation(splashScreenView, SpringAnimation.ALPHA)
+                        animation.spring = SpringForce().apply {
+                            stiffness = SpringForce.STIFFNESS_MEDIUM
+                            dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+                            finalPosition = 0F
+                        }
+                        animation.addEndListener { _, canceled, _, _ ->
+                            if (!canceled) {
+                                contentView.removeView(splashScreenView)
+                            }
+                        }
+                        lifecycleScope.launch {
+                            delay(timeMillis = 100L)
+                            animation.start()
+                        }
+                    }
+                }
             }
         }
         ContextCompat.registerReceiver(
