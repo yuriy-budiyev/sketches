@@ -117,7 +117,7 @@ class MainActivity: ComponentActivity() {
                 }
             },
         )
-        if (savedInstanceState == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 val darkMode =
                     resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
@@ -139,15 +139,17 @@ class MainActivity: ComponentActivity() {
                 }
             }
             var splashScreenExitCalled by mutableStateOf(false)
-            contentView.alpha = 0F
-            lifecycleScope.launch {
-                snapshotFlow { contentReady }.collect { contentReady ->
-                    if (contentReady) {
-                        cancel()
-                        lifecycleScope.launch {
-                            delay(timeMillis = 1000L)
-                            if (!splashScreenExitCalled) {
-                                contentView.alpha = 1F
+            if (savedInstanceState == null) {
+                contentView.alpha = 0F
+                lifecycleScope.launch {
+                    snapshotFlow { contentReady }.collect { contentReady ->
+                        if (contentReady) {
+                            cancel()
+                            lifecycleScope.launch {
+                                delay(timeMillis = 1000L)
+                                if (!splashScreenExitCalled) {
+                                    contentView.alpha = 1F
+                                }
                             }
                         }
                     }
@@ -167,7 +169,7 @@ class MainActivity: ComponentActivity() {
                     }
                 }
                 lifecycleScope.launch {
-                    delay(timeMillis = 100L)
+                    delay(timeMillis = SplashScreenDelay)
                     contentView.alpha = 1F
                     animation.start()
                 }
@@ -189,7 +191,7 @@ class MainActivity: ComponentActivity() {
                 contentReady = true
             }
         }
-        if (savedInstanceState == null && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S && savedInstanceState == null) {
             val splashScreenView = View(this)
             splashScreenView.setBackgroundResource(R.drawable.bg_splash_screen)
             contentView.addView(
@@ -215,7 +217,7 @@ class MainActivity: ComponentActivity() {
                             }
                         }
                         lifecycleScope.launch {
-                            delay(timeMillis = 100L)
+                            delay(timeMillis = SplashScreenDelay)
                             animation.start()
                         }
                     }
@@ -261,6 +263,8 @@ class MainActivity: ComponentActivity() {
             "com.github.yuriybudiyev.sketches.main.ChooserCallbackResendAction"
 
         const val ChooserCallbackActionExtra: String = "ChooserCallbackAction"
+
+        const val SplashScreenDelay: Long = 100L
     }
 
     class ChooserCallbackReceiver: BroadcastReceiver() {
