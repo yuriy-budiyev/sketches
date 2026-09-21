@@ -69,6 +69,7 @@ import com.github.yuriybudiyev.sketches.main.ui.MainScreen
 import com.github.yuriybudiyev.sketches.main.ui.dimens.DefaultDimens
 import com.github.yuriybudiyev.sketches.main.ui.theme.MainTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -104,12 +105,14 @@ class MainActivity: ComponentActivity() {
             window.colorMode = ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT
         }
         var contentReady by mutableStateOf(false)
+        var contentDrawAllowed by mutableStateOf(false)
         val contentView = decorView.findViewById<ViewGroup>(android.R.id.content)!!
         contentView.viewTreeObserver.addOnPreDrawListener(
             object: ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
                     if (contentReady) {
                         contentView.viewTreeObserver.removeOnPreDrawListener(this)
+                        contentDrawAllowed = true
                         return true
                     } else {
                         return false
@@ -141,11 +144,11 @@ class MainActivity: ComponentActivity() {
             var splashScreenExitCalled by mutableStateOf(false)
             if (savedInstanceState == null) {
                 contentView.alpha = 0F
-                lifecycleScope.launch {
-                    snapshotFlow { contentReady }.collect { contentReady ->
-                        if (contentReady) {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    snapshotFlow { contentDrawAllowed }.collect { contentDrawAllowed ->
+                        if (contentDrawAllowed) {
                             cancel()
-                            lifecycleScope.launch {
+                            lifecycleScope.launch(Dispatchers.Main) {
                                 delay(timeMillis = 1000L)
                                 if (!splashScreenExitCalled) {
                                     contentView.alpha = 1F
@@ -163,7 +166,7 @@ class MainActivity: ComponentActivity() {
                         splashScreenView.remove()
                     }
                 }
-                lifecycleScope.launch {
+                lifecycleScope.launch(Dispatchers.Main) {
                     delay(timeMillis = SplashScreenDelay)
                     contentView.alpha = 1F
                     animation.start()
@@ -186,7 +189,7 @@ class MainActivity: ComponentActivity() {
                 contentReady = true
             }
         }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S && savedInstanceState == null) {
+        if (savedInstanceState == null && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             val splashScreenView = View(this)
             splashScreenView.setBackgroundResource(R.drawable.bg_splash_screen)
             contentView.addView(
@@ -196,9 +199,9 @@ class MainActivity: ComponentActivity() {
                     ViewGroup.LayoutParams.MATCH_PARENT,
                 ),
             )
-            lifecycleScope.launch {
-                snapshotFlow { contentReady }.collect { contentReady ->
-                    if (contentReady) {
+            lifecycleScope.launch(Dispatchers.Main) {
+                snapshotFlow { contentDrawAllowed }.collect { contentDrawAllowed ->
+                    if (contentDrawAllowed) {
                         cancel()
                         val animation = splashScreenExitAnimation(splashScreenView)
                         animation.addEndListener { _, canceled, _, _ ->
@@ -206,7 +209,7 @@ class MainActivity: ComponentActivity() {
                                 contentView.removeView(splashScreenView)
                             }
                         }
-                        lifecycleScope.launch {
+                        lifecycleScope.launch(Dispatchers.Main) {
                             delay(timeMillis = SplashScreenDelay)
                             animation.start()
                         }

@@ -29,9 +29,6 @@ android {
         versionCode = 120
         versionName = "1.5.14"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
     }
 
     buildTypes {
