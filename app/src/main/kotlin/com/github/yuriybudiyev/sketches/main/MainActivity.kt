@@ -157,12 +157,7 @@ class MainActivity: ComponentActivity() {
             }
             splashScreen.setOnExitAnimationListener { splashScreenView ->
                 splashScreenExitCalled = true
-                val animation = SpringAnimation(splashScreenView, SpringAnimation.ALPHA)
-                animation.spring = SpringForce().apply {
-                    stiffness = SpringForce.STIFFNESS_MEDIUM
-                    dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
-                    finalPosition = 0F
-                }
+                val animation = splashScreenExitAnimation(splashScreenView)
                 animation.addEndListener { _, canceled, _, _ ->
                     if (!canceled) {
                         splashScreenView.remove()
@@ -205,12 +200,7 @@ class MainActivity: ComponentActivity() {
                 snapshotFlow { contentReady }.collect { contentReady ->
                     if (contentReady) {
                         cancel()
-                        val animation = SpringAnimation(splashScreenView, SpringAnimation.ALPHA)
-                        animation.spring = SpringForce().apply {
-                            stiffness = SpringForce.STIFFNESS_MEDIUM
-                            dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
-                            finalPosition = 0F
-                        }
+                        val animation = splashScreenExitAnimation(splashScreenView)
                         animation.addEndListener { _, canceled, _, _ ->
                             if (!canceled) {
                                 contentView.removeView(splashScreenView)
@@ -265,6 +255,15 @@ class MainActivity: ComponentActivity() {
         const val ChooserCallbackActionExtra: String = "ChooserCallbackAction"
 
         const val SplashScreenDelay: Long = 100L
+
+        fun splashScreenExitAnimation(splashScreenView: View): SpringAnimation =
+            SpringAnimation(splashScreenView, SpringAnimation.ALPHA).apply {
+                spring = SpringForce().apply {
+                    stiffness = SpringForce.STIFFNESS_MEDIUM
+                    dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+                    finalPosition = 0F
+                }
+            }
     }
 
     class ChooserCallbackReceiver: BroadcastReceiver() {
