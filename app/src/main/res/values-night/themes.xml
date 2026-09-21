@@ -1,10 +1,10 @@
 <resources>
 
     <style name="Theme.Sketches.Base" parent="android:Theme.Material.NoActionBar">
-        <item name="android:background">#FF000000</item>
-        <item name="android:windowBackground">#FF000000</item>
+        <item name="android:background">#00000000</item>
         <item name="android:statusBarColor">#00000000</item>
         <item name="android:navigationBarColor">#00000000</item>
+        <item name="android:windowBackground">@color/window_background</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>

@@ -1,10 +1,8 @@
 <resources>
 
-    <style name="Theme.Sketches.Base.V31" parent="Theme.Sketches.Base.V29">
+    <style name="Theme.Sketches.Splash" parent="Theme.Sketches">
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
         <item name="android:windowSplashScreenIconBackgroundColor">@color/ic_launcher_background</item>
-        <item name="android:windowSplashScreenBackground">#FFFFFFFF</item>
+        <item name="android:windowSplashScreenBackground">@color/window_background</item>
     </style>
-
-    <style name="Theme.Sketches" parent="Theme.Sketches.Base.V31" />
 </resources>

@@ -57,6 +57,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.lifecycleScope
+import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.ShareManager
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
@@ -75,6 +76,7 @@ import kotlinx.coroutines.launch
 class MainActivity: ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_Sketches)
         super.onCreate(savedInstanceState)
         val window = window!!
         val decorView = window.decorView
@@ -114,20 +116,6 @@ class MainActivity: ComponentActivity() {
                 }
             },
         )
-        var splashScreenExitCalled by mutableStateOf(false)
-        lifecycleScope.launch {
-            snapshotFlow { contentReady }.collect { contentReady ->
-                if (contentReady) {
-                    lifecycleScope.launch {
-                        delay(timeMillis = 1000L)
-                        if (!splashScreenExitCalled) {
-                            contentView.alpha = 1F
-                        }
-                    }
-                    cancel()
-                }
-            }
-        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 val darkMode =
@@ -149,7 +137,21 @@ class MainActivity: ComponentActivity() {
                     )
                 }
             }
+            var splashScreenExitCalled by mutableStateOf(false)
             contentView.alpha = if (savedInstanceState != null) 1F else 0F
+            lifecycleScope.launch {
+                snapshotFlow { contentReady }.collect { contentReady ->
+                    if (contentReady) {
+                        lifecycleScope.launch {
+                            delay(timeMillis = 1000L)
+                            if (!splashScreenExitCalled) {
+                                contentView.alpha = 1F
+                            }
+                        }
+                        cancel()
+                    }
+                }
+            }
             splashScreen.setOnExitAnimationListener { splashScreenView ->
                 splashScreenExitCalled = true
                 val animation = SpringAnimation(splashScreenView, SpringAnimation.ALPHA)
