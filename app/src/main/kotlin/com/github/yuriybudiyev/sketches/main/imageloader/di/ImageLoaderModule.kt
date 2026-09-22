@@ -33,10 +33,12 @@ import coil3.gif.GifDecoder
 import coil3.request.CachePolicy
 import coil3.request.allowHardware
 import coil3.request.allowRgb565
+import coil3.request.maxBitmapSize
 import coil3.serviceLoaderEnabled
 import coil3.svg.SvgDecoder
 import coil3.video.VideoFrameDecoder
 import com.github.yuriybudiyev.sketches.core.coil.LocalCacheInterceptor
+import com.github.yuriybudiyev.sketches.core.coil.getMaxBitmapSize
 import com.github.yuriybudiyev.sketches.core.coil.imageMemoryCache
 import com.github.yuriybudiyev.sketches.main.imageloader.executor.ImageLoaderExecutor
 import dagger.Module
@@ -61,6 +63,7 @@ object ImageLoaderModule {
         val imageLoaderDispatcher = ImageLoaderExecutor().asCoroutineDispatcher()
         return ImageLoader.Builder(context)
             .serviceLoaderEnabled(false)
+            .maxBitmapSize(context.getMaxBitmapSize())
             .allowHardware(true)
             .allowRgb565(false)
             .memoryCache(null)

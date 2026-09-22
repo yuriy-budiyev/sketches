@@ -44,9 +44,20 @@ import coil3.request.ImageResult
 import coil3.request.SuccessResult
 import coil3.request.allowHardware
 import coil3.size.Dimension
+import coil3.size.Size
 import coil3.target.ViewTarget
 import coil3.toBitmap
 import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
+import kotlin.math.sqrt
+
+/**
+ * Max [Bitmap] size assuming most images have 32 bits per pixel,
+ * allowing pixels to take 25% of max memory.
+ */
+fun Context.getMaxBitmapSize(): Size {
+    val size = sqrt((getMaxMemory() / 16L).toDouble()).toInt()
+    return Size(width = size, height = size)
+}
 
 fun ImageRequest.Builder.allowLocalCacheIntercept(allow: Boolean): ImageRequest.Builder {
     extras[AllowLocalCacheInterceptKey] = allow
