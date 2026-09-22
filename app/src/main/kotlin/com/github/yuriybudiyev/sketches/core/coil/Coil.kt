@@ -56,8 +56,8 @@ import kotlin.math.sqrt
  */
 fun Context.getMaxBitmapSize(): Size {
     val maxMemory = getMaxMemory()
-    val factor = if (maxMemory >= 201326592L) 16L else 24L
-    val size = sqrt(maxMemory.toDouble() / factor.toDouble()).toInt()
+    val factor = if (maxMemory >= 201326592L) 16.0 else 24.0
+    val size = sqrt(maxMemory.toDouble() / factor).toInt()
     return Size(width = size, height = size)
 }
 
