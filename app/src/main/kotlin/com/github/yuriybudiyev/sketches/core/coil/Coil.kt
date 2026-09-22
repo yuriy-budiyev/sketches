@@ -52,10 +52,12 @@ import kotlin.math.sqrt
 
 /**
  * Max [Bitmap] size assuming most images have 32 bits per pixel,
- * allowing pixels to take 25% of max memory.
+ * allowing pixels to take 17-25% of max memory depending on its amount.
  */
 fun Context.getMaxBitmapSize(): Size {
-    val size = sqrt((getMaxMemory() / 16L).toDouble()).toInt()
+    val maxMemory = getMaxMemory()
+    val factor = if (maxMemory >= 201326592L) 16L else 24L
+    val size = sqrt(maxMemory.toDouble() / factor.toDouble()).toInt()
     return Size(width = size, height = size)
 }
 
