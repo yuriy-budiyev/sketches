@@ -307,11 +307,10 @@ fun MainNavRoot(
             onBack = { navBackStack.removeLastOrNull() },
         )
         val currentScene = sceneState.currentScene
-        val currentInfo = SceneInfo(currentScene)
-        val previousSceneInfos = sceneState.previousScenes.map { scene -> SceneInfo(scene) }
+        val previousScenes = sceneState.previousScenes
         val navEventState = rememberNavigationEventState(
-            currentInfo = currentInfo,
-            backInfo = previousSceneInfos,
+            currentInfo = SceneInfo(currentScene),
+            backInfo = previousScenes.mapTo(ArrayList(previousScenes.size)) { scene -> SceneInfo(scene) },
         )
         NavigationBackHandler(
             state = navEventState,
