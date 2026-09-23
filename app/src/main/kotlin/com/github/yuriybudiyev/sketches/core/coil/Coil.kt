@@ -212,15 +212,11 @@ class LruMemoryCache private constructor(private val maxSizeBytes: Long): Compon
     operator fun get(key: Key): Image? =
         imageCache[key]
 
-    @Suppress("DEPRECATION")
     override fun onTrimMemory(level: Int) {
-        when {
-            level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND -> {
-                imageCache.evictAll()
-            }
-            level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW -> {
-                imageCache.trimToSize(imageCache.size() / 2)
-            }
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND) {
+            imageCache.evictAll()
+        } else if (level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
+            imageCache.trimToSize(imageCache.size() / 2)
         }
     }
 
