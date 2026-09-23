@@ -98,6 +98,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
@@ -307,10 +308,9 @@ fun MainNavRoot(
             onBack = { navBackStack.removeLastOrNull() },
         )
         val currentScene = sceneState.currentScene
-        val previousScenes = sceneState.previousScenes
         val navEventState = rememberNavigationEventState(
             currentInfo = SceneInfo(currentScene),
-            backInfo = previousScenes.mapTo(ArrayList(previousScenes.size)) { scene -> SceneInfo(scene) },
+            backInfo = sceneState.previousScenes.fastMap { scene -> SceneInfo(scene) },
         )
         NavigationBackHandler(
             state = navEventState,
