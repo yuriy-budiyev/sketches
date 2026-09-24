@@ -28,6 +28,8 @@ import android.os.Parcelable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
@@ -57,11 +59,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastFirstOrNull
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.withHighTransparency
@@ -411,40 +415,46 @@ private fun MediaItem(
     }
 }
 
-/*
+/**
+ * For [SketchesGroupingMediaGrid] only
+ */
 suspend fun LazyGridState.fastAnimateScrollToStart(files: List<MediaFile>) {
-    var jumpIndex = layoutInfo.maxSpan * 3 + 1
-    if (firstVisibleItemIndex > jumpIndex) {
-        scrollToItem(jumpIndex)
-    }
-    var headersBeforeJump = 0
-    var previousDate = LocalDateTime.MAX
-    files.fastForEachIndexed { index, file ->
-        val currentDate = file.dateAdded
-        if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
-            headersBeforeJump++
-        }
-        previousDate = currentDate
-        if (index == jumpIndex) {
-            return@fastForEachIndexed
-        }
-    }
-
-    val itemSize = layoutInfo.visibleItemsInfo.firstOrNull()?.let { itemInfo ->
-        when (layoutInfo.orientation) {
-            Orientation.Vertical -> itemInfo.size.height
-            Orientation.Horizontal -> itemInfo.size.width
-        }
-    } ?: run {
-        scrollToItem(0)
+    //TODO
+    var items = layoutInfo.visibleItemsInfo
+    if (items.isEmpty()) {
+        scrollToItem(index = 0)
         return
     }
+    val itemSize = when (layoutInfo.orientation) {
+        Orientation.Vertical -> items[0].size.height
+        Orientation.Horizontal -> items[0].size.width
+    }
+    val viewportSize = when (layoutInfo.orientation) {
+        Orientation.Vertical -> layoutInfo.viewportSize.height
+        Orientation.Horizontal -> layoutInfo.viewportSize.width
+    }
+    val maxSpan = layoutInfo.maxSpan
+    var jumpIndex = (maxSpan * viewportSize / itemSize)
+    jumpIndex += jumpIndex % maxSpan
+    if (firstVisibleItemIndex > jumpIndex) {
+        scrollToItem(index = jumpIndex, scrollOffset = -itemSize)
+    }
+    items = layoutInfo.visibleItemsInfo
+    if (items.isEmpty()) {
+        scrollToItem(index = 0)
+        return
+    }
+    val item = items.fastFirstOrNull { item -> item.offset.y >= layoutInfo.viewportStartOffset }
+    if (item == null) {
+        scrollToItem(index = 0)
+        return
+    }
+    val itemOffset = when (layoutInfo.orientation) {
+        Orientation.Vertical -> item.offset.y
+        Orientation.Horizontal -> item.offset.x
+    }
     animateScrollBy(
-        value = -(firstVisibleItemIndex * itemSize + firstVisibleItemScrollOffset).toFloat(),
+        value = -(item.row * itemSize - itemOffset).toFloat(),
         animationSpec = defaultAnimationSpec(),
     )
-    if (firstVisibleItemIndex != 0 || firstVisibleItemScrollOffset != 0) {
-        scrollToItem(0)
-    }
 }
-*/
