@@ -83,6 +83,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberM
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
+import com.github.yuriybudiyev.sketches.core.ui.utils.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
@@ -234,7 +235,7 @@ private fun BookmarksScreen(
             navResultStore.collectNavResult<ImageScreenNavResult> { result ->
                 mediaGridState.scrollToItem(
                     index = result.fileIndex,
-                    itemType = SketchesMediaGridContentType.MediaFile,
+                    itemType = SketchesMediaGridContentType.Media,
                     animate = false,
                     snapToClosestEdge = true,
                     onlyIfItemAtIndexIsNotVisible = true,
@@ -268,7 +269,7 @@ private fun BookmarksScreen(
             coroutineScope.launch {
                 if (allFiles.isNotEmpty()) {
                     mediaGridScrollConnection.reset()
-                    mediaGridState.animateScrollToItem(index = 0)
+                    mediaGridState.fastAnimateScrollToStart()
                 }
             }
         }

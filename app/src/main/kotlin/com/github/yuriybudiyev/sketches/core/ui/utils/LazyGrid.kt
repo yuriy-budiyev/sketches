@@ -25,8 +25,11 @@
 package com.github.yuriybudiyev.sketches.core.ui.utils
 
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.util.fastFirstOrNull
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 
 suspend fun LazyGridState.scrollToItem(
     index: Int,
@@ -88,4 +91,47 @@ suspend fun LazyGridState.scrollToItem(
             scrollOffset = offset,
         )
     }
+}
+
+/**
+ * For grids with single content type and single item size
+ */
+suspend fun LazyGridState.fastAnimateScrollToStart() {
+    var items = layoutInfo.visibleItemsInfo
+    if (items.isEmpty()) {
+        scrollToItem(index = 0)
+        return
+    }
+    val itemSize = when (layoutInfo.orientation) {
+        Orientation.Vertical -> items[0].size.height
+        Orientation.Horizontal -> items[0].size.width
+    }
+    val viewportSize = when (layoutInfo.orientation) {
+        Orientation.Vertical -> layoutInfo.viewportSize.height
+        Orientation.Horizontal -> layoutInfo.viewportSize.width
+    }
+    val maxSpan = layoutInfo.maxSpan
+    var jumpIndex = (maxSpan * viewportSize / itemSize)
+    jumpIndex += jumpIndex % maxSpan
+    if (firstVisibleItemIndex > jumpIndex) {
+        scrollToItem(index = jumpIndex, scrollOffset = -itemSize)
+    }
+    items = layoutInfo.visibleItemsInfo
+    if (items.isEmpty()) {
+        scrollToItem(index = 0)
+        return
+    }
+    val item = items.fastFirstOrNull { item -> item.offset.y >= layoutInfo.viewportStartOffset }
+    if (item == null) {
+        scrollToItem(index = 0)
+        return
+    }
+    val itemOffset = when (layoutInfo.orientation) {
+        Orientation.Vertical -> item.offset.y
+        Orientation.Horizontal -> item.offset.x
+    }
+    animateScrollBy(
+        value = -(item.row * itemSize - itemOffset).toFloat(),
+        animationSpec = defaultAnimationSpec(),
+    )
 }

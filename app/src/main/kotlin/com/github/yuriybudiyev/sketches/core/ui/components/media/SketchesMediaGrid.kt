@@ -32,7 +32,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
@@ -83,15 +82,15 @@ sealed interface SketchesMediaGridKey: Parcelable {
 
     @Parcelize
     @Immutable
-    data class GroupHeader(
+    data class Header(
         val year: Int,
         val month: Int,
     ): SketchesMediaGridKey
 
     @Parcelize
     @Immutable
-    data class MediaFile(
-        val fileId: Long,
+    data class Media(
+        val id: Long,
     ): SketchesMediaGridKey
 }
 
@@ -99,10 +98,10 @@ sealed interface SketchesMediaGridKey: Parcelable {
 sealed interface SketchesMediaGridContentType {
 
     @Immutable
-    data object GroupHeader: SketchesMediaGridContentType
+    data object Header: SketchesMediaGridContentType
 
     @Immutable
-    data object MediaFile: SketchesMediaGridContentType
+    data object Media: SketchesMediaGridContentType
 }
 
 @Composable
@@ -126,8 +125,8 @@ fun SketchesMediaGrid(
     ) {
         items(
             count = files.size,
-            key = { index -> SketchesMediaGridKey.MediaFile(fileId = files[index].id) },
-            contentType = { SketchesMediaGridContentType.MediaFile },
+            key = { index -> SketchesMediaGridKey.Media(id = files[index].id) },
+            contentType = { SketchesMediaGridContentType.Media },
         ) { index ->
             val file by rememberUpdatedState(files[index])
             val fileSelected by remember {
@@ -135,7 +134,7 @@ fun SketchesMediaGrid(
                     selectedFiles.contains(file.id)
                 }
             }
-            SketchesMediaGridImageItem(
+            MediaItem(
                 file = file,
                 fileSelected = fileSelected,
                 onLongClick = {
@@ -154,6 +153,7 @@ fun SketchesMediaGrid(
                         onItemClick(index, file)
                     }
                 },
+                modifier = Modifier.defaultAnimateItem(),
             )
         }
     }
@@ -194,7 +194,6 @@ fun SketchesGroupingMediaGrid(
             )
             .toFormatter(Locale.getDefault())
     }
-    val colorScheme = MaterialTheme.colorScheme
     SketchesLazyGrid(
         modifier = modifier,
         state = state,
@@ -220,42 +219,26 @@ fun SketchesGroupingMediaGrid(
                 val groupOffset = index
                 index += groupSize
                 item(
-                    key = SketchesMediaGridKey.GroupHeader(
+                    key = SketchesMediaGridKey.Header(
                         year = groupDate.year,
                         month = groupDate.monthValue,
                     ),
-                    contentType = SketchesMediaGridContentType.GroupHeader,
+                    contentType = SketchesMediaGridContentType.Header,
                     span = { GridItemSpan(maxLineSpan) },
                 ) {
-                    val text = if (nowDate.year == groupDate.year) {
-                        dateFormatterMonth.format(groupDate)
-                    } else {
-                        dateFormatterMonthYear.format(groupDate)
-                    }
-                    Text(
-                        text = text.capitalizeFirstChar(),
-                        modifier = Modifier
-                            .defaultAnimateItem()
-                            .background(
-                                color = colorScheme.background,
-                                shape = RectangleShape,
-                            )
-                            .padding(
-                                start = 4.dp,
-                                top = 8.dp,
-                                end = 4.dp,
-                                bottom = 0.dp,
-                            ),
-                        color = colorScheme.onBackground,
-                        fontSize = 16.sp,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
+                    HeaderItem(
+                        text = if (nowDate.year == groupDate.year) {
+                            dateFormatterMonth.format(groupDate)
+                        } else {
+                            dateFormatterMonthYear.format(groupDate)
+                        },
+                        modifier = Modifier.defaultAnimateItem(),
                     )
                 }
                 items(
                     count = groupSize,
-                    key = { index -> SketchesMediaGridKey.MediaFile(files[index + groupOffset].id) },
-                    contentType = { SketchesMediaGridContentType.MediaFile },
+                    key = { index -> SketchesMediaGridKey.Media(files[index + groupOffset].id) },
+                    contentType = { SketchesMediaGridContentType.Media },
                 ) { index ->
                     val file by rememberUpdatedState(files[index + groupOffset])
                     val fileSelected by remember {
@@ -263,7 +246,7 @@ fun SketchesGroupingMediaGrid(
                             selectedFiles.contains(file.id)
                         }
                     }
-                    SketchesMediaGridImageItem(
+                    MediaItem(
                         file = file,
                         fileSelected = fileSelected,
                         onLongClick = {
@@ -282,6 +265,7 @@ fun SketchesGroupingMediaGrid(
                                 onItemClick(index, file)
                             }
                         },
+                        modifier = Modifier.defaultAnimateItem(),
                     )
                 }
             }
@@ -303,12 +287,7 @@ inline fun calculateMediaIndexWithGroups(
         if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
             offset++
         }
-        if (
-            predicate(
-                index,
-                file,
-            )
-        ) {
+        if (predicate(index, file)) {
             fileIndex = index
             break
         }
@@ -321,19 +300,45 @@ inline fun calculateMediaIndexWithGroups(
 }
 
 @Composable
-private fun LazyGridItemScope.SketchesMediaGridImageItem(
+private fun HeaderItem(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    val colorScheme = MaterialTheme.colorScheme
+    Text(
+        text = text.capitalizeFirstChar(),
+        modifier = modifier
+            .background(
+                color = colorScheme.background,
+                shape = RectangleShape,
+            )
+            .padding(
+                start = 4.dp,
+                top = 8.dp,
+                end = 4.dp,
+                bottom = 0.dp,
+            ),
+        color = colorScheme.onBackground,
+        fontSize = 16.sp,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 1,
+    )
+}
+
+@Composable
+private fun MediaItem(
     file: MediaFile,
     fileSelected: Boolean,
     onLongClick: () -> Unit,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val file by rememberUpdatedState(file)
     val fileSelected by rememberUpdatedState(fileSelected)
     val colorScheme = MaterialTheme.colorScheme
     val dimens = LocalDimens.current
     Box(
-        modifier = Modifier
-            .defaultAnimateItem()
+        modifier = modifier
             .aspectRatio(ratio = 1F)
             .border(
                 width = dimens.mediaItemBorderThickness,
@@ -405,3 +410,41 @@ private fun LazyGridItemScope.SketchesMediaGridImageItem(
         }
     }
 }
+
+/*
+suspend fun LazyGridState.fastAnimateScrollToStart(files: List<MediaFile>) {
+    var jumpIndex = layoutInfo.maxSpan * 3 + 1
+    if (firstVisibleItemIndex > jumpIndex) {
+        scrollToItem(jumpIndex)
+    }
+    var headersBeforeJump = 0
+    var previousDate = LocalDateTime.MAX
+    files.fastForEachIndexed { index, file ->
+        val currentDate = file.dateAdded
+        if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
+            headersBeforeJump++
+        }
+        previousDate = currentDate
+        if (index == jumpIndex) {
+            return@fastForEachIndexed
+        }
+    }
+
+    val itemSize = layoutInfo.visibleItemsInfo.firstOrNull()?.let { itemInfo ->
+        when (layoutInfo.orientation) {
+            Orientation.Vertical -> itemInfo.size.height
+            Orientation.Horizontal -> itemInfo.size.width
+        }
+    } ?: run {
+        scrollToItem(0)
+        return
+    }
+    animateScrollBy(
+        value = -(firstVisibleItemIndex * itemSize + firstVisibleItemScrollOffset).toFloat(),
+        animationSpec = defaultAnimationSpec(),
+    )
+    if (firstVisibleItemIndex != 0 || firstVisibleItemScrollOffset != 0) {
+        scrollToItem(0)
+    }
+}
+*/

@@ -103,6 +103,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareFo
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
+import com.github.yuriybudiyev.sketches.core.ui.utils.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
@@ -268,7 +269,7 @@ fun BucketScreen(
             navResultStore.collectNavResult<ImageScreenNavResult> { result ->
                 mediaGridState.scrollToItem(
                     index = result.fileIndex,
-                    itemType = SketchesMediaGridContentType.MediaFile,
+                    itemType = SketchesMediaGridContentType.Media,
                     animate = false,
                     snapToClosestEdge = true,
                     onlyIfItemAtIndexIsNotVisible = true,
@@ -504,7 +505,7 @@ fun BucketScreen(
                         coroutineScope.launch {
                             if (allFiles.isNotEmpty()) {
                                 mediaGridScrollConnection.reset()
-                                mediaGridState.animateScrollToItem(index = 0)
+                                mediaGridState.fastAnimateScrollToStart()
                             }
                         }
                     },

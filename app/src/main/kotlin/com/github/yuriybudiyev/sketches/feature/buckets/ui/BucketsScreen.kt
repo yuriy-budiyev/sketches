@@ -103,6 +103,7 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.theme.withMediumTransparency
+import com.github.yuriybudiyev.sketches.core.ui.utils.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
 import kotlinx.coroutines.launch
@@ -227,7 +228,7 @@ fun BucketsScreen(
             coroutineScope.launch {
                 if (allBuckets.isNotEmpty()) {
                     bucketsGridScrollConnection.reset()
-                    bucketsGridState.animateScrollToItem(index = 0)
+                    bucketsGridState.fastAnimateScrollToStart()
                 }
             }
         }
