@@ -64,12 +64,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastForEachIndexed
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
-import com.github.yuriybudiyev.sketches.core.platform.log.logDebug
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
@@ -465,29 +463,13 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
     }
     if (firstVisibleItemIndex > jumpIndex) {
         scrollToItem(index = jumpIndex)
-    }
-    val items = layoutInfo.visibleItemsInfo
-    if (items.isEmpty()) {
-        scrollToItem(index = 0)
+        animateScrollBy(
+            value = -jumpSize.toFloat(),
+            animationSpec = defaultAnimationSpec(),
+        )
         return
     }
-    val firstVisibleItem = items.fastFirstOrNull { item ->
-        item.offset.y >= layoutInfo.viewportStartOffset
-    }
-    if (firstVisibleItem == null) {
-        scrollToItem(index = 0)
-        return
-    }
-    val firstVisibleItemOffset = when (layoutInfo.orientation) {
-        Orientation.Vertical -> firstVisibleItem.offset.y
-        Orientation.Horizontal -> firstVisibleItem.offset.x
-    }
-    val value = -(jumpSize - firstVisibleItemOffset).toFloat()
-    logDebug { value }
-    animateScrollBy(
-        value = value,
-        animationSpec = defaultAnimationSpec(),
-    )
+    //TODO
 }
 
 @OptIn(ExperimentalContracts::class)
