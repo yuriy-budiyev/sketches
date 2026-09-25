@@ -123,7 +123,7 @@ fun ImagesScreen(
     val context = LocalContext.current
     val shareManager by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMedia by rememberUpdatedState(onDeleteMedia)
-    var allFiles by remember { mutableStateOf<List<MediaFile>>(emptyList()) }
+    var allFiles by remember { mutableStateOf<Collection<MediaFile>>(emptyList()) }
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val mediaGridState = rememberLazyGridState()

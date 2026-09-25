@@ -40,10 +40,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
@@ -52,9 +55,11 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.yuriybudiyev.sketches.R
@@ -159,6 +164,15 @@ fun SketchesMediaGrid(
     }
 }
 
+@Stable
+class SketchesMediaGridScrollSpec {
+
+    var headerItemSize: IntSize by mutableStateOf(IntSize.Zero)
+
+    var mediaItemSize: IntSize by mutableStateOf(IntSize.Zero)
+
+}
+
 @Composable
 fun SketchesGroupingMediaGrid(
     files: List<MediaFile>,
@@ -166,6 +180,7 @@ fun SketchesGroupingMediaGrid(
     onItemClick: (index: Int, file: MediaFile) -> Unit,
     modifier: Modifier = Modifier,
     state: LazyGridState = rememberLazyGridState(),
+    scrollSpec: SketchesMediaGridScrollSpec = remember { SketchesMediaGridScrollSpec() },
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
@@ -232,7 +247,13 @@ fun SketchesGroupingMediaGrid(
                         } else {
                             dateFormatterMonthYear.format(groupDate)
                         },
-                        modifier = Modifier.defaultAnimateItem(),
+                        modifier = Modifier
+                            .defaultAnimateItem()
+                            .onSizeChanged { size ->
+                                if (size != IntSize.Zero) {
+                                    scrollSpec.headerItemSize = size
+                                }
+                            },
                     )
                 }
                 items(
@@ -265,7 +286,13 @@ fun SketchesGroupingMediaGrid(
                                 onItemClick(index, file)
                             }
                         },
-                        modifier = Modifier.defaultAnimateItem(),
+                        modifier = Modifier
+                            .defaultAnimateItem()
+                            .onSizeChanged { size ->
+                                if (size != IntSize.Zero) {
+                                    scrollSpec.mediaItemSize = size
+                                }
+                            },
                     )
                 }
             }
@@ -389,7 +416,7 @@ private fun MediaItem(
  * For [SketchesGroupingMediaGrid] only.
  * LazyGrid scroll is retarded as fuck.
  */
-suspend fun LazyGridState.fastAnimateScrollToStart(files: List<MediaFile>) {
+suspend fun LazyGridState.fastAnimateScrollToStart(files: Collection<MediaFile>) {
     scrollToItem(index = 0)
     /*var items = layoutInfo.visibleItemsInfo
     if (items.isEmpty()) {
