@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.ui.components.media
 
 import android.os.Parcelable
+import androidx.collection.MutableIntIntMap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
@@ -59,10 +60,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastCoerceAtLeast
 import androidx.compose.ui.util.fastFirstOrNull
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
+import com.github.yuriybudiyev.sketches.core.platform.log.logDebug
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
@@ -277,32 +280,6 @@ fun SketchesGroupingMediaGrid(
     }
 }
 
-@OptIn(ExperimentalContracts::class)
-inline fun calculateMediaIndexWithGroups(
-    files: Collection<MediaFile>,
-    predicate: (index: Int, file: MediaFile) -> Boolean,
-): Int {
-    contract { callsInPlace(predicate) }
-    var offset = 0
-    var fileIndex = -1
-    var previousDate = LocalDateTime.MAX
-    for ((index, file) in files.withIndex()) {
-        val currentDate = file.dateAdded
-        if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
-            offset++
-        }
-        if (predicate(index, file)) {
-            fileIndex = index
-            break
-        }
-        previousDate = currentDate
-    }
-    if (fileIndex == -1) {
-        return -1
-    }
-    return fileIndex + offset
-}
-
 @Composable
 private fun HeaderItem(
     text: String,
@@ -416,11 +393,102 @@ private fun MediaItem(
 }
 
 /**
- * For [SketchesGroupingMediaGrid] only
+ * For [SketchesGroupingMediaGrid] only.
+ * LazyGrid scroll is retarded as fuck.
  */
 suspend fun LazyGridState.fastAnimateScrollToStart(files: List<MediaFile>) {
-    //TODO
-    var items = layoutInfo.visibleItemsInfo
+    var headerItem = layoutInfo.visibleItemsInfo.fastFirstOrNull { item ->
+        item.contentType == SketchesMediaGridContentType.Header
+    }
+    val mediaItem = layoutInfo.visibleItemsInfo.fastFirstOrNull { item ->
+        item.contentType == SketchesMediaGridContentType.Media
+    }
+    if (mediaItem == null) {
+        scrollToItem(index = 0)
+        return
+    }
+    val mediaItemSize = when (layoutInfo.orientation) {
+        Orientation.Vertical -> mediaItem.size.height
+        Orientation.Horizontal -> mediaItem.size.width
+    }
+    val viewportSize = when (layoutInfo.orientation) {
+        Orientation.Vertical -> layoutInfo.viewportSize.height
+        Orientation.Horizontal -> layoutInfo.viewportSize.width
+    }
+    val maxSpan = layoutInfo.maxSpan
+    var jumpIndex = (maxSpan * viewportSize / mediaItemSize)
+    val size = files.size
+    if (size == 0) {
+        scrollToItem(index = 0)
+        return
+    }
+    var headerIndex: Int
+    var fileIndex = 0
+    var date = files[0].dateAdded
+    val groups = MutableIntIntMap()
+    while (fileIndex < size) {
+        var groupSize = 0
+        var nextDate = files[fileIndex].dateAdded
+        while (date.year == nextDate.year && date.monthValue == nextDate.monthValue) {
+            groupSize++
+            if (fileIndex + groupSize > size - 1) {
+                break
+            }
+            nextDate = files[fileIndex + groupSize].dateAdded
+        }
+        headerIndex = fileIndex + groups.size
+        groups[headerIndex] = groupSize
+        if (headerIndex >= jumpIndex) {
+            jumpIndex = headerIndex
+            break
+        }
+        date = nextDate
+        fileIndex += groupSize
+    }
+    if (headerItem == null || firstVisibleItemIndex > jumpIndex) {
+        logDebug { "jump 1" }
+        scrollToItem(index = jumpIndex)
+    }
+    if (headerItem == null) {
+        headerItem = layoutInfo.visibleItemsInfo.fastFirstOrNull { item ->
+            item.contentType == SketchesMediaGridContentType.Header
+        }
+    }
+    if (headerItem == null) {
+        scrollToItem(index = 0)
+        return
+    }
+    val headerItemSize = when (layoutInfo.orientation) {
+        Orientation.Vertical -> headerItem.size.height
+        Orientation.Horizontal -> headerItem.size.width
+    }
+    var scrollSize = 0
+    jumpIndex = 0
+    groups.forEach { headerIndex, groupSize ->
+        scrollSize += headerItemSize
+        var remainingMedia = groupSize
+        while (scrollSize <= viewportSize && remainingMedia > 0) {
+            scrollSize += mediaItemSize
+            remainingMedia -= maxSpan
+        }
+        jumpIndex += (groupSize - remainingMedia).fastCoerceAtLeast(0)
+        if (scrollSize >= viewportSize) {
+            return@forEach
+        }
+    }
+    if (firstVisibleItemIndex > jumpIndex) {
+        logDebug { "jump 2" }
+        scrollToItem(index = jumpIndex)
+    }
+    animateScrollBy(
+        value = -scrollSize.toFloat(),
+        animationSpec = defaultAnimationSpec()
+    )
+    logDebug { "-----" }
+    logDebug { jumpIndex }
+    logDebug { scrollSize }
+
+    /*var items = layoutInfo.visibleItemsInfo
     if (items.isEmpty()) {
         scrollToItem(index = 0)
         return
@@ -456,5 +524,31 @@ suspend fun LazyGridState.fastAnimateScrollToStart(files: List<MediaFile>) {
     animateScrollBy(
         value = -(item.row * itemSize - itemOffset).toFloat(),
         animationSpec = defaultAnimationSpec(),
-    )
+    )*/
+}
+
+@OptIn(ExperimentalContracts::class)
+inline fun calculateMediaIndexWithGroups(
+    files: Collection<MediaFile>,
+    predicate: (index: Int, file: MediaFile) -> Boolean,
+): Int {
+    contract { callsInPlace(predicate) }
+    var offset = 0
+    var fileIndex = -1
+    var previousDate = LocalDateTime.MAX
+    for ((index, file) in files.withIndex()) {
+        val currentDate = file.dateAdded
+        if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
+            offset++
+        }
+        if (predicate(index, file)) {
+            fileIndex = index
+            break
+        }
+        previousDate = currentDate
+    }
+    if (fileIndex == -1) {
+        return -1
+    }
+    return fileIndex + offset
 }

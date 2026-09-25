@@ -84,6 +84,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberM
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.calculateMediaIndexWithGroups
+import com.github.yuriybudiyev.sketches.core.ui.components.media.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
@@ -122,7 +123,7 @@ fun ImagesScreen(
     val context = LocalContext.current
     val shareManager by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMedia by rememberUpdatedState(onDeleteMedia)
-    var allFiles by remember { mutableStateOf<Collection<MediaFile>>(emptyList()) }
+    var allFiles by remember { mutableStateOf<List<MediaFile>>(emptyList()) }
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val mediaGridState = rememberLazyGridState()
@@ -261,7 +262,7 @@ fun ImagesScreen(
             coroutineScope.launch {
                 if (allFiles.isNotEmpty()) {
                     mediaGridScrollConnection.reset()
-                    mediaGridState.animateScrollToItem(index = 0)
+                    mediaGridState.fastAnimateScrollToStart(allFiles)
                 }
             }
         }
