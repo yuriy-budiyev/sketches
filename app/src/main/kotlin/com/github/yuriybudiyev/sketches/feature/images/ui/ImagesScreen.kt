@@ -85,6 +85,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDe
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.calculateMediaIndexWithGroups
 import com.github.yuriybudiyev.sketches.core.ui.components.media.fastAnimateScrollToStart
+import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaGridScrollSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
@@ -127,6 +128,7 @@ fun ImagesScreen(
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val mediaGridState = rememberLazyGridState()
+    val mediaGridScrollSpec = rememberSketchesMediaGridScrollSpec()
     val mediaGridScrollConnection = rememberLastScrollDirectionScrollConnection(mediaGridState)
     val mediaBatchState = rememberMediaBatchState()
     var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
@@ -262,7 +264,10 @@ fun ImagesScreen(
             coroutineScope.launch {
                 if (allFiles.isNotEmpty()) {
                     mediaGridScrollConnection.reset()
-                    mediaGridState.fastAnimateScrollToStart(allFiles)
+                    mediaGridState.fastAnimateScrollToStart(
+                        files = allFiles,
+                        spec = mediaGridScrollSpec,
+                    )
                 }
             }
         }
@@ -322,6 +327,7 @@ fun ImagesScreen(
                         .matchParentSize()
                         .nestedScroll(mediaGridScrollConnection),
                     state = mediaGridState,
+                    scrollSpec = mediaGridScrollSpec,
                     overlayTop = true,
                     overlayBottom = true,
                 )

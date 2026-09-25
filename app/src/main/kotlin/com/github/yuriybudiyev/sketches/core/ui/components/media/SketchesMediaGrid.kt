@@ -28,6 +28,8 @@ import android.os.Parcelable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
@@ -62,11 +64,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastFirstOrNull
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.withHighTransparency
@@ -164,13 +168,16 @@ fun SketchesMediaGrid(
     }
 }
 
+@Composable
+fun rememberSketchesMediaGridScrollSpec(): SketchesMediaGridScrollSpec =
+    remember { SketchesMediaGridScrollSpec() }
+
 @Stable
 class SketchesMediaGridScrollSpec {
 
     var headerItemSize: IntSize by mutableStateOf(IntSize.Zero)
 
     var mediaItemSize: IntSize by mutableStateOf(IntSize.Zero)
-
 }
 
 @Composable
@@ -180,7 +187,7 @@ fun SketchesGroupingMediaGrid(
     onItemClick: (index: Int, file: MediaFile) -> Unit,
     modifier: Modifier = Modifier,
     state: LazyGridState = rememberLazyGridState(),
-    scrollSpec: SketchesMediaGridScrollSpec = remember { SketchesMediaGridScrollSpec() },
+    scrollSpec: SketchesMediaGridScrollSpec = rememberSketchesMediaGridScrollSpec(),
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
@@ -416,45 +423,65 @@ private fun MediaItem(
  * For [SketchesGroupingMediaGrid] only.
  * LazyGrid scroll is retarded as fuck.
  */
-suspend fun LazyGridState.fastAnimateScrollToStart(files: Collection<MediaFile>) {
-    scrollToItem(index = 0)
-    /*var items = layoutInfo.visibleItemsInfo
-    if (items.isEmpty()) {
-        scrollToItem(index = 0)
-        return
+suspend fun LazyGridState.fastAnimateScrollToStart(
+    files: Collection<MediaFile>,
+    spec: SketchesMediaGridScrollSpec,
+) {
+    val headerItemSize = when (layoutInfo.orientation) {
+        Orientation.Vertical -> spec.headerItemSize.height
+        Orientation.Horizontal -> spec.headerItemSize.width
     }
-    val itemSize = when (layoutInfo.orientation) {
-        Orientation.Vertical -> items[0].size.height
-        Orientation.Horizontal -> items[0].size.width
+    val mediaItemSize = when (layoutInfo.orientation) {
+        Orientation.Vertical -> spec.mediaItemSize.height
+        Orientation.Horizontal -> spec.mediaItemSize.width
     }
+    val maxSpan = layoutInfo.maxSpan
     val viewportSize = when (layoutInfo.orientation) {
         Orientation.Vertical -> layoutInfo.viewportSize.height
         Orientation.Horizontal -> layoutInfo.viewportSize.width
     }
-    val maxSpan = layoutInfo.maxSpan
-    var jumpIndex = (maxSpan * viewportSize / itemSize)
-    jumpIndex += jumpIndex % maxSpan
-    if (firstVisibleItemIndex > jumpIndex) {
-        scrollToItem(index = jumpIndex, scrollOffset = -itemSize)
+    var jumpIndex = 0
+    var jumpOffset = 0
+    var jumpSize = 0
+    var previousDate = LocalDateTime.MAX
+    for ((index, file) in files.withIndex()) {
+        val currentDate = file.dateAdded
+        if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
+            jumpOffset++
+            jumpSize += headerItemSize
+        }
+        if (index % maxSpan == 0) {
+            jumpSize += mediaItemSize
+        }
+        previousDate = currentDate
+        if (jumpSize >= viewportSize) {
+            jumpIndex = index + jumpOffset
+            break
+        }
     }
-    items = layoutInfo.visibleItemsInfo
+    if (firstVisibleItemIndex > jumpIndex) {
+        scrollToItem(index = jumpIndex)
+    }
+    val items = layoutInfo.visibleItemsInfo
     if (items.isEmpty()) {
         scrollToItem(index = 0)
         return
     }
-    val item = items.fastFirstOrNull { item -> item.offset.y >= layoutInfo.viewportStartOffset }
-    if (item == null) {
+    val firstVisibleItem = items.fastFirstOrNull { item ->
+        item.offset.y >= layoutInfo.viewportStartOffset
+    }
+    if (firstVisibleItem == null) {
         scrollToItem(index = 0)
         return
     }
-    val itemOffset = when (layoutInfo.orientation) {
-        Orientation.Vertical -> item.offset.y
-        Orientation.Horizontal -> item.offset.x
+    val firstVisibleItemOffset = when (layoutInfo.orientation) {
+        Orientation.Vertical -> firstVisibleItem.offset.y
+        Orientation.Horizontal -> firstVisibleItem.offset.x
     }
     animateScrollBy(
-        value = -(item.row * itemSize - itemOffset).toFloat(),
+        value = -(jumpSize - firstVisibleItemOffset).toFloat(),
         animationSpec = defaultAnimationSpec(),
-    )*/
+    )
 }
 
 @OptIn(ExperimentalContracts::class)
