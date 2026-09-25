@@ -147,7 +147,7 @@ fun BucketScreen(
     val context = LocalContext.current
     val shareManager by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMedia by rememberUpdatedState(onDeleteMedia)
-    var allFiles by remember { mutableStateOf<Collection<MediaFile>>(emptyList()) }
+    var allFiles by remember { mutableStateOf<List<MediaFile>>(emptyList()) }
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     var bucketHidden by rememberSaveable { mutableStateOf(false) }

@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastFirstOrNull
+import androidx.compose.ui.util.fastForEachIndexed
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
@@ -424,7 +425,7 @@ private fun MediaItem(
  * LazyGrid scroll is retarded as fuck.
  */
 suspend fun LazyGridState.fastAnimateScrollToStart(
-    files: Collection<MediaFile>,
+    files: List<MediaFile>,
     spec: SketchesMediaGridScrollSpec,
 ) {
     val headerItemSize = when (layoutInfo.orientation) {
@@ -444,7 +445,7 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
     var jumpOffset = 0
     var jumpSize = 0
     var previousDate = LocalDateTime.MAX
-    for ((index, file) in files.withIndex()) {
+    files.fastForEachIndexed { index, file ->
         val currentDate = file.dateAdded
         if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
             jumpOffset++
@@ -456,7 +457,7 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
         previousDate = currentDate
         if (jumpSize >= viewportSize) {
             jumpIndex = index + jumpOffset
-            break
+            return@fastForEachIndexed
         }
     }
     if (firstVisibleItemIndex > jumpIndex) {

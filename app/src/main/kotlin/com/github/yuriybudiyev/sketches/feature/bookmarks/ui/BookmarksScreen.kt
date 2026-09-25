@@ -123,7 +123,7 @@ private fun BookmarksScreen(
     val shareManager by rememberUpdatedState(LocalShareManager.current)
     val onDeleteMedia by rememberUpdatedState(onDeleteMedia)
     val onDeleteBookmarks by rememberUpdatedState(onDeleteBookmarks)
-    var allFiles by remember { mutableStateOf<Collection<MediaFile>>(emptyList()) }
+    var allFiles by remember { mutableStateOf<List<MediaFile>>(emptyList()) }
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteFilesDialogVisible by rememberSaveable { mutableStateOf(false) }
     var deleteBookmarksDialogVisible by rememberSaveable { mutableStateOf(false) }
