@@ -69,6 +69,7 @@ import androidx.compose.ui.util.fastForEachIndexed
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
+import com.github.yuriybudiyev.sketches.core.platform.log.logDebug
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
@@ -445,19 +446,21 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
     var jumpOffset = 0
     var jumpSize = 0
     var previousDate = LocalDateTime.MAX
-    files.fastForEachIndexed { index, file ->
-        val currentDate = file.dateAdded
-        if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
-            jumpOffset++
-            jumpSize += headerItemSize
-        }
-        if (index % maxSpan == 0) {
-            jumpSize += mediaItemSize
-        }
-        previousDate = currentDate
-        if (jumpSize >= viewportSize) {
-            jumpIndex = index + jumpOffset
-            return@fastForEachIndexed
+    run jumpLoop@{
+        files.fastForEachIndexed { index, file ->
+            val currentDate = file.dateAdded
+            if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
+                jumpOffset++
+                jumpSize += headerItemSize
+            }
+            if (index % maxSpan == 0) {
+                jumpSize += mediaItemSize
+            }
+            previousDate = currentDate
+            if (jumpSize >= viewportSize) {
+                jumpIndex = index + jumpOffset
+                return@jumpLoop
+            }
         }
     }
     if (firstVisibleItemIndex > jumpIndex) {
@@ -479,8 +482,10 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
         Orientation.Vertical -> firstVisibleItem.offset.y
         Orientation.Horizontal -> firstVisibleItem.offset.x
     }
+    val value = -(jumpSize - firstVisibleItemOffset).toFloat()
+    logDebug { value }
     animateScrollBy(
-        value = -(jumpSize - firstVisibleItemOffset).toFloat(),
+        value = value,
         animationSpec = defaultAnimationSpec(),
     )
 }
