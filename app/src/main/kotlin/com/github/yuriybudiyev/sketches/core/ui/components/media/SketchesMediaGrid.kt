@@ -485,6 +485,9 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
     spec: SketchesMediaGridScrollSpec,
     files: List<MediaFile>,
 ) {
+    if (layoutInfo.totalItemsCount == 0) {
+        return
+    }
     val headerItemSize = when (layoutInfo.orientation) {
         Orientation.Vertical -> spec.headerItemSize.height
         Orientation.Horizontal -> spec.headerItemSize.width
