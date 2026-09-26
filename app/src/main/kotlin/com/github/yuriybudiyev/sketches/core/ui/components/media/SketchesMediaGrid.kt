@@ -562,7 +562,50 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
         )
         return
     }
-    //TODO
+    scrollIndex = 0
+    scrollAmount = firstVisibleItemScrollOffset
+    fileIndex = 0
+    fileDate = files[0].dateAdded
+    scrollLoop@ while (fileIndex < filesSize) {
+        var groupSize = 0
+        var nextDate = files[fileIndex].dateAdded
+        while (fileDate.year == nextDate.year && fileDate.monthValue == nextDate.monthValue) {
+            groupSize++
+            if (fileIndex + groupSize > filesSize - 1) {
+                break
+            }
+            nextDate = files[fileIndex + groupSize].dateAdded
+        }
+        if (scrollIndex >= firstVisibleItemIndex) {
+            break@scrollLoop
+        }
+        scrollIndex++
+        scrollAmount += headerItemSize + spec.itemSpacingPx
+        if (scrollIndex >= firstVisibleItemIndex) {
+            break@scrollLoop
+        }
+        repeat(groupSize / maxSpan) {
+            scrollAmount += mediaItemSize + spec.itemSpacingPx
+            scrollIndex += maxSpan
+            if (scrollIndex >= firstVisibleItemIndex) {
+                break@scrollLoop
+            }
+        }
+        val remainder = groupSize % maxSpan
+        if (remainder > 0) {
+            scrollAmount += mediaItemSize + spec.itemSpacingPx
+            scrollIndex += remainder
+        }
+        if (scrollIndex >= firstVisibleItemIndex) {
+            break@scrollLoop
+        }
+        fileDate = nextDate
+        fileIndex += groupSize
+    }
+    animateScrollBy(
+        value = -scrollAmount.toFloat(),
+        animationSpec = defaultAnimationSpec(),
+    )
 }
 
 @OptIn(ExperimentalContracts::class)
