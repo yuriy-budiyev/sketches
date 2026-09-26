@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.ui.components.media
 
 import android.os.Parcelable
+import androidx.collection.MutableIntIntMap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
@@ -58,16 +59,17 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.fastForEachIndexed
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
+import com.github.yuriybudiyev.sketches.core.platform.log.logDebug
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
@@ -114,12 +116,35 @@ sealed interface SketchesMediaGridContentType {
 }
 
 @Composable
+fun rememberSketchesMediaGridScrollSpec(): SketchesMediaGridScrollSpec {
+    val itemSpacing = with(LocalDensity.current) { LocalDimens.current.lazyGridItemSpacing.roundToPx() }
+    return remember(itemSpacing) { SketchesMediaGridScrollSpec(itemSpacing) }
+}
+
+@Stable
+class SketchesMediaGridScrollSpec(val itemSpacing: Int) {
+
+    /**
+     * Always zero for [SketchesMediaGrid], available for [SketchesGroupingMediaGrid].
+     * Don't change the value manually.
+     */
+    var headerItemSize: IntSize by mutableStateOf(IntSize.Zero)
+
+    /**
+     * Available for both [SketchesMediaGrid] and [SketchesGroupingMediaGrid].
+     * Don't change the value manually.
+     */
+    var mediaItemSize: IntSize by mutableStateOf(IntSize.Zero)
+}
+
+@Composable
 fun SketchesMediaGrid(
     files: List<MediaFile>,
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaFile) -> Unit,
     modifier: Modifier = Modifier,
     state: LazyGridState = rememberLazyGridState(),
+    scrollSpec: SketchesMediaGridScrollSpec = rememberSketchesMediaGridScrollSpec(),
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
@@ -162,22 +187,16 @@ fun SketchesMediaGrid(
                         onItemClick(index, file)
                     }
                 },
-                modifier = Modifier.defaultAnimateItem(),
+                modifier = Modifier
+                    .defaultAnimateItem()
+                    .onSizeChanged { size ->
+                        if (size != IntSize.Zero) {
+                            scrollSpec.mediaItemSize = size
+                        }
+                    },
             )
         }
     }
-}
-
-@Composable
-fun rememberSketchesMediaGridScrollSpec(): SketchesMediaGridScrollSpec =
-    remember { SketchesMediaGridScrollSpec() }
-
-@Stable
-class SketchesMediaGridScrollSpec {
-
-    var headerItemSize: IntSize by mutableStateOf(IntSize.Zero)
-
-    var mediaItemSize: IntSize by mutableStateOf(IntSize.Zero)
 }
 
 @Composable
@@ -420,12 +439,51 @@ private fun MediaItem(
 }
 
 /**
- * For [SketchesGroupingMediaGrid] only.
- * LazyGrid scroll is retarded as fuck.
+ * For [SketchesMediaGrid] only
+ */
+suspend fun LazyGridState.fastAnimateScrollToStart(spec: SketchesMediaGridScrollSpec) {
+    val mediaItemSize = when (layoutInfo.orientation) {
+        Orientation.Vertical -> spec.mediaItemSize.height
+        Orientation.Horizontal -> spec.mediaItemSize.width
+    }
+    val viewportSize = when (layoutInfo.orientation) {
+        Orientation.Vertical -> layoutInfo.viewportSize.height
+        Orientation.Horizontal -> layoutInfo.viewportSize.width
+    }
+    val maxSpan = layoutInfo.maxSpan
+    var scrollRows = viewportSize / mediaItemSize
+    var scrollIndex = scrollRows * maxSpan
+    var scrollAmount = scrollRows * mediaItemSize + scrollRows * spec.itemSpacing
+    logDebug { "--bucket" }
+    logDebug { scrollRows }
+    logDebug { scrollIndex }
+    logDebug { scrollAmount }
+    if (true || firstVisibleItemIndex > scrollIndex) {
+        scrollToItem(index = scrollIndex)
+        /*animateScrollBy(
+            value = -scrollAmount.toFloat(),
+            animationSpec = defaultAnimationSpec(),
+        )*/
+        return
+    }
+    scrollIndex = firstVisibleItemIndex
+    scrollRows = scrollIndex / maxSpan
+    if (scrollIndex % maxSpan > 0) {
+        scrollRows++
+    }
+    scrollAmount = scrollRows * mediaItemSize + scrollRows * spec.itemSpacing + firstVisibleItemScrollOffset
+    animateScrollBy(
+        value = -scrollAmount.toFloat(),
+        animationSpec = defaultAnimationSpec(),
+    )
+}
+
+/**
+ * For [SketchesGroupingMediaGrid] only
  */
 suspend fun LazyGridState.fastAnimateScrollToStart(
-    files: List<MediaFile>,
     spec: SketchesMediaGridScrollSpec,
+    files: List<MediaFile>,
 ) {
     val headerItemSize = when (layoutInfo.orientation) {
         Orientation.Vertical -> spec.headerItemSize.height
@@ -435,41 +493,67 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
         Orientation.Vertical -> spec.mediaItemSize.height
         Orientation.Horizontal -> spec.mediaItemSize.width
     }
-    val maxSpan = layoutInfo.maxSpan
     val viewportSize = when (layoutInfo.orientation) {
         Orientation.Vertical -> layoutInfo.viewportSize.height
         Orientation.Horizontal -> layoutInfo.viewportSize.width
     }
-    var jumpIndex = 0
-    var jumpOffset = 0
-    var jumpSize = 0
-    var previousDate = LocalDateTime.MAX
-    run jumpLoop@{
-        files.fastForEachIndexed { index, file ->
-            val currentDate = file.dateAdded
-            if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
-                jumpOffset++
-                jumpSize += headerItemSize
+    val maxSpan = layoutInfo.maxSpan
+    val groups = MutableIntIntMap()
+    val size = files.size
+    if (size == 0) {
+        scrollToItem(index = 0)
+        return
+    }
+    var fileIndex = 0
+    var fileDate = files[0].dateAdded
+    while (fileIndex < size) {
+        var groupSize = 0
+        var nextDate = files[fileIndex].dateAdded
+        while (fileDate.year == nextDate.year && fileDate.monthValue == nextDate.monthValue) {
+            groupSize++
+            if (fileIndex + groupSize > size - 1) {
+                break
             }
-            if (index % maxSpan == 0) {
-                jumpSize += mediaItemSize
+            nextDate = files[fileIndex + groupSize].dateAdded
+        }
+        groups[fileIndex] = groupSize
+        fileDate = nextDate
+        fileIndex += groupSize
+    }
+    var scrollIndex = 0
+    var scrollAmount = 0
+    run groupsLoop@{
+        groups.forEach { _, groupSize ->
+            scrollIndex++
+            scrollAmount += headerItemSize + spec.itemSpacing
+            repeat(groupSize) { index ->
+                scrollIndex++
+                if ((index + 1) % maxSpan == 0) {
+                    scrollAmount += mediaItemSize + spec.itemSpacing
+                }
+                if (scrollAmount >= viewportSize || scrollIndex >= firstVisibleItemIndex) {
+                    return@groupsLoop
+                }
             }
-            previousDate = currentDate
-            if (jumpSize >= viewportSize) {
-                jumpIndex = index + jumpOffset
-                return@jumpLoop
+            val remainder = groupSize % maxSpan
+            if (remainder > 0) {
+                scrollAmount += mediaItemSize + spec.itemSpacing
+                scrollIndex += remainder
+                if (scrollAmount >= viewportSize || scrollIndex >= firstVisibleItemIndex) {
+                    return@groupsLoop
+                }
             }
         }
     }
-    if (firstVisibleItemIndex > jumpIndex) {
-        scrollToItem(index = jumpIndex)
-        animateScrollBy(
-            value = -jumpSize.toFloat(),
-            animationSpec = defaultAnimationSpec(),
-        )
-        return
+    if (scrollIndex < firstVisibleItemIndex) {
+        scrollToItem(index = scrollIndex)
+    } else {
+        scrollAmount += firstVisibleItemScrollOffset
     }
-    //TODO
+    animateScrollBy(
+        value = -scrollAmount.toFloat(),
+        animationSpec = defaultAnimationSpec(),
+    )
 }
 
 @OptIn(ExperimentalContracts::class)

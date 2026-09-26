@@ -99,11 +99,12 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatc
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
+import com.github.yuriybudiyev.sketches.core.ui.components.media.fastAnimateScrollToStart
+import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaGridScrollSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
-import com.github.yuriybudiyev.sketches.core.ui.utils.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
@@ -152,6 +153,7 @@ fun BucketScreen(
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     var bucketHidden by rememberSaveable { mutableStateOf(false) }
     val mediaGridState = rememberLazyGridState()
+    val mediaGridScrollSpec = rememberSketchesMediaGridScrollSpec()
     val mediaGridScrollConnection = rememberLastScrollDirectionScrollConnection(mediaGridState)
     val mediaBatchState = rememberMediaBatchState()
     var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
@@ -350,6 +352,7 @@ fun BucketScreen(
                         .matchParentSize()
                         .nestedScroll(mediaGridScrollConnection),
                     state = mediaGridState,
+                    scrollSpec = mediaGridScrollSpec,
                     overlayTop = true,
                     overlayBottom = false,
                 )
@@ -471,7 +474,7 @@ fun BucketScreen(
             )
         }
         DefaultAnimatedVisibility(
-            visible = scrollToStartButtonVisible,
+            visible = true || scrollToStartButtonVisible,
             modifier = Modifier.align(Alignment.BottomEnd),
         ) {
             Box(
@@ -505,7 +508,7 @@ fun BucketScreen(
                         coroutineScope.launch {
                             if (allFiles.isNotEmpty()) {
                                 mediaGridScrollConnection.reset()
-                                mediaGridState.fastAnimateScrollToStart()
+                                mediaGridState.fastAnimateScrollToStart(mediaGridScrollSpec)
                             }
                         }
                     },

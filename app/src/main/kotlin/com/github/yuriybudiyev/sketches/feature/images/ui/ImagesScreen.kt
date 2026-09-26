@@ -265,8 +265,8 @@ fun ImagesScreen(
                 if (allFiles.isNotEmpty()) {
                     mediaGridScrollConnection.reset()
                     mediaGridState.fastAnimateScrollToStart(
-                        files = allFiles,
                         spec = mediaGridScrollSpec,
+                        files = allFiles,
                     )
                 }
             }
