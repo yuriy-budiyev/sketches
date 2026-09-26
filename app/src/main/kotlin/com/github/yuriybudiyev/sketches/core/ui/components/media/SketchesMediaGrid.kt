@@ -69,7 +69,6 @@ import androidx.compose.ui.unit.sp
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
-import com.github.yuriybudiyev.sketches.core.platform.log.logDebug
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
@@ -442,6 +441,12 @@ private fun MediaItem(
  * For [SketchesMediaGrid] only
  */
 suspend fun LazyGridState.fastAnimateScrollToStart(spec: SketchesMediaGridScrollSpec) {
+    if (layoutInfo.totalItemsCount == 0) {
+        return
+    }
+    if (firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0) {
+        return
+    }
     val mediaItemSize = when (layoutInfo.orientation) {
         Orientation.Vertical -> spec.mediaItemSize.height
         Orientation.Horizontal -> spec.mediaItemSize.width
@@ -454,16 +459,12 @@ suspend fun LazyGridState.fastAnimateScrollToStart(spec: SketchesMediaGridScroll
     var scrollRows = viewportSize / mediaItemSize
     var scrollIndex = scrollRows * maxSpan
     var scrollAmount = scrollRows * mediaItemSize + scrollRows * spec.itemSpacing
-    logDebug { "--bucket" }
-    logDebug { scrollRows }
-    logDebug { scrollIndex }
-    logDebug { scrollAmount }
-    if (true || firstVisibleItemIndex > scrollIndex) {
+    if (firstVisibleItemIndex > scrollIndex) {
         scrollToItem(index = scrollIndex)
-        /*animateScrollBy(
+        animateScrollBy(
             value = -scrollAmount.toFloat(),
             animationSpec = defaultAnimationSpec(),
-        )*/
+        )
         return
     }
     scrollIndex = firstVisibleItemIndex
@@ -488,6 +489,9 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
     if (layoutInfo.totalItemsCount == 0) {
         return
     }
+    if (firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0) {
+        return
+    }
     val headerItemSize = when (layoutInfo.orientation) {
         Orientation.Vertical -> spec.headerItemSize.height
         Orientation.Horizontal -> spec.headerItemSize.width
@@ -502,19 +506,18 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
     }
     val maxSpan = layoutInfo.maxSpan
     val groups = MutableIntIntMap()
-    val size = files.size
-    if (size == 0) {
-        scrollToItem(index = 0)
+    val filesSize = files.size
+    if (filesSize == 0) {
         return
     }
     var fileIndex = 0
     var fileDate = files[0].dateAdded
-    while (fileIndex < size) {
+    while (fileIndex < filesSize) {
         var groupSize = 0
         var nextDate = files[fileIndex].dateAdded
         while (fileDate.year == nextDate.year && fileDate.monthValue == nextDate.monthValue) {
             groupSize++
-            if (fileIndex + groupSize > size - 1) {
+            if (fileIndex + groupSize > filesSize - 1) {
                 break
             }
             nextDate = files[fileIndex + groupSize].dateAdded
