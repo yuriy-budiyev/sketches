@@ -474,7 +474,7 @@ fun BucketScreen(
             )
         }
         DefaultAnimatedVisibility(
-            visible = true || scrollToStartButtonVisible,
+            visible = scrollToStartButtonVisible,
             modifier = Modifier.align(Alignment.BottomEnd),
         ) {
             Box(
