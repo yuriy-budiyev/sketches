@@ -85,7 +85,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDe
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.calculateMediaIndexWithGroups
 import com.github.yuriybudiyev.sketches.core.ui.components.media.fastAnimateScrollToStart
-import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaGridScrollSpec
+import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaGridSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
@@ -128,7 +128,7 @@ fun ImagesScreen(
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val mediaGridState = rememberLazyGridState()
-    val mediaGridScrollSpec = rememberSketchesMediaGridScrollSpec()
+    val mediaGridSpec = rememberSketchesMediaGridSpec()
     val mediaGridScrollConnection = rememberLastScrollDirectionScrollConnection(mediaGridState)
     val mediaBatchState = rememberMediaBatchState()
     var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
@@ -265,7 +265,7 @@ fun ImagesScreen(
                 if (allFiles.isNotEmpty()) {
                     mediaGridScrollConnection.reset()
                     mediaGridState.fastAnimateScrollToStart(
-                        spec = mediaGridScrollSpec,
+                        spec = mediaGridSpec,
                         files = allFiles,
                     )
                 }
@@ -327,7 +327,7 @@ fun ImagesScreen(
                         .matchParentSize()
                         .nestedScroll(mediaGridScrollConnection),
                     state = mediaGridState,
-                    scrollSpec = mediaGridScrollSpec,
+                    spec = mediaGridSpec,
                     overlayTop = true,
                     overlayBottom = true,
                 )

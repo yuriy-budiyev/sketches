@@ -100,7 +100,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberM
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.fastAnimateScrollToStart
-import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaGridScrollSpec
+import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaGridSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
@@ -153,7 +153,7 @@ fun BucketScreen(
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     var bucketHidden by rememberSaveable { mutableStateOf(false) }
     val mediaGridState = rememberLazyGridState()
-    val mediaGridScrollSpec = rememberSketchesMediaGridScrollSpec()
+    val mediaGridSpec = rememberSketchesMediaGridSpec()
     val mediaGridScrollConnection = rememberLastScrollDirectionScrollConnection(mediaGridState)
     val mediaBatchState = rememberMediaBatchState()
     var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
@@ -352,7 +352,7 @@ fun BucketScreen(
                         .matchParentSize()
                         .nestedScroll(mediaGridScrollConnection),
                     state = mediaGridState,
-                    scrollSpec = mediaGridScrollSpec,
+                    spec = mediaGridSpec,
                     overlayTop = true,
                     overlayBottom = false,
                 )
@@ -508,7 +508,7 @@ fun BucketScreen(
                         coroutineScope.launch {
                             if (allFiles.isNotEmpty()) {
                                 mediaGridScrollConnection.reset()
-                                mediaGridState.fastAnimateScrollToStart(mediaGridScrollSpec)
+                                mediaGridState.fastAnimateScrollToStart(mediaGridSpec)
                             }
                         }
                     },

@@ -82,8 +82,9 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatc
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
+import com.github.yuriybudiyev.sketches.core.ui.components.media.fastAnimateScrollToStart
+import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaGridSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
-import com.github.yuriybudiyev.sketches.core.ui.utils.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
@@ -128,6 +129,7 @@ private fun BookmarksScreen(
     var deleteFilesDialogVisible by rememberSaveable { mutableStateOf(false) }
     var deleteBookmarksDialogVisible by rememberSaveable { mutableStateOf(false) }
     val mediaGridState = rememberLazyGridState()
+    val mediaGridSpec = rememberSketchesMediaGridSpec()
     val mediaGridScrollConnection = rememberLastScrollDirectionScrollConnection(mediaGridState)
     val mediaBatchState = rememberMediaBatchState()
     var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
@@ -269,7 +271,7 @@ private fun BookmarksScreen(
             coroutineScope.launch {
                 if (allFiles.isNotEmpty()) {
                     mediaGridScrollConnection.reset()
-                    mediaGridState.fastAnimateScrollToStart()
+                    mediaGridState.fastAnimateScrollToStart(mediaGridSpec)
                 }
             }
         }
@@ -329,6 +331,7 @@ private fun BookmarksScreen(
                         .matchParentSize()
                         .nestedScroll(mediaGridScrollConnection),
                     state = mediaGridState,
+                    spec = mediaGridSpec,
                     overlayTop = true,
                     overlayBottom = true,
                 )
