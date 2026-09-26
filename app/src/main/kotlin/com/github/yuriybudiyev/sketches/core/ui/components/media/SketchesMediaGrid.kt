@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.core.ui.components.media
 
 import android.os.Parcelable
-import androidx.collection.MutableIntIntMap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
@@ -70,6 +69,7 @@ import androidx.compose.ui.unit.sp
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
+import com.github.yuriybudiyev.sketches.core.platform.log.logDebug
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
@@ -497,12 +497,12 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
     spec: SketchesMediaGridSpec,
     files: List<MediaFile>,
 ) {
-    if (layoutInfo.totalItemsCount == 0) {
+    /*if (layoutInfo.totalItemsCount == 0) {
         return
     }
     if (firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0) {
         return
-    }
+    }*/
     val headerItemSize = when (layoutInfo.orientation) {
         Orientation.Vertical -> spec.headerItemSize.height
         Orientation.Horizontal -> spec.headerItemSize.width
@@ -516,7 +516,10 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
         Orientation.Horizontal -> layoutInfo.viewportSize.width
     }
     val maxSpan = layoutInfo.maxSpan
-    val groups = MutableIntIntMap()
+    var scrollIndex = 0
+    var groupCount = 0
+    var scrollRows = 0
+    var scrollAmount = 0
     val filesSize = files.size
     if (filesSize == 0) {
         return
@@ -533,40 +536,30 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
             }
             nextDate = files[fileIndex + groupSize].dateAdded
         }
-        groups[fileIndex] = groupSize
         fileDate = nextDate
         fileIndex += groupSize
-    }
-    var scrollIndex = 0
-    var scrollAmount = 0
-    run groupsLoop@{
-        groups.forEach { _, groupSize ->
-            scrollIndex++
-            scrollAmount += headerItemSize + spec.itemSpacingPx
-            repeat(groupSize) { index ->
-                scrollIndex++
-                if ((index + 1) % maxSpan == 0) {
-                    scrollAmount += mediaItemSize + spec.itemSpacingPx
-                }
-                if (scrollAmount >= viewportSize || scrollIndex >= firstVisibleItemIndex) {
-                    return@groupsLoop
-                }
-            }
-            val remainder = groupSize % maxSpan
-            if (remainder > 0) {
-                scrollAmount += mediaItemSize + spec.itemSpacingPx
-                scrollIndex += remainder
-                if (scrollAmount >= viewportSize || scrollIndex >= firstVisibleItemIndex) {
-                    return@groupsLoop
-                }
-            }
+        groupCount++
+        scrollAmount += headerItemSize + spec.itemSpacingPx
+        var groupRows = groupSize / maxSpan
+        if (groupSize % maxSpan > 0) {
+            groupRows++
+        }
+        logDebug { "g: $groupRows" }
+        scrollRows += groupRows
+        scrollAmount += groupRows * mediaItemSize + groupRows * spec.itemSpacingPx
+        if (scrollAmount >= viewportSize) {
+            scrollIndex = fileIndex + groupCount
+            break
         }
     }
-    if (scrollIndex < firstVisibleItemIndex) {
-        scrollToItem(index = scrollIndex)
-    } else {
-        scrollAmount += firstVisibleItemScrollOffset
-    }
+    logDebug { "-------" }
+    logDebug { headerItemSize }
+    logDebug { mediaItemSize }
+    logDebug { spec.itemSpacingPx }
+    logDebug { scrollIndex }
+    logDebug { scrollRows }
+    logDebug { scrollAmount }
+    scrollToItem(index = scrollIndex)
     animateScrollBy(
         value = -scrollAmount.toFloat(),
         animationSpec = defaultAnimationSpec(),
