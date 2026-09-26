@@ -467,6 +467,9 @@ suspend fun LazyGridState.fastAnimateScrollToStart(spec: SketchesMediaGridSpec) 
     }
     val maxSpan = layoutInfo.maxSpan
     var scrollSpans = viewportSize / mediaItemSize
+    if (viewportSize % mediaItemSize > 0) {
+        scrollSpans++
+    }
     var scrollIndex = scrollSpans * maxSpan
     var scrollAmount = scrollSpans * mediaItemSize + scrollSpans * spec.itemSpacingPx
     if (firstVisibleItemIndex > scrollIndex) {

@@ -143,9 +143,12 @@ suspend fun LazyGridState.fastAnimateScrollToStart(spec: SketchesLazyGridSpec) {
         Orientation.Horizontal -> layoutInfo.viewportSize.width
     }
     val maxSpan = layoutInfo.maxSpan
-    var scrollRows = viewportSize / itemSize
-    var scrollIndex = scrollRows * maxSpan
-    var scrollAmount = scrollRows * itemSize + scrollRows * spec.itemSpacingPx
+    var scrollSpans = viewportSize / itemSize
+    if (viewportSize % itemSize > 0) {
+        scrollSpans++
+    }
+    var scrollIndex = scrollSpans * maxSpan
+    var scrollAmount = scrollSpans * itemSize + scrollSpans * spec.itemSpacingPx
     if (firstVisibleItemIndex > scrollIndex) {
         scrollToItem(index = scrollIndex)
         animateScrollBy(
@@ -155,11 +158,11 @@ suspend fun LazyGridState.fastAnimateScrollToStart(spec: SketchesLazyGridSpec) {
         return
     }
     scrollIndex = firstVisibleItemIndex
-    scrollRows = scrollIndex / maxSpan
+    scrollSpans = scrollIndex / maxSpan
     if (scrollIndex % maxSpan > 0) {
-        scrollRows++
+        scrollSpans++
     }
-    scrollAmount = scrollRows * itemSize + scrollRows * spec.itemSpacingPx + firstVisibleItemScrollOffset
+    scrollAmount = scrollSpans * itemSize + scrollSpans * spec.itemSpacingPx + firstVisibleItemScrollOffset
     animateScrollBy(
         value = -scrollAmount.toFloat(),
         animationSpec = defaultAnimationSpec(),
