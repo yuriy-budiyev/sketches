@@ -24,10 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.animation
 
-import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
@@ -42,18 +41,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 
 @Stable
-@Suppress("NOTHING_TO_INLINE")
-inline fun <T> defaultAnimationSpec(): FiniteAnimationSpec<T> =
-    spring(
+fun <T> defaultAnimationSpec(): SpringSpec<T> =
+    SpringSpec(
         dampingRatio = Spring.DampingRatioNoBouncy,
         stiffness = Spring.StiffnessMedium,
         visibilityThreshold = null,
     )
 
 @Stable
-@Suppress("NOTHING_TO_INLINE")
 context(scope: LazyItemScope)
-inline fun Modifier.defaultAnimateItem(): Modifier =
+fun Modifier.defaultAnimateItem(): Modifier =
     with(scope) {
         animateItem(
             fadeInSpec = defaultAnimationSpec(),
@@ -63,9 +60,8 @@ inline fun Modifier.defaultAnimateItem(): Modifier =
     }
 
 @Stable
-@Suppress("NOTHING_TO_INLINE")
 context(scope: LazyGridItemScope)
-inline fun Modifier.defaultAnimateItem(): Modifier =
+fun Modifier.defaultAnimateItem(): Modifier =
     with(scope) {
         animateItem(
             fadeInSpec = defaultAnimationSpec(),
