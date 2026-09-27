@@ -48,6 +48,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.SaverScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateSet
 import androidx.compose.runtime.structuralEqualityPolicy
@@ -120,7 +122,11 @@ fun rememberSketchesMediaGridSpec(
     itemSpacing: Dp = LocalDimens.current.lazyGridItemSpacing,
 ): SketchesMediaGridSpec {
     val itemSpacingPx = with(LocalDensity.current) { itemSpacing.roundToPx() }
-    return remember(itemSpacingPx) {
+    return rememberSaveable(
+        itemSpacing,
+        itemSpacingPx,
+        saver = SketchesMediaGridSpec.Saver(itemSpacing, itemSpacingPx),
+    ) {
         SketchesMediaGridSpec(itemSpacing, itemSpacingPx)
     }
 }
@@ -142,6 +148,37 @@ class SketchesMediaGridSpec(
      * Don't change the value manually.
      */
     var mediaItemSize: IntSize by mutableStateOf(IntSize.Zero)
+
+    @Parcelize
+    data class Config(
+        val headerItemWidth: Int,
+        val headerItemHeight: Int,
+        val mediaItemWidth: Int,
+        val mediaItemHeight: Int,
+    ): Parcelable
+
+    class Saver(
+        val itemSpacing: Dp,
+        val itemSpacingPx: Int,
+    ): androidx.compose.runtime.saveable.Saver<SketchesMediaGridSpec, Config> {
+        override fun SaverScope.save(value: SketchesMediaGridSpec): Config =
+            Config(
+                headerItemWidth = value.headerItemSize.width,
+                headerItemHeight = value.headerItemSize.height,
+                mediaItemWidth = value.mediaItemSize.width,
+                mediaItemHeight = value.mediaItemSize.height,
+            )
+
+        override fun restore(value: Config): SketchesMediaGridSpec =
+            SketchesMediaGridSpec(
+                itemSpacing = itemSpacing,
+                itemSpacingPx = itemSpacingPx,
+            ).apply {
+                headerItemSize = IntSize(value.headerItemWidth, value.headerItemHeight)
+                mediaItemSize = IntSize(value.mediaItemWidth, value.mediaItemHeight)
+            }
+
+    }
 }
 
 @Composable
