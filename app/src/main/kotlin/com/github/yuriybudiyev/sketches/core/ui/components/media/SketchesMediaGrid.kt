@@ -498,13 +498,13 @@ suspend fun LazyGridState.fastAnimateScrollToStart(spec: SketchesMediaGridSpec) 
         Orientation.Vertical -> spec.mediaItemSize.height
         Orientation.Horizontal -> spec.mediaItemSize.width
     }
-    val viewportSize = when (layoutInfo.orientation) {
+    val scrollThreshold = when (layoutInfo.orientation) {
         Orientation.Vertical -> layoutInfo.viewportSize.height
         Orientation.Horizontal -> layoutInfo.viewportSize.width
-    }
+    }.let { size -> size / 2 }
     val maxSpan = layoutInfo.maxSpan
-    var scrollSpans = viewportSize / mediaItemSize
-    if (viewportSize % mediaItemSize > 0) {
+    var scrollSpans = scrollThreshold / mediaItemSize
+    if (scrollThreshold % mediaItemSize > 0) {
         scrollSpans++
     }
     var scrollIndex = scrollSpans * maxSpan
@@ -551,10 +551,10 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
         Orientation.Vertical -> spec.mediaItemSize.height
         Orientation.Horizontal -> spec.mediaItemSize.width
     }
-    val viewportSize = when (layoutInfo.orientation) {
+    val scrollThreshold = when (layoutInfo.orientation) {
         Orientation.Vertical -> layoutInfo.viewportSize.height
         Orientation.Horizontal -> layoutInfo.viewportSize.width
-    }
+    }.let { size -> size / 2 }
     val maxSpan = layoutInfo.maxSpan
     var scrollIndex = 0
     var scrollAmount = 0
@@ -585,7 +585,7 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
         repeat(groupSize / maxSpan) {
             scrollAmount += mediaItemSize + spec.itemSpacingPx
             scrollIndex += maxSpan
-            if (scrollAmount >= viewportSize || scrollIndex >= firstVisibleItemIndex) {
+            if (scrollAmount >= scrollThreshold || scrollIndex >= firstVisibleItemIndex) {
                 break@scrollLoop
             }
         }
@@ -594,7 +594,7 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
             scrollAmount += mediaItemSize + spec.itemSpacingPx
             scrollIndex += remainder
         }
-        if (scrollAmount >= viewportSize || scrollIndex >= firstVisibleItemIndex) {
+        if (scrollAmount >= scrollThreshold || scrollIndex >= firstVisibleItemIndex) {
             break@scrollLoop
         }
         fileDate = nextDate
