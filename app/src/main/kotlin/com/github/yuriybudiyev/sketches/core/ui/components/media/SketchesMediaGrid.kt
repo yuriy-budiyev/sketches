@@ -501,7 +501,7 @@ suspend fun LazyGridState.fastAnimateScrollToStart(spec: SketchesMediaGridSpec) 
     val scrollThreshold = when (layoutInfo.orientation) {
         Orientation.Vertical -> layoutInfo.viewportSize.height
         Orientation.Horizontal -> layoutInfo.viewportSize.width
-    }.let { size -> size / 2 }
+    }
     val maxSpan = layoutInfo.maxSpan
     var scrollSpans = scrollThreshold / mediaItemSize
     if (scrollThreshold % mediaItemSize > 0) {
@@ -554,7 +554,7 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
     val scrollThreshold = when (layoutInfo.orientation) {
         Orientation.Vertical -> layoutInfo.viewportSize.height
         Orientation.Horizontal -> layoutInfo.viewportSize.width
-    }.let { size -> size / 2 }
+    }
     val maxSpan = layoutInfo.maxSpan
     var scrollIndex = 0
     var scrollAmount = 0
