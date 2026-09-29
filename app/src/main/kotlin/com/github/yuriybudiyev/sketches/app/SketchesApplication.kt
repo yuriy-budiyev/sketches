@@ -25,18 +25,17 @@
 package com.github.yuriybudiyev.sketches.app
 
 import android.app.Application
-import android.content.Context
 import androidx.compose.runtime.Composer
 import androidx.compose.runtime.tooling.ComposeStackTraceMode
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
+import coil3.annotation.DelicateCoilApi
 import com.github.yuriybudiyev.sketches.BuildConfig
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
-import javax.inject.Provider
 
 @HiltAndroidApp
-class SketchesApplication: Application(), SingletonImageLoader.Factory {
+class SketchesApplication: Application() {
 
     override fun onCreate() {
         super.onCreate()
@@ -50,8 +49,8 @@ class SketchesApplication: Application(), SingletonImageLoader.Factory {
     }
 
     @Inject
-    lateinit var imageLoaderProvider: Provider<ImageLoader>
-
-    override fun newImageLoader(context: Context): ImageLoader =
-        imageLoaderProvider.get()
+    @OptIn(DelicateCoilApi::class)
+    fun setSingletonImageLoader(imageLoader: ImageLoader) {
+        SingletonImageLoader.setUnsafe(imageLoader)
+    }
 }

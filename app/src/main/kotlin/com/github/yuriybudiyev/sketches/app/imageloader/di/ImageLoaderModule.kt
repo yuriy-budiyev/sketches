@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.main.imageloader.di
+package com.github.yuriybudiyev.sketches.app.imageloader.di
 
 import android.content.Context
 import android.os.Build
@@ -37,10 +37,10 @@ import coil3.request.maxBitmapSize
 import coil3.serviceLoaderEnabled
 import coil3.svg.SvgDecoder
 import coil3.video.VideoFrameDecoder
+import com.github.yuriybudiyev.sketches.app.imageloader.executor.ImageLoaderExecutor
 import com.github.yuriybudiyev.sketches.core.coil.LocalCacheInterceptor
 import com.github.yuriybudiyev.sketches.core.coil.getMaxBitmapSize
 import com.github.yuriybudiyev.sketches.core.coil.imageMemoryCache
-import com.github.yuriybudiyev.sketches.main.imageloader.executor.ImageLoaderExecutor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
