@@ -71,8 +71,18 @@ fun rememberSketchesLazyGridSpec(
 @Stable
 class SketchesLazyGridSpec {
 
+    /**
+     * Distance between two adjacent items in [Dp].
+     *
+     * Do not set manually, use [rememberSketchesLazyGridSpec].
+     */
     var itemSpacing: Float by mutableFloatStateOf(0F)
 
+    /**
+     * Distance between two adjacent items in pixels.
+     *
+     * Do not set manually, use [rememberSketchesLazyGridSpec].
+     */
     var itemSpacingPx: Int by mutableIntStateOf(0)
 }
 

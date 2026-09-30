@@ -50,6 +50,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -123,7 +124,7 @@ sealed interface SketchesMediaGridContentType {
 fun rememberSketchesMediaGridSpec(
     itemSpacing: Dp = LocalDimens.current.lazyGridItemSpacing,
 ): SketchesMediaGridSpec =
-    rememberSaveable(saver = SketchesMediaGridSpec.Saver) { SketchesMediaGridSpec() }.also { spec ->
+    rememberSaveable(saver = SketchesMediaGridSpecSaver) { SketchesMediaGridSpec() }.also { spec ->
         spec.itemSpacing = itemSpacing.value
         spec.itemSpacingPx = with(LocalDensity.current) { itemSpacing.roundToPx() }
     }
@@ -131,52 +132,33 @@ fun rememberSketchesMediaGridSpec(
 @Stable
 class SketchesMediaGridSpec {
 
+    /**
+     * Distance between two adjacent items in [Dp].
+     *
+     * Do not set manually, use [rememberSketchesMediaGridSpec].
+     */
     var itemSpacing: Float by mutableFloatStateOf(0F)
 
+    /**
+     * Distance between two adjacent items in pixels.
+     *
+     * Do not set manually, use [rememberSketchesMediaGridSpec].
+     */
     var itemSpacingPx: Int by mutableIntStateOf(0)
 
     /**
      * Always zero for [SketchesMediaGrid], available for [SketchesGroupingMediaGrid].
-     * Don't change the value manually.
+     *
+     * Do not set manually.
      */
     var headerItemSize: IntSize by mutableStateOf(IntSize.Zero)
 
     /**
      * Available for both [SketchesMediaGrid] and [SketchesGroupingMediaGrid].
-     * Don't change the value manually.
+     *
+     * Do not set manually.
      */
     var mediaItemSize: IntSize by mutableStateOf(IntSize.Zero)
-
-    object Saver: androidx.compose.runtime.saveable.Saver<SketchesMediaGridSpec, Saver.Config> {
-
-        override fun SaverScope.save(value: SketchesMediaGridSpec): Config =
-            Config(
-                itemSpacingDp = value.itemSpacing,
-                itemSpacingPx = value.itemSpacingPx,
-                headerItemWidth = value.headerItemSize.width,
-                headerItemHeight = value.headerItemSize.height,
-                mediaItemWidth = value.mediaItemSize.width,
-                mediaItemHeight = value.mediaItemSize.height,
-            )
-
-        override fun restore(value: Config): SketchesMediaGridSpec =
-            SketchesMediaGridSpec().apply {
-                itemSpacing = value.itemSpacingDp
-                itemSpacingPx = value.itemSpacingPx
-                headerItemSize = IntSize(value.headerItemWidth, value.headerItemHeight)
-                mediaItemSize = IntSize(value.mediaItemWidth, value.mediaItemHeight)
-            }
-
-        @Parcelize
-        data class Config(
-            val itemSpacingDp: Float,
-            val itemSpacingPx: Int,
-            val headerItemWidth: Int,
-            val headerItemHeight: Int,
-            val mediaItemWidth: Int,
-            val mediaItemHeight: Int,
-        ): Parcelable
-    }
 }
 
 @Composable
@@ -633,4 +615,35 @@ inline fun calculateMediaIndexWithGroups(
         return -1
     }
     return fileIndex + offset
+}
+
+@Parcelize
+private data class SketchesMediaGridSpecConfig(
+    val itemSpacingDp: Float,
+    val itemSpacingPx: Int,
+    val headerItemWidth: Int,
+    val headerItemHeight: Int,
+    val mediaItemWidth: Int,
+    val mediaItemHeight: Int,
+): Parcelable
+
+private object SketchesMediaGridSpecSaver: Saver<SketchesMediaGridSpec, SketchesMediaGridSpecConfig> {
+
+    override fun SaverScope.save(value: SketchesMediaGridSpec): SketchesMediaGridSpecConfig =
+        SketchesMediaGridSpecConfig(
+            itemSpacingDp = value.itemSpacing,
+            itemSpacingPx = value.itemSpacingPx,
+            headerItemWidth = value.headerItemSize.width,
+            headerItemHeight = value.headerItemSize.height,
+            mediaItemWidth = value.mediaItemSize.width,
+            mediaItemHeight = value.mediaItemSize.height,
+        )
+
+    override fun restore(value: SketchesMediaGridSpecConfig): SketchesMediaGridSpec =
+        SketchesMediaGridSpec().apply {
+            itemSpacing = value.itemSpacingDp
+            itemSpacingPx = value.itemSpacingPx
+            headerItemSize = IntSize(value.headerItemWidth, value.headerItemHeight)
+            mediaItemSize = IntSize(value.mediaItemWidth, value.mediaItemHeight)
+        }
 }
