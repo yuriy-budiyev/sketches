@@ -27,7 +27,6 @@ package com.github.yuriybudiyev.sketches.main.navigation
 import android.os.Parcelable
 import android.view.HapticFeedbackConstants
 import android.view.SoundEffectConstants
-import android.view.View
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
@@ -59,7 +58,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -547,14 +545,6 @@ private fun NavItem(
                         clippingEnabled = true,
                     ),
                 ) {
-                    val popupView = LocalView.current
-                    SideEffect(popupView) {
-                        var view: View? = popupView
-                        while (view != null) {
-                            view.setBackgroundColor(android.graphics.Color.TRANSPARENT)
-                            view = view.parent as? View
-                        }
-                    }
                     Box(
                         modifier = Modifier
                             .graphicsLayer {

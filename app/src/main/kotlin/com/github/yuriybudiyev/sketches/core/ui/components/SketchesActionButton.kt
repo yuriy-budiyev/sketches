@@ -26,7 +26,6 @@ package com.github.yuriybudiyev.sketches.core.ui.components
 
 import android.view.HapticFeedbackConstants
 import android.view.SoundEffectConstants
-import android.view.View
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -43,7 +42,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -132,14 +130,6 @@ fun SketchesActionButton(
                     clippingEnabled = true,
                 ),
             ) {
-                val popupView = LocalView.current
-                SideEffect(popupView) {
-                    var view: View? = popupView
-                    while (view != null) {
-                        view.setBackgroundColor(android.graphics.Color.TRANSPARENT)
-                        view = view.parent as? View
-                    }
-                }
                 Box(
                     modifier = Modifier
                         .graphicsLayer {

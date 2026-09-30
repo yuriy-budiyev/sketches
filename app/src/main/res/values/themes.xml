@@ -4,16 +4,10 @@
         <item name="android:background">#00000000</item>
         <item name="android:statusBarColor">#00000000</item>
         <item name="android:navigationBarColor">#00000000</item>
-        <item name="android:windowBackground">@color/window_background</item>
+        <item name="android:windowBackground">#00000000</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:dialogTheme">@style/Theme.Sketches.Dialog</item>
-    </style>
-
-    <style name="Theme.Sketches.Dialog" parent="android:Theme.Material.Dialog">
-        <item name="android:background">#00000000</item>
-        <item name="android:windowBackground">#00000000</item>
     </style>
 
     <style name="Theme.Sketches" parent="Theme.Sketches.Base" />

@@ -3,6 +3,6 @@
     <style name="Theme.Sketches.Splash" parent="Theme.Sketches">
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
         <item name="android:windowSplashScreenIconBackgroundColor">@color/ic_launcher_background</item>
-        <item name="android:windowSplashScreenBackground">@color/window_background</item>
+        <item name="android:windowSplashScreenBackground">@color/splash_screen_background</item>
     </style>
 </resources>
