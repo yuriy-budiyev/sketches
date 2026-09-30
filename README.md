@@ -6,4 +6,4 @@ Android gallery app based on **compose**, **coroutines/flow**, **navigation3**, 
 
 #### Screenshot
 
-<img src="https://github.com/yuriy-budiyev/sketches/blob/main/screenshots/images_screen.png?raw=true" width="360" alt="Images screen displays all media by grouped by month captured" title="Images screen screenshot">
+<img src="https://github.com/yuriy-budiyev/sketches/blob/main/screenshots/images_screen.png?raw=true" width="360" alt="Images screen displays all media grouped by month added" title="Images screen screenshot">
