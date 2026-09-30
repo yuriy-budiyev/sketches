@@ -239,12 +239,12 @@ fun MainNavRoot(
         val viewModelStoreViewModel =
             viewModelStoreViewModelProvider[ViewModelStoreViewModel::class]
         return@remember NavEntryDecorator<NavRoute>(
-            onPop = ({ contentKey ->
+            onPop = { contentKey ->
                 if (contentKey !is RootNavRoute) {
                     viewModelStoreViewModel.clearViewModelStore(contentKey)
                     saveableStateHolder.removeState(contentKey)
                 }
-            }),
+            },
             decorate = { navEntry ->
                 saveableStateHolder.SaveableStateProvider(navEntry.contentKey) {
                     val navEntryViewModelStore =
