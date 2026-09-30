@@ -147,17 +147,8 @@ class SketchesMediaGridSpec {
      */
     var mediaItemSize: IntSize by mutableStateOf(IntSize.Zero)
 
-    @Parcelize
-    data class Config(
-        val itemSpacingDp: Float,
-        val itemSpacingPx: Int,
-        val headerItemWidth: Int,
-        val headerItemHeight: Int,
-        val mediaItemWidth: Int,
-        val mediaItemHeight: Int,
-    ): Parcelable
+    object Saver: androidx.compose.runtime.saveable.Saver<SketchesMediaGridSpec, Saver.Config> {
 
-    object Saver: androidx.compose.runtime.saveable.Saver<SketchesMediaGridSpec, Config> {
         override fun SaverScope.save(value: SketchesMediaGridSpec): Config =
             Config(
                 itemSpacingDp = value.itemSpacing,
@@ -176,6 +167,15 @@ class SketchesMediaGridSpec {
                 mediaItemSize = IntSize(value.mediaItemWidth, value.mediaItemHeight)
             }
 
+        @Parcelize
+        data class Config(
+            val itemSpacingDp: Float,
+            val itemSpacingPx: Int,
+            val headerItemWidth: Int,
+            val headerItemHeight: Int,
+            val mediaItemWidth: Int,
+            val mediaItemHeight: Int,
+        ): Parcelable
     }
 }
 
