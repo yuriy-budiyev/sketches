@@ -45,6 +45,8 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -120,22 +122,18 @@ sealed interface SketchesMediaGridContentType {
 @Composable
 fun rememberSketchesMediaGridSpec(
     itemSpacing: Dp = LocalDimens.current.lazyGridItemSpacing,
-): SketchesMediaGridSpec {
-    val itemSpacingPx = with(LocalDensity.current) { itemSpacing.roundToPx() }
-    return rememberSaveable(
-        itemSpacing,
-        itemSpacingPx,
-        saver = SketchesMediaGridSpec.Saver(itemSpacing, itemSpacingPx),
-    ) {
-        SketchesMediaGridSpec(itemSpacing, itemSpacingPx)
+): SketchesMediaGridSpec =
+    rememberSaveable(saver = SketchesMediaGridSpec.Saver) { SketchesMediaGridSpec() }.also { spec ->
+        spec.itemSpacing = itemSpacing.value
+        spec.itemSpacingPx = with(LocalDensity.current) { itemSpacing.roundToPx() }
     }
-}
 
 @Stable
-class SketchesMediaGridSpec(
-    val itemSpacing: Dp,
-    val itemSpacingPx: Int,
-) {
+class SketchesMediaGridSpec {
+
+    var itemSpacing: Float by mutableFloatStateOf(0F)
+
+    var itemSpacingPx: Int by mutableIntStateOf(0)
 
     /**
      * Always zero for [SketchesMediaGrid], available for [SketchesGroupingMediaGrid].
@@ -151,18 +149,19 @@ class SketchesMediaGridSpec(
 
     @Parcelize
     data class Config(
+        val itemSpacingDp: Float,
+        val itemSpacingPx: Int,
         val headerItemWidth: Int,
         val headerItemHeight: Int,
         val mediaItemWidth: Int,
         val mediaItemHeight: Int,
     ): Parcelable
 
-    class Saver(
-        val itemSpacing: Dp,
-        val itemSpacingPx: Int,
-    ): androidx.compose.runtime.saveable.Saver<SketchesMediaGridSpec, Config> {
+    object Saver: androidx.compose.runtime.saveable.Saver<SketchesMediaGridSpec, Config> {
         override fun SaverScope.save(value: SketchesMediaGridSpec): Config =
             Config(
+                itemSpacingDp = value.itemSpacing,
+                itemSpacingPx = value.itemSpacingPx,
                 headerItemWidth = value.headerItemSize.width,
                 headerItemHeight = value.headerItemSize.height,
                 mediaItemWidth = value.mediaItemSize.width,
@@ -170,10 +169,9 @@ class SketchesMediaGridSpec(
             )
 
         override fun restore(value: Config): SketchesMediaGridSpec =
-            SketchesMediaGridSpec(
-                itemSpacing = itemSpacing,
-                itemSpacingPx = itemSpacingPx,
-            ).apply {
+            SketchesMediaGridSpec().apply {
+                itemSpacing = value.itemSpacingDp
+                itemSpacingPx = value.itemSpacingPx
                 headerItemSize = IntSize(value.headerItemWidth, value.headerItemHeight)
                 mediaItemSize = IntSize(value.mediaItemWidth, value.mediaItemHeight)
             }
@@ -198,7 +196,7 @@ fun SketchesMediaGrid(
     SketchesLazyGrid(
         modifier = modifier,
         state = state,
-        spec = rememberSketchesLazyGridSpec(spec.itemSpacing),
+        spec = rememberSketchesLazyGridSpec(spec.itemSpacing.dp),
         overlayTop = overlayTop,
         overlayBottom = overlayBottom,
     ) {
@@ -283,7 +281,7 @@ fun SketchesGroupingMediaGrid(
     SketchesLazyGrid(
         modifier = modifier,
         state = state,
-        spec = rememberSketchesLazyGridSpec(spec.itemSpacing),
+        spec = rememberSketchesLazyGridSpec(spec.itemSpacing.dp),
         overlayTop = overlayTop,
         overlayBottom = overlayBottom,
     ) {

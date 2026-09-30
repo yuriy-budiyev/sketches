@@ -43,13 +43,18 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceAtLeast
+import androidx.compose.ui.unit.dp
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
@@ -57,17 +62,19 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 fun rememberSketchesLazyGridSpec(
     itemSpacing: Dp = LocalDimens.current.lazyGridItemSpacing,
 ): SketchesLazyGridSpec {
-    val itemSpacingPx = with(LocalDensity.current) { itemSpacing.roundToPx() }
-    return remember(itemSpacing, itemSpacingPx) {
-        SketchesLazyGridSpec(itemSpacing, itemSpacingPx)
+    return remember { SketchesLazyGridSpec() }.also { spec ->
+        spec.itemSpacing = itemSpacing.value
+        spec.itemSpacingPx = with(LocalDensity.current) { itemSpacing.roundToPx() }
     }
 }
 
-@Immutable
-data class SketchesLazyGridSpec(
-    val itemSpacing: Dp,
-    val itemSpacingPx: Int,
-)
+@Stable
+class SketchesLazyGridSpec {
+
+    var itemSpacing: Float by mutableFloatStateOf(0F)
+
+    var itemSpacingPx: Int by mutableIntStateOf(0)
+}
 
 @Composable
 fun SketchesLazyGrid(
@@ -117,8 +124,8 @@ fun SketchesLazyGrid(
             end = contentPaddingEnd,
             bottom = contentPaddingBottom,
         ),
-        horizontalArrangement = Arrangement.spacedBy(space = spec.itemSpacing),
-        verticalArrangement = Arrangement.spacedBy(space = spec.itemSpacing),
+        horizontalArrangement = Arrangement.spacedBy(space = spec.itemSpacing.dp),
+        verticalArrangement = Arrangement.spacedBy(space = spec.itemSpacing.dp),
         content = content,
     )
 }
