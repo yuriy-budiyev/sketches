@@ -280,19 +280,19 @@ class ImageMemoryCache private constructor(private val maxSizeBytes: Long) {
     companion object {
 
         fun instance(context: Context): ImageMemoryCache {
-            var value = instance
-            if (value !== null) {
-                return value
+            var instance = this.instance
+            if (instance !== null) {
+                return instance
             }
             synchronized(this) {
-                value = instance
-                if (value === null) {
+                instance = this.instance
+                if (instance === null) {
                     val appContext = context.applicationContext
-                    value = ImageMemoryCache(appContext.getMaxMemory() / 4L)
-                    appContext.registerComponentCallbacks(value.memoryCallbacks)
-                    instance = value
+                    instance = ImageMemoryCache(appContext.getMaxMemory() / 4L)
+                    appContext.registerComponentCallbacks(instance.memoryCallbacks)
+                    this.instance = instance
                 }
-                return value
+                return instance
             }
         }
 
