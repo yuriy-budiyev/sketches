@@ -28,7 +28,7 @@ package com.github.yuriybudiyev.sketches.core.math
  * Closest even value to this integer [x] towards positive infinity.
  */
 fun closestEven(x: Int): Int =
-    (x + 1) and -2
+    x + 1 and -2
 
 /**
  * Converts this [Long] value to [Int].
