@@ -57,7 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil3.compose.asPainter
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.coil.imageMemoryCache
+import com.github.yuriybudiyev.sketches.core.imageloader.cache.imageMemoryCache
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.components.ActionButtonHintPosition
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton

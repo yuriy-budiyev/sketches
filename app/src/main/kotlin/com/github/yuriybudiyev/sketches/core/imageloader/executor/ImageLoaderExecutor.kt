@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.app.imageloader.executor
+package com.github.yuriybudiyev.sketches.core.imageloader.executor
 
 import android.os.Process
 import com.github.yuriybudiyev.sketches.core.math.closestEven

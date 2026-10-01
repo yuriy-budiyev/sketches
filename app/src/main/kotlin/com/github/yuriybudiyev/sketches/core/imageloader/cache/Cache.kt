@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.coil
+package com.github.yuriybudiyev.sketches.core.imageloader.cache
 
 import android.content.ComponentCallbacks2
 import android.content.Context
@@ -44,21 +44,10 @@ import coil3.request.ImageResult
 import coil3.request.SuccessResult
 import coil3.request.allowHardware
 import coil3.size.Dimension
-import coil3.size.Size
 import coil3.target.ViewTarget
 import coil3.toBitmap
 import com.github.yuriybudiyev.sketches.core.math.toIntClamped
 import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
-import kotlin.math.sqrt
-
-/**
- * Max [Bitmap] size assuming most images have 32 bits per pixel,
- * allowing pixels to take 20% of max memory.
- */
-fun Context.getMaxBitmapSize(): Size {
-    val size = sqrt(getMaxMemory().toDouble() / 20.0).toInt()
-    return Size(width = size, height = size)
-}
 
 fun ImageRequest.Builder.allowLocalCacheIntercept(allow: Boolean): ImageRequest.Builder {
     extras[AllowLocalCacheInterceptKey] = allow
