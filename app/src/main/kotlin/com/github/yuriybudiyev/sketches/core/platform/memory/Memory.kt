@@ -34,9 +34,8 @@ import android.content.pm.ApplicationInfo
 fun Context.getMaxMemory(): Long {
     try {
         val activityManager = getSystemService(ActivityManager::class.java)
-        val largeHeap = (applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP) != 0
-        val memoryClass =
-            if (largeHeap) activityManager.largeMemoryClass else activityManager.memoryClass
+        val largeHeap = applicationInfo.flags and ApplicationInfo.FLAG_LARGE_HEAP != 0
+        val memoryClass = if (largeHeap) activityManager.largeMemoryClass else activityManager.memoryClass
         return memoryClass.toLong() * 1024L * 1024L
     } catch (_: Exception) {
         return Runtime.getRuntime().maxMemory()
