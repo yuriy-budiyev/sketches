@@ -25,7 +25,19 @@
 package com.github.yuriybudiyev.sketches.core.math
 
 /**
- * Closest even value to this integer value towards positive infinity.
+ * Closest even value to this integer [x] towards positive infinity.
  */
 fun closestEven(x: Int): Int =
-    if ((x and 1) == 1) x + 1 else x
+    if (x and 1 == 1) x + 1 else x
+
+/**
+ * Converts this [Long] value to [Int].
+ *
+ * Clamps this `Long` value in [Int.MIN_VALUE]..[Int.MAX_VALUE] range.
+ */
+fun Long.toIntClamped(): Int =
+    when {
+        this >= Int.MAX_VALUE.toLong() -> Int.MAX_VALUE
+        this <= Int.MIN_VALUE.toLong() -> Int.MIN_VALUE
+        else -> this.toInt()
+    }

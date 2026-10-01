@@ -47,6 +47,7 @@ import coil3.size.Dimension
 import coil3.size.Size
 import coil3.target.ViewTarget
 import coil3.toBitmap
+import com.github.yuriybudiyev.sketches.core.math.toIntClamped
 import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
 import kotlin.math.sqrt
 
@@ -67,7 +68,7 @@ fun ImageRequest.Builder.allowLocalCacheIntercept(allow: Boolean): ImageRequest.
 private val AllowLocalCacheInterceptKey: Extras.Key<Boolean> = Extras.Key(default = false)
 
 class LocalCacheInterceptor(
-    private val memoryCache: LruMemoryCache,
+    private val memoryCache: ImageMemoryCache,
     private val diskCache: DiskCache,
 ): Interceptor {
 
@@ -85,7 +86,7 @@ class LocalCacheInterceptor(
         val width = (size.width as? Dimension.Pixels)?.px ?: return chain.proceed()
         val height = (size.height as? Dimension.Pixels)?.px ?: return chain.proceed()
         val uriString = uri.toString()
-        val memoryCacheKey = LruMemoryCache.Key(
+        val memoryCacheKey = ImageMemoryCache.Key(
             uri = uriString,
             width = width,
             height = height,
@@ -183,10 +184,10 @@ class LocalCacheInterceptor(
     }
 }
 
-inline val Context.imageMemoryCache: LruMemoryCache
-    get() = LruMemoryCache.instance(this)
+inline val Context.imageMemoryCache: ImageMemoryCache
+    get() = ImageMemoryCache.instance(this)
 
-class LruMemoryCache private constructor(private val maxSizeBytes: Long): ComponentCallbacks2 {
+class ImageMemoryCache private constructor(private val maxSizeBytes: Long) {
 
     operator fun set(
         key: Key,
@@ -210,25 +211,6 @@ class LruMemoryCache private constructor(private val maxSizeBytes: Long): Compon
     operator fun get(key: Key): Image? =
         imageCache[key]
 
-    override fun onTrimMemory(level: Int) {
-        when {
-            level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND -> {
-                imageCache.evictAll()
-            }
-            level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN -> {
-                imageCache.trimToSize(imageCache.size() / 2)
-            }
-        }
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {}
-
-    @Suppress("DEPRECATION")
-    @Deprecated("Deprecated in Java")
-    override fun onLowMemory() {
-        onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
-    }
-
     @Suppress("NOTHING_TO_INLINE")
     private inline operator fun LruCache<Key, Image>.set(
         key: Key,
@@ -242,6 +224,7 @@ class LruMemoryCache private constructor(private val maxSizeBytes: Long): Compon
 
     private val imageCache: LruCache<Key, Image> = CacheImpl()
     private val keyCache: MutableMap<String, Key> = LinkedHashMap()
+    private val memoryCallbacks: ComponentCallbacks2 = CallbacksImpl()
 
     data class Key(
         val uri: String,
@@ -249,13 +232,35 @@ class LruMemoryCache private constructor(private val maxSizeBytes: Long): Compon
         val height: Int,
     )
 
-    private inner class CacheImpl: LruCache<Key, Image>(checkOverflow(maxSizeBytes)) {
+    private inner class CallbacksImpl: ComponentCallbacks2 {
+
+        override fun onTrimMemory(level: Int) {
+            when {
+                level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND -> {
+                    imageCache.evictAll()
+                }
+                level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN -> {
+                    imageCache.trimToSize(imageCache.size() / 2)
+                }
+            }
+        }
+
+        override fun onConfigurationChanged(newConfig: Configuration) {}
+
+        @Suppress("DEPRECATION")
+        @Deprecated("Deprecated in Java")
+        override fun onLowMemory() {
+            onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
+        }
+    }
+
+    private inner class CacheImpl: LruCache<Key, Image>(maxSizeBytes.toIntClamped()) {
 
         override fun sizeOf(
             key: Key,
             value: Image,
         ): Int =
-            checkOverflow(value.size)
+            value.size.toIntClamped()
 
         override fun entryRemoved(
             evicted: Boolean,
@@ -272,16 +277,9 @@ class LruMemoryCache private constructor(private val maxSizeBytes: Long): Compon
         }
     }
 
-    private fun checkOverflow(value: Long): Int =
-        if (value > Int.MAX_VALUE) {
-            Int.MAX_VALUE
-        } else {
-            value.toInt()
-        }
-
     companion object {
 
-        fun instance(context: Context): LruMemoryCache {
+        fun instance(context: Context): ImageMemoryCache {
             var value = instance
             if (value !== null) {
                 return value
@@ -290,8 +288,8 @@ class LruMemoryCache private constructor(private val maxSizeBytes: Long): Compon
                 value = instance
                 if (value === null) {
                     val appContext = context.applicationContext
-                    value = LruMemoryCache(appContext.getMaxMemory() / 4L)
-                    appContext.registerComponentCallbacks(value)
+                    value = ImageMemoryCache(appContext.getMaxMemory() / 4L)
+                    appContext.registerComponentCallbacks(value.memoryCallbacks)
                     instance = value
                 }
                 return value
@@ -299,6 +297,6 @@ class LruMemoryCache private constructor(private val maxSizeBytes: Long): Compon
         }
 
         @Volatile
-        private var instance: LruMemoryCache? = null
+        private var instance: ImageMemoryCache? = null
     }
 }
