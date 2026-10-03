@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.platform.systembars
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ProvidableCompositionLocal
@@ -59,6 +60,10 @@ fun SystemBarsVisibilityEffect(visible: Boolean) {
 @Stable
 interface SystemBarsController {
 
+    val systemBarsInsetsIgnoringVisibility: WindowInsets
+
+    val navigationBarsInsetsIgnoringVisibility: WindowInsets
+
     val isInMultiWindowMode: Boolean
 
     val isSystemBarsVisible: Boolean
@@ -69,4 +74,6 @@ interface SystemBarsController {
 }
 
 val LocalSystemBarsController: ProvidableCompositionLocal<SystemBarsController> =
-    staticCompositionLocalOf { error("CompositionLocal LocalSystemBarsController not present") }
+    staticCompositionLocalOf {
+        error("CompositionLocal LocalSystemBarsController not present")
+    }

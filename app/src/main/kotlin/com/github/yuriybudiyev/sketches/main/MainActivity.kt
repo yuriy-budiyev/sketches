@@ -59,6 +59,7 @@ import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.lifecycleScope
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.platform.insets.MutableAndroidWindowInsets
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.ShareManager
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
@@ -86,9 +87,14 @@ class MainActivity: ComponentActivity() {
         WindowCompat.getInsetsController(window, decorView).systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         ViewCompat.setOnApplyWindowInsetsListener(decorView) { view, windowInsets ->
+            systemBarsController.systemBarsInsetsIgnoringVisibility.update(
+                windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars()),
+            )
+            systemBarsController.navigationBarsInsetsIgnoringVisibility.update(
+                windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars()),
+            )
             systemBarsController.isSystemBarsVisible =
-                windowInsets.isVisible(WindowInsetsCompat.Type.navigationBars()) ||
-                    windowInsets.isVisible(WindowInsetsCompat.Type.statusBars())
+                windowInsets.isVisible(WindowInsetsCompat.Type.statusBars())
             ViewCompat.onApplyWindowInsets(view, windowInsets)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -303,6 +309,12 @@ class MainActivity: ComponentActivity() {
         isInMultiWindowMode: Boolean,
         isSystemBarsVisible: Boolean,
     ): SystemBarsController {
+
+        override val systemBarsInsetsIgnoringVisibility: MutableAndroidWindowInsets =
+            MutableAndroidWindowInsets()
+
+        override val navigationBarsInsetsIgnoringVisibility: MutableAndroidWindowInsets =
+            MutableAndroidWindowInsets()
 
         override var isInMultiWindowMode: Boolean by mutableStateOf(isInMultiWindowMode)
 

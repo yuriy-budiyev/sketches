@@ -35,7 +35,6 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridScope
@@ -55,6 +54,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
+import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
@@ -96,7 +96,7 @@ fun SketchesLazyGrid(
     content: LazyGridScope.() -> Unit,
 ) {
     val layoutDirection = LocalLayoutDirection.current
-    val contentPaddings = WindowInsets.systemBars
+    val contentPaddings = LocalSystemBarsController.current.systemBarsInsetsIgnoringVisibility
         .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
         .asPaddingValues()
     val dimens = LocalDimens.current
