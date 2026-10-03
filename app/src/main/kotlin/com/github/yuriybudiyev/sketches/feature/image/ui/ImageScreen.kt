@@ -121,6 +121,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesAppBar
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.DeleteAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesPreviewAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.SketchesMediaPlayer
@@ -575,10 +576,10 @@ private fun ImageScreenLayout(
                         }
                     },
                 )
-                SketchesActionButton(
-                    icon = painterResource(R.drawable.ic_delete),
-                    hint = stringResource(R.string.delete_image),
-                    onClick = {
+                DeleteAction(
+                    iconRes = R.drawable.ic_delete,
+                    hintRes = R.string.delete_image,
+                    onDelete = {
                         deleteImageDialogVisible = true
                     },
                 )
