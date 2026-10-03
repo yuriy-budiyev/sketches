@@ -489,14 +489,8 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
         position: Long = this.position,
         duration: Long = this.duration,
     ): Boolean =
-        if (
-            position != SketchesMediaState.UnknownTime
-            && duration != SketchesMediaState.UnknownTime
-        ) {
-            position == duration
-        } else {
-            false
-        }
+        position != SketchesMediaState.UnknownTime && duration != SketchesMediaState.UnknownTime
+            && position == duration
 
     override fun seek(position: Long) {
         player.withCheck(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM) {

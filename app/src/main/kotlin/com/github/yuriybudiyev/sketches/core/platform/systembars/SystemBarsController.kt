@@ -24,9 +24,37 @@
 
 package com.github.yuriybudiyev.sketches.core.platform.systembars
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
+
+@Composable
+fun SystemBarsVisibilityEffect(visible: Boolean) {
+    val systemBarsController = LocalSystemBarsController.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(
+        systemBarsController,
+        lifecycleOwner,
+        visible,
+    ) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            if (visible) {
+                if (!systemBarsController.isSystemBarsVisible) {
+                    systemBarsController.showSystemBars()
+                }
+            } else {
+                if (systemBarsController.isSystemBarsVisible) {
+                    systemBarsController.hideSystemBars()
+                }
+            }
+        }
+    }
+}
 
 @Stable
 interface SystemBarsController {

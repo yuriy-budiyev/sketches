@@ -145,7 +145,7 @@ fun ImageRoute(viewModel: ImageScreenViewModel) {
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.updateMediaAccess()
     }
-    val navResultStore by rememberUpdatedState(LocalNavResultStore.current)
+    val navResultStore = LocalNavResultStore.current
     ImageScreen(
         uiState = uiState,
         onChange = { index, file ->

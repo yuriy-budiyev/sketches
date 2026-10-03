@@ -76,15 +76,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
-import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
+import com.github.yuriybudiyev.sketches.core.navigation.NavResultEffect
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
-import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
+import com.github.yuriybudiyev.sketches.core.platform.systembars.SystemBarsVisibilityEffect
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
@@ -261,35 +259,16 @@ fun BucketScreen(
             selectedFiles.clear()
         }
     }
-    val navResultStore = LocalNavResultStore.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-    LaunchedEffect(
-        navResultStore,
-        lifecycleOwner,
-    ) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            navResultStore.collectNavResult<ImageScreenNavResult> { result ->
-                mediaGridState.scrollToItem(
-                    index = result.fileIndex,
-                    itemType = SketchesMediaGridContentType.Media,
-                    animate = false,
-                    snapToClosestEdge = true,
-                    onlyIfItemAtIndexIsNotVisible = true,
-                )
-            }
-        }
+    NavResultEffect<ImageScreenNavResult> { result ->
+        mediaGridState.scrollToItem(
+            index = result.fileIndex,
+            itemType = SketchesMediaGridContentType.Media,
+            animate = false,
+            snapToClosestEdge = true,
+            onlyIfItemAtIndexIsNotVisible = true,
+        )
     }
-    val systemBarsController = LocalSystemBarsController.current
-    LaunchedEffect(
-        systemBarsController,
-        lifecycleOwner,
-    ) {
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            if (!systemBarsController.isSystemBarsVisible) {
-                systemBarsController.showSystemBars()
-            }
-        }
-    }
+    SystemBarsVisibilityEffect(visible = true)
     val onBackPressedDispatcher by rememberUpdatedState(
         LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher,
     )

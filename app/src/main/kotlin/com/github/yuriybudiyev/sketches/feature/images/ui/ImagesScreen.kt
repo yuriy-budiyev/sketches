@@ -58,17 +58,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
-import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavMenuController
+import com.github.yuriybudiyev.sketches.core.navigation.NavResultEffect
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
-import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
+import com.github.yuriybudiyev.sketches.core.platform.systembars.SystemBarsVisibilityEffect
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
@@ -221,34 +219,15 @@ fun ImagesScreen(
             selectedFiles.clear()
         }
     }
-    val navResultStore = LocalNavResultStore.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-    LaunchedEffect(
-        navResultStore,
-        lifecycleOwner,
-    ) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            navResultStore.collectNavResult<ImageScreenNavResult> { result ->
-                mediaGridState.scrollToItem(
-                    files = allFiles,
-                    snapToClosestEdge = true,
-                ) { index, _ ->
-                    index == result.fileIndex
-                }
-            }
+    NavResultEffect<ImageScreenNavResult> { result ->
+        mediaGridState.scrollToItem(
+            files = allFiles,
+            snapToClosestEdge = true,
+        ) { index, _ ->
+            index == result.fileIndex
         }
     }
-    val systemBarsController = LocalSystemBarsController.current
-    LaunchedEffect(
-        systemBarsController,
-        lifecycleOwner,
-    ) {
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            if (!systemBarsController.isSystemBarsVisible) {
-                systemBarsController.showSystemBars()
-            }
-        }
-    }
+    SystemBarsVisibilityEffect(visible = true)
     val rootNavMenuController = LocalRootNavMenuController.current
     LaunchedEffect(rootNavMenuController) {
         snapshotFlow { selectedFiles.toSet().isNotEmpty() }.collect { hasSelectedFiles ->

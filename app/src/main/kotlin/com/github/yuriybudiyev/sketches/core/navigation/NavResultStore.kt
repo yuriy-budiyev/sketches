@@ -26,6 +26,7 @@ package com.github.yuriybudiyev.sketches.core.navigation
 
 import android.os.Parcelable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
@@ -33,8 +34,25 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
+
+@Composable
+inline fun <reified T: NavResult> NavResultEffect(crossinline onNavResult: suspend (result: T) -> Unit) {
+    val navResultStore = LocalNavResultStore.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(
+        navResultStore,
+        lifecycleOwner,
+    ) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            navResultStore.collectNavResult<T>(onNavResult)
+        }
+    }
+}
 
 class NavResultStore {
 
