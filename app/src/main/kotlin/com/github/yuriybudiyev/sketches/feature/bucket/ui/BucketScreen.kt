@@ -90,6 +90,9 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesC
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.DeleteAction
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SelectAction
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.ShareAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
@@ -99,7 +102,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDe
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaGridSpec
-import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
@@ -385,58 +387,29 @@ fun BucketScreen(
                 },
             )
             if (inSelectionMode) {
-                SketchesActionButton(
-                    icon = painterResource(
-                        if (allFilesSelected) {
-                            R.drawable.ic_select_none
-                        } else {
-                            R.drawable.ic_select_all
-                        },
-                    ),
-                    hint = stringResource(
-                        if (allFilesSelected) {
-                            R.string.select_none
-                        } else {
-                            R.string.select_all
-                        },
-                    ),
-                    onClick = {
+                SelectAction(
+                    selected = allFilesSelected,
+                    onSelectAll = {
                         coroutineScope.launch {
-                            if (allFilesSelected) {
-                                selectedFiles.clear()
-                            } else {
-                                selectedFiles.addAll(allFiles.map { file -> file.id })
-                            }
+                            selectedFiles.addAll(allFiles.map { file -> file.id })
+                        }
+                    },
+                    onSelectNone = {
+                        coroutineScope.launch {
+                            selectedFiles.clear()
                         }
                     },
                 )
-                SketchesActionButton(
-                    icon = painterResource(R.drawable.ic_delete),
-                    hint = stringResource(R.string.delete_selected),
-                    onClick = {
+                DeleteAction(
+                    onDelete = {
                         deleteDialogVisible = true
                     },
                 )
-                val shareTitle = stringResource(R.string.share_selected)
-                SketchesActionButton(
-                    icon = painterResource(R.drawable.ic_share),
-                    hint = shareTitle,
-                    onClick = {
-                        coroutineScope.launch {
-                            allFiles.prepareForSharing(
-                                filterIds = selectedFiles.toSet(),
-                                mediaSizeLimit = MediaBatchState.BatchSize,
-                            ) { media, mimeType ->
-                                mediaBatchState.start(
-                                    media = media,
-                                    payload = BatchAction.Share(
-                                        chooserTitle = shareTitle,
-                                        mimeType = mimeType,
-                                    ),
-                                )
-                            }
-                        }
-                    },
+                ShareAction(
+                    allFiles = allFiles,
+                    selectedFiles = selectedFiles,
+                    mediaBatchState = mediaBatchState,
+                    coroutineScope = coroutineScope,
                 )
             }
         }

@@ -53,7 +53,6 @@ import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -66,13 +65,15 @@ import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaR
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.systembars.SystemBarsVisibilityEffect
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteBookmarksConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.DeleteAction
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SelectAction
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.ShareAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
@@ -82,7 +83,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDe
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaGridSpec
-import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
@@ -343,65 +343,38 @@ private fun BookmarksScreen(
             visible = appBarVisible,
         ) {
             if (inSelectionMode) {
-                SketchesActionButton(
-                    icon = painterResource(
-                        if (allFilesSelected) {
-                            R.drawable.ic_select_none
-                        } else {
-                            R.drawable.ic_select_all
-                        },
-                    ),
-                    hint = stringResource(
-                        if (allFilesSelected) {
-                            R.string.select_none
-                        } else {
-                            R.string.select_all
-                        },
-                    ),
-                    onClick = {
+                SelectAction(
+                    selected = allFilesSelected,
+                    onSelectAll = {
                         coroutineScope.launch {
-                            if (allFilesSelected) {
-                                selectedFiles.clear()
-                            } else {
-                                selectedFiles.addAll(allFiles.map { file -> file.id })
-                            }
+                            selectedFiles.addAll(allFiles.map { file -> file.id })
+                        }
+                    },
+                    onSelectNone = {
+                        coroutineScope.launch {
+                            selectedFiles.clear()
                         }
                     },
                 )
-                SketchesActionButton(
-                    icon = painterResource(R.drawable.ic_bookmark_delete),
-                    hint = stringResource(R.string.delete_bookmarks),
-                    onClick = {
+                DeleteAction(
+                    iconRes = R.drawable.ic_bookmark_delete,
+                    hintRes = R.string.delete_bookmarks,
+                    onDelete = {
                         deleteBookmarksDialogVisible = true
                     },
                 )
-                SketchesActionButton(
-                    icon = painterResource(R.drawable.ic_delete),
-                    hint = stringResource(R.string.delete_selected),
-                    onClick = {
+                DeleteAction(
+                    iconRes = R.drawable.ic_delete,
+                    hintRes = R.string.delete_selected,
+                    onDelete = {
                         deleteFilesDialogVisible = true
                     },
                 )
-                val shareTitle = stringResource(R.string.share_selected)
-                SketchesActionButton(
-                    icon = painterResource(R.drawable.ic_share),
-                    hint = shareTitle,
-                    onClick = {
-                        coroutineScope.launch {
-                            allFiles.prepareForSharing(
-                                filterIds = selectedFiles.toSet(),
-                                mediaSizeLimit = MediaBatchState.BatchSize,
-                            ) { media, mimeType ->
-                                mediaBatchState.start(
-                                    media = media,
-                                    payload = BatchAction.Share(
-                                        chooserTitle = shareTitle,
-                                        mimeType = mimeType,
-                                    ),
-                                )
-                            }
-                        }
-                    },
+                ShareAction(
+                    allFiles = allFiles,
+                    selectedFiles = selectedFiles,
+                    mediaBatchState = mediaBatchState,
+                    coroutineScope = coroutineScope,
                 )
             }
         }

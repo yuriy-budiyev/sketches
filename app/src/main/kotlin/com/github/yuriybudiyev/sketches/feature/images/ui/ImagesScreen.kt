@@ -76,6 +76,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndica
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.DeleteAction
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SelectAction
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.ShareAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesGroupingMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
@@ -86,7 +87,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.calculateMediaIndexWithGroups
 import com.github.yuriybudiyev.sketches.core.ui.components.media.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaGridSpec
-import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
@@ -368,26 +368,11 @@ fun ImagesScreen(
                         deleteDialogVisible = true
                     },
                 )
-                val shareTitle = stringResource(R.string.share_selected)
-                SketchesActionButton(
-                    icon = painterResource(R.drawable.ic_share),
-                    hint = shareTitle,
-                    onClick = {
-                        coroutineScope.launch {
-                            allFiles.prepareForSharing(
-                                filterIds = selectedFiles.toSet(),
-                                mediaSizeLimit = MediaBatchState.BatchSize,
-                            ) { media, mimeType ->
-                                mediaBatchState.start(
-                                    media = media,
-                                    payload = BatchAction.Share(
-                                        chooserTitle = shareTitle,
-                                        mimeType = mimeType,
-                                    ),
-                                )
-                            }
-                        }
-                    },
+                ShareAction(
+                    allFiles = allFiles,
+                    selectedFiles = selectedFiles,
+                    mediaBatchState = mediaBatchState,
+                    coroutineScope = coroutineScope,
                 )
             }
         }

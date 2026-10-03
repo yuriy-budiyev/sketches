@@ -24,8 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -35,9 +36,10 @@ import androidx.compose.ui.res.stringResource
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchState
-import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaDescriptor
 import com.github.yuriybudiyev.sketches.core.ui.components.media.share.prepareForSharing
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -72,11 +74,16 @@ fun SelectAction(
 }
 
 @Composable
-@NonRestartableComposable
-fun DeleteAction(onDelete: () -> Unit) {
+fun DeleteAction(
+    @DrawableRes
+    iconRes: Int = R.drawable.ic_delete,
+    @StringRes
+    hintRes: Int = R.string.delete_selected,
+    onDelete: () -> Unit,
+) {
     SketchesActionButton(
-        icon = painterResource(R.drawable.ic_delete),
-        hint = stringResource(R.string.delete_selected),
+        icon = painterResource(iconRes),
+        hint = stringResource(hintRes),
         onClick = onDelete,
     )
 }
@@ -85,22 +92,30 @@ fun DeleteAction(onDelete: () -> Unit) {
 fun ShareAction(
     allFiles: List<MediaFile>,
     selectedFiles: SnapshotStateSet<Long>,
-    onShare: (media: List<MediaDescriptor>, mimeType: String) -> Unit,
+    mediaBatchState: MediaBatchState,
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ) {
-    val files by rememberUpdatedState(allFiles)
+    val allFiles by rememberUpdatedState(allFiles)
     val selectedFiles by rememberUpdatedState(selectedFiles)
-    val onShare by rememberUpdatedState(onShare)
-    val coroutineScope = rememberCoroutineScope()
+    val mediaBatchState by rememberUpdatedState(mediaBatchState)
     val shareTitle = stringResource(R.string.share_selected)
     SketchesActionButton(
         icon = painterResource(R.drawable.ic_share),
         hint = shareTitle,
         onClick = {
             coroutineScope.launch {
-                files.prepareForSharing(
+                allFiles.prepareForSharing(
                     filterIds = selectedFiles.toSet(),
                     mediaSizeLimit = MediaBatchState.BatchSize,
-                    onDataReady = onShare,
+                    onDataReady = { media, mimeType ->
+                        mediaBatchState.start(
+                            media = media,
+                            payload = BatchAction.Share(
+                                chooserTitle = shareTitle,
+                                mimeType = mimeType,
+                            ),
+                        )
+                    },
                 )
             }
         },

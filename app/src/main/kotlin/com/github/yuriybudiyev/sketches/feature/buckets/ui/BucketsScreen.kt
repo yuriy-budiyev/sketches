@@ -85,7 +85,6 @@ import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaR
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
@@ -93,6 +92,8 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGridSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.DeleteAction
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SelectAction
 import com.github.yuriybudiyev.sketches.core.ui.components.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
@@ -329,35 +330,21 @@ fun BucketsScreen(
             visible = appBarVisible,
         ) {
             if (inSelectionMode) {
-                SketchesActionButton(
-                    icon = painterResource(
-                        if (allBucketsSelected) {
-                            R.drawable.ic_select_none
-                        } else {
-                            R.drawable.ic_select_all
-                        },
-                    ),
-                    hint = stringResource(
-                        if (allBucketsSelected) {
-                            R.string.select_none
-                        } else {
-                            R.string.select_all
-                        },
-                    ),
-                    onClick = {
+                SelectAction(
+                    selected = allBucketsSelected,
+                    onSelectAll = {
                         coroutineScope.launch {
-                            if (allBucketsSelected) {
-                                selectedBuckets.clear()
-                            } else {
-                                selectedBuckets.addAll(allBuckets.map { bucket -> bucket.id })
-                            }
+                            selectedBuckets.addAll(allBuckets.map { bucket -> bucket.id })
+                        }
+                    },
+                    onSelectNone = {
+                        coroutineScope.launch {
+                            selectedBuckets.clear()
                         }
                     },
                 )
-                SketchesActionButton(
-                    icon = painterResource(R.drawable.ic_delete),
-                    hint = stringResource(R.string.delete_selected),
-                    onClick = {
+                DeleteAction(
+                    onDelete = {
                         coroutineScope.launch {
                             onDeleteBuckets(allBuckets.filterByIds(selectedBuckets.toSet()))
                         }
