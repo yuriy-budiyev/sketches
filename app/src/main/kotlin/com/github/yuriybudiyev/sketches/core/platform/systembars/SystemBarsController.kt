@@ -62,6 +62,8 @@ interface SystemBarsController {
 
     val systemBarsInsetsIgnoringVisibility: WindowInsets
 
+    val statusBarsInsetsIgnoringVisibility: WindowInsets
+
     val navigationBarsInsetsIgnoringVisibility: WindowInsets
 
     val isInMultiWindowMode: Boolean

@@ -53,7 +53,6 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
@@ -70,7 +69,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -92,15 +90,12 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -294,49 +289,14 @@ private fun ImageScreenLayout(
     val navBarPaddings = navBarInsets.asPaddingValues()
     val navBarPaddingStart = navBarPaddings.calculateStartPadding(layoutDirection)
     val navBarPaddingEnd = navBarPaddings.calculateEndPadding(layoutDirection)
-    val contentInsets = navBarInsets
-        .union(WindowInsets.statusBars.only(WindowInsetsSides.Top))
+    val contentInsets = systemBarsController.navigationBarsInsetsIgnoringVisibility
+        .union(systemBarsController.statusBarsInsetsIgnoringVisibility.only(WindowInsetsSides.Top))
         .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
     val contentPaddings = contentInsets.asPaddingValues()
-    var contentPaddingStartVisible by remember { mutableStateOf(0.dp) }.apply {
-        val newValue = contentPaddings.calculateStartPadding(layoutDirection)
-        if (newValue > value) {
-            value = newValue
-        }
-    }
-    var contentPaddingTopVisible by remember { mutableStateOf(0.dp) }.apply {
-        val newValue = contentPaddings.calculateTopPadding()
-        if (newValue > value) {
-            value = newValue
-        }
-    }
-    var contentPaddingEndVisible by remember { mutableStateOf(0.dp) }.apply {
-        val newValue = contentPaddings.calculateEndPadding(layoutDirection)
-        if (newValue > value) {
-            value = newValue
-        }
-    }
-    var contentPaddingBottomVisible by remember { mutableStateOf(0.dp) }.apply {
-        val newValue = contentPaddings.calculateBottomPadding()
-        if (newValue > value) {
-            value = newValue
-        }
-    }
-    SideEffect(LocalConfiguration.current.orientation) {
-        contentPaddingStartVisible = 0.dp
-        contentPaddingTopVisible = 0.dp
-        contentPaddingEndVisible = 0.dp
-        contentPaddingBottomVisible = 0.dp
-    }
-    var containerSize by remember { mutableStateOf(IntSize.Zero) }
-    LaunchedEffect(Unit) {
-        snapshotFlow { containerSize }.collect {
-            contentPaddingStartVisible = 0.dp
-            contentPaddingTopVisible = 0.dp
-            contentPaddingEndVisible = 0.dp
-            contentPaddingBottomVisible = 0.dp
-        }
-    }
+    val contentPaddingStartVisible = contentPaddings.calculateStartPadding(layoutDirection)
+    val contentPaddingTopVisible = contentPaddings.calculateTopPadding()
+    val contentPaddingEndVisible = contentPaddings.calculateEndPadding(layoutDirection)
+    val contentPaddingBottomVisible = contentPaddings.calculateBottomPadding()
     var uiVisible by remember { mutableStateOf(true) }
     val contentPaddingStart by animateDpAsState(
         targetValue = if (uiVisible) {
@@ -401,7 +361,7 @@ private fun ImageScreenLayout(
             uiVisible || uiAlpha > 0F
         }
     }
-    Box(modifier = modifier.onSizeChanged { size -> containerSize = size }) {
+    Box(modifier = modifier) {
         MediaPager(
             state = pagerState,
             files = files,
