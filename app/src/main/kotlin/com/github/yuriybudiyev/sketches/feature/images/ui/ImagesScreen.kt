@@ -73,7 +73,9 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessa
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesTopAppBar
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.DeleteAction
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SelectAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesGroupingMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
@@ -348,35 +350,21 @@ fun ImagesScreen(
                 )
             }
             if (inSelectionMode) {
-                SketchesActionButton(
-                    icon = painterResource(
-                        if (allFilesSelected) {
-                            R.drawable.ic_select_none
-                        } else {
-                            R.drawable.ic_select_all
-                        },
-                    ),
-                    hint = stringResource(
-                        if (allFilesSelected) {
-                            R.string.select_none
-                        } else {
-                            R.string.select_all
-                        },
-                    ),
-                    onClick = {
+                SelectAction(
+                    selected = allFilesSelected,
+                    onSelectAll = {
                         coroutineScope.launch {
-                            if (allFilesSelected) {
-                                selectedFiles.clear()
-                            } else {
-                                selectedFiles.addAll(allFiles.map { file -> file.id })
-                            }
+                            selectedFiles.addAll(allFiles.map { file -> file.id })
+                        }
+                    },
+                    onSelectNone = {
+                        coroutineScope.launch {
+                            selectedFiles.clear()
                         }
                     },
                 )
-                SketchesActionButton(
-                    icon = painterResource(R.drawable.ic_delete),
-                    hint = stringResource(R.string.delete_selected),
-                    onClick = {
+                DeleteAction(
+                    onDelete = {
                         deleteDialogVisible = true
                     },
                 )

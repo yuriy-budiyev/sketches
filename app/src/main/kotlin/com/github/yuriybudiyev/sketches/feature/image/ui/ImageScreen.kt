@@ -70,7 +70,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -116,12 +115,12 @@ import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBars
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteBookmarksConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesPreviewAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.SketchesMediaPlayer
@@ -757,7 +756,6 @@ private fun MediaPage(
 }
 
 @Composable
-@NonRestartableComposable
 private fun ImagePage(
     state: PagerState,
     zoomState: ZoomState,

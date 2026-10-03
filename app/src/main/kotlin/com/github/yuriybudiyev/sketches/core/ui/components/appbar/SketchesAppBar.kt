@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.components
+package com.github.yuriybudiyev.sketches.core.ui.components.appbar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

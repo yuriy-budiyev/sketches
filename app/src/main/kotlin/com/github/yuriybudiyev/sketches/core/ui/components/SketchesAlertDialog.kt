@@ -30,7 +30,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
@@ -84,7 +83,6 @@ fun SketchesAlertDialog(
 }
 
 @Composable
-@NonRestartableComposable
 fun SketchesDeleteImagesConfirmationDialog(
     count: Int,
     onDelete: () -> Unit,
@@ -109,7 +107,6 @@ fun SketchesDeleteImagesConfirmationDialog(
 }
 
 @Composable
-@NonRestartableComposable
 fun SketchesDeleteBookmarksConfirmationDialog(
     count: Int,
     onDelete: () -> Unit,
