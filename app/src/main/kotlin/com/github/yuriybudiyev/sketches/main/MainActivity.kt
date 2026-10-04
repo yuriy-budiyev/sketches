@@ -90,6 +90,9 @@ class MainActivity: ComponentActivity() {
             systemBarsController.systemBarsInsetsIgnoringVisibility.update(
                 windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars()),
             )
+            systemBarsController.captionBarInsetsIgnoringVisibility.update(
+                windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.captionBar()),
+            )
             systemBarsController.statusBarsInsetsIgnoringVisibility.update(
                 windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.statusBars()),
             )
@@ -98,6 +101,7 @@ class MainActivity: ComponentActivity() {
             )
             systemBarsController.isSystemBarsVisible =
                 windowInsets.isVisible(WindowInsetsCompat.Type.systemBars())
+                    || windowInsets.isVisible(WindowInsetsCompat.Type.captionBar())
                     || windowInsets.isVisible(WindowInsetsCompat.Type.statusBars())
                     || windowInsets.isVisible(WindowInsetsCompat.Type.navigationBars())
             ViewCompat.onApplyWindowInsets(view, windowInsets)
@@ -316,6 +320,9 @@ class MainActivity: ComponentActivity() {
     ): SystemBarsController {
 
         override val systemBarsInsetsIgnoringVisibility: MutableAndroidWindowInsets =
+            MutableAndroidWindowInsets()
+
+        override val captionBarInsetsIgnoringVisibility: MutableAndroidWindowInsets =
             MutableAndroidWindowInsets()
 
         override val statusBarsInsetsIgnoringVisibility: MutableAndroidWindowInsets =

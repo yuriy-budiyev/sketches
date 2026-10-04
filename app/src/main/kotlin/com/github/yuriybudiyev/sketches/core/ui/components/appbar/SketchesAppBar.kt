@@ -35,12 +35,14 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.captionBar
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -65,7 +67,9 @@ inline fun BoxScope.SketchesTopAppBar(
     actions: @Composable () -> Unit = {},
 ) {
     val layoutDirection = LocalLayoutDirection.current
-    val paddings = WindowInsets.systemBars
+    val paddings = WindowInsets.navigationBars
+        .union(WindowInsets.captionBar)
+        .union(WindowInsets.statusBars)
         .union(WindowInsets.displayCutout)
         .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
         .asPaddingValues()
