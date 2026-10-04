@@ -97,7 +97,9 @@ class MainActivity: ComponentActivity() {
                 windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars()),
             )
             systemBarsController.isSystemBarsVisible =
-                windowInsets.isVisible(WindowInsetsCompat.Type.statusBars())
+                windowInsets.isVisible(WindowInsetsCompat.Type.systemBars())
+                    || windowInsets.isVisible(WindowInsetsCompat.Type.statusBars())
+                    || windowInsets.isVisible(WindowInsetsCompat.Type.navigationBars())
             ViewCompat.onApplyWindowInsets(view, windowInsets)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
