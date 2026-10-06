@@ -243,7 +243,6 @@ fun ImagesScreen(
     DisposableEffect(rootNavMenuController) {
         rootNavMenuController.setOnClickListener(ImagesNavRoute) {
             coroutineScope.launch {
-                val allFiles = allFiles
                 if (allFiles.isNotEmpty()) {
                     mediaGridScrollConnection.reset()
                     mediaGridState.fastAnimateScrollToStart(
