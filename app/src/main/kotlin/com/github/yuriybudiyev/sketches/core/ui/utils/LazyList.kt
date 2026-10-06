@@ -38,10 +38,13 @@ suspend fun LazyListState.scrollToItemCentered(index: Int) {
         return
     }
     val itemSize = layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: return
-    val viewportCenter = (layoutInfo.viewportEndOffset - layoutInfo.viewportStartOffset) / 2
+    val viewportSize = when (layoutInfo.orientation) {
+        Orientation.Vertical -> layoutInfo.viewportSize.height
+        Orientation.Horizontal -> layoutInfo.viewportSize.width
+    }
     scrollToItem(
         index = index,
-        scrollOffset = -(viewportCenter - itemSize / 2),
+        scrollOffset = -(viewportSize / 2 - itemSize / 2),
     )
 }
 
@@ -53,7 +56,11 @@ suspend fun LazyListState.fastAnimateScrollToItemCentered(index: Int) {
         return
     }
     val itemSize = layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: return
-    val viewportCenter = (layoutInfo.viewportEndOffset - layoutInfo.viewportStartOffset) / 2
+    val viewportSize = when (layoutInfo.orientation) {
+        Orientation.Vertical -> layoutInfo.viewportSize.height
+        Orientation.Horizontal -> layoutInfo.viewportSize.width
+    }
+    val viewportCenter = viewportSize / 2
     var targetItem = layoutInfo.visibleItemsInfo.fastFirstOrNull { item -> item.index == index }
     if (targetItem != null) {
         animateScrollBy(
@@ -61,10 +68,6 @@ suspend fun LazyListState.fastAnimateScrollToItemCentered(index: Int) {
             animationSpec = defaultAnimationSpec(),
         )
     } else {
-        val viewportSize = when (layoutInfo.orientation) {
-            Orientation.Vertical -> layoutInfo.viewportSize.height
-            Orientation.Horizontal -> layoutInfo.viewportSize.width
-        }
         scrollToItem(
             index = index,
             scrollOffset = if (index > firstVisibleItemIndex) -(viewportSize - itemSize) else 0,
