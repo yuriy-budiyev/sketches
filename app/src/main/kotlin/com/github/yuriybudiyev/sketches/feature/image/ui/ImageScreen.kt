@@ -272,10 +272,7 @@ private fun ImageScreenLayout(
         snapshotFlow { systemBarsController.isSystemBarsVisible }.collect { visible ->
             if (visible) {
                 coroutineScope.launch {
-                    barState.scrollToItemCentered(
-                        index = pagerState.currentPage,
-                        animate = false,
-                    )
+                    barState.scrollToItemCentered(pagerState.currentPage)
                 }
             }
         }

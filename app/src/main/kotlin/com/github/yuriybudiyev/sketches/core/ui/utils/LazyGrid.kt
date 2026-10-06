@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.IntSize
 suspend fun LazyGridState.scrollToItem(
     index: Int,
     itemType: Any?,
-    animate: Boolean = false,
     snapToClosestEdge: Boolean = false,
     onlyIfItemAtIndexIsNotVisible: Boolean = false,
 ) {
@@ -42,9 +41,8 @@ suspend fun LazyGridState.scrollToItem(
         Orientation.Vertical -> layoutInfo.viewportSize.height
         Orientation.Horizontal -> layoutInfo.viewportSize.width
     }
-    val viewportSizeWithAppliedPaddings = orientationAwareViewportSize
-        .minus(layoutInfo.beforeContentPadding)
-        .minus(layoutInfo.afterContentPadding)
+    val viewportSizeWithAppliedPaddings =
+        orientationAwareViewportSize - layoutInfo.beforeContentPadding - layoutInfo.afterContentPadding
     if (onlyIfItemAtIndexIsNotVisible && itemAtIndex != null) {
         val orientationAwareItemOffset = when (layoutInfo.orientation) {
             Orientation.Vertical -> itemAtIndex.offset.y
@@ -71,21 +69,12 @@ suspend fun LazyGridState.scrollToItem(
         val lastItem = visibleItemsInfo.lastOrNull()
         if (firstItemOfType != null && lastItem != null && firstItemOfType !== lastItem) {
             if (index > firstItemOfType.index + (lastItem.index - firstItemOfType.index) / 2) {
-                offset = viewportSizeWithAppliedPaddings
-                    .minus(orientationAwareItemSize)
-                    .unaryMinus()
+                offset = -(viewportSizeWithAppliedPaddings - orientationAwareItemSize)
             }
         }
     }
-    if (animate) {
-        animateScrollToItem(
-            index = index,
-            scrollOffset = offset,
-        )
-    } else {
-        scrollToItem(
-            index = index,
-            scrollOffset = offset,
-        )
-    }
+    scrollToItem(
+        index = index,
+        scrollOffset = offset,
+    )
 }

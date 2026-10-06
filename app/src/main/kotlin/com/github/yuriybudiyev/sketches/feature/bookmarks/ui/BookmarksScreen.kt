@@ -202,7 +202,6 @@ private fun BookmarksScreen(
                         mediaGridState.scrollToItem(
                             index = bucketIndex,
                             itemType = null,
-                            animate = false,
                             snapToClosestEdge = false,
                             onlyIfItemAtIndexIsNotVisible = true,
                         )
@@ -229,7 +228,6 @@ private fun BookmarksScreen(
         mediaGridState.scrollToItem(
             index = result.fileIndex,
             itemType = SketchesMediaGridContentType.Media,
-            animate = false,
             snapToClosestEdge = true,
             onlyIfItemAtIndexIsNotVisible = true,
         )

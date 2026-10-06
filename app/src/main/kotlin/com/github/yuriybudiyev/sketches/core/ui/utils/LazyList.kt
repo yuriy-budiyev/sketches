@@ -33,36 +33,16 @@ import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 /**
  * For lists with same constant item size
  */
-suspend fun LazyListState.scrollToItemCentered(
-    index: Int,
-    animate: Boolean = false,
-) {
-    val orientationAwareViewportSize = when (layoutInfo.orientation) {
-        Orientation.Vertical -> layoutInfo.viewportSize.height
-        Orientation.Horizontal -> layoutInfo.viewportSize.width
+suspend fun LazyListState.scrollToItemCentered(index: Int) {
+    if (layoutInfo.totalItemsCount == 0) {
+        return
     }
-    val visibleItemsInfo = layoutInfo.visibleItemsInfo
-    val offset = orientationAwareViewportSize
-        .minus(layoutInfo.beforeContentPadding)
-        .minus(layoutInfo.afterContentPadding)
-        .minus(
-            visibleItemsInfo.firstOrNull { item -> item.index == index }?.size
-                ?: visibleItemsInfo.firstOrNull()?.size
-                ?: 0,
-        )
-        .div(2)
-        .unaryMinus()
-    if (animate) {
-        animateScrollToItem(
-            index = index,
-            scrollOffset = offset,
-        )
-    } else {
-        scrollToItem(
-            index = index,
-            scrollOffset = offset,
-        )
-    }
+    val itemSize = layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: return
+    val viewportCenter = (layoutInfo.viewportEndOffset - layoutInfo.viewportStartOffset) / 2
+    scrollToItem(
+        index = index,
+        scrollOffset = -(viewportCenter - itemSize / 2),
+    )
 }
 
 /**
@@ -98,7 +78,7 @@ suspend fun LazyListState.fastAnimateScrollToItemCentered(index: Int) {
         } else {
             scrollToItem(
                 index = index,
-                scrollOffset = viewportCenter - itemSize / 2,
+                scrollOffset = -(viewportCenter - itemSize / 2),
             )
         }
     }
