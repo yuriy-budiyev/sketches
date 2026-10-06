@@ -2,7 +2,7 @@
 
 # Sketches
 
-Local-only **Android** gallery app with video and zoom support.
+**Android** gallery app with video and zoom support.
 
 Based on **compose**, **coroutines/flow**, **navigation3**, **room3**, **media3** and **coil3**.
 
