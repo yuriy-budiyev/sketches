@@ -42,10 +42,10 @@ suspend fun LazyListState.scrollToItemCentered(index: Int) {
         Orientation.Vertical -> layoutInfo.viewportSize.height
         Orientation.Horizontal -> layoutInfo.viewportSize.width
     }
-    val layoutCenter = viewportSize / 2 - layoutInfo.beforeContentPadding
+    val centerScrollOffset = viewportSize / 2 - layoutInfo.beforeContentPadding
     scrollToItem(
         index = index,
-        scrollOffset = -(layoutCenter - itemSize / 2),
+        scrollOffset = -(centerScrollOffset - itemSize / 2),
     )
 }
 
@@ -61,11 +61,11 @@ suspend fun LazyListState.fastAnimateScrollToItemCentered(index: Int) {
         Orientation.Vertical -> layoutInfo.viewportSize.height
         Orientation.Horizontal -> layoutInfo.viewportSize.width
     }
-    val layoutCenter = viewportSize / 2 - layoutInfo.beforeContentPadding
+    val centerScrollOffset = viewportSize / 2 - layoutInfo.beforeContentPadding
     var targetItem = layoutInfo.visibleItemsInfo.fastFirstOrNull { item -> item.index == index }
     if (targetItem != null) {
         animateScrollBy(
-            value = (targetItem.offset - layoutCenter + itemSize / 2).toFloat(),
+            value = (targetItem.offset - centerScrollOffset + itemSize / 2).toFloat(),
             animationSpec = defaultAnimationSpec(),
         )
     } else {
@@ -76,13 +76,13 @@ suspend fun LazyListState.fastAnimateScrollToItemCentered(index: Int) {
         targetItem = layoutInfo.visibleItemsInfo.fastFirstOrNull { item -> item.index == index }
         if (targetItem != null) {
             animateScrollBy(
-                value = (targetItem.offset - layoutCenter + itemSize / 2).toFloat(),
+                value = (targetItem.offset - centerScrollOffset + itemSize / 2).toFloat(),
                 animationSpec = defaultAnimationSpec(),
             )
         } else {
             scrollToItem(
                 index = index,
-                scrollOffset = -(layoutCenter - itemSize / 2),
+                scrollOffset = -(centerScrollOffset - itemSize / 2),
             )
         }
     }
