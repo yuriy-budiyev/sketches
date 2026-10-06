@@ -25,8 +25,14 @@
 package com.github.yuriybudiyev.sketches.core.ui.utils
 
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.ui.util.fastFirstOrNull
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 
+/**
+ * For lists with same constant item size
+ */
 suspend fun LazyListState.scrollToItemCentered(
     index: Int,
     animate: Boolean = false,
@@ -56,5 +62,44 @@ suspend fun LazyListState.scrollToItemCentered(
             index = index,
             scrollOffset = offset,
         )
+    }
+}
+
+/**
+ * For lists with same constant item size
+ */
+suspend fun LazyListState.fastAnimateScrollToItemCentered(index: Int) {
+    if (layoutInfo.totalItemsCount == 0) {
+        return
+    }
+    val itemSize = layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: return
+    val viewportCenter = (layoutInfo.viewportEndOffset - layoutInfo.viewportStartOffset) / 2
+    var targetItem = layoutInfo.visibleItemsInfo.fastFirstOrNull { item -> item.index == index }
+    if (targetItem != null) {
+        animateScrollBy(
+            value = (targetItem.offset - viewportCenter + itemSize / 2).toFloat(),
+            animationSpec = defaultAnimationSpec(),
+        )
+    } else {
+        val viewportSize = when (layoutInfo.orientation) {
+            Orientation.Vertical -> layoutInfo.viewportSize.height
+            Orientation.Horizontal -> layoutInfo.viewportSize.width
+        }
+        scrollToItem(
+            index = index,
+            scrollOffset = if (index > firstVisibleItemIndex) -(viewportSize - itemSize) else 0,
+        )
+        targetItem = layoutInfo.visibleItemsInfo.fastFirstOrNull { item -> item.index == index }
+        if (targetItem != null) {
+            animateScrollBy(
+                value = (targetItem.offset - viewportCenter + itemSize / 2).toFloat(),
+                animationSpec = defaultAnimationSpec(),
+            )
+        } else {
+            scrollToItem(
+                index = index,
+                scrollOffset = viewportCenter - itemSize / 2,
+            )
+        }
     }
 }

@@ -128,6 +128,7 @@ import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgro
 import com.github.yuriybudiyev.sketches.core.ui.theme.rememberTopToBottomBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
+import com.github.yuriybudiyev.sketches.core.ui.utils.fastAnimateScrollToItemCentered
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemCentered
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
@@ -263,10 +264,7 @@ private fun ImageScreenLayout(
                 files[page],
             )
             coroutineScope.launch {
-                barState.scrollToItemCentered(
-                    index = page,
-                    animate = true,
-                )
+                barState.fastAnimateScrollToItemCentered(page)
             }
         }
     }
