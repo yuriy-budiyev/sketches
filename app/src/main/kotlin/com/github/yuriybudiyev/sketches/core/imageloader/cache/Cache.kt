@@ -32,6 +32,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import androidx.collection.LruCache
+import androidx.compose.runtime.Immutable
 import coil3.BitmapImage
 import coil3.Extras
 import coil3.Image
@@ -72,19 +73,15 @@ class LocalCacheInterceptor(
             return chain.proceed()
         }
         val size = chain.size
-        val width = (size.width as? Dimension.Pixels)?.px ?: return chain.proceed()
-        val height = (size.height as? Dimension.Pixels)?.px ?: return chain.proceed()
-        val uriString = uri.toString()
-        val memoryCacheKey = ImageMemoryCache.Key(
-            uri = uriString,
-            width = width,
-            height = height,
+        val imageKey = ImageKey(
+            uri = uri.toString(),
+            width = (size.width as? Dimension.Pixels)?.px ?: return chain.proceed(),
+            height = (size.height as? Dimension.Pixels)?.px ?: return chain.proceed(),
         )
-        val diskCacheKey = "$uriString/$width/$height"
         val hardwareAllowed = request.allowHardware && request.target.let { target ->
             target !is ViewTarget<*> || target.view.isHardwareAccelerated
         }
-        val memoryImage = memoryCache[memoryCacheKey]
+        val memoryImage = memoryCache[imageKey]
         if (
             memoryImage != null && memoryImage.let { memoryImage ->
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.O || memoryImage !is BitmapImage ||
@@ -101,7 +98,7 @@ class LocalCacheInterceptor(
                 isPlaceholderCached = false,
             )
         }
-        diskCache.openSnapshot(diskCacheKey)?.use { snapshot ->
+        diskCache.openSnapshot(imageKey.toString())?.use { snapshot ->
             val bitmap = diskCache.fileSystem.read(snapshot.data) {
                 val options = BitmapFactory.Options()
                 options.inJustDecodeBounds = true
@@ -126,7 +123,7 @@ class LocalCacheInterceptor(
             }
             if (bitmap != null) {
                 val diskImage = bitmap.asImage(shareable = !bitmap.isMutable)
-                memoryCache[memoryCacheKey] = diskImage
+                memoryCache[imageKey] = diskImage
                 return SuccessResult(
                     image = diskImage,
                     request = request,
@@ -141,11 +138,11 @@ class LocalCacheInterceptor(
         val result = chain.proceed()
         if (result is SuccessResult) {
             val bitmap = result.image.toBitmap()
-            diskCache.openEditor(diskCacheKey)?.let { editor ->
+            diskCache.openEditor(imageKey.toString())?.let { editor ->
                 diskCache.fileSystem.write(editor.metadata) {
-                    writeUtf8("$uriString\n")
-                    writeUtf8("$width\n")
-                    writeUtf8("$height\n")
+                    writeUtf8("${imageKey.uri}\n")
+                    writeUtf8("${imageKey.width}\n")
+                    writeUtf8("${imageKey.height}\n")
                 }
                 diskCache.fileSystem.write(editor.data) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -158,7 +155,7 @@ class LocalCacheInterceptor(
                 editor.commit()
             }
             val resultImage = bitmap.asImage(shareable = true)
-            memoryCache[memoryCacheKey] = resultImage
+            memoryCache[imageKey] = resultImage
             return SuccessResult(
                 image = resultImage,
                 request = request,
@@ -179,7 +176,7 @@ inline val Context.imageMemoryCache: ImageMemoryCache
 class ImageMemoryCache private constructor(private val maxSizeBytes: Long) {
 
     operator fun set(
-        key: Key,
+        key: ImageKey,
         image: Image,
     ) {
         if (image.size >= imageCache.maxSize()) {
@@ -197,29 +194,20 @@ class ImageMemoryCache private constructor(private val maxSizeBytes: Long) {
     operator fun get(uri: String): Image? =
         imageCache[synchronized(keyCache) { keyCache[uri] } ?: return null]
 
-    operator fun get(key: Key): Image? =
+    operator fun get(key: ImageKey): Image? =
         imageCache[key]
 
     @Suppress("NOTHING_TO_INLINE")
-    private inline operator fun LruCache<Key, Image>.set(
-        key: Key,
+    private inline operator fun LruCache<ImageKey, Image>.set(
+        key: ImageKey,
         image: Image,
     ) {
-        put(
-            key,
-            image,
-        )
+        put(key, image)
     }
 
-    private val imageCache: LruCache<Key, Image> = CacheImpl()
-    private val keyCache: MutableMap<String, Key> = LinkedHashMap()
+    private val imageCache: LruCache<ImageKey, Image> = CacheImpl()
+    private val keyCache: MutableMap<String, ImageKey> = LinkedHashMap()
     private val memoryCallbacks: ComponentCallbacks2 = CallbacksImpl()
-
-    data class Key(
-        val uri: String,
-        val width: Int,
-        val height: Int,
-    )
 
     private inner class CallbacksImpl: ComponentCallbacks2 {
 
@@ -243,17 +231,17 @@ class ImageMemoryCache private constructor(private val maxSizeBytes: Long) {
         }
     }
 
-    private inner class CacheImpl: LruCache<Key, Image>(maxSizeBytes.toIntClamped()) {
+    private inner class CacheImpl: LruCache<ImageKey, Image>(maxSizeBytes.toIntClamped()) {
 
         override fun sizeOf(
-            key: Key,
+            key: ImageKey,
             value: Image,
         ): Int =
             value.size.toIntClamped()
 
         override fun entryRemoved(
             evicted: Boolean,
-            key: Key,
+            key: ImageKey,
             oldValue: Image,
             newValue: Image?,
         ) {
@@ -288,4 +276,44 @@ class ImageMemoryCache private constructor(private val maxSizeBytes: Long) {
         @Volatile
         private var instance: ImageMemoryCache? = null
     }
+}
+
+@Immutable
+class ImageKey(
+    val uri: String,
+    val width: Int,
+    val height: Int,
+) {
+
+    override fun hashCode(): Int =
+        cachedHashCode
+
+    override fun equals(other: Any?): Boolean =
+        when {
+            other === this -> true
+            other is ImageKey ->
+                other.cachedHashCode == this.cachedHashCode
+                    && other.width == this.width
+                    && other.height == this.height
+                    && other.uri == this.uri
+            else -> false
+        }
+
+    override fun toString(): String =
+        cachedString
+
+    private val cachedHashCode: Int = calculateHashCode()
+
+    private fun calculateHashCode(): Int {
+        var result = 17
+        result = 31 * result + uri.hashCode()
+        result = 31 * result + width
+        result = 31 * result + height
+        return result
+    }
+
+    private val cachedString: String = calculateString()
+
+    private fun calculateString(): String =
+        "$uri/$width/$height"
 }

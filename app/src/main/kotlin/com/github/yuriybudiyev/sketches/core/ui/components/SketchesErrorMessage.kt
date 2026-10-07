@@ -89,7 +89,7 @@ fun SketchesErrorMessage(
             text = if (message.isNullOrEmpty()) {
                 stringResource(R.string.unexpected_error)
             } else {
-                stringResource(R.string.unexpected_error) + "\n${message}"
+                "${stringResource(R.string.unexpected_error)}${System.lineSeparator()}${message}"
             },
             modifier = modifier,
         )
