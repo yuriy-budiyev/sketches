@@ -25,7 +25,8 @@
 package com.github.yuriybudiyev.sketches.core.ui.components.media.share
 
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
-import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
+import com.github.yuriybudiyev.sketches.core.data.model.MediaType
+import com.github.yuriybudiyev.sketches.core.platform.content.mimeType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaDescriptor
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptor
 import java.util.EnumSet
@@ -67,7 +68,7 @@ inline fun Collection<MediaFile>.prepareForSharing(
     onDataReady(
         media,
         if (mediaTypes.size == 1) {
-            mediaTypes.first().mimeType
+            mediaTypes.first().mimeType()
         } else {
             "*/*"
         },

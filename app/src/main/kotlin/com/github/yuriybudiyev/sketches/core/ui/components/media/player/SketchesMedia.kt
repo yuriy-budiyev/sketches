@@ -196,7 +196,7 @@ fun SketchesMediaDisplay(
                         stateUri,
                     ) {
                         if (stateUri != null) {
-                            context.imageMemoryCache[stateUri.toString()]?.asPainter(
+                            context.imageMemoryCache[stateUri]?.asPainter(
                                 context = context,
                                 filterQuality = FilterQuality.High,
                             )

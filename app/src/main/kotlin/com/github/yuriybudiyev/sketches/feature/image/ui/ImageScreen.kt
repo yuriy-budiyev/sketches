@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
-import android.net.Uri
 import android.os.Build
 import android.os.Parcelable
 import androidx.activity.compose.BackHandler
@@ -97,13 +96,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
-import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
@@ -158,7 +158,7 @@ fun ImageRoute(viewModel: ImageScreenViewModel) {
             )
         },
         onDeleteImage = { _, file ->
-            viewModel.deleteMedia(listOf(file.uri))
+            viewModel.deleteMedia(listOf(file.uri.toUri()))
         },
         onCreateBookmark = { mediaId ->
             viewModel.createBookmark(mediaId)
@@ -543,7 +543,7 @@ private fun ImageScreenLayout(
                         coroutineScope.launch {
                             val file = files[currentIndex]
                             shareManager.startChooserActivity(
-                                file.uri,
+                                file.uri.toUri(),
                                 file.mimeType,
                                 shareHint,
                             )
@@ -561,7 +561,7 @@ private fun ImageScreenLayout(
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             deleteRequestLauncher.launchDeleteMediaRequest(
                                 context,
-                                listOf(files[currentIndex].uri),
+                                listOf(files[currentIndex].uri.toUri()),
                             )
                         } else {
                             onDeleteImage(
@@ -645,7 +645,7 @@ private fun MediaPager(
 private fun MediaPage(
     state: PagerState,
     number: Int,
-    fileUri: Uri,
+    fileUri: String,
     fileType: MediaType,
     onPageTap: () -> Unit,
     controllerVisible: Boolean,
@@ -713,7 +713,7 @@ private fun ImagePage(
     state: PagerState,
     zoomState: ZoomState,
     number: Int,
-    fileUri: Uri,
+    fileUri: String,
     onPageTap: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -738,7 +738,7 @@ private fun VideoPage(
     state: PagerState,
     zoomState: ZoomState,
     number: Int,
-    fileUri: Uri,
+    fileUri: String,
     onPageTap: () -> Unit,
     controllerVisible: Boolean,
     controllerStartPadding: Dp,

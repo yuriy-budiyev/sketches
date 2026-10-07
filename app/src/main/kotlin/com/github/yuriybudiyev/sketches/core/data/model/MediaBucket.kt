@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.data.model
 
-import android.net.Uri
 import androidx.compose.runtime.Immutable
 import java.time.LocalDateTime
 
@@ -33,7 +32,7 @@ data class MediaBucket(
     val id: Long,
     val name: String,
     val size: Int,
-    val coverUri: Uri,
+    val coverUri: String,
     val coverDateAdded: LocalDateTime,
     val isHidden: Boolean,
 )

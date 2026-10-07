@@ -223,7 +223,6 @@ class ImageScreenViewModel @AssistedInject constructor(
     }
 
     private enum class Mode {
-
         Images,
         Bookmarks,
     }

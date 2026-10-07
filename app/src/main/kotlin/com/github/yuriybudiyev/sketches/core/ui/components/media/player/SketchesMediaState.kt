@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.core.ui.components.media.player
 
 import android.content.Context
-import android.net.Uri
 import android.os.Parcelable
 import android.view.Surface
 import android.view.SurfaceView
@@ -159,10 +158,10 @@ sealed interface SketchesMediaState {
 
     fun seek(position: Long)
 
-    val uri: Uri?
+    val uri: String?
 
     fun open(
-        uri: Uri,
+        uri: String,
         position: Long = 0L,
         playWhenReady: Boolean = false,
         volumeEnabled: Boolean = false,
@@ -527,11 +526,11 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
         positionPeriodicUpdateJob = null
     }
 
-    override var uri: Uri? by mutableStateOf(null)
+    override var uri: String? by mutableStateOf(null)
         private set
 
     override fun open(
-        uri: Uri,
+        uri: String,
         position: Long,
         playWhenReady: Boolean,
         volumeEnabled: Boolean,
@@ -612,7 +611,7 @@ private data class SketchesMediaStateConfig(
     val isVolumeEnabled: Boolean,
     val isRepeatEnabled: Boolean,
     val position: Long,
-    val uri: Uri?,
+    val uri: String?,
     val isPlayedAtLeastOnce: Boolean,
 ): Parcelable
 

@@ -241,7 +241,6 @@ fun SketchesActionButton(
 }
 
 enum class ActionButtonHintPosition {
-
     Above,
     Below,
     Start,

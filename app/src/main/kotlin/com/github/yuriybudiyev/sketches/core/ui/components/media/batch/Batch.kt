@@ -37,10 +37,12 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.core.net.toUri
 import com.github.yuriybudiyev.sketches.core.collections.newLinkedHashSet
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaStoreBatchSize
-import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
+import com.github.yuriybudiyev.sketches.core.platform.content.contentUri
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.parcelize.Parcelize
@@ -103,7 +105,7 @@ fun Collection<MediaFile>.toUriList(filterIds: Set<Long>): List<Uri> {
     val uris = ArrayList<Uri>(size)
     for (file in this) {
         if (filterIds.contains(file.id)) {
-            uris.add(file.uri)
+            uris.add(file.uri.toUri())
         }
         if (uris.size == size) {
             break
@@ -130,10 +132,7 @@ fun Collection<MediaFile>.toMediaDescriptorList(filterIds: Set<Long>): List<Medi
 }
 
 fun MediaDescriptor.toUri(): Uri =
-    ContentUris.withAppendedId(
-        MediaType.entries[type].contentUri,
-        id,
-    )
+    ContentUris.withAppendedId(MediaType.entries[type].contentUri(), id)
 
 fun Collection<MediaDescriptor>.toUriList(): List<Uri> =
     mapTo(ArrayList(size)) { descriptor -> descriptor.toUri() }

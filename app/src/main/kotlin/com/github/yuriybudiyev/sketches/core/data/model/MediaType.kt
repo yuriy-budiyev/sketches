@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Yuriy Budiyev
+ * Copyright (c) 2026 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,17 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.data.model
 
-import androidx.compose.runtime.Immutable
-import java.time.LocalDateTime
-
-@Immutable
-data class MediaFile(
-    val id: Long,
-    val bucketId: Long,
-    val name: String,
-    val dateAdded: LocalDateTime,
-    val mediaType: MediaType,
-    val mimeType: String,
-    val uri: String,
-    val bookmark: Bookmark?,
-)
+enum class MediaType {
+    Image,
+    Video,
+}

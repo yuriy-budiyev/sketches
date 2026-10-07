@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components.media
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -67,7 +66,7 @@ import com.github.yuriybudiyev.sketches.core.ui.theme.withHighTransparency
 
 @Composable
 fun SketchesThumbnailAsyncImage(
-    uri: Uri,
+    uri: String,
     contentDescription: String,
     modifier: Modifier = Modifier,
 ) {
@@ -134,7 +133,7 @@ fun SketchesThumbnailAsyncImage(
 
 @Composable
 fun SketchesPreviewAsyncImage(
-    uri: Uri,
+    uri: String,
     contentDescription: String,
     modifier: Modifier = Modifier,
     zoomState: ZoomState = rememberZoomState(),
@@ -179,7 +178,7 @@ fun SketchesPreviewAsyncImage(
                     uri,
                     context,
                 ) {
-                    context.imageMemoryCache[uri.toString()]?.asPainter(context)
+                    context.imageMemoryCache[uri]?.asPainter(context)
                 }
                 if (painter != null) {
                     val size = painter.intrinsicSize

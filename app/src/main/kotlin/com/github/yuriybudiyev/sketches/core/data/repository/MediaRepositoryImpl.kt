@@ -45,8 +45,10 @@ import com.github.yuriybudiyev.sketches.core.data.entity.HiddenBucketEntity
 import com.github.yuriybudiyev.sketches.core.data.model.Bookmark
 import com.github.yuriybudiyev.sketches.core.data.model.MediaBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
+import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaStoreBatchSize
-import com.github.yuriybudiyev.sketches.core.platform.content.MediaType
+import com.github.yuriybudiyev.sketches.core.platform.content.contentUri
+import com.github.yuriybudiyev.sketches.core.platform.content.mimeType
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -199,7 +201,7 @@ class MediaRepositoryImpl @Inject constructor(
     }
 
     private fun queryMediaStoreEntities(mediaType: MediaType): List<MediaEntity> {
-        val contentUri = mediaType.contentUri
+        val contentUri = mediaType.contentUri()
         val cursor = appContext.contentResolver.query(
             contentUri,
             arrayOf(
@@ -239,12 +241,8 @@ class MediaRepositoryImpl @Inject constructor(
                             ZoneId.systemDefault(),
                         ),
                         mediaType = mediaType,
-                        mimeType = cursor.getStringOrNull(mimeTypeColumn)
-                            ?: mediaType.mimeType,
-                        uri = ContentUris.withAppendedId(
-                            contentUri,
-                            id,
-                        ),
+                        mimeType = cursor.getStringOrNull(mimeTypeColumn) ?: mediaType.mimeType(),
+                        uri = ContentUris.withAppendedId(contentUri, id).toString(),
                     ),
                 )
             }
@@ -500,12 +498,12 @@ class MediaRepositoryImpl @Inject constructor(
         val mediaObserver = MediaObserver()
         with(appContext.contentResolver) {
             registerContentObserver(
-                MediaType.Image.contentUri,
+                MediaType.Image.contentUri(),
                 true,
                 mediaObserver,
             )
             registerContentObserver(
-                MediaType.Video.contentUri,
+                MediaType.Video.contentUri(),
                 true,
                 mediaObserver,
             )
@@ -520,13 +518,13 @@ class MediaRepositoryImpl @Inject constructor(
         val dateAdded: LocalDateTime,
         val mediaType: MediaType,
         val mimeType: String,
-        val uri: Uri,
+        val uri: String,
     )
 
     private data class MediaBucketInfo(
         val id: Long,
         val name: String,
-        val coverUri: Uri,
+        val coverUri: String,
         val coverDateAdded: LocalDateTime,
         var size: Int,
     )

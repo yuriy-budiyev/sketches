@@ -29,7 +29,6 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Build
 import androidx.collection.LruCache
 import androidx.compose.runtime.Immutable
@@ -67,25 +66,27 @@ class LocalCacheInterceptor(
         if (request.extras[AllowLocalCacheInterceptKey] != true) {
             return chain.proceed()
         }
-        val uri = request.data as? Uri ?: return chain.proceed()
-        val uriScheme = uri.scheme
-        if (uriScheme != "content" && uriScheme != "file") {
+        val uri = request.data as? String ?: return chain.proceed()
+        val colonIndex = uri.indexOf(':')
+        if (colonIndex < 1) {
+            return chain.proceed()
+        }
+        val scheme = uri.substring(startIndex = 0, endIndex = colonIndex)
+        if (scheme != "content" && scheme != "file") {
             return chain.proceed()
         }
         val size = chain.size
-        val imageKey = ImageKey(
-            uri = uri.toString(),
-            width = (size.width as? Dimension.Pixels)?.px ?: return chain.proceed(),
-            height = (size.height as? Dimension.Pixels)?.px ?: return chain.proceed(),
-        )
+        val width = (size.width as? Dimension.Pixels)?.px ?: return chain.proceed()
+        val height = (size.height as? Dimension.Pixels)?.px ?: return chain.proceed()
+        val imageKey = ImageKey(uri, width, height)
         val hardwareAllowed = request.allowHardware && request.target.let { target ->
             target !is ViewTarget<*> || target.view.isHardwareAccelerated
         }
         val memoryImage = memoryCache[imageKey]
         if (
             memoryImage != null && memoryImage.let { memoryImage ->
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.O || memoryImage !is BitmapImage ||
-                    memoryImage.bitmap.config != Bitmap.Config.HARDWARE || hardwareAllowed
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.O || memoryImage !is BitmapImage
+                    || memoryImage.bitmap.config != Bitmap.Config.HARDWARE || hardwareAllowed
             }
         ) {
             return SuccessResult(

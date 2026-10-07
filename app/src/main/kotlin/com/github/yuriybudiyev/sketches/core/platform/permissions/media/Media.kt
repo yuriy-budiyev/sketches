@@ -40,7 +40,6 @@ import androidx.compose.runtime.setValue
 import com.github.yuriybudiyev.sketches.core.platform.permissions.checkPermissionGranted
 
 enum class MediaAccess {
-
     None,
     Full,
     UserSelected,

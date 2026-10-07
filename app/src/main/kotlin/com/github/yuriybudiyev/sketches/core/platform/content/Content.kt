@@ -31,32 +31,29 @@ import android.provider.MediaStore
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.Immutable
+import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 
-@Immutable
-enum class MediaType(
-    val contentUri: Uri,
-    val mimeType: String,
-) {
+fun MediaType.contentUri(): Uri =
+    when (this) {
+        MediaType.Image ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+            } else {
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            }
+        MediaType.Video ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+            } else {
+                MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+            }
+    }
 
-    Image(
-        contentUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-        } else {
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        },
-        mimeType = "image/*",
-    ),
-
-    Video(
-        contentUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            MediaStore.Video.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
-        } else {
-            MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-        },
-        mimeType = "video/*",
-    ),
-}
+fun MediaType.mimeType(): String =
+    when (this) {
+        MediaType.Image -> "image/*"
+        MediaType.Video -> "video/*"
+    }
 
 @RequiresApi(Build.VERSION_CODES.R)
 fun ActivityResultLauncher<IntentSenderRequest>.launchDeleteMediaRequest(
