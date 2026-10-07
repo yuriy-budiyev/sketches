@@ -51,6 +51,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.core.content.ContextCompat
+import androidx.core.view.OnApplyWindowInsetsListener
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -86,26 +87,7 @@ class MainActivity: ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         WindowCompat.getInsetsController(window, decorView).systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        ViewCompat.setOnApplyWindowInsetsListener(decorView) { view, windowInsets ->
-            systemBarsController.systemBarsInsetsIgnoringVisibility.update(
-                windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars()),
-            )
-            systemBarsController.captionBarInsetsIgnoringVisibility.update(
-                windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.captionBar()),
-            )
-            systemBarsController.statusBarsInsetsIgnoringVisibility.update(
-                windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.statusBars()),
-            )
-            systemBarsController.navigationBarsInsetsIgnoringVisibility.update(
-                windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars()),
-            )
-            systemBarsController.isSystemBarsVisible =
-                windowInsets.isVisible(WindowInsetsCompat.Type.systemBars())
-                    || windowInsets.isVisible(WindowInsetsCompat.Type.captionBar())
-                    || windowInsets.isVisible(WindowInsetsCompat.Type.statusBars())
-                    || windowInsets.isVisible(WindowInsetsCompat.Type.navigationBars())
-            ViewCompat.onApplyWindowInsets(view, windowInsets)
-        }
+        ViewCompat.setOnApplyWindowInsetsListener(decorView, onApplyWindowInsetsListener)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.attributes.layoutInDisplayCutoutMode =
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
@@ -253,9 +235,12 @@ class MainActivity: ComponentActivity() {
         systemBarsController.isInMultiWindowMode = isInMultiWindowMode
     }
 
-    private val onSharedListeners: MutableMap<String?, () -> Unit> = LinkedHashMap()
+    private val onApplyWindowInsetsListener: OnApplyWindowInsetsListener =
+        OnApplyWindowInsetsListenerImpl()
 
     private val shareReceiver: BroadcastReceiver = DynamicChooserCallbackReceiver()
+
+    private val onSharedListeners: MutableMap<String?, () -> Unit> = LinkedHashMap()
 
     private val systemBarsController: SystemBarsControllerImpl =
         SystemBarsControllerImpl(
@@ -310,6 +295,33 @@ class MainActivity: ComponentActivity() {
             lifecycleScope.launch {
                 onSharedListeners[intent.getStringExtra(ChooserCallbackActionExtra)]?.invoke()
             }
+        }
+    }
+
+    private inner class OnApplyWindowInsetsListenerImpl: OnApplyWindowInsetsListener {
+
+        override fun onApplyWindowInsets(
+            view: View,
+            insets: WindowInsetsCompat,
+        ): WindowInsetsCompat {
+            systemBarsController.systemBarsInsetsIgnoringVisibility.update(
+                insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars()),
+            )
+            systemBarsController.captionBarInsetsIgnoringVisibility.update(
+                insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.captionBar()),
+            )
+            systemBarsController.statusBarsInsetsIgnoringVisibility.update(
+                insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.statusBars()),
+            )
+            systemBarsController.navigationBarsInsetsIgnoringVisibility.update(
+                insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars()),
+            )
+            systemBarsController.isSystemBarsVisible =
+                insets.isVisible(WindowInsetsCompat.Type.systemBars())
+                    || insets.isVisible(WindowInsetsCompat.Type.captionBar())
+                    || insets.isVisible(WindowInsetsCompat.Type.statusBars())
+                    || insets.isVisible(WindowInsetsCompat.Type.navigationBars())
+            return ViewCompat.onApplyWindowInsets(view, insets)
         }
     }
 
