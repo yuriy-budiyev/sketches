@@ -63,12 +63,7 @@ fun ActivityResultLauncher<IntentSenderRequest>.launchDeleteMediaRequest(
 ) {
     launch(
         IntentSenderRequest
-            .Builder(
-                MediaStore.createDeleteRequest(
-                    context.contentResolver,
-                    uris,
-                ).intentSender,
-            )
+            .Builder(MediaStore.createDeleteRequest(context.contentResolver, uris).intentSender)
             .build(),
     )
 }
