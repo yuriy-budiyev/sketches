@@ -62,7 +62,7 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavMenuController
 import com.github.yuriybudiyev.sketches.core.navigation.NavResultEffect
-import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
+import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequestOrThrow
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.systembars.SystemBarsVisibilityEffect
@@ -78,7 +78,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.Simple
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesGroupingMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
-import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchState
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchEffect
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
@@ -129,13 +129,12 @@ fun ImagesScreen(
     val mediaGridSpec = rememberSketchesMediaGridSpec()
     val mediaGridScrollConnection = rememberLastScrollDirectionScrollConnection(mediaGridState)
     val mediaBatchState = rememberMediaBatchState()
-    var currentBatch by rememberSaveable { mutableStateOf<Set<Long>>(emptySet()) }
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { (resultCode, _) ->
             coroutineScope.launch {
                 if (resultCode == Activity.RESULT_OK) {
-                    selectedFiles.removeAll(currentBatch)
+                    selectedFiles.removeAll(mediaBatchState.currentBatch)
                     mediaBatchState.proceed()
                 } else {
                     mediaBatchState.reset()
@@ -143,44 +142,23 @@ fun ImagesScreen(
             }
         },
     )
-    LaunchedEffect(Unit) {
-        mediaBatchState.action.collect { action ->
-            coroutineScope.launch {
-                when (action) {
-                    is MediaBatchState.Action.Batch -> {
-                        currentBatch = action.ids
-                        when (action.payload) {
-                            is BatchAction.Share -> {
-                                shareManager.startChooserActivity(
-                                    uris = action.uris,
-                                    mimeType = action.payload.mimeType,
-                                    chooserTitle = action.payload.chooserTitle,
-                                    listenerAction = ShareAction,
-                                )
-                            }
-                            is BatchAction.Delete -> {
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                    deleteRequestLauncher.launchDeleteMediaRequest(
-                                        context,
-                                        action.uris,
-                                    )
-                                } else {
-                                    error("Low SDK version: ${Build.VERSION.SDK_INT}")
-                                }
-                            }
-                        }
-                    }
-                    is MediaBatchState.Action.Finish -> {
-                        selectedFiles.clear()
-                        currentBatch = emptySet()
-                    }
-                    is MediaBatchState.Action.Reset -> {
-                        currentBatch = emptySet()
-                    }
-                }
-            }
-        }
-    }
+    MediaBatchEffect(
+        state = mediaBatchState,
+        onShare = { uris, mimeType, chooserTitle ->
+            shareManager.startChooserActivity(
+                uris = uris,
+                mimeType = mimeType,
+                chooserTitle = chooserTitle,
+                listenerAction = ShareAction,
+            )
+        },
+        onDelete = { uris ->
+            deleteRequestLauncher.launchDeleteMediaRequestOrThrow(context, uris)
+        },
+        onFinish = {
+            selectedFiles.clear()
+        },
+    )
     LaunchedEffect(Unit) {
         snapshotFlow { selectedFiles.isEmpty() }.collect { empty ->
             if (empty) {
@@ -193,7 +171,7 @@ fun ImagesScreen(
     DisposableEffect(shareManager) {
         shareManager.registerOnSharedListener(ShareAction) {
             coroutineScope.launch {
-                selectedFiles.removeAll(currentBatch)
+                selectedFiles.removeAll(mediaBatchState.currentBatch)
                 mediaBatchState.reset()
                 if (selectedFiles.isNotEmpty()) {
                     mediaGridState.scrollToItem(

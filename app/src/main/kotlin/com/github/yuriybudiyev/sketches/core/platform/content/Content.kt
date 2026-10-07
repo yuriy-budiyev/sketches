@@ -73,4 +73,15 @@ fun ActivityResultLauncher<IntentSenderRequest>.launchDeleteMediaRequest(
     )
 }
 
+fun ActivityResultLauncher<IntentSenderRequest>.launchDeleteMediaRequestOrThrow(
+    context: Context,
+    uris: Collection<Uri>,
+) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        launchDeleteMediaRequest(context, uris)
+    } else {
+        error("Low SDK version: ${Build.VERSION.SDK_INT}")
+    }
+}
+
 const val MediaStoreBatchSize: Int = 500

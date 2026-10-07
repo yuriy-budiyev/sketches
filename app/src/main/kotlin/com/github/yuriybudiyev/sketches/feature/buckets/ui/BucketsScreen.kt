@@ -81,7 +81,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaBucket
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavMenuController
-import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
+import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequestOrThrow
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
@@ -97,7 +97,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.Simple
 import com.github.yuriybudiyev.sketches.core.ui.components.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
-import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchState
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchEffect
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaDescriptor
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
@@ -162,30 +162,15 @@ fun BucketsScreen(
             }
         },
     )
-    LaunchedEffect(Unit) {
-        mediaBatchState.action.collect { action ->
-            when (action) {
-                is MediaBatchState.Action.Batch -> {
-                    if (action.payload is BatchAction.Delete) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            deleteRequestLauncher.launchDeleteMediaRequest(
-                                context,
-                                action.uris,
-                            )
-                        } else {
-                            error("Low SDK version: ${Build.VERSION.SDK_INT}")
-                        }
-                    }
-                }
-                is MediaBatchState.Action.Finish -> {
-                    selectedBuckets.clear()
-                }
-                is MediaBatchState.Action.Reset -> {
-                    // Do nothing
-                }
-            }
-        }
-    }
+    MediaBatchEffect(
+        state = mediaBatchState,
+        onDelete = { uris ->
+            deleteRequestLauncher.launchDeleteMediaRequestOrThrow(context, uris)
+        },
+        onFinish = {
+            selectedBuckets.clear()
+        },
+    )
     LaunchedEffect(Unit) {
         if (selectedBuckets.isEmpty()) {
             deleteDialogMedia.clear()

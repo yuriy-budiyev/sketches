@@ -28,9 +28,11 @@ import android.content.ContentUris
 import android.net.Uri
 import android.os.Parcelable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -46,6 +48,49 @@ import kotlinx.parcelize.Parcelize
 @Composable
 fun rememberMediaBatchState(): MediaBatchState =
     rememberSaveable(saver = MediaBatchStateImplSaver) { MediaBatchStateImpl() }
+
+@Composable
+fun MediaBatchEffect(
+    state: MediaBatchState,
+    onShare: ((uris: ArrayList<Uri>, mimeType: String, chooserTitle: String) -> Unit)? = null,
+    onDelete: ((uris: ArrayList<Uri>) -> Unit)? = null,
+    onFinish: (() -> Unit)? = null,
+    onReset: (() -> Unit)? = null,
+) {
+    val onShare by rememberUpdatedState(onShare)
+    val onDelete by rememberUpdatedState(onDelete)
+    val onFinish by rememberUpdatedState(onFinish)
+    val onReset by rememberUpdatedState(onReset)
+    LaunchedEffect(state) {
+        state.action.collect { action ->
+            when (action) {
+                is MediaBatchState.Action.Batch -> {
+                    state.currentBatch = action.ids
+                    when (action.payload) {
+                        is BatchAction.Share -> {
+                            onShare?.invoke(
+                                action.uris,
+                                action.payload.mimeType,
+                                action.payload.chooserTitle,
+                            )
+                        }
+                        is BatchAction.Delete -> {
+                            onDelete?.invoke(action.uris)
+                        }
+                    }
+                }
+                is MediaBatchState.Action.Finish -> {
+                    state.currentBatch = emptySet()
+                    onFinish?.invoke()
+                }
+                is MediaBatchState.Action.Reset -> {
+                    state.currentBatch = emptySet()
+                    onReset?.invoke()
+                }
+            }
+        }
+    }
+}
 
 fun MediaFile.toMediaDescriptor(): MediaDescriptor =
     MediaDescriptor(
@@ -95,6 +140,8 @@ fun Collection<MediaDescriptor>.toUriList(): List<Uri> =
 
 @Stable
 sealed interface MediaBatchState {
+
+    var currentBatch: Set<Long>
 
     val isActive: Boolean
 
@@ -147,6 +194,8 @@ data class MediaDescriptor(
 ): Parcelable
 
 private class MediaBatchStateImpl: MediaBatchState {
+
+    override var currentBatch: Set<Long> by mutableStateOf(emptySet())
 
     override var isActive: Boolean by mutableStateOf(false)
 
@@ -226,6 +275,7 @@ private data class MediaBatchStateImplConfig(
     val isActive: Boolean,
     val startIndex: Int,
     val media: List<MediaDescriptor>,
+    val currentBatch: Set<Long>,
     val payload: Parcelable?,
 ): Parcelable
 
@@ -236,6 +286,7 @@ private object MediaBatchStateImplSaver: Saver<MediaBatchStateImpl, MediaBatchSt
             isActive = value.isActive,
             startIndex = value.startIndex,
             media = value.media,
+            currentBatch = value.currentBatch,
             payload = value.payload,
         )
 
@@ -244,6 +295,7 @@ private object MediaBatchStateImplSaver: Saver<MediaBatchStateImpl, MediaBatchSt
             isActive = value.isActive
             startIndex = value.startIndex
             media = value.media
+            currentBatch = value.currentBatch
             payload = value.payload
         }
 }
