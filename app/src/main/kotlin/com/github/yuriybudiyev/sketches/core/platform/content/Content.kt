@@ -31,7 +31,9 @@ import android.provider.MediaStore
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.Immutable
 
+@Immutable
 enum class MediaType(
     val contentUri: Uri,
     val mimeType: String,
