@@ -54,7 +54,6 @@ import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -68,15 +67,14 @@ import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnReques
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.systembars.SystemBarsVisibilityEffect
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesTopAppBar
-import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.DeleteAction
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SelectAction
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.ShareAction
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SimpleAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesGroupingMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
@@ -341,9 +339,9 @@ fun ImagesScreen(
             visible = appBarVisible,
         ) {
             if (onRequestMediaAccess.isEnabled) {
-                SketchesActionButton(
-                    icon = painterResource(R.drawable.ic_media_permission),
-                    hint = stringResource(R.string.request_media_access),
+                SimpleAction(
+                    iconRes = R.drawable.ic_media_permission,
+                    hintRes = R.string.request_media_access,
                     onClick = {
                         onRequestMediaAccess()
                     },
@@ -363,8 +361,10 @@ fun ImagesScreen(
                         }
                     },
                 )
-                DeleteAction(
-                    onDelete = {
+                SimpleAction(
+                    iconRes = R.drawable.ic_delete,
+                    hintRes = R.string.delete_selected,
+                    onClick = {
                         deleteDialogVisible = true
                     },
                 )

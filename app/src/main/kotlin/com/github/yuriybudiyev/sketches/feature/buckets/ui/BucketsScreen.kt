@@ -92,8 +92,8 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGridSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesTopAppBar
-import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.DeleteAction
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SelectAction
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SimpleAction
 import com.github.yuriybudiyev.sketches.core.ui.components.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
@@ -343,8 +343,10 @@ fun BucketsScreen(
                         }
                     },
                 )
-                DeleteAction(
-                    onDelete = {
+                SimpleAction(
+                    iconRes = R.drawable.ic_delete,
+                    hintRes = R.string.delete_selected,
+                    onClick = {
                         coroutineScope.launch {
                             onDeleteBuckets(allBuckets.filterByIds(selectedBuckets.toSet()))
                         }

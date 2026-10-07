@@ -71,9 +71,9 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesC
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesTopAppBar
-import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.DeleteAction
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SelectAction
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.ShareAction
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SimpleAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
@@ -354,17 +354,17 @@ private fun BookmarksScreen(
                         }
                     },
                 )
-                DeleteAction(
+                SimpleAction(
                     iconRes = R.drawable.ic_bookmark_delete,
                     hintRes = R.string.delete_bookmarks,
-                    onDelete = {
+                    onClick = {
                         deleteBookmarksDialogVisible = true
                     },
                 )
-                DeleteAction(
+                SimpleAction(
                     iconRes = R.drawable.ic_delete,
                     hintRes = R.string.delete_selected,
-                    onDelete = {
+                    onClick = {
                         deleteFilesDialogVisible = true
                     },
                 )

@@ -116,7 +116,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesAppBar
-import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.DeleteAction
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SimpleAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesPreviewAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.SketchesMediaPlayer
@@ -508,21 +508,17 @@ private fun ImageScreenLayout(
                 contentPaddingEnd = contentPaddingEndVisible,
                 text = files[currentIndex].name,
             ) {
-                SketchesActionButton(
-                    icon = painterResource(
-                        if (hasBookmark) {
-                            R.drawable.ic_bookmark_delete
-                        } else {
-                            R.drawable.ic_bookmark_create
-                        },
-                    ),
-                    hint = stringResource(
-                        if (hasBookmark) {
-                            R.string.delete_bookmark
-                        } else {
-                            R.string.create_bookmark
-                        },
-                    ),
+                SimpleAction(
+                    iconRes = if (hasBookmark) {
+                        R.drawable.ic_bookmark_delete
+                    } else {
+                        R.drawable.ic_bookmark_create
+                    },
+                    hintRes = if (hasBookmark) {
+                        R.string.delete_bookmark
+                    } else {
+                        R.string.create_bookmark
+                    },
                     onClick = {
                         val file = files[currentIndex]
                         if (file.bookmark != null) {
@@ -532,24 +528,24 @@ private fun ImageScreenLayout(
                         }
                     },
                 )
-                DeleteAction(
+                SimpleAction(
                     iconRes = R.drawable.ic_delete,
                     hintRes = R.string.delete_image,
-                    onDelete = {
+                    onClick = {
                         deleteImageDialogVisible = true
                     },
                 )
-                val shareDescription = stringResource(R.string.share_image)
+                val shareHint by rememberUpdatedState(stringResource(R.string.share_image))
                 SketchesActionButton(
                     icon = painterResource(R.drawable.ic_share),
-                    hint = shareDescription,
+                    hint = shareHint,
                     onClick = {
                         coroutineScope.launch {
                             val file = files[currentIndex]
                             shareManager.startChooserActivity(
                                 file.uri,
                                 file.mimeType,
-                                shareDescription,
+                                shareHint,
                             )
                         }
                     },

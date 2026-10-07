@@ -85,14 +85,13 @@ import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.systembars.SystemBarsVisibilityEffect
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesTopAppBar
-import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.DeleteAction
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SelectAction
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.ShareAction
+import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SimpleAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
@@ -363,21 +362,17 @@ fun BucketScreen(
             },
             visible = appBarVisible,
         ) {
-            SketchesActionButton(
-                icon = painterResource(
-                    if (bucketHidden) {
-                        R.drawable.ic_bucket_show
-                    } else {
-                        R.drawable.ic_bucket_hide
-                    },
-                ),
-                hint = stringResource(
-                    if (bucketHidden) {
-                        R.string.show_bucket
-                    } else {
-                        R.string.hide_bucket
-                    },
-                ),
+            SimpleAction(
+                iconRes = if (bucketHidden) {
+                    R.drawable.ic_bucket_show
+                } else {
+                    R.drawable.ic_bucket_hide
+                },
+                hintRes = if (bucketHidden) {
+                    R.string.show_bucket
+                } else {
+                    R.string.hide_bucket
+                },
                 onClick = if (bucketHidden) {
                     onShowBucket
                 } else {
@@ -398,8 +393,10 @@ fun BucketScreen(
                         }
                     },
                 )
-                DeleteAction(
-                    onDelete = {
+                SimpleAction(
+                    iconRes = R.drawable.ic_delete,
+                    hintRes = R.string.delete_selected,
+                    onClick = {
                         deleteDialogVisible = true
                     },
                 )

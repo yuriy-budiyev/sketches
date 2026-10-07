@@ -74,17 +74,17 @@ fun SelectAction(
 }
 
 @Composable
-fun DeleteAction(
+fun SimpleAction(
     @DrawableRes
-    iconRes: Int = R.drawable.ic_delete,
+    iconRes: Int,
     @StringRes
-    hintRes: Int = R.string.delete_selected,
-    onDelete: () -> Unit,
+    hintRes: Int,
+    onClick: () -> Unit,
 ) {
     SketchesActionButton(
         icon = painterResource(iconRes),
         hint = stringResource(hintRes),
-        onClick = onDelete,
+        onClick = onClick,
     )
 }
 
@@ -98,10 +98,10 @@ fun ShareAction(
     val allFiles by rememberUpdatedState(allFiles)
     val selectedFiles by rememberUpdatedState(selectedFiles)
     val mediaBatchState by rememberUpdatedState(mediaBatchState)
-    val shareTitle = stringResource(R.string.share_selected)
+    val shareHint by rememberUpdatedState(stringResource(R.string.share_selected))
     SketchesActionButton(
         icon = painterResource(R.drawable.ic_share),
-        hint = shareTitle,
+        hint = shareHint,
         onClick = {
             coroutineScope.launch {
                 allFiles.prepareForSharing(
@@ -111,7 +111,7 @@ fun ShareAction(
                         mediaBatchState.start(
                             media = media,
                             payload = BatchAction.Share(
-                                chooserTitle = shareTitle,
+                                chooserTitle = shareHint,
                                 mimeType = mimeType,
                             ),
                         )
