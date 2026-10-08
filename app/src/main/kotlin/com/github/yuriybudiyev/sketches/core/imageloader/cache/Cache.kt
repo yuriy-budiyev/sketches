@@ -296,22 +296,18 @@ class ImageKey(
             else -> false
         }
 
-    private val cachedHashCode: Int = computeHashCode()
-
-    private fun computeHashCode(): Int {
+    private val cachedHashCode: Int = run {
         var result = 17
         result = 31 * result + uri.hashCode()
         result = 31 * result + width
         result = 31 * result + height
-        return result
+        return@run result
     }
 
     override fun hashCode(): Int =
         cachedHashCode
 
-    private val cachedString: String = buildString()
-
-    private fun buildString(): String =
+    private val cachedString: String =
         "$uri/$width/$height"
 
     override fun toString(): String =
