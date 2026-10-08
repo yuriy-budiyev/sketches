@@ -303,9 +303,9 @@ class ImageKey(
     override fun toString(): String =
         cachedString
 
-    private val cachedHashCode: Int = calculateHashCode()
+    private val cachedHashCode: Int = computeHashCode()
 
-    private fun calculateHashCode(): Int {
+    private fun computeHashCode(): Int {
         var result = 17
         result = 31 * result + uri.hashCode()
         result = 31 * result + width
@@ -313,8 +313,8 @@ class ImageKey(
         return result
     }
 
-    private val cachedString: String = calculateString()
+    private val cachedString: String = buildString()
 
-    private fun calculateString(): String =
+    private fun buildString(): String =
         "$uri/$width/$height"
 }
