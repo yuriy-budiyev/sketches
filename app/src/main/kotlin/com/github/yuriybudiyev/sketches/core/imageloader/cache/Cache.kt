@@ -286,22 +286,15 @@ class ImageKey(
     val height: Int,
 ) {
 
-    override fun hashCode(): Int =
-        cachedHashCode
-
     override fun equals(other: Any?): Boolean =
         when {
             other === this -> true
             other is ImageKey ->
-                other.cachedHashCode == this.cachedHashCode
+                other.uri == this.uri
                     && other.width == this.width
                     && other.height == this.height
-                    && other.uri == this.uri
             else -> false
         }
-
-    override fun toString(): String =
-        cachedString
 
     private val cachedHashCode: Int = computeHashCode()
 
@@ -313,8 +306,14 @@ class ImageKey(
         return result
     }
 
+    override fun hashCode(): Int =
+        cachedHashCode
+
     private val cachedString: String = buildString()
 
     private fun buildString(): String =
         "$uri/$width/$height"
+
+    override fun toString(): String =
+        cachedString
 }
