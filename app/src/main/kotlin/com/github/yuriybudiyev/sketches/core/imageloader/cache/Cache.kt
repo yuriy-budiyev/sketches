@@ -290,17 +290,17 @@ class ImageKey(
         when {
             other === this -> true
             other is ImageKey ->
-                other.uri == this.uri
-                    && other.width == this.width
+                other.width == this.width
                     && other.height == this.height
+                    && other.uri == this.uri
             else -> false
         }
 
     private val cachedHashCode: Int = run {
         var result = 17
-        result = 31 * result + uri.hashCode()
         result = 31 * result + width
         result = 31 * result + height
+        result = 31 * result + uri.hashCode()
         return@run result
     }
 
