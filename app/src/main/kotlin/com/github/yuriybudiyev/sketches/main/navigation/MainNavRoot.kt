@@ -139,7 +139,7 @@ import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotSt
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
+import com.github.yuriybudiyev.sketches.core.ui.theme.bottomToTopBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.registerBookmarksNavRoute
@@ -413,7 +413,7 @@ fun MainNavRoot(
                                     .calculateBottomPadding(),
                             )
                             .background(
-                                brush = rememberBottomToTopBackgroundGradientBrush(colorScheme),
+                                brush = colorScheme.bottomToTopBackgroundGradientBrush(),
                                 shape = RectangleShape,
                             ),
                     )

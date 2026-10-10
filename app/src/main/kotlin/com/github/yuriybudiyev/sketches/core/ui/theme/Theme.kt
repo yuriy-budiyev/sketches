@@ -25,10 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.ui.theme
 
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
@@ -50,39 +47,31 @@ fun Color.withHighTransparency(): Color =
     this.copy(alpha = HighTransparencyAlpha)
 
 @Stable
-@Composable
-fun rememberTopToBottomBackgroundGradientBrush(
-    colorScheme: ColorScheme = MaterialTheme.colorScheme,
+fun ColorScheme.topToBottomBackgroundGradientBrush(
     startY: Float = 0F,
     endY: Float = Float.POSITIVE_INFINITY,
 ): Brush =
-    remember(colorScheme, startY, endY) {
-        Brush.verticalGradient(
-            colors = listOf(
-                colorScheme.background,
-                colorScheme.background.withLowTransparency(),
-            ),
-            startY = startY,
-            endY = endY,
-            tileMode = TileMode.Clamp,
-        )
-    }
+    Brush.verticalGradient(
+        colors = listOf(
+            background,
+            background.withLowTransparency(),
+        ),
+        startY = startY,
+        endY = endY,
+        tileMode = TileMode.Clamp,
+    )
 
 @Stable
-@Composable
-fun rememberBottomToTopBackgroundGradientBrush(
-    colorScheme: ColorScheme = MaterialTheme.colorScheme,
+fun ColorScheme.bottomToTopBackgroundGradientBrush(
     startY: Float = 0F,
     endY: Float = Float.POSITIVE_INFINITY,
 ): Brush =
-    remember(colorScheme, startY, endY) {
-        Brush.verticalGradient(
-            colors = listOf(
-                colorScheme.background.withLowTransparency(),
-                colorScheme.background,
-            ),
-            startY = startY,
-            endY = endY,
-            tileMode = TileMode.Clamp,
-        )
-    }
+    Brush.verticalGradient(
+        colors = listOf(
+            background.withLowTransparency(),
+            background,
+        ),
+        startY = startY,
+        endY = endY,
+        tileMode = TileMode.Clamp,
+    )

@@ -124,8 +124,8 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.player.remember
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.LowTransparencyAlpha
-import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
-import com.github.yuriybudiyev.sketches.core.ui.theme.rememberTopToBottomBackgroundGradientBrush
+import com.github.yuriybudiyev.sketches.core.ui.theme.bottomToTopBackgroundGradientBrush
+import com.github.yuriybudiyev.sketches.core.ui.theme.topToBottomBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.utils.fastAnimateScrollToItemCentered
@@ -439,8 +439,7 @@ private fun ImageScreenLayout(
                     .run {
                         if (contentPaddingBottomVisible > 0.dp) {
                             background(
-                                brush = rememberBottomToTopBackgroundGradientBrush(
-                                    colorScheme = colorScheme,
+                                brush = colorScheme.bottomToTopBackgroundGradientBrush(
                                     startY = with(LocalDensity.current) { dimens.mediaBarHeight.toPx() },
                                 ),
                                 shape = RectangleShape,
@@ -490,8 +489,7 @@ private fun ImageScreenLayout(
                     .run {
                         if (contentPaddingTopVisible > 0.dp) {
                             background(
-                                brush = rememberTopToBottomBackgroundGradientBrush(
-                                    colorScheme = colorScheme,
+                                brush = colorScheme.topToBottomBackgroundGradientBrush(
                                     endY = with(LocalDensity.current) { contentPaddingTopVisible.toPx() },
                                 ),
                                 shape = RectangleShape,
