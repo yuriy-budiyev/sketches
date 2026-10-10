@@ -49,6 +49,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextOverflow
@@ -57,7 +58,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.theme.rememberTopToBottomBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 
 @Composable
@@ -86,7 +86,12 @@ inline fun BoxScope.SketchesTopAppBar(
                     .fillMaxWidth()
                     .height(contentPaddingTop)
                     .background(
-                        brush = rememberTopToBottomBackgroundGradientBrush(colorScheme),
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                colorScheme.background,
+                                colorScheme.background.withLowTransparency(),
+                            ),
+                        ),
                         shape = RectangleShape,
                     ),
             )

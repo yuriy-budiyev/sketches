@@ -75,6 +75,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
@@ -139,7 +140,6 @@ import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotSt
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.registerBookmarksNavRoute
@@ -413,7 +413,12 @@ fun MainNavRoot(
                                     .calculateBottomPadding(),
                             )
                             .background(
-                                brush = rememberBottomToTopBackgroundGradientBrush(colorScheme),
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        colorScheme.background.withLowTransparency(),
+                                        colorScheme.background,
+                                    ),
+                                ),
                                 shape = RectangleShape,
                             ),
                     )

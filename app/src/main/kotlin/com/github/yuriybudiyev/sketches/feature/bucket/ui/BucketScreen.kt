@@ -67,6 +67,7 @@ import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -102,7 +103,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaGridSpec
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
@@ -395,7 +395,12 @@ fun BucketScreen(
                     .fillMaxWidth()
                     .height(bottomNavBarHeight)
                     .background(
-                        brush = rememberBottomToTopBackgroundGradientBrush(colorScheme),
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                colorScheme.background.withLowTransparency(),
+                                colorScheme.background,
+                            ),
+                        ),
                         shape = RectangleShape,
                     ),
             )
