@@ -86,7 +86,6 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
@@ -125,6 +124,8 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.player.remember
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.LowTransparencyAlpha
+import com.github.yuriybudiyev.sketches.core.ui.theme.rememberBottomToTopBackgroundGradientBrush
+import com.github.yuriybudiyev.sketches.core.ui.theme.rememberTopToBottomBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.utils.fastAnimateScrollToItemCentered
@@ -438,11 +439,8 @@ private fun ImageScreenLayout(
                     .run {
                         if (contentPaddingBottomVisible > 0.dp) {
                             background(
-                                brush = Brush.verticalGradient(
-                                    colors = listOf(
-                                        colorScheme.background.withLowTransparency(),
-                                        colorScheme.background,
-                                    ),
+                                brush = rememberBottomToTopBackgroundGradientBrush(
+                                    colorScheme = colorScheme,
                                     startY = with(LocalDensity.current) { dimens.mediaBarHeight.toPx() },
                                 ),
                                 shape = RectangleShape,
@@ -492,11 +490,8 @@ private fun ImageScreenLayout(
                     .run {
                         if (contentPaddingTopVisible > 0.dp) {
                             background(
-                                brush = Brush.verticalGradient(
-                                    colors = listOf(
-                                        colorScheme.background,
-                                        colorScheme.background.withLowTransparency(),
-                                    ),
+                                brush = rememberTopToBottomBackgroundGradientBrush(
+                                    colorScheme = colorScheme,
                                     endY = with(LocalDensity.current) { contentPaddingTopVisible.toPx() },
                                 ),
                                 shape = RectangleShape,
