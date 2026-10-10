@@ -36,15 +36,15 @@ const val HighTransparencyAlpha: Float = 0.15F
 
 @Stable
 fun Color.withLowTransparency(): Color =
-    this.copy(alpha = LowTransparencyAlpha)
+    copy(alpha = LowTransparencyAlpha)
 
 @Stable
 fun Color.withMediumTransparency(): Color =
-    this.copy(alpha = MediumTransparencyAlpha)
+    copy(alpha = MediumTransparencyAlpha)
 
 @Stable
 fun Color.withHighTransparency(): Color =
-    this.copy(alpha = HighTransparencyAlpha)
+    copy(alpha = HighTransparencyAlpha)
 
 @Stable
 fun ColorScheme.topToBottomBackgroundGradientBrush(
