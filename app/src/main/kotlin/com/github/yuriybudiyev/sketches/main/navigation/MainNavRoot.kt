@@ -252,10 +252,13 @@ fun MainNavRoot(
                         object: ViewModelStoreOwner,
                             SavedStateRegistryOwner by savedStateRegistryOwner,
                             HasDefaultViewModelProviderFactory {
+
                             override val viewModelStore: ViewModelStore
                                 get() = navEntryViewModelStore
+
                             override val defaultViewModelProviderFactory: ViewModelProvider.Factory
                                 get() = SavedStateViewModelFactory()
+
                             override val defaultViewModelCreationExtras: CreationExtras
                                 get() = MutableCreationExtras().also { extras ->
                                     extras[SAVED_STATE_REGISTRY_OWNER_KEY] = this
