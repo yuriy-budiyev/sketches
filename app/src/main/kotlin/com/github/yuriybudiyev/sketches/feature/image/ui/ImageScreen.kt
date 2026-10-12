@@ -37,6 +37,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -62,8 +63,12 @@ import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
@@ -216,6 +221,7 @@ fun ImageScreen(
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 private fun ImageScreenLayout(
     index: Int,
     files: List<MediaFile>,
@@ -246,6 +252,8 @@ private fun ImageScreenLayout(
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState(currentIndex) { files.size }
     val barState = rememberLazyListState(currentIndex)
+    val infoBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var infoBottomSheetVisible by rememberSaveable { mutableStateOf(false) }
     val systemBarsController by rememberUpdatedState(LocalSystemBarsController.current)
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -527,6 +535,13 @@ private fun ImageScreenLayout(
                     },
                 )
                 SimpleAction(
+                    iconRes = R.drawable.ic_show_info,
+                    hintRes = R.string.show_info,
+                    onClick = {
+                        infoBottomSheetVisible = true
+                    },
+                )
+                SimpleAction(
                     iconRes = R.drawable.ic_delete,
                     hintRes = R.string.delete_image,
                     onClick = {
@@ -587,6 +602,29 @@ private fun ImageScreenLayout(
                     deleteBookmarkDialogVisible = false
                 },
             )
+        }
+        if (infoBottomSheetVisible) {
+            ModalBottomSheet(
+                sheetState = infoBottomSheetState,
+                dragHandle = null,
+                onDismissRequest = {
+                    infoBottomSheetVisible = false
+                },
+            ) {
+                val file = files[currentIndex]
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = 24.dp,
+                            top = 24.dp,
+                            end = 24.dp,
+                            bottom = 8.dp,
+                        ),
+                ) {
+                    Text(file.toString())
+                }
+            }
         }
     }
 }
