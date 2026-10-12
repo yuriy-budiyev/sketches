@@ -33,7 +33,6 @@ import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.provider.MediaStore
-import androidx.core.database.getStringOrNull
 import com.github.yuriybudiyev.sketches.core.collections.newLinkedHashMap
 import com.github.yuriybudiyev.sketches.core.collections.newLinkedHashSet
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
@@ -48,6 +47,11 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaStoreBatchSize
 import com.github.yuriybudiyev.sketches.core.platform.content.contentUri
+import com.github.yuriybudiyev.sketches.core.platform.content.getIntOrDefault
+import com.github.yuriybudiyev.sketches.core.platform.content.getLocalDateTimeFromEpochMillisOrDefault
+import com.github.yuriybudiyev.sketches.core.platform.content.getLocalDateTimeFromEpochSecondsOrDefault
+import com.github.yuriybudiyev.sketches.core.platform.content.getLongOrDefault
+import com.github.yuriybudiyev.sketches.core.platform.content.getStringOrDefault
 import com.github.yuriybudiyev.sketches.core.platform.content.mimeType
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
@@ -68,9 +72,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.EmptyCoroutineContext
@@ -207,10 +209,15 @@ class MediaRepositoryImpl @Inject constructor(
             arrayOf(
                 MediaStore.MediaColumns._ID,
                 MediaStore.MediaColumns.BUCKET_ID,
+                MediaStore.MediaColumns.RELATIVE_PATH,
                 MediaStore.MediaColumns.DISPLAY_NAME,
                 MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
                 MediaStore.MediaColumns.DATE_ADDED,
+                MediaStore.MediaColumns.DATE_TAKEN,
                 MediaStore.MediaColumns.MIME_TYPE,
+                MediaStore.MediaColumns.WIDTH,
+                MediaStore.MediaColumns.HEIGHT,
+                MediaStore.MediaColumns.SIZE,
             ),
             null,
             null,
@@ -220,12 +227,15 @@ class MediaRepositoryImpl @Inject constructor(
             val files = ArrayList<MediaEntity>(cursor.count)
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
             val bucketIdColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_ID)
-            val displayNameColumn =
-                cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)
-            val bucketDisplayNameColumn =
-                cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME)
+            val pathColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.RELATIVE_PATH)
+            val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)
+            val bucketNameColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME)
             val dateAddedColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_ADDED)
+            val dateTakenColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_TAKEN)
             val mimeTypeColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE)
+            val widthColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.WIDTH)
+            val heightColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.HEIGHT)
+            val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE)
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn)
                 val bucketId = cursor.getLong(bucketIdColumn)
@@ -233,15 +243,16 @@ class MediaRepositoryImpl @Inject constructor(
                     MediaEntity(
                         id = id,
                         bucketId = bucketId,
-                        name = cursor.getStringOrNull(displayNameColumn) ?: id.toString(),
-                        bucketName = cursor.getStringOrNull(bucketDisplayNameColumn)
-                            ?: bucketId.toString(),
-                        dateAdded = LocalDateTime.ofInstant(
-                            Instant.ofEpochSecond(cursor.getLong(dateAddedColumn)),
-                            ZoneId.systemDefault(),
-                        ),
+                        path = cursor.getStringOrDefault(pathColumn) { "" },
+                        name = cursor.getStringOrDefault(nameColumn) { id.toString() },
+                        bucketName = cursor.getStringOrDefault(bucketNameColumn) { bucketId.toString() },
+                        dateAdded = cursor.getLocalDateTimeFromEpochSecondsOrDefault(dateAddedColumn) { LocalDateTime.MIN },
+                        dateTaken = cursor.getLocalDateTimeFromEpochMillisOrDefault(dateTakenColumn) { LocalDateTime.MIN },
                         mediaType = mediaType,
-                        mimeType = cursor.getStringOrNull(mimeTypeColumn) ?: mediaType.mimeType(),
+                        mimeType = cursor.getStringOrDefault(mimeTypeColumn) { mediaType.mimeType() },
+                        width = cursor.getIntOrDefault(widthColumn) { -1 },
+                        height = cursor.getIntOrDefault(heightColumn) { -1 },
+                        size = cursor.getLongOrDefault(sizeColumn) { -1L },
                         uri = ContentUris.withAppendedId(contentUri, id).toString(),
                     ),
                 )
@@ -513,11 +524,16 @@ class MediaRepositoryImpl @Inject constructor(
     private data class MediaEntity(
         val id: Long,
         val bucketId: Long,
+        val path: String,
         val name: String,
         val bucketName: String,
         val dateAdded: LocalDateTime,
+        val dateTaken: LocalDateTime,
         val mediaType: MediaType,
         val mimeType: String,
+        val width: Int,
+        val height: Int,
+        val size: Long,
         val uri: String,
     )
 
