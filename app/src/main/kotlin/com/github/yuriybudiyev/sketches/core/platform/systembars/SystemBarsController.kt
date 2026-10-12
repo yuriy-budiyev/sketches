@@ -62,6 +62,8 @@ interface SystemBarsController {
 
     val systemBarsInsetsIgnoringVisibility: WindowInsets
 
+    val systemBarsWithoutOverlaysInsetsIgnoringVisibility: WindowInsets
+
     val captionBarInsetsIgnoringVisibility: WindowInsets
 
     val statusBarsInsetsIgnoringVisibility: WindowInsets
