@@ -31,10 +31,15 @@ import java.time.LocalDateTime
 data class MediaFile(
     val id: Long,
     val bucketId: Long,
+    val path: String?,
     val name: String,
     val dateAdded: LocalDateTime,
+    val dateTaken: LocalDateTime?,
     val mediaType: MediaType,
     val mimeType: String,
-    val uri: String,
+    val width: Int,
+    val height: Int,
+    val size: Long,
     val bookmark: Bookmark?,
+    val uri: String,
 )

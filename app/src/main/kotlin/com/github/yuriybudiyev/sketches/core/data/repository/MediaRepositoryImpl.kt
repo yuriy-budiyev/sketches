@@ -33,6 +33,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.provider.MediaStore
+import androidx.core.database.getStringOrNull
 import com.github.yuriybudiyev.sketches.core.collections.newLinkedHashMap
 import com.github.yuriybudiyev.sketches.core.collections.newLinkedHashSet
 import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
@@ -48,8 +49,6 @@ import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.MediaStoreBatchSize
 import com.github.yuriybudiyev.sketches.core.platform.content.contentUri
 import com.github.yuriybudiyev.sketches.core.platform.content.getIntOrDefault
-import com.github.yuriybudiyev.sketches.core.platform.content.getLocalDateTimeFromEpochMillisOrDefault
-import com.github.yuriybudiyev.sketches.core.platform.content.getLocalDateTimeFromEpochSecondsOrDefault
 import com.github.yuriybudiyev.sketches.core.platform.content.getLongOrDefault
 import com.github.yuriybudiyev.sketches.core.platform.content.getStringOrDefault
 import com.github.yuriybudiyev.sketches.core.platform.content.mimeType
@@ -72,7 +71,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.EmptyCoroutineContext
@@ -243,22 +244,28 @@ class MediaRepositoryImpl @Inject constructor(
                     MediaEntity(
                         id = id,
                         bucketId = bucketId,
-                        path = cursor.getStringOrDefault(pathColumn) { "" },
+                        path = cursor.getStringOrNull(pathColumn),
                         name = cursor.getStringOrDefault(nameColumn) { id.toString() },
                         bucketName = cursor.getStringOrDefault(bucketNameColumn) { bucketId.toString() },
-                        dateAdded = cursor.getLocalDateTimeFromEpochSecondsOrDefault(
-                            index = dateAddedColumn,
-                            default = { LocalDateTime.MIN },
-                        ),
-                        dateTaken = cursor.getLocalDateTimeFromEpochMillisOrDefault(
-                            index = dateTakenColumn,
-                            default = { LocalDateTime.MIN },
-                        ),
+                        dateAdded =
+                            LocalDateTime.ofInstant(
+                                Instant.ofEpochSecond(cursor.getLong(dateAddedColumn)),
+                                ZoneId.systemDefault(),
+                            ),
+                        dateTaken =
+                            if (cursor.isNull(dateTakenColumn)) {
+                                null
+                            } else {
+                                LocalDateTime.ofInstant(
+                                    Instant.ofEpochMilli(cursor.getLong(dateTakenColumn)),
+                                    ZoneId.systemDefault(),
+                                )
+                            },
                         mediaType = mediaType,
                         mimeType = cursor.getStringOrDefault(mimeTypeColumn) { mediaType.mimeType() },
-                        width = cursor.getIntOrDefault(widthColumn) { -1 },
-                        height = cursor.getIntOrDefault(heightColumn) { -1 },
-                        size = cursor.getLongOrDefault(sizeColumn) { -1L },
+                        width = cursor.getIntOrDefault(widthColumn) { 0 },
+                        height = cursor.getIntOrDefault(heightColumn) { 0 },
+                        size = cursor.getLongOrDefault(sizeColumn) { 0L },
                         uri = ContentUris.withAppendedId(contentUri, id).toString(),
                     ),
                 )
@@ -280,12 +287,17 @@ class MediaRepositoryImpl @Inject constructor(
                         MediaFile(
                             id = entity.id,
                             bucketId = entity.bucketId,
+                            path = entity.path,
                             name = entity.name,
                             dateAdded = entity.dateAdded,
+                            dateTaken = entity.dateTaken,
                             mediaType = entity.mediaType,
                             mimeType = entity.mimeType,
-                            uri = entity.uri,
+                            width = entity.width,
+                            height = entity.height,
+                            size = entity.size,
                             bookmark = bookmarks[entity.id],
+                            uri = entity.uri,
                         )
                     },
                 )
@@ -530,11 +542,11 @@ class MediaRepositoryImpl @Inject constructor(
     private data class MediaEntity(
         val id: Long,
         val bucketId: Long,
-        val path: String,
+        val path: String?,
         val name: String,
         val bucketName: String,
         val dateAdded: LocalDateTime,
-        val dateTaken: LocalDateTime,
+        val dateTaken: LocalDateTime?,
         val mediaType: MediaType,
         val mimeType: String,
         val width: Int,

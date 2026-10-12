@@ -33,9 +33,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.annotation.RequiresApi
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 
 fun MediaType.contentUri(): Uri =
     when (this) {
@@ -99,31 +96,5 @@ inline fun Cursor.getIntOrDefault(
     default: () -> Int,
 ): Int =
     if (isNull(index)) default() else getInt(index)
-
-inline fun Cursor.getLocalDateTimeFromEpochSecondsOrDefault(
-    index: Int,
-    default: () -> LocalDateTime,
-): LocalDateTime =
-    if (isNull(index)) {
-        default()
-    } else {
-        LocalDateTime.ofInstant(
-            Instant.ofEpochSecond(getLong(index)),
-            ZoneId.systemDefault(),
-        )
-    }
-
-inline fun Cursor.getLocalDateTimeFromEpochMillisOrDefault(
-    index: Int,
-    default: () -> LocalDateTime,
-): LocalDateTime =
-    if (isNull(index)) {
-        default()
-    } else {
-        LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(getLong(index)),
-            ZoneId.systemDefault(),
-        )
-    }
 
 const val MediaStoreBatchSize: Int = 500
