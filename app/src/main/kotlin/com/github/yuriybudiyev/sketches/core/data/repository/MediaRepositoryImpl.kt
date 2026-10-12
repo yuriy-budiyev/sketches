@@ -246,8 +246,14 @@ class MediaRepositoryImpl @Inject constructor(
                         path = cursor.getStringOrDefault(pathColumn) { "" },
                         name = cursor.getStringOrDefault(nameColumn) { id.toString() },
                         bucketName = cursor.getStringOrDefault(bucketNameColumn) { bucketId.toString() },
-                        dateAdded = cursor.getLocalDateTimeFromEpochSecondsOrDefault(dateAddedColumn) { LocalDateTime.MIN },
-                        dateTaken = cursor.getLocalDateTimeFromEpochMillisOrDefault(dateTakenColumn) { LocalDateTime.MIN },
+                        dateAdded = cursor.getLocalDateTimeFromEpochSecondsOrDefault(
+                            index = dateAddedColumn,
+                            default = { LocalDateTime.MIN },
+                        ),
+                        dateTaken = cursor.getLocalDateTimeFromEpochMillisOrDefault(
+                            index = dateTakenColumn,
+                            default = { LocalDateTime.MIN },
+                        ),
                         mediaType = mediaType,
                         mimeType = cursor.getStringOrDefault(mimeTypeColumn) { mediaType.mimeType() },
                         width = cursor.getIntOrDefault(widthColumn) { -1 },
