@@ -257,9 +257,7 @@ private fun ImageScreenLayout(
     val pagerState = rememberPagerState(currentIndex) { files.size }
     val barState = rememberLazyListState(currentIndex)
     val infoBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val infoBottomSheetDateFormatter = remember {
-        DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.MEDIUM)
-    }
+    val infoBottomSheetDateFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT) }
     var infoBottomSheetVisible by rememberSaveable { mutableStateOf(false) }
     val systemBarsController by rememberUpdatedState(LocalSystemBarsController.current)
     val deleteRequestLauncher = rememberLauncherForActivityResult(
