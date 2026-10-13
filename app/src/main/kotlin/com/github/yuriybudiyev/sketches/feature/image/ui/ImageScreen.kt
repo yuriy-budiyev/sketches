@@ -26,6 +26,7 @@ package com.github.yuriybudiyev.sketches.feature.image.ui
 
 import android.os.Build
 import android.os.Parcelable
+import android.text.format.Formatter.formatFileSize
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -652,6 +653,22 @@ private fun ImageScreenLayout(
                         MediaInfoField(
                             name = "Date taken",
                             value = infoBottomSheetDateFormatter.format(file.dateTaken),
+                        )
+                    }
+                    if (file.width > 0 && file.height > 0) {
+                        MediaInfoField(
+                            name = "Width",
+                            value = file.width.toString(),
+                        )
+                        MediaInfoField(
+                            name = "Height",
+                            value = file.height.toString(),
+                        )
+                    }
+                    if (file.size > 0L) {
+                        MediaInfoField(
+                            name = "Size",
+                            value = formatFileSize(context, file.size),
                         )
                     }
                 }
