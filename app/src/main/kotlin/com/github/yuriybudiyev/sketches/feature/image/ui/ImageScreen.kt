@@ -101,6 +101,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -138,6 +139,8 @@ import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemCentered
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import kotlin.math.ceil
 
 @Composable
@@ -253,6 +256,9 @@ private fun ImageScreenLayout(
     val pagerState = rememberPagerState(currentIndex) { files.size }
     val barState = rememberLazyListState(currentIndex)
     val infoBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val infoBottomSheetDateFormatter = remember {
+        DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT, FormatStyle.MEDIUM)
+    }
     var infoBottomSheetVisible by rememberSaveable { mutableStateOf(false) }
     val systemBarsController by rememberUpdatedState(LocalSystemBarsController.current)
     val deleteRequestLauncher = rememberLauncherForActivityResult(
@@ -622,11 +628,55 @@ private fun ImageScreenLayout(
                             bottom = 8.dp,
                         ),
                 ) {
-                    Text(file.toString())
+                    Text(
+                        text = "Info",
+                        fontSize = 22.sp,
+                        lineHeight = 28.sp,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    MediaInfoField(
+                        name = "Name",
+                        value = file.name,
+                    )
+                    if (file.path != null) {
+                        MediaInfoField(
+                            name = "Path",
+                            value = file.path,
+                        )
+                    }
+                    MediaInfoField(
+                        name = "Date added",
+                        value = infoBottomSheetDateFormatter.format(file.dateAdded),
+                    )
+                    if (file.dateTaken != null) {
+                        MediaInfoField(
+                            name = "Date taken",
+                            value = infoBottomSheetDateFormatter.format(file.dateTaken),
+                        )
+                    }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun MediaInfoField(
+    name: String,
+    value: String,
+) {
+    Text(
+        text = name,
+        fontSize = 16.sp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
+    )
+    Text(
+        text = value,
+        fontSize = 16.sp,
+        modifier = Modifier.fillMaxWidth(),
+    )
 }
 
 @Composable
