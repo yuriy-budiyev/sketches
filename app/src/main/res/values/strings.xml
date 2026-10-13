@@ -50,7 +50,7 @@
     <string name="show_bucket">Show album</string>
     <string name="hide_bucket">Hide album</string>
     <string name="hidden_bucket">Hidden album</string>
-    <string name="show_info">Show info</string>
+    <string name="show_info">Show information</string>
     <string name="media_info_title">Information</string>
     <string name="media_info_field_name">Name</string>
     <string name="media_info_field_path">Path</string>

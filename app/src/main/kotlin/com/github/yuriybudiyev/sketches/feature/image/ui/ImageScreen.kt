@@ -63,7 +63,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -628,6 +630,7 @@ private fun MediaInfoBottomSheet(
     onDismissRequest: () -> Unit,
 ) {
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
     val dateFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT) }
     ModalBottomSheet(
         sheetState = state,
@@ -636,6 +639,7 @@ private fun MediaInfoBottomSheet(
     ) {
         Column(
             modifier = Modifier
+                .verticalScroll(scrollState)
                 .fillMaxWidth()
                 .padding(
                     start = 24.dp,
