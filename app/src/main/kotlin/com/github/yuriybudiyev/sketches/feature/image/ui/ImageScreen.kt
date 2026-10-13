@@ -68,6 +68,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -257,7 +258,6 @@ private fun ImageScreenLayout(
     val pagerState = rememberPagerState(currentIndex) { files.size }
     val barState = rememberLazyListState(currentIndex)
     val infoBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val infoBottomSheetDateFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT) }
     var infoBottomSheetVisible by rememberSaveable { mutableStateOf(false) }
     val systemBarsController by rememberUpdatedState(LocalSystemBarsController.current)
     val deleteRequestLauncher = rememberLauncherForActivityResult(
@@ -609,78 +609,93 @@ private fun ImageScreenLayout(
             )
         }
         if (infoBottomSheetVisible) {
-            ModalBottomSheet(
-                sheetState = infoBottomSheetState,
-                dragHandle = null,
+            MediaInfoBottomSheet(
+                file = files[currentIndex],
+                state = infoBottomSheetState,
                 onDismissRequest = {
                     infoBottomSheetVisible = false
                 },
-            ) {
-                val file = files[currentIndex]
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            start = 24.dp,
-                            top = 24.dp,
-                            end = 24.dp,
-                            bottom = 8.dp,
-                        ),
-                ) {
-                    Text(
-                        text = "Info",
-                        fontSize = 22.sp,
-                        lineHeight = 28.sp,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    MediaInfoField(
-                        name = "Name",
-                        value = file.name,
-                    )
-                    if (file.path != null) {
-                        MediaInfoField(
-                            name = "Path",
-                            value = file.path,
-                        )
-                    }
-                    MediaInfoField(
-                        name = "Date added",
-                        value = infoBottomSheetDateFormatter.format(file.dateAdded),
-                    )
-                    if (file.dateTaken != null) {
-                        MediaInfoField(
-                            name = "Date taken",
-                            value = infoBottomSheetDateFormatter.format(file.dateTaken),
-                        )
-                    }
-                    if (file.width > 0 && file.height > 0) {
-                        MediaInfoField(
-                            name = "Width",
-                            value = file.width.toString(),
-                        )
-                        MediaInfoField(
-                            name = "Height",
-                            value = file.height.toString(),
-                        )
-                    }
-                    if (file.size > 0L) {
-                        MediaInfoField(
-                            name = "Size",
-                            value = formatFileSize(context, file.size),
-                        )
-                    }
-                    MediaInfoField(
-                        name = "MIME type",
-                        value = file.mimeType,
-                    )
-                }
-            }
+            )
         }
     }
 }
 
 @Composable
-private fun MediaInfoField(
+@ExperimentalMaterial3Api
+private fun MediaInfoBottomSheet(
+    file: MediaFile,
+    state: SheetState,
+    onDismissRequest: () -> Unit,
+) {
+    val context = LocalContext.current
+    val dateFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT) }
+    ModalBottomSheet(
+        sheetState = state,
+        dragHandle = null,
+        onDismissRequest = onDismissRequest,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 24.dp,
+                    top = 24.dp,
+                    end = 24.dp,
+                    bottom = 8.dp,
+                ),
+        ) {
+            Text(
+                text = stringResource(R.string.media_info_title),
+                fontSize = 22.sp,
+                lineHeight = 28.sp,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            MediaInfoBottomSheetField(
+                name = stringResource(R.string.media_info_field_name),
+                value = file.name,
+            )
+            if (file.path != null) {
+                MediaInfoBottomSheetField(
+                    name = stringResource(R.string.media_info_field_path),
+                    value = file.path,
+                )
+            }
+            MediaInfoBottomSheetField(
+                name = stringResource(R.string.media_info_field_date_added),
+                value = dateFormatter.format(file.dateAdded),
+            )
+            if (file.dateTaken != null) {
+                MediaInfoBottomSheetField(
+                    name = stringResource(R.string.media_info_field_date_taken),
+                    value = dateFormatter.format(file.dateTaken),
+                )
+            }
+            if (file.width > 0 && file.height > 0) {
+                MediaInfoBottomSheetField(
+                    name = stringResource(R.string.media_info_field_width),
+                    value = file.width.toString(),
+                )
+                MediaInfoBottomSheetField(
+                    name = stringResource(R.string.media_info_field_height),
+                    value = file.height.toString(),
+                )
+            }
+            if (file.size > 0L) {
+                MediaInfoBottomSheetField(
+                    name = stringResource(R.string.media_info_field_size),
+                    value = formatFileSize(context, file.size),
+                )
+            }
+            MediaInfoBottomSheetField(
+                name = stringResource(R.string.media_info_field_mime_type),
+                value = file.mimeType,
+            )
+        }
+    }
+}
+
+@Composable
+private fun MediaInfoBottomSheetField(
     name: String,
     value: String,
 ) {

@@ -55,4 +55,13 @@
     <string name="hide_bucket">Скрыть альбом</string>
     <string name="hidden_bucket">Скрытый альбом</string>
     <string name="show_info">Показать информацию</string>
+    <string name="media_info_title">Информация</string>
+    <string name="media_info_field_name">Имя</string>
+    <string name="media_info_field_path">Расположение</string>
+    <string name="media_info_field_date_added">Дата добавления</string>
+    <string name="media_info_field_date_taken">Дата съёмки</string>
+    <string name="media_info_field_width">Ширина</string>
+    <string name="media_info_field_height">Высота</string>
+    <string name="media_info_field_size">Размер</string>
+    <string name="media_info_field_mime_type">MIME-тип</string>
 </resources>

@@ -51,4 +51,13 @@
     <string name="hide_bucket">Hide album</string>
     <string name="hidden_bucket">Hidden album</string>
     <string name="show_info">Show info</string>
+    <string name="media_info_title">Info</string>
+    <string name="media_info_field_name">Name</string>
+    <string name="media_info_field_path">Path</string>
+    <string name="media_info_field_date_added">Date added</string>
+    <string name="media_info_field_date_taken">Date taken</string>
+    <string name="media_info_field_width">Width</string>
+    <string name="media_info_field_height">Height</string>
+    <string name="media_info_field_size">Size</string>
+    <string name="media_info_field_mime_type">MIME type</string>
 </resources>
