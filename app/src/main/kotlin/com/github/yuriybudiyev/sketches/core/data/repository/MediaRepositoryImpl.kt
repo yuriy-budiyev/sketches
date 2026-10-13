@@ -29,6 +29,7 @@ import android.content.ContentUris
 import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
@@ -71,6 +72,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -210,7 +212,11 @@ class MediaRepositoryImpl @Inject constructor(
             arrayOf(
                 MediaStore.MediaColumns._ID,
                 MediaStore.MediaColumns.BUCKET_ID,
-                MediaStore.MediaColumns.RELATIVE_PATH,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStore.MediaColumns.RELATIVE_PATH
+                } else {
+                    MediaStore.MediaColumns.DATA
+                },
                 MediaStore.MediaColumns.DISPLAY_NAME,
                 MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
                 MediaStore.MediaColumns.DATE_ADDED,
@@ -228,7 +234,8 @@ class MediaRepositoryImpl @Inject constructor(
             val files = ArrayList<MediaEntity>(cursor.count)
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
             val bucketIdColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_ID)
-            val pathColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.RELATIVE_PATH)
+            val pathColumn = cursor.getColumnIndex(MediaStore.MediaColumns.RELATIVE_PATH)
+            val dataColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DATA)
             val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)
             val bucketNameColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME)
             val dateAddedColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_ADDED)
@@ -244,7 +251,24 @@ class MediaRepositoryImpl @Inject constructor(
                     MediaEntity(
                         id = id,
                         bucketId = bucketId,
-                        path = cursor.getStringOrNull(pathColumn),
+                        path =
+                            when {
+                                pathColumn != -1 -> cursor.getStringOrNull(pathColumn)
+                                dataColumn != -1 -> {
+                                    val path = cursor.getStringOrNull(dataColumn)
+                                    if (path != null) {
+                                        val file = File(path)
+                                        if (file.isFile) {
+                                            file.parentFile?.absolutePath
+                                        } else {
+                                            file.absolutePath
+                                        }
+                                    } else {
+                                        null
+                                    }
+                                }
+                                else -> null
+                            },
                         name = cursor.getStringOrDefault(nameColumn) { id.toString() },
                         bucketName = cursor.getStringOrDefault(bucketNameColumn) { bucketId.toString() },
                         dateAdded =
