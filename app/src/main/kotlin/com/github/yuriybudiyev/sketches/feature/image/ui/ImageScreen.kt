@@ -658,36 +658,41 @@ private fun MediaInfoBottomSheet(
                 name = stringResource(R.string.media_info_field_name),
                 value = file.name,
             )
-            if (file.path != null) {
+            val path = file.path
+            if (path != null) {
                 MediaInfoBottomSheetField(
                     name = stringResource(R.string.media_info_field_path),
-                    value = file.path,
+                    value = path,
                 )
             }
             MediaInfoBottomSheetField(
                 name = stringResource(R.string.media_info_field_date_added),
                 value = dateFormatter.format(file.dateAdded),
             )
-            if (file.dateTaken != null) {
+            val dateTaken = file.dateTaken
+            if (dateTaken != null) {
                 MediaInfoBottomSheetField(
                     name = stringResource(R.string.media_info_field_date_taken),
-                    value = dateFormatter.format(file.dateTaken),
+                    value = dateFormatter.format(dateTaken),
                 )
             }
-            if (file.width > 0 && file.height > 0) {
+            val width = file.width
+            val height = file.height
+            if (width > 0 && height > 0) {
                 MediaInfoBottomSheetField(
                     name = stringResource(R.string.media_info_field_width),
-                    value = file.width.toString(),
+                    value = width.toString(),
                 )
                 MediaInfoBottomSheetField(
                     name = stringResource(R.string.media_info_field_height),
-                    value = file.height.toString(),
+                    value = height.toString(),
                 )
             }
-            if (file.size > 0L) {
+            val size = file.size
+            if (size > 0L) {
                 MediaInfoBottomSheetField(
                     name = stringResource(R.string.media_info_field_size),
-                    value = formatFileSize(context, file.size),
+                    value = formatFileSize(context, size),
                 )
             }
             MediaInfoBottomSheetField(
