@@ -671,6 +671,10 @@ private fun ImageScreenLayout(
                             value = formatFileSize(context, file.size),
                         )
                     }
+                    MediaInfoField(
+                        name = "MIME type",
+                        value = file.mimeType,
+                    )
                 }
             }
         }
