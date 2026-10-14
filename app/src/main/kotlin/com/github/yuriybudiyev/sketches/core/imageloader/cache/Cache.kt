@@ -290,7 +290,8 @@ class ImageKey(
         when {
             other === this -> true
             other is ImageKey ->
-                other.width == this.width
+                other.cachedHashCode == this.cachedHashCode
+                    && other.width == this.width
                     && other.height == this.height
                     && other.uri == this.uri
             else -> false
