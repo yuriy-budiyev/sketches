@@ -133,7 +133,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.player.Sketches
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.theme.LowTransparencyAlpha
 import com.github.yuriybudiyev.sketches.core.ui.theme.bottomToTopBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.topToBottomBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withHighTransparency
@@ -577,18 +576,18 @@ private fun ImageScreenLayout(
                 count = 1,
                 onDelete = {
                     deleteImageDialogVisible = false
-                    coroutineScope.launch {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        coroutineScope.launch {
                             deleteRequestLauncher.launchDeleteMediaRequest(
                                 context,
                                 listOf(files[currentIndex].uri.toUri()),
                             )
-                        } else {
-                            onDeleteImage(
-                                currentIndex,
-                                files[currentIndex],
-                            )
                         }
+                    } else {
+                        onDeleteImage(
+                            currentIndex,
+                            files[currentIndex],
+                        )
                     }
                 },
                 onDismiss = {
@@ -601,9 +600,7 @@ private fun ImageScreenLayout(
                 count = 1,
                 onDelete = {
                     deleteBookmarkDialogVisible = false
-                    coroutineScope.launch {
-                        onDeleteBookmark(files[currentIndex].id)
-                    }
+                    onDeleteBookmark(files[currentIndex].id)
                 },
                 onDismiss = {
                     deleteBookmarkDialogVisible = false
@@ -941,7 +938,6 @@ private fun MediaBar(
     onItemClick: (index: Int, file: MediaFile) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val coroutineScope = rememberCoroutineScope()
     val currentIndex by rememberUpdatedState(currentIndex)
     val files by rememberUpdatedState(files)
     val onItemClick by rememberUpdatedState(onItemClick)
@@ -980,12 +976,10 @@ private fun MediaBar(
                     )
                     .clipToBounds()
                     .clickable {
-                        coroutineScope.launch {
-                            onItemClick(
-                                position,
-                                file,
-                            )
-                        }
+                        onItemClick(
+                            position,
+                            file,
+                        )
                     },
             ) {
                 val fileUri = file.uri
@@ -997,11 +991,7 @@ private fun MediaBar(
                             MediaType.Video -> R.string.video
                         },
                     ),
-                    modifier = Modifier
-                        .graphicsLayer {
-                            alpha = if (position == currentIndex) 1F else LowTransparencyAlpha
-                        }
-                        .matchParentSize(),
+                    modifier = Modifier.matchParentSize(),
                 )
                 if (file.mediaType == MediaType.Video) {
                     Icon(
