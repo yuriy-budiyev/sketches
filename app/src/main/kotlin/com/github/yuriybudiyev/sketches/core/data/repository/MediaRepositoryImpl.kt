@@ -260,16 +260,13 @@ class MediaRepositoryImpl @Inject constructor(
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                                 cursor.getStringOrNull(pathColumn)
                             } else {
-                                val path = cursor.getStringOrNull(pathColumn)
-                                if (path != null) {
-                                    val file = File(path)
-                                    if (file.isFile) {
-                                        file.parentFile?.absolutePath
+                                cursor.getStringOrNull(pathColumn)?.let { path ->
+                                    val separatorIndex = path.lastIndexOf(File.separatorChar)
+                                    if (separatorIndex != -1) {
+                                        path.substring(0, separatorIndex + 1)
                                     } else {
-                                        file.absolutePath
+                                        null
                                     }
-                                } else {
-                                    null
                                 }
                             },
                         name = cursor.getStringOrDefault(nameColumn) { id.toString() },
