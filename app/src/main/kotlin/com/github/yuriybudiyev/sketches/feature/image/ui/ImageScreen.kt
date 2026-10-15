@@ -628,7 +628,9 @@ private fun MediaInfoBottomSheet(
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
-    val dateFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT) }
+    val dateFormatter = remember {
+        DateTimeFormatter.ofLocalizedDateTime(FormatStyle.FULL, FormatStyle.SHORT)
+    }
     ModalBottomSheet(
         sheetState = state,
         dragHandle = null,
