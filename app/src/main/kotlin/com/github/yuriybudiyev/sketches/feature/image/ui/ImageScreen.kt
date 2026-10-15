@@ -117,6 +117,7 @@ import com.github.yuriybudiyev.sketches.core.navigation.LocalNavResultStore
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequest
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
+import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
@@ -666,13 +667,13 @@ private fun MediaInfoBottomSheet(
             }
             MediaInfoBottomSheetField(
                 name = stringResource(R.string.media_info_field_date_added),
-                value = dateFormatter.format(file.dateAdded),
+                value = dateFormatter.format(file.dateAdded).capitalizeFirstChar(),
             )
             val dateTaken = file.dateTaken
             if (dateTaken != null) {
                 MediaInfoBottomSheetField(
                     name = stringResource(R.string.media_info_field_date_taken),
-                    value = dateFormatter.format(dateTaken),
+                    value = dateFormatter.format(dateTaken).capitalizeFirstChar(),
                 )
             }
             val width = file.width
