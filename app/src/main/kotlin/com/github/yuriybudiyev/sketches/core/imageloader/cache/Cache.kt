@@ -84,9 +84,8 @@ class LocalCacheInterceptor(
         }
         val memoryImage = memoryCache[imageKey]
         if (
-            memoryImage != null && memoryImage.let { memoryImage ->
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.O || memoryImage !is BitmapImage
-                    || memoryImage.bitmap.config != Bitmap.Config.HARDWARE || hardwareAllowed
+            memoryImage != null && memoryImage.let { image ->
+                image !is BitmapImage || image.bitmap.config != Bitmap.Config.HARDWARE || hardwareAllowed
             }
         ) {
             return SuccessResult(
@@ -107,18 +106,14 @@ class LocalCacheInterceptor(
                 options.inJustDecodeBounds = false
                 options.inMutable = false
                 options.inPreferredConfig =
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        if (hardwareAllowed) {
-                            Bitmap.Config.HARDWARE
-                        } else {
-                            if (options.outConfig == Bitmap.Config.RGBA_F16) {
-                                Bitmap.Config.RGBA_F16
-                            } else {
-                                Bitmap.Config.ARGB_8888
-                            }
-                        }
+                    if (hardwareAllowed) {
+                        Bitmap.Config.HARDWARE
                     } else {
-                        Bitmap.Config.ARGB_8888
+                        if (options.outConfig == Bitmap.Config.RGBA_F16) {
+                            Bitmap.Config.RGBA_F16
+                        } else {
+                            Bitmap.Config.ARGB_8888
+                        }
                     }
                 BitmapFactory.decodeStream(inputStream(), null, options)
             }

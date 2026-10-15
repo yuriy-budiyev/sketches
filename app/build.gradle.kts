@@ -24,7 +24,7 @@ android {
 
     defaultConfig {
         applicationId = "com.github.yuriybudiyev.sketches.app"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 37
         versionCode = 136
         versionName = "1.6.3"
@@ -51,7 +51,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-        isCoreLibraryDesugaringEnabled = true
     }
 
     buildFeatures {
@@ -98,7 +97,6 @@ room3 {
 }
 
 dependencies {
-    coreLibraryDesugaring(libs.android.tools.desugar)
     implementation(libs.bundles.kotlin)
     implementation(libs.bundles.androidx.annotation)
     implementation(libs.bundles.androidx.core)

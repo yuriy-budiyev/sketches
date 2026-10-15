@@ -84,6 +84,18 @@ class MainActivity: ComponentActivity() {
         super.onCreate(savedInstanceState)
         val window = window!!
         val decorView = window.decorView
+        val darkMode =
+            resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
+                Configuration.UI_MODE_NIGHT_YES
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
+            @Suppress("DEPRECATION")
+            decorView.systemUiVisibility =
+                if (darkMode) {
+                    decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR.inv()
+                } else {
+                    decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+                }
+        }
         WindowCompat.setDecorFitsSystemWindows(window, false)
         WindowCompat.getInsetsController(window, decorView).systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
@@ -98,7 +110,7 @@ class MainActivity: ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             window.colorMode = ActivityInfo.COLOR_MODE_HDR
             window.desiredHdrHeadroom = 1.5F
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        } else {
             window.colorMode = ActivityInfo.COLOR_MODE_WIDE_COLOR_GAMUT
         }
         var contentReady by mutableStateOf(false)
@@ -119,9 +131,6 @@ class MainActivity: ComponentActivity() {
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                val darkMode =
-                    resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
-                        Configuration.UI_MODE_NIGHT_YES
                 val insetsController = decorView.windowInsetsController!!
                 if (darkMode) {
                     insetsController.setSystemBarsAppearance(
