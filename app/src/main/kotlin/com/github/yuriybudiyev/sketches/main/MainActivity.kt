@@ -359,8 +359,8 @@ class MainActivity: ComponentActivity() {
                 windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars()),
             )
             isSystemBarsVisible =
-                windowInsets.isVisible(WindowInsetsCompat.Type.captionBar()) or
-                    windowInsets.isVisible(WindowInsetsCompat.Type.statusBars()) or
+                windowInsets.isVisible(WindowInsetsCompat.Type.captionBar()) ||
+                    windowInsets.isVisible(WindowInsetsCompat.Type.statusBars()) ||
                     windowInsets.isVisible(WindowInsetsCompat.Type.navigationBars())
             return ViewCompat.onApplyWindowInsets(view, windowInsets)
         }
