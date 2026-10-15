@@ -36,11 +36,9 @@ android {
             applicationIdSuffix = ".debug"
         }
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles.apply {
-                add(getDefaultProguardFile("proguard-android-optimize.txt"))
-                add(project.file("proguard-rules.pro"))
+            optimization {
+                enable = true
+                packageScope = setOf("**")
             }
         }
         create("preview") {
@@ -78,16 +76,15 @@ androidComponents {
             output.outputType == VariantOutputConfiguration.OutputType.SINGLE
         }
         @Suppress("UnstableApiUsage")
-        output.outputFileName.set("${rootProject.name}-v${output.versionName.get()}.apk")
+        output.outputFileName = "${rootProject.name}-v${output.versionName.get()}.apk"
     }
 }
 
 composeCompiler {
-    reportsDestination.set(layout.buildDirectory.dir("compose_compiler"))
-    metricsDestination.set(layout.buildDirectory.dir("compose_compiler"))
-    stabilityConfigurationFiles.set(
-        listOf(project.rootProject.layout.projectDirectory.file("compose_stability_config.conf")),
-    )
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    metricsDestination = layout.buildDirectory.dir("compose_compiler")
+    stabilityConfigurationFiles =
+        listOf(rootProject.layout.projectDirectory.file("compose_stability_config.conf"))
 }
 
 kotlin {
