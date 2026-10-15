@@ -35,7 +35,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 
 @Composable
-fun SystemBarsVisibilityEffect(visible: Boolean) {
+fun SystemBarsVisibility(visible: Boolean) {
     val systemBarsController = LocalSystemBarsController.current
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(

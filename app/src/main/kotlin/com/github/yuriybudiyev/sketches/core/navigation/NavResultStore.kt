@@ -41,7 +41,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 
 @Composable
-inline fun <reified T: NavResult> NavResultEffect(crossinline onNavResult: suspend (result: T) -> Unit) {
+inline fun <reified T: NavResult> NavResultHandler(crossinline onNavResult: suspend (result: T) -> Unit) {
     val navResultStore = LocalNavResultStore.current
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(

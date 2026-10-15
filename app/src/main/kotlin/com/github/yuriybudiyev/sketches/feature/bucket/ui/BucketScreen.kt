@@ -79,10 +79,10 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
-import com.github.yuriybudiyev.sketches.core.navigation.NavResultEffect
+import com.github.yuriybudiyev.sketches.core.navigation.NavResultHandler
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequestOrThrow
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
-import com.github.yuriybudiyev.sketches.core.platform.systembars.SystemBarsVisibilityEffect
+import com.github.yuriybudiyev.sketches.core.platform.systembars.SystemBarsVisibility
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
@@ -95,7 +95,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.Simple
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
-import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchEffect
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchHandler
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
@@ -168,7 +168,7 @@ fun BucketScreen(
             }
         },
     )
-    MediaBatchEffect(
+    MediaBatchHandler(
         state = mediaBatchState,
         onShare = { uris, mimeType, chooserTitle ->
             shareManager.startChooserActivity(
@@ -239,7 +239,7 @@ fun BucketScreen(
             selectedFiles.clear()
         }
     }
-    NavResultEffect<ImageScreenNavResult> { result ->
+    NavResultHandler<ImageScreenNavResult> { result ->
         mediaGridState.scrollToItem(
             index = result.fileIndex,
             itemType = SketchesMediaGridContentType.Media,
@@ -247,7 +247,7 @@ fun BucketScreen(
             onlyIfItemAtIndexIsNotVisible = true,
         )
     }
-    SystemBarsVisibilityEffect(visible = true)
+    SystemBarsVisibility(visible = true)
     val onBackPressedDispatcher by rememberUpdatedState(
         LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher,
     )

@@ -61,11 +61,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavMenuController
-import com.github.yuriybudiyev.sketches.core.navigation.NavResultEffect
+import com.github.yuriybudiyev.sketches.core.navigation.NavResultHandler
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequestOrThrow
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
-import com.github.yuriybudiyev.sketches.core.platform.systembars.SystemBarsVisibilityEffect
+import com.github.yuriybudiyev.sketches.core.platform.systembars.SystemBarsVisibility
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
@@ -78,7 +78,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.Simple
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesGroupingMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
-import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchEffect
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchHandler
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
@@ -142,7 +142,7 @@ fun ImagesScreen(
             }
         },
     )
-    MediaBatchEffect(
+    MediaBatchHandler(
         state = mediaBatchState,
         onShare = { uris, mimeType, chooserTitle ->
             shareManager.startChooserActivity(
@@ -197,7 +197,7 @@ fun ImagesScreen(
             selectedFiles.clear()
         }
     }
-    NavResultEffect<ImageScreenNavResult> { result ->
+    NavResultHandler<ImageScreenNavResult> { result ->
         mediaGridState.scrollToItem(
             files = allFiles,
             snapToClosestEdge = true,
@@ -205,7 +205,7 @@ fun ImagesScreen(
             index == result.fileIndex
         }
     }
-    SystemBarsVisibilityEffect(visible = true)
+    SystemBarsVisibility(visible = true)
     val rootNavMenuController = LocalRootNavMenuController.current
     LaunchedEffect(rootNavMenuController) {
         snapshotFlow { selectedFiles.toSet().isNotEmpty() }.collect { hasSelectedFiles ->

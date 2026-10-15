@@ -52,7 +52,7 @@ fun rememberMediaBatchState(): MediaBatchState =
     rememberSaveable(saver = MediaBatchStateImplSaver) { MediaBatchStateImpl() }
 
 @Composable
-fun MediaBatchEffect(
+fun MediaBatchHandler(
     state: MediaBatchState,
     onShare: ((uris: ArrayList<Uri>, mimeType: String, chooserTitle: String) -> Unit)? = null,
     onDelete: ((uris: ArrayList<Uri>) -> Unit)? = null,

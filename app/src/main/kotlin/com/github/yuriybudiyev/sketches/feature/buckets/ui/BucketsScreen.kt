@@ -97,7 +97,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.Simple
 import com.github.yuriybudiyev.sketches.core.ui.components.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
-import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchEffect
+import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchHandler
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaDescriptor
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
@@ -162,7 +162,7 @@ fun BucketsScreen(
             }
         },
     )
-    MediaBatchEffect(
+    MediaBatchHandler(
         state = mediaBatchState,
         onDelete = { uris ->
             deleteRequestLauncher.launchDeleteMediaRequestOrThrow(context, uris)
