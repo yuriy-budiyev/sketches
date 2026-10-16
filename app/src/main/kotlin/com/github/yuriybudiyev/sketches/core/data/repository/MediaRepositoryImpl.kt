@@ -120,26 +120,20 @@ class MediaRepositoryImpl @Inject constructor(
     override suspend fun deleteMedia(uris: Collection<Uri>) {
         withContext(ioDispatcher) {
             val chunkSize = uris.size.coerceAtMost(MediaStoreBatchSize)
-            val ops = ArrayList<ContentProviderOperation>(chunkSize)
+            val operations = ArrayList<ContentProviderOperation>(chunkSize)
             val contentResolver = appContext.contentResolver
             for (uri in uris) {
-                ops.add(ContentProviderOperation.newDelete(uri).build())
-                if (ops.size == chunkSize) {
+                operations.add(ContentProviderOperation.newDelete(uri).build())
+                if (operations.size == chunkSize) {
                     contentProviderMutex.withLock {
-                        contentResolver.applyBatch(
-                            MediaStore.AUTHORITY,
-                            ops,
-                        )
+                        contentResolver.applyBatch(MediaStore.AUTHORITY, operations)
                     }
-                    ops.clear()
+                    operations.clear()
                 }
             }
-            if (ops.isNotEmpty()) {
+            if (operations.isNotEmpty()) {
                 contentProviderMutex.withLock {
-                    contentResolver.applyBatch(
-                        MediaStore.AUTHORITY,
-                        ops,
-                    )
+                    contentResolver.applyBatch(MediaStore.AUTHORITY, operations)
                 }
             }
         }
