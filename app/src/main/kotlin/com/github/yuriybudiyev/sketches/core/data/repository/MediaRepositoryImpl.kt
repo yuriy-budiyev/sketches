@@ -263,7 +263,7 @@ class MediaRepositoryImpl @Inject constructor(
                                 cursor.getStringOrNull(pathColumn)?.let { path ->
                                     val separatorIndex = path.lastIndexOf(File.separatorChar)
                                     if (separatorIndex != -1) {
-                                        path.substring(0, separatorIndex + 1)
+                                        path.substring(startIndex = 0, endIndex = separatorIndex + 1)
                                     } else {
                                         null
                                     }
