@@ -42,7 +42,7 @@ object MainDatabaseModule {
 
     @Provides
     @Singleton
-    fun provideSketchesDatabase(
+    fun provideMainDatabase(
         @ApplicationContext
         context: Context,
     ): MainDatabase =
