@@ -33,7 +33,7 @@ fun closestEven(x: Int): Int =
 /**
  * Converts this [Long] value to [Int].
  *
- * Clamps this `Long` value in [Int.MIN_VALUE]..[Int.MAX_VALUE] range.
+ * Clamps this [Long] value in [Int.MIN_VALUE]..[Int.MAX_VALUE] range.
  */
 fun Long.toIntClamped(): Int =
     when {
