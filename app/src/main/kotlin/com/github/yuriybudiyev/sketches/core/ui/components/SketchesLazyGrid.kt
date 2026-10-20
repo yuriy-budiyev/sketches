@@ -97,7 +97,7 @@ fun SketchesLazyGrid(
 ) {
     val layoutDirection = LocalLayoutDirection.current
     val systemBarsController = LocalSystemBarsController.current
-    val contentPaddings = systemBarsController.systemBarsWithoutOverlaysInsetsIgnoringVisibility
+    val contentPaddings = systemBarsController.insets.systemBars
         .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
         .asPaddingValues()
     val dimens = LocalDimens.current

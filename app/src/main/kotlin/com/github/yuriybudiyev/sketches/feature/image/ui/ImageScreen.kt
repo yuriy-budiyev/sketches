@@ -299,9 +299,10 @@ private fun ImageScreenLayout(
     val navBarPaddings = navBarInsets.asPaddingValues()
     val navBarPaddingStart = navBarPaddings.calculateStartPadding(layoutDirection)
     val navBarPaddingEnd = navBarPaddings.calculateEndPadding(layoutDirection)
-    val contentInsets = systemBarsController.navigationBarsInsetsIgnoringVisibility
-        .union(systemBarsController.captionBarInsetsIgnoringVisibility.only(WindowInsetsSides.Top))
-        .union(systemBarsController.statusBarsInsetsIgnoringVisibility.only(WindowInsetsSides.Top))
+    val windowInsetsIgnoringVisibility = systemBarsController.insets
+    val contentInsets = windowInsetsIgnoringVisibility.navigationBars
+        .union(windowInsetsIgnoringVisibility.captionBar.only(WindowInsetsSides.Top))
+        .union(windowInsetsIgnoringVisibility.statusBars.only(WindowInsetsSides.Top))
         .union(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
     val contentPaddings = contentInsets.asPaddingValues()
     val contentPaddingStartVisible = contentPaddings.calculateStartPadding(layoutDirection)

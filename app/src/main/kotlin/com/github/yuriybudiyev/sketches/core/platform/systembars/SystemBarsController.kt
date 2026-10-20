@@ -30,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
@@ -60,15 +61,10 @@ fun SystemBarsVisibility(visible: Boolean) {
 @Stable
 interface SystemBarsController {
 
-    val systemBarsInsetsIgnoringVisibility: WindowInsets
-
-    val systemBarsWithoutOverlaysInsetsIgnoringVisibility: WindowInsets
-
-    val captionBarInsetsIgnoringVisibility: WindowInsets
-
-    val statusBarsInsetsIgnoringVisibility: WindowInsets
-
-    val navigationBarsInsetsIgnoringVisibility: WindowInsets
+    /**
+     * Insets ignoring visibility and animations
+     */
+    val insets: Insets
 
     val isInMultiWindowMode: Boolean
 
@@ -77,6 +73,30 @@ interface SystemBarsController {
     fun showSystemBars()
 
     fun hideSystemBars()
+
+    @Stable
+    interface Insets {
+
+        /**
+         * Combined insets of [navigationBars], [statusBars] and [captionBar]
+         */
+        val systemBars: WindowInsets
+
+        /**
+         * [WindowInsetsCompat.Type.captionBar]
+         */
+        val captionBar: WindowInsets
+
+        /**
+         * [WindowInsetsCompat.Type.statusBars]
+         */
+        val statusBars: WindowInsets
+
+        /**
+         * [WindowInsetsCompat.Type.navigationBars]
+         */
+        val navigationBars: WindowInsets
+    }
 }
 
 val LocalSystemBarsController: ProvidableCompositionLocal<SystemBarsController> =
