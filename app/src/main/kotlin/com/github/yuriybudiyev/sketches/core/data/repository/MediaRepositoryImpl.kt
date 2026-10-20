@@ -257,7 +257,7 @@ class MediaRepositoryImpl @Inject constructor(
             null,
         ) ?: return emptyList()
         cursor.use { cursor ->
-            val files = ArrayList<MediaEntity>(cursor.count)
+            val entities = ArrayList<MediaEntity>(cursor.count)
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
             val bucketIdColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_ID)
             val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)
@@ -293,7 +293,7 @@ class MediaRepositoryImpl @Inject constructor(
                     width = cursor.getIntOrDefault(widthColumn) { 0 }
                     height = cursor.getIntOrDefault(heightColumn) { 0 }
                 }
-                files.add(
+                entities.add(
                     MediaEntity(
                         id = id,
                         bucketId = bucketId,
@@ -335,7 +335,7 @@ class MediaRepositoryImpl @Inject constructor(
                     ),
                 )
             }
-            return files
+            return entities
         }
     }
 
