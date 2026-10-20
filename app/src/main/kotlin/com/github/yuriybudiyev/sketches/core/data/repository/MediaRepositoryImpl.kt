@@ -249,13 +249,8 @@ class MediaRepositoryImpl @Inject constructor(
                     )
             }
         }
-        val cursor = appContext.contentResolver.query(
-            contentUri,
-            projection,
-            null,
-            null,
-            null,
-        ) ?: return emptyList()
+        val cursor = appContext.contentResolver.query(contentUri, projection, null, null, null)
+            ?: return emptyList()
         cursor.use { cursor ->
             val entities = ArrayList<MediaEntity>(cursor.count)
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
