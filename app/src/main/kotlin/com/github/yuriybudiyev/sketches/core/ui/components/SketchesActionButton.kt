@@ -166,7 +166,7 @@ fun SketchesActionButton(
         }
         Box(
             Modifier
-                .size(48.dp)
+                .size(dimens.actionButtonSize)
                 .clip(CircleShape)
                 .semantics {
                     role = Role.Button

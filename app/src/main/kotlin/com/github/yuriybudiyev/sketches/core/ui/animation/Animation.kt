@@ -24,13 +24,16 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.animation
 
+import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
+import androidx.compose.material3.MotionScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -41,12 +44,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 
 @Stable
-fun <T> defaultAnimationSpec(): SpringSpec<T> =
-    SpringSpec(
-        dampingRatio = Spring.DampingRatioNoBouncy,
-        stiffness = Spring.StiffnessMedium,
-        visibilityThreshold = null,
-    )
+@Suppress("UNCHECKED_CAST")
+fun <T> defaultAnimationSpec(): FiniteAnimationSpec<T> =
+    DefaultAnimationSpec as FiniteAnimationSpec<T>
+
+@Stable
+fun defaultMotionScheme(): MotionScheme =
+    DefaultMotionScheme
 
 @Stable
 context(scope: LazyItemScope)
@@ -95,4 +99,40 @@ inline fun DefaultAnimatedVisibility(
             content = { content() },
         )
     }
+}
+
+@Stable
+private val DefaultAnimationSpec: SpringSpec<Any> =
+    SpringSpec(
+        dampingRatio = Spring.DampingRatioNoBouncy,
+        stiffness = Spring.StiffnessMedium,
+        visibilityThreshold = null,
+    )
+
+@Immutable
+private object DefaultMotionScheme: MotionScheme {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> defaultEffectsSpec(): FiniteAnimationSpec<T> =
+        DefaultAnimationSpec as FiniteAnimationSpec<T>
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> defaultSpatialSpec(): FiniteAnimationSpec<T> =
+        DefaultAnimationSpec as FiniteAnimationSpec<T>
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> fastEffectsSpec(): FiniteAnimationSpec<T> =
+        DefaultAnimationSpec as FiniteAnimationSpec<T>
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> fastSpatialSpec(): FiniteAnimationSpec<T> =
+        DefaultAnimationSpec as FiniteAnimationSpec<T>
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> slowEffectsSpec(): FiniteAnimationSpec<T> =
+        DefaultAnimationSpec as FiniteAnimationSpec<T>
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> slowSpatialSpec(): FiniteAnimationSpec<T> =
+        DefaultAnimationSpec as FiniteAnimationSpec<T>
 }

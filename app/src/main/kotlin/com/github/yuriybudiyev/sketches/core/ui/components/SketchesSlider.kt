@@ -24,28 +24,32 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 fun SketchesSlider(
     value: Float,
     onValueChange: (Float) -> Unit,
@@ -54,12 +58,12 @@ fun SketchesSlider(
     thumbColor: Color = MaterialTheme.colorScheme.onBackground,
     trackColor: Color = MaterialTheme.colorScheme.onBackground.withLowTransparency(),
 ) {
+    val sliderState = rememberSliderState().also { state ->
+        state.value = value
+    }
     val interactionSource = remember { MutableInteractionSource() }
     val trackHeight = 4.dp
-    val thumbSize = DpSize(
-        width = 20.dp,
-        height = 20.dp,
-    )
+    val thumbSize = DpSize(width = 20.dp, height = 20.dp)
     val colors = SliderDefaults.colors(
         thumbColor = thumbColor,
         activeTrackColor = trackColor,
@@ -72,8 +76,9 @@ fun SketchesSlider(
         disabledInactiveTrackColor = trackColor,
         disabledInactiveTickColor = trackColor,
     )
+    val dimens = LocalDimens.current
     Slider(
-        value = value,
+        state = sliderState,
         onValueChange = onValueChange,
         onValueChangeFinished = onValueChangeFinished,
         modifier = Modifier
@@ -84,29 +89,28 @@ fun SketchesSlider(
             .then(modifier),
         interactionSource = interactionSource,
         colors = colors,
-        thumb = {
-            SliderDefaults.Thumb(
-                interactionSource = interactionSource,
+        thumb = { _ ->
+            Box(
                 modifier = Modifier
                     .size(thumbSize)
-                    .shadow(
-                        1.dp,
-                        CircleShape,
-                        clip = false,
+                    .background(
+                        color = colors.thumbColor,
+                        shape = CircleShape,
                     )
+                    .hoverable(interactionSource = interactionSource)
+                    .pointerHoverIcon(icon = PointerIcon.Hand)
                     .indication(
                         interactionSource = interactionSource,
                         indication = ripple(
                             bounded = false,
-                            radius = 20.dp,
+                            radius = dimens.actionButtonSize / 2,
                         ),
                     ),
-                colors = colors,
             )
         },
-        track = {
+        track = { state ->
             SliderDefaults.Track(
-                sliderState = it,
+                sliderState = state,
                 modifier = Modifier.height(trackHeight),
                 thumbTrackGapSize = 0.dp,
                 trackInsideCornerSize = 0.dp,

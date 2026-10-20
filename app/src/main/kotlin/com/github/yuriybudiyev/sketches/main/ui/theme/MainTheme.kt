@@ -31,11 +31,13 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultMotionScheme
 
 @Composable
 fun MainTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = if (isSystemInDarkTheme()) DarkColorScheme else LightColorScheme,
+        motionScheme = defaultMotionScheme(),
         content = content,
     )
 }
