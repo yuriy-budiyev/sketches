@@ -201,37 +201,54 @@ class MediaRepositoryImpl @Inject constructor(
 
     private fun queryMediaStoreEntities(mediaType: MediaType): List<MediaEntity> {
         val contentUri = mediaType.contentUri()
-        val projection =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                arrayOf(
-                    MediaStore.MediaColumns._ID,
-                    MediaStore.MediaColumns.BUCKET_ID,
-                    MediaStore.MediaColumns.DISPLAY_NAME,
-                    MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
-                    MediaStore.MediaColumns.DATE_ADDED,
-                    MediaStore.MediaColumns.DATE_TAKEN,
-                    MediaStore.MediaColumns.MIME_TYPE,
-                    MediaStore.MediaColumns.WIDTH,
-                    MediaStore.MediaColumns.HEIGHT,
-                    MediaStore.MediaColumns.SIZE,
-                    MediaStore.MediaColumns.RELATIVE_PATH,
-                    MediaStore.MediaColumns.ORIENTATION,
-                )
-            } else {
-                arrayOf(
-                    MediaStore.MediaColumns._ID,
-                    MediaStore.MediaColumns.BUCKET_ID,
-                    MediaStore.MediaColumns.DISPLAY_NAME,
-                    MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
-                    MediaStore.MediaColumns.DATE_ADDED,
-                    MediaStore.MediaColumns.DATE_TAKEN,
-                    MediaStore.MediaColumns.MIME_TYPE,
-                    MediaStore.MediaColumns.WIDTH,
-                    MediaStore.MediaColumns.HEIGHT,
-                    MediaStore.MediaColumns.SIZE,
-                    MediaStore.MediaColumns.DATA,
-                )
+        val projection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            arrayOf(
+                MediaStore.MediaColumns._ID,
+                MediaStore.MediaColumns.BUCKET_ID,
+                MediaStore.MediaColumns.DISPLAY_NAME,
+                MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
+                MediaStore.MediaColumns.DATE_ADDED,
+                MediaStore.MediaColumns.DATE_TAKEN,
+                MediaStore.MediaColumns.MIME_TYPE,
+                MediaStore.MediaColumns.WIDTH,
+                MediaStore.MediaColumns.HEIGHT,
+                MediaStore.MediaColumns.SIZE,
+                MediaStore.MediaColumns.RELATIVE_PATH,
+                MediaStore.MediaColumns.ORIENTATION,
+            )
+        } else {
+            when (mediaType) {
+                MediaType.Image ->
+                    arrayOf(
+                        MediaStore.MediaColumns._ID,
+                        MediaStore.MediaColumns.BUCKET_ID,
+                        MediaStore.MediaColumns.DISPLAY_NAME,
+                        MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
+                        MediaStore.MediaColumns.DATE_ADDED,
+                        MediaStore.MediaColumns.DATE_TAKEN,
+                        MediaStore.MediaColumns.MIME_TYPE,
+                        MediaStore.MediaColumns.WIDTH,
+                        MediaStore.MediaColumns.HEIGHT,
+                        MediaStore.MediaColumns.SIZE,
+                        MediaStore.MediaColumns.DATA,
+                        MediaStore.MediaColumns.ORIENTATION,
+                    )
+                MediaType.Video ->
+                    arrayOf(
+                        MediaStore.MediaColumns._ID,
+                        MediaStore.MediaColumns.BUCKET_ID,
+                        MediaStore.MediaColumns.DISPLAY_NAME,
+                        MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
+                        MediaStore.MediaColumns.DATE_ADDED,
+                        MediaStore.MediaColumns.DATE_TAKEN,
+                        MediaStore.MediaColumns.MIME_TYPE,
+                        MediaStore.MediaColumns.WIDTH,
+                        MediaStore.MediaColumns.HEIGHT,
+                        MediaStore.MediaColumns.SIZE,
+                        MediaStore.MediaColumns.DATA,
+                    )
             }
+        }
         val cursor = appContext.contentResolver.query(
             contentUri,
             projection,
@@ -258,7 +275,10 @@ class MediaRepositoryImpl @Inject constructor(
                 orientationColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.ORIENTATION)
             } else {
                 pathColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)
-                orientationColumn = -1
+                orientationColumn = when (mediaType) {
+                    MediaType.Image -> cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.ORIENTATION)
+                    MediaType.Video -> -1
+                }
             }
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn)
