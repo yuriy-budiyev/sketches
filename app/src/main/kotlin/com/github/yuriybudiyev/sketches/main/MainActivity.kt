@@ -317,11 +317,11 @@ class MainActivity: ComponentActivity() {
         override var isSystemBarsVisible: Boolean by mutableStateOf(isSystemBarsVisible)
 
         override fun showSystemBars() {
-            WindowCompat.getInsetsController(window, window.decorView).show(systemBarsWithoutOverlays())
+            WindowCompat.getInsetsController(window, window.decorView).show(systemBars())
         }
 
         override fun hideSystemBars() {
-            WindowCompat.getInsetsController(window, window.decorView).hide(systemBarsWithoutOverlays())
+            WindowCompat.getInsetsController(window, window.decorView).hide(systemBars())
         }
 
         override fun onApplyWindowInsets(
@@ -329,7 +329,7 @@ class MainActivity: ComponentActivity() {
             windowInsets: WindowInsetsCompat,
         ): WindowInsetsCompat {
             insets.systemBars.update(
-                windowInsets.getInsetsIgnoringVisibility(systemBarsWithoutOverlays()),
+                windowInsets.getInsetsIgnoringVisibility(systemBars()),
             )
             insets.captionBar.update(
                 windowInsets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.captionBar()),
@@ -347,7 +347,7 @@ class MainActivity: ComponentActivity() {
             return ViewCompat.onApplyWindowInsets(view, windowInsets)
         }
 
-        private fun systemBarsWithoutOverlays(): Int =
+        private fun systemBars(): Int =
             WindowInsetsCompat.Type.captionBar() or
                 WindowInsetsCompat.Type.statusBars() or
                 WindowInsetsCompat.Type.navigationBars()
