@@ -83,18 +83,18 @@ inline fun Cursor.getStringOrDefault(
     index: Int,
     default: () -> String,
 ): String =
-    if (isNull(index)) default() else getString(index)
+    if (index == -1 || isNull(index)) default() else getString(index)
 
 inline fun Cursor.getLongOrDefault(
     index: Int,
     default: () -> Long,
 ): Long =
-    if (isNull(index)) default() else getLong(index)
+    if (index == -1 || isNull(index)) default() else getLong(index)
 
 inline fun Cursor.getIntOrDefault(
     index: Int,
     default: () -> Int,
 ): Int =
-    if (isNull(index)) default() else getInt(index)
+    if (index == -1 || isNull(index)) default() else getInt(index)
 
 const val MediaStoreBatchSize: Int = 500

@@ -201,25 +201,40 @@ class MediaRepositoryImpl @Inject constructor(
 
     private fun queryMediaStoreEntities(mediaType: MediaType): List<MediaEntity> {
         val contentUri = mediaType.contentUri()
+        val projection =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                arrayOf(
+                    MediaStore.MediaColumns._ID,
+                    MediaStore.MediaColumns.BUCKET_ID,
+                    MediaStore.MediaColumns.DISPLAY_NAME,
+                    MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
+                    MediaStore.MediaColumns.DATE_ADDED,
+                    MediaStore.MediaColumns.DATE_TAKEN,
+                    MediaStore.MediaColumns.MIME_TYPE,
+                    MediaStore.MediaColumns.WIDTH,
+                    MediaStore.MediaColumns.HEIGHT,
+                    MediaStore.MediaColumns.SIZE,
+                    MediaStore.MediaColumns.RELATIVE_PATH,
+                    MediaStore.MediaColumns.ORIENTATION,
+                )
+            } else {
+                arrayOf(
+                    MediaStore.MediaColumns._ID,
+                    MediaStore.MediaColumns.BUCKET_ID,
+                    MediaStore.MediaColumns.DISPLAY_NAME,
+                    MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
+                    MediaStore.MediaColumns.DATE_ADDED,
+                    MediaStore.MediaColumns.DATE_TAKEN,
+                    MediaStore.MediaColumns.MIME_TYPE,
+                    MediaStore.MediaColumns.WIDTH,
+                    MediaStore.MediaColumns.HEIGHT,
+                    MediaStore.MediaColumns.SIZE,
+                    MediaStore.MediaColumns.DATA,
+                )
+            }
         val cursor = appContext.contentResolver.query(
             contentUri,
-            arrayOf(
-                MediaStore.MediaColumns._ID,
-                MediaStore.MediaColumns.BUCKET_ID,
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    MediaStore.MediaColumns.RELATIVE_PATH
-                } else {
-                    MediaStore.MediaColumns.DATA
-                },
-                MediaStore.MediaColumns.DISPLAY_NAME,
-                MediaStore.MediaColumns.BUCKET_DISPLAY_NAME,
-                MediaStore.MediaColumns.DATE_ADDED,
-                MediaStore.MediaColumns.DATE_TAKEN,
-                MediaStore.MediaColumns.MIME_TYPE,
-                MediaStore.MediaColumns.WIDTH,
-                MediaStore.MediaColumns.HEIGHT,
-                MediaStore.MediaColumns.SIZE,
-            ),
+            projection,
             null,
             null,
             null,
@@ -228,13 +243,6 @@ class MediaRepositoryImpl @Inject constructor(
             val files = ArrayList<MediaEntity>(cursor.count)
             val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
             val bucketIdColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_ID)
-            val pathColumn = cursor.getColumnIndexOrThrow(
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    MediaStore.MediaColumns.RELATIVE_PATH
-                } else {
-                    MediaStore.MediaColumns.DATA
-                },
-            )
             val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)
             val bucketNameColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME)
             val dateAddedColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATE_ADDED)
@@ -243,9 +251,28 @@ class MediaRepositoryImpl @Inject constructor(
             val widthColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.WIDTH)
             val heightColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.HEIGHT)
             val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE)
+            val pathColumn: Int
+            val orientationColumn: Int
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                pathColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.RELATIVE_PATH)
+                orientationColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.ORIENTATION)
+            } else {
+                pathColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)
+                orientationColumn = -1
+            }
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn)
                 val bucketId = cursor.getLong(bucketIdColumn)
+                val width: Int
+                val height: Int
+                val orientation = cursor.getIntOrDefault(orientationColumn) { 0 }
+                if (orientation == 90 || orientation == 270) {
+                    width = cursor.getIntOrDefault(heightColumn) { 0 }
+                    height = cursor.getIntOrDefault(widthColumn) { 0 }
+                } else {
+                    width = cursor.getIntOrDefault(widthColumn) { 0 }
+                    height = cursor.getIntOrDefault(heightColumn) { 0 }
+                }
                 files.add(
                     MediaEntity(
                         id = id,
@@ -281,8 +308,8 @@ class MediaRepositoryImpl @Inject constructor(
                             },
                         mediaType = mediaType,
                         mimeType = cursor.getStringOrDefault(mimeTypeColumn) { mediaType.mimeType() },
-                        width = cursor.getIntOrDefault(widthColumn) { 0 },
-                        height = cursor.getIntOrDefault(heightColumn) { 0 },
+                        width = width,
+                        height = height,
                         size = cursor.getLongOrDefault(sizeColumn) { 0L },
                         uri = ContentUris.withAppendedId(contentUri, id).toString(),
                     ),
