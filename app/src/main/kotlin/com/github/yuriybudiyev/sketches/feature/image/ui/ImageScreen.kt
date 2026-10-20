@@ -527,6 +527,13 @@ private fun ImageScreenLayout(
                 text = files[currentIndex].name,
             ) {
                 SimpleAction(
+                    iconRes = R.drawable.ic_show_info,
+                    hintRes = R.string.show_info,
+                    onClick = {
+                        infoBottomSheetVisible = true
+                    },
+                )
+                SimpleAction(
                     iconRes = if (hasBookmark) {
                         R.drawable.ic_bookmark_delete
                     } else {
@@ -544,13 +551,6 @@ private fun ImageScreenLayout(
                         } else {
                             onCreateBookmark(file.id)
                         }
-                    },
-                )
-                SimpleAction(
-                    iconRes = R.drawable.ic_show_info,
-                    hintRes = R.string.show_info,
-                    onClick = {
-                        infoBottomSheetVisible = true
                     },
                 )
                 SimpleAction(
