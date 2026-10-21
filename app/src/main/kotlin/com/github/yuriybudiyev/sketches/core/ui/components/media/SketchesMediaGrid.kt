@@ -45,8 +45,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -63,11 +61,9 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -78,7 +74,6 @@ import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
-import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridSpec
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
@@ -121,30 +116,11 @@ sealed interface SketchesMediaGridContentType {
 }
 
 @Composable
-fun rememberSketchesMediaGridSpec(
-    itemSpacing: Dp = LocalDimens.current.lazyGridItemSpacing,
-): SketchesMediaGridSpec =
-    rememberSaveable(saver = SketchesMediaGridSpecSaver) { SketchesMediaGridSpec() }.also { spec ->
-        spec.itemSpacing = itemSpacing.value
-        spec.itemSpacingPx = with(LocalDensity.current) { itemSpacing.roundToPx() }
-    }
+fun rememberSketchesMediaGridSpec(): SketchesMediaGridSpec =
+    rememberSaveable(saver = SketchesMediaGridSpecSaver) { SketchesMediaGridSpec() }
 
 @Stable
 class SketchesMediaGridSpec {
-
-    /**
-     * Distance between two adjacent items in [Dp].
-     *
-     * Do not set manually, use [rememberSketchesMediaGridSpec].
-     */
-    var itemSpacing: Float by mutableFloatStateOf(0F)
-
-    /**
-     * Distance between two adjacent items in pixels.
-     *
-     * Do not set manually, use [rememberSketchesMediaGridSpec].
-     */
-    var itemSpacingPx: Int by mutableIntStateOf(0)
 
     /**
      * Always zero for [SketchesMediaGrid], available for [SketchesGroupingMediaGrid].
@@ -178,7 +154,6 @@ fun SketchesMediaGrid(
     SketchesLazyGrid(
         modifier = modifier,
         state = state,
-        spec = rememberSketchesLazyGridSpec(spec.itemSpacing.dp),
         overlayTop = overlayTop,
         overlayBottom = overlayBottom,
     ) {
@@ -263,7 +238,6 @@ fun SketchesGroupingMediaGrid(
     SketchesLazyGrid(
         modifier = modifier,
         state = state,
-        spec = rememberSketchesLazyGridSpec(spec.itemSpacing.dp),
         overlayTop = overlayTop,
         overlayBottom = overlayBottom,
     ) {
@@ -483,12 +457,13 @@ suspend fun LazyGridState.fastAnimateScrollToStart(spec: SketchesMediaGridSpec) 
         Orientation.Horizontal -> layoutInfo.viewportSize.width
     }
     val maxSpan = layoutInfo.maxSpan
+    val itemSpacing = layoutInfo.mainAxisItemSpacing
     var scrollSpans = scrollThreshold / mediaItemSize
     if (scrollThreshold % mediaItemSize > 0) {
         scrollSpans++
     }
     var scrollIndex = scrollSpans * maxSpan
-    var scrollAmount = scrollSpans * mediaItemSize + scrollSpans * spec.itemSpacingPx
+    var scrollAmount = scrollSpans * mediaItemSize + scrollSpans * itemSpacing
     if (firstVisibleItemIndex > scrollIndex) {
         scrollToItem(index = scrollIndex)
         animateScrollBy(
@@ -503,7 +478,7 @@ suspend fun LazyGridState.fastAnimateScrollToStart(spec: SketchesMediaGridSpec) 
         scrollSpans++
     }
     scrollAmount =
-        scrollSpans * mediaItemSize + scrollSpans * spec.itemSpacingPx + firstVisibleItemScrollOffset
+        scrollSpans * mediaItemSize + scrollSpans * itemSpacing + firstVisibleItemScrollOffset
     animateScrollBy(
         value = -scrollAmount.toFloat(),
         animationSpec = defaultAnimationSpec(),
@@ -536,6 +511,7 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
         Orientation.Horizontal -> layoutInfo.viewportSize.width
     }
     val maxSpan = layoutInfo.maxSpan
+    val itemSpacing = layoutInfo.mainAxisItemSpacing
     var scrollIndex = 0
     var scrollAmount = 0
     val filesSize = files.size
@@ -558,12 +534,12 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
             break@scrollLoop
         }
         scrollIndex++
-        scrollAmount += headerItemSize + spec.itemSpacingPx
+        scrollAmount += headerItemSize + itemSpacing
         if (scrollIndex >= firstVisibleItemIndex) {
             break@scrollLoop
         }
         repeat(groupSize / maxSpan) {
-            scrollAmount += mediaItemSize + spec.itemSpacingPx
+            scrollAmount += mediaItemSize + itemSpacing
             scrollIndex += maxSpan
             if (scrollAmount >= scrollThreshold || scrollIndex >= firstVisibleItemIndex) {
                 break@scrollLoop
@@ -571,7 +547,7 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
         }
         val remainder = groupSize % maxSpan
         if (remainder > 0) {
-            scrollAmount += mediaItemSize + spec.itemSpacingPx
+            scrollAmount += mediaItemSize + itemSpacing
             scrollIndex += remainder
         }
         if (scrollAmount >= scrollThreshold || scrollIndex >= firstVisibleItemIndex) {
@@ -619,8 +595,6 @@ inline fun calculateMediaIndexWithGroups(
 
 @Parcelize
 private data class SketchesMediaGridSpecConfig(
-    val itemSpacingDp: Float,
-    val itemSpacingPx: Int,
     val headerItemWidth: Int,
     val headerItemHeight: Int,
     val mediaItemWidth: Int,
@@ -631,8 +605,6 @@ private object SketchesMediaGridSpecSaver: Saver<SketchesMediaGridSpec, Sketches
 
     override fun SaverScope.save(value: SketchesMediaGridSpec): SketchesMediaGridSpecConfig =
         SketchesMediaGridSpecConfig(
-            itemSpacingDp = value.itemSpacing,
-            itemSpacingPx = value.itemSpacingPx,
             headerItemWidth = value.headerItemSize.width,
             headerItemHeight = value.headerItemSize.height,
             mediaItemWidth = value.mediaItemSize.width,
@@ -641,8 +613,6 @@ private object SketchesMediaGridSpecSaver: Saver<SketchesMediaGridSpec, Sketches
 
     override fun restore(value: SketchesMediaGridSpecConfig): SketchesMediaGridSpec =
         SketchesMediaGridSpec().apply {
-            itemSpacing = value.itemSpacingDp
-            itemSpacingPx = value.itemSpacingPx
             headerItemSize = IntSize(value.headerItemWidth, value.headerItemHeight)
             mediaItemSize = IntSize(value.mediaItemWidth, value.mediaItemHeight)
         }

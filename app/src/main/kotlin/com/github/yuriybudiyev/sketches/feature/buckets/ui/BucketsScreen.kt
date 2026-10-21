@@ -89,7 +89,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessa
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGridSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SelectAction
@@ -102,7 +101,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaDesc
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
-import com.github.yuriybudiyev.sketches.core.ui.components.rememberSketchesLazyGridSpec
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
@@ -148,7 +146,6 @@ fun BucketsScreen(
     val deleteDialogMedia = rememberSaveableSnapshotStateList<MediaDescriptor>()
     val mediaBatchState = rememberMediaBatchState()
     val bucketsGridState = rememberLazyGridState()
-    val bucketsGridSpec = rememberSketchesLazyGridSpec()
     val bucketsGridScrollConnection = rememberLastScrollDirectionScrollConnection(bucketsGridState)
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -217,7 +214,7 @@ fun BucketsScreen(
             coroutineScope.launch {
                 if (allBuckets.isNotEmpty()) {
                     bucketsGridScrollConnection.reset()
-                    bucketsGridState.fastAnimateScrollToStart(bucketsGridSpec)
+                    bucketsGridState.fastAnimateScrollToStart()
                 }
             }
         }
@@ -275,7 +272,6 @@ fun BucketsScreen(
                 allBuckets = buckets
                 BucketsMediaGrid(
                     state = bucketsGridState,
-                    spec = bucketsGridSpec,
                     buckets = buckets,
                     selectedBuckets = selectedBuckets,
                     onBucketClick = onBucketClick,
@@ -370,7 +366,6 @@ fun BucketsScreen(
 @Composable
 private fun BucketsMediaGrid(
     state: LazyGridState,
-    spec: SketchesLazyGridSpec,
     buckets: List<MediaBucket>,
     selectedBuckets: SnapshotStateSet<Long>,
     onBucketClick: (index: Int, bucket: MediaBucket) -> Unit,
@@ -384,7 +379,6 @@ private fun BucketsMediaGrid(
     SketchesLazyGrid(
         modifier = modifier,
         state = state,
-        spec = spec,
         overlayTop = true,
         overlayBottom = true,
     ) {

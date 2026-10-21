@@ -43,55 +43,17 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.layout.LazyLayoutCacheWindow
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.coerceAtLeast
-import androidx.compose.ui.unit.dp
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
 @Composable
-fun rememberSketchesLazyGridSpec(
-    itemSpacing: Dp = LocalDimens.current.lazyGridItemSpacing,
-): SketchesLazyGridSpec {
-    return remember { SketchesLazyGridSpec() }.also { spec ->
-        spec.itemSpacing = itemSpacing.value
-        spec.itemSpacingPx = with(LocalDensity.current) { itemSpacing.roundToPx() }
-    }
-}
-
-@Stable
-class SketchesLazyGridSpec {
-
-    /**
-     * Distance between two adjacent items in [Dp].
-     *
-     * Do not set manually, use [rememberSketchesLazyGridSpec].
-     */
-    var itemSpacing: Float by mutableFloatStateOf(0F)
-
-    /**
-     * Distance between two adjacent items in pixels.
-     *
-     * Do not set manually, use [rememberSketchesLazyGridSpec].
-     */
-    var itemSpacingPx: Int by mutableIntStateOf(0)
-}
-
-@Composable
 fun SketchesLazyGrid(
     modifier: Modifier = Modifier,
     state: LazyGridState = rememberLazyGridState(),
-    spec: SketchesLazyGridSpec = rememberSketchesLazyGridSpec(),
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
     content: LazyGridScope.() -> Unit,
@@ -136,9 +98,13 @@ fun SketchesLazyGrid(
             end = contentPaddingEnd,
             bottom = contentPaddingBottom,
         ),
-        horizontalArrangement = Arrangement.spacedBy(space = spec.itemSpacing.dp),
-        verticalArrangement = Arrangement.spacedBy(space = spec.itemSpacing.dp),
-        cacheWindow = LazyLayoutCacheWindow(aheadFraction = 0.25F, behindFraction = 0.25F),
+        horizontalArrangement = Arrangement.spacedBy(space = dimens.lazyGridItemSpacing),
+        verticalArrangement = Arrangement.spacedBy(space = dimens.lazyGridItemSpacing),
+        cacheWindow = LazyLayoutCacheWindow(
+            aheadFraction = 0.5F,
+            behindFraction = 0.5F,
+            isNonScrollCachingEnabled = true,
+        ),
         content = content,
     )
 }
@@ -146,7 +112,7 @@ fun SketchesLazyGrid(
 /**
  * For [SketchesLazyGrid] with single content type and same sized items
  */
-suspend fun LazyGridState.fastAnimateScrollToStart(spec: SketchesLazyGridSpec) {
+suspend fun LazyGridState.fastAnimateScrollToStart() {
     if (layoutInfo.totalItemsCount == 0) {
         return
     }
@@ -163,12 +129,13 @@ suspend fun LazyGridState.fastAnimateScrollToStart(spec: SketchesLazyGridSpec) {
         Orientation.Horizontal -> layoutInfo.viewportSize.width
     }
     val maxSpan = layoutInfo.maxSpan
+    val itemSpacing = layoutInfo.mainAxisItemSpacing
     var scrollSpans = scrollThreshold / itemSize
     if (scrollThreshold % itemSize > 0) {
         scrollSpans++
     }
     var scrollIndex = scrollSpans * maxSpan
-    var scrollAmount = scrollSpans * itemSize + scrollSpans * spec.itemSpacingPx
+    var scrollAmount = scrollSpans * itemSize + scrollSpans * itemSpacing
     if (firstVisibleItemIndex > scrollIndex) {
         scrollToItem(index = scrollIndex)
         animateScrollBy(
@@ -182,7 +149,7 @@ suspend fun LazyGridState.fastAnimateScrollToStart(spec: SketchesLazyGridSpec) {
     if (scrollIndex % maxSpan > 0) {
         scrollSpans++
     }
-    scrollAmount = scrollSpans * itemSize + scrollSpans * spec.itemSpacingPx + firstVisibleItemScrollOffset
+    scrollAmount = scrollSpans * itemSize + scrollSpans * itemSpacing + firstVisibleItemScrollOffset
     animateScrollBy(
         value = -scrollAmount.toFloat(),
         animationSpec = defaultAnimationSpec(),
