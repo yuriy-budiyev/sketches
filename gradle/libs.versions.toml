@@ -2,7 +2,7 @@
 agp = "9.4.1"
 kotlin = "2.4.21"
 kotlin-coroutines = "1.11.0"
-kotlin-serialization = "1.11.0"
+kotlin-serialization = "1.12.0"
 kotlin-ksp = "2.3.12"
 androidx-annotation = "1.11.0"
 androidx-annotation-experimental = "1.6.0"
