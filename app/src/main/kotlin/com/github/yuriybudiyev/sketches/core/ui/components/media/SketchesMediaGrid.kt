@@ -123,15 +123,11 @@ fun rememberSketchesMediaGridSpec(): SketchesMediaGridSpec =
 class SketchesMediaGridSpec {
 
     /**
-     * Always zero for [SketchesMediaGrid], available for [SketchesGroupingMediaGrid].
-     *
      * Do not set manually.
      */
     var headerItemSize: IntSize by mutableStateOf(IntSize.Zero)
 
     /**
-     * Available for both [SketchesMediaGrid] and [SketchesGroupingMediaGrid].
-     *
      * Do not set manually.
      */
     var mediaItemSize: IntSize by mutableStateOf(IntSize.Zero)
