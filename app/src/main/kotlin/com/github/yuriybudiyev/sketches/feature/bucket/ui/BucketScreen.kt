@@ -92,6 +92,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesTopApp
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SelectAction
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.ShareAction
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SimpleAction
+import com.github.yuriybudiyev.sketches.core.ui.components.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
@@ -99,8 +100,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatc
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
-import com.github.yuriybudiyev.sketches.core.ui.components.media.fastAnimateScrollToStart
-import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaGridSpec
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.bottomToTopBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
@@ -152,7 +151,6 @@ fun BucketScreen(
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     var bucketHidden by rememberSaveable { mutableStateOf(false) }
     val mediaGridState = rememberLazyGridState()
-    val mediaGridSpec = rememberSketchesMediaGridSpec()
     val mediaGridScrollConnection = rememberLastScrollDirectionScrollConnection(mediaGridState)
     val mediaBatchState = rememberMediaBatchState()
     val deleteRequestLauncher = rememberLauncherForActivityResult(
@@ -310,7 +308,6 @@ fun BucketScreen(
                         .matchParentSize()
                         .nestedScroll(mediaGridScrollConnection),
                     state = mediaGridState,
-                    spec = mediaGridSpec,
                     overlayTop = true,
                     overlayBottom = false,
                 )
@@ -435,7 +432,7 @@ fun BucketScreen(
                         coroutineScope.launch {
                             if (allFiles.isNotEmpty()) {
                                 mediaGridScrollConnection.reset()
-                                mediaGridState.fastAnimateScrollToStart(mediaGridSpec)
+                                mediaGridState.fastAnimateScrollToStart()
                             }
                         }
                     },

@@ -74,6 +74,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesTopApp
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SelectAction
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.ShareAction
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SimpleAction
+import com.github.yuriybudiyev.sketches.core.ui.components.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
@@ -81,8 +82,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatc
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
-import com.github.yuriybudiyev.sketches.core.ui.components.media.fastAnimateScrollToStart
-import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaGridSpec
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
@@ -127,7 +126,6 @@ private fun BookmarksScreen(
     var deleteFilesDialogVisible by rememberSaveable { mutableStateOf(false) }
     var deleteBookmarksDialogVisible by rememberSaveable { mutableStateOf(false) }
     val mediaGridState = rememberLazyGridState()
-    val mediaGridSpec = rememberSketchesMediaGridSpec()
     val mediaGridScrollConnection = rememberLastScrollDirectionScrollConnection(mediaGridState)
     val mediaBatchState = rememberMediaBatchState()
     val deleteRequestLauncher = rememberLauncherForActivityResult(
@@ -228,7 +226,7 @@ private fun BookmarksScreen(
             coroutineScope.launch {
                 if (allFiles.isNotEmpty()) {
                     mediaGridScrollConnection.reset()
-                    mediaGridState.fastAnimateScrollToStart(mediaGridSpec)
+                    mediaGridState.fastAnimateScrollToStart()
                 }
             }
         }
@@ -288,7 +286,6 @@ private fun BookmarksScreen(
                         .matchParentSize()
                         .nestedScroll(mediaGridScrollConnection),
                     state = mediaGridState,
-                    spec = mediaGridSpec,
                     overlayTop = true,
                     overlayBottom = true,
                 )

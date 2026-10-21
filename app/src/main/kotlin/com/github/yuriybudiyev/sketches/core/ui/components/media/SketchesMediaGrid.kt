@@ -144,7 +144,6 @@ fun SketchesMediaGrid(
     onItemClick: (index: Int, file: MediaFile) -> Unit,
     modifier: Modifier = Modifier,
     state: LazyGridState = rememberLazyGridState(),
-    spec: SketchesMediaGridSpec = rememberSketchesMediaGridSpec(),
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
@@ -187,13 +186,7 @@ fun SketchesMediaGrid(
                         onItemClick(index, file)
                     }
                 },
-                modifier = Modifier
-                    .defaultAnimateItem()
-                    .onSizeChanged { size ->
-                        if (size != IntSize.Zero) {
-                            spec.mediaItemSize = size
-                        }
-                    },
+                modifier = Modifier.defaultAnimateItem(),
             )
         }
     }
@@ -436,53 +429,6 @@ private fun MediaItem(
             )
         }
     }
-}
-
-/**
- * For [SketchesMediaGrid] only
- */
-suspend fun LazyGridState.fastAnimateScrollToStart(spec: SketchesMediaGridSpec) {
-    if (layoutInfo.totalItemsCount == 0) {
-        return
-    }
-    if (firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0) {
-        return
-    }
-    val mediaItemSize = when (layoutInfo.orientation) {
-        Orientation.Vertical -> spec.mediaItemSize.height
-        Orientation.Horizontal -> spec.mediaItemSize.width
-    }
-    val scrollThreshold = when (layoutInfo.orientation) {
-        Orientation.Vertical -> layoutInfo.viewportSize.height
-        Orientation.Horizontal -> layoutInfo.viewportSize.width
-    }
-    val maxSpan = layoutInfo.maxSpan
-    val itemSpacing = layoutInfo.mainAxisItemSpacing
-    var scrollSpans = scrollThreshold / mediaItemSize
-    if (scrollThreshold % mediaItemSize > 0) {
-        scrollSpans++
-    }
-    var scrollIndex = scrollSpans * maxSpan
-    var scrollAmount = scrollSpans * mediaItemSize + scrollSpans * itemSpacing
-    if (firstVisibleItemIndex > scrollIndex) {
-        scrollToItem(index = scrollIndex)
-        animateScrollBy(
-            value = -scrollAmount.toFloat(),
-            animationSpec = defaultAnimationSpec(),
-        )
-        return
-    }
-    scrollIndex = firstVisibleItemIndex
-    scrollSpans = scrollIndex / maxSpan
-    if (scrollIndex % maxSpan > 0) {
-        scrollSpans++
-    }
-    scrollAmount =
-        scrollSpans * mediaItemSize + scrollSpans * itemSpacing + firstVisibleItemScrollOffset
-    animateScrollBy(
-        value = -scrollAmount.toFloat(),
-        animationSpec = defaultAnimationSpec(),
-    )
 }
 
 /**
