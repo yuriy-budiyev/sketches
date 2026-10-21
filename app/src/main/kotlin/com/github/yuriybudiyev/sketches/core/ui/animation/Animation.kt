@@ -102,7 +102,7 @@ inline fun DefaultAnimatedVisibility(
 }
 
 @Stable
-private val DefaultAnimationSpec: SpringSpec<Any> =
+private val DefaultAnimationSpec: FiniteAnimationSpec<Any> =
     SpringSpec(
         dampingRatio = Spring.DampingRatioNoBouncy,
         stiffness = Spring.StiffnessMedium,
