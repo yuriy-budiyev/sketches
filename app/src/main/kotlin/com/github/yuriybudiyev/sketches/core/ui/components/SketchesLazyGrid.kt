@@ -41,6 +41,7 @@ import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.layout.LazyLayoutCacheWindow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -137,6 +138,7 @@ fun SketchesLazyGrid(
         ),
         horizontalArrangement = Arrangement.spacedBy(space = spec.itemSpacing.dp),
         verticalArrangement = Arrangement.spacedBy(space = spec.itemSpacing.dp),
+        cacheWindow = LazyLayoutCacheWindow(aheadFraction = 0.25F, behindFraction = 0.25F),
         content = content,
     )
 }
