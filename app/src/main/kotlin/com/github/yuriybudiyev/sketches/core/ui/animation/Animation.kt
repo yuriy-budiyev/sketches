@@ -45,8 +45,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 
 @Stable
 @Suppress("UNCHECKED_CAST")
-fun <T> defaultAnimationSpec(): FiniteAnimationSpec<T> =
-    DefaultAnimationSpec as FiniteAnimationSpec<T>
+fun <T> defaultAnimationSpec(): SpringSpec<T> =
+    DefaultAnimationSpec as SpringSpec<T>
 
 @Stable
 fun defaultMotionScheme(): MotionScheme =
@@ -102,7 +102,7 @@ inline fun DefaultAnimatedVisibility(
 }
 
 @Stable
-private val DefaultAnimationSpec: FiniteAnimationSpec<Any> =
+private val DefaultAnimationSpec: SpringSpec<Any> =
     SpringSpec(
         dampingRatio = Spring.DampingRatioNoBouncy,
         stiffness = Spring.StiffnessMedium,
@@ -110,29 +110,24 @@ private val DefaultAnimationSpec: FiniteAnimationSpec<Any> =
     )
 
 @Immutable
+@Suppress("UNCHECKED_CAST")
 private object DefaultMotionScheme: MotionScheme {
 
-    @Suppress("UNCHECKED_CAST")
     override fun <T> defaultEffectsSpec(): FiniteAnimationSpec<T> =
         DefaultAnimationSpec as FiniteAnimationSpec<T>
 
-    @Suppress("UNCHECKED_CAST")
     override fun <T> defaultSpatialSpec(): FiniteAnimationSpec<T> =
         DefaultAnimationSpec as FiniteAnimationSpec<T>
 
-    @Suppress("UNCHECKED_CAST")
     override fun <T> fastEffectsSpec(): FiniteAnimationSpec<T> =
         DefaultAnimationSpec as FiniteAnimationSpec<T>
 
-    @Suppress("UNCHECKED_CAST")
     override fun <T> fastSpatialSpec(): FiniteAnimationSpec<T> =
         DefaultAnimationSpec as FiniteAnimationSpec<T>
 
-    @Suppress("UNCHECKED_CAST")
     override fun <T> slowEffectsSpec(): FiniteAnimationSpec<T> =
         DefaultAnimationSpec as FiniteAnimationSpec<T>
 
-    @Suppress("UNCHECKED_CAST")
     override fun <T> slowSpatialSpec(): FiniteAnimationSpec<T> =
         DefaultAnimationSpec as FiniteAnimationSpec<T>
 }
