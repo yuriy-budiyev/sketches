@@ -54,8 +54,8 @@ private val DarkColorScheme: ColorScheme =
         surface = Color(0xFF000000),
         onSurface = Color(0xFFFFFFFF),
         onSurfaceVariant = Color(0xFFFFFFFF),
-        surfaceContainerHigh = Color(0xFF151515),
-        surfaceContainerLow = Color(0xFF151515),
+        surfaceContainerHigh = Color(0xFF252525),
+        surfaceContainerLow = Color(0xFF252525),
         outline = Color(0xFF6B69D6),
         outlineVariant = Color(0xFF6B69D6),
     )
