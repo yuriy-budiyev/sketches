@@ -66,10 +66,10 @@ import com.github.yuriybudiyev.sketches.core.platform.share.ShareManager
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.systembars.SystemBarsController
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.dimens.defaultDimens
+import com.github.yuriybudiyev.sketches.core.ui.theme.DefaultTheme
 import com.github.yuriybudiyev.sketches.core.ui.wsc.LocalWindowSizeClass
 import com.github.yuriybudiyev.sketches.main.ui.MainScreen
-import com.github.yuriybudiyev.sketches.main.ui.dimens.DefaultDimens
-import com.github.yuriybudiyev.sketches.main.ui.theme.MainTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -182,12 +182,12 @@ class MainActivity: ComponentActivity() {
         setContent {
             @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
             CompositionLocalProvider(
-                LocalDimens provides DefaultDimens(),
+                LocalDimens provides defaultDimens(),
                 LocalShareManager provides shareManager,
                 LocalSystemBarsController provides systemBarsController,
                 LocalWindowSizeClass provides calculateWindowSizeClass(this),
             ) {
-                MainTheme {
+                DefaultTheme {
                     MainScreen()
                 }
             }

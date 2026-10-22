@@ -26,8 +26,10 @@ package com.github.yuriybudiyev.sketches.core.ui.dimens
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 @Immutable
 interface Dimens {
@@ -53,3 +55,29 @@ interface Dimens {
 
 val LocalDimens: ProvidableCompositionLocal<Dimens> =
     staticCompositionLocalOf { error("CompositionLocal LocalDimens not present") }
+
+@Stable
+fun defaultDimens(): Dimens =
+    DefaultDimens
+
+@Immutable
+private data object DefaultDimens: Dimens {
+    override val material3AppBarHeight: Dp = 64.dp
+    override val navBarHeight: Dp = material3AppBarHeight
+    override val navRailWidth: Dp = 72.dp
+    override val navBarIndicatorWidth: Dp = 56.dp
+    override val navBarIndicatorHeight: Dp = 32.dp
+    override val lazyGridOverlayTop: Dp = material3AppBarHeight
+    override val lazyGridOverlayBottom: Dp = navBarHeight
+    override val lazyGridItemSize: Dp = 108.dp
+    override val lazyGridItemSpacing: Dp = 1.dp
+    override val mediaGridIconPadding: Dp = 4.dp
+    override val mediaBarHeight: Dp = material3AppBarHeight
+    override val mediaBarItemSize: Dp = 56.dp
+    override val mediaItemBorderThickness: Dp = 1.dp
+    override val mediaBarItemSpacing: Dp = 1.dp
+    override val mediaBarVideoIconPadding: Dp = 2.dp
+    override val placeholderBlurRadius: Dp = 4.dp
+    override val shadowBlurRadius: Dp = 4.dp
+    override val actionButtonSize: Dp = 48.dp
+}

@@ -121,6 +121,10 @@ import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBars
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
+import com.github.yuriybudiyev.sketches.core.ui.colors.bottomToTopBackgroundGradientBrush
+import com.github.yuriybudiyev.sketches.core.ui.colors.topToBottomBackgroundGradientBrush
+import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
+import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteBookmarksConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
@@ -135,10 +139,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.player.Sketches
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.theme.bottomToTopBackgroundGradientBrush
-import com.github.yuriybudiyev.sketches.core.ui.theme.topToBottomBackgroundGradientBrush
-import com.github.yuriybudiyev.sketches.core.ui.theme.withHighTransparency
-import com.github.yuriybudiyev.sketches.core.ui.theme.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.utils.fastAnimateScrollToItemCentered
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemCentered
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult

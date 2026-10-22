@@ -111,7 +111,7 @@ private val DefaultAnimationSpec: SpringSpec<Any> =
 
 @Immutable
 @Suppress("UNCHECKED_CAST")
-private object DefaultMotionScheme: MotionScheme {
+private data object DefaultMotionScheme: MotionScheme {
 
     override fun <T> defaultEffectsSpec(): FiniteAnimationSpec<T> =
         DefaultAnimationSpec as FiniteAnimationSpec<T>

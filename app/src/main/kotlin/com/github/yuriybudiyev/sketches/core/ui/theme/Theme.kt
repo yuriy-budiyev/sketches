@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2024 Yuriy Budiyev
+ * Copyright (c) 2026 Yuriy Budiyev
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,54 +24,56 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
-import androidx.compose.runtime.Stable
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TileMode
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultMotionScheme
 
-const val LowTransparencyAlpha: Float = 0.75F
-const val MediumTransparencyAlpha: Float = 0.35F
-const val HighTransparencyAlpha: Float = 0.15F
+@Composable
+fun DefaultTheme(content: @Composable () -> Unit) {
+    MaterialTheme(
+        colorScheme = if (isSystemInDarkTheme()) DarkColorScheme else LightColorScheme,
+        motionScheme = defaultMotionScheme(),
+        content = content,
+    )
+}
 
-@Stable
-fun Color.withLowTransparency(): Color =
-    copy(alpha = LowTransparencyAlpha)
-
-@Stable
-fun Color.withMediumTransparency(): Color =
-    copy(alpha = MediumTransparencyAlpha)
-
-@Stable
-fun Color.withHighTransparency(): Color =
-    copy(alpha = HighTransparencyAlpha)
-
-@Stable
-fun ColorScheme.topToBottomBackgroundGradientBrush(
-    startY: Float = 0F,
-    endY: Float = Float.POSITIVE_INFINITY,
-): Brush =
-    Brush.verticalGradient(
-        colors = listOf(
-            background,
-            background.withLowTransparency(),
-        ),
-        startY = startY,
-        endY = endY,
-        tileMode = TileMode.Clamp,
+private val DarkColorScheme: ColorScheme =
+    darkColorScheme(
+        primary = Color(0xFF6B69D6),
+        onPrimary = Color(0xFFFFFFFF),
+        scrim = Color(0xFF000000),
+        primaryContainer = Color(0x00000000),
+        onPrimaryContainer = Color(0xFFFFFFFF),
+        background = Color(0xFF000000),
+        onBackground = Color(0xFFFFFFFF),
+        surface = Color(0xFF000000),
+        onSurface = Color(0xFFFFFFFF),
+        onSurfaceVariant = Color(0xFFFFFFFF),
+        surfaceContainerHigh = Color(0xFF151515),
+        surfaceContainerLow = Color(0xFF151515),
+        outline = Color(0xFF6B69D6),
+        outlineVariant = Color(0xFF6B69D6),
     )
 
-@Stable
-fun ColorScheme.bottomToTopBackgroundGradientBrush(
-    startY: Float = 0F,
-    endY: Float = Float.POSITIVE_INFINITY,
-): Brush =
-    Brush.verticalGradient(
-        colors = listOf(
-            background.withLowTransparency(),
-            background,
-        ),
-        startY = startY,
-        endY = endY,
-        tileMode = TileMode.Clamp,
+private val LightColorScheme: ColorScheme =
+    lightColorScheme(
+        primary = Color(0xFF6B69D6),
+        onPrimary = Color(0xFFFFFFFF),
+        scrim = Color(0xFF000000),
+        primaryContainer = Color(0x00000000),
+        onPrimaryContainer = Color(0xFF000000),
+        background = Color(0xFFFFFFFF),
+        onBackground = Color(0xFF000000),
+        surface = Color(0xFFFFFFFF),
+        onSurface = Color(0xFF000000),
+        onSurfaceVariant = Color(0xFF000000),
+        surfaceContainerHigh = Color(0xFFF5F5F5),
+        surfaceContainerLow = Color(0xFFF5F5F5),
+        outline = Color(0xFF6B69D6),
+        outlineVariant = Color(0xFF6B69D6),
     )
