@@ -524,7 +524,6 @@ private fun ImageScreenLayout(
                 contentPaddingTop = contentPaddingTopVisible,
                 contentPaddingStart = contentPaddingStartVisible,
                 contentPaddingEnd = contentPaddingEndVisible,
-                text = files[currentIndex].name,
             ) {
                 SimpleAction(
                     iconRes = R.drawable.ic_show_info,
