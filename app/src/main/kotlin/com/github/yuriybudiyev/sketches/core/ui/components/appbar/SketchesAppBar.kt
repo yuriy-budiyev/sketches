@@ -133,7 +133,7 @@ inline fun SketchesAppBar(
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (!text.isNullOrEmpty()) {
+        if (text != null) {
             Text(
                 text = text,
                 modifier = Modifier.weight(1F),
