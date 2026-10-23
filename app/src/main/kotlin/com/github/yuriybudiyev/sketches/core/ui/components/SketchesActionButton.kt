@@ -42,14 +42,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.computedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -104,11 +103,7 @@ fun SketchesActionButton(
         targetValue = if (hintVisible) 1F else 0F,
         animationSpec = defaultAnimationSpec(),
     )
-    val hintInComposition by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            hintVisible || hintAlpha > 0F
-        }
-    }
+    val hintInComposition by remember { computedStateOf { hintVisible || hintAlpha > 0F } }
     var hideHintJob by remember { mutableStateOf<Job?>(null) }
     val view = LocalView.current
     Box(

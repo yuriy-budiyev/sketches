@@ -78,7 +78,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.computedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -88,7 +88,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -246,11 +245,7 @@ private fun ImageScreenLayout(
         }
     }
     val files by rememberUpdatedState(files)
-    val hasBookmark by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            files[currentIndex].bookmark != null
-        }
-    }
+    val hasBookmark by remember { computedStateOf { files[currentIndex].bookmark != null } }
     val context = LocalContext.current
     val shareManager by rememberUpdatedState(LocalShareManager.current)
     val onChange by rememberUpdatedState(onChange)
@@ -372,11 +367,7 @@ private fun ImageScreenLayout(
         },
         animationSpec = defaultAnimationSpec(),
     )
-    val uiInComposition by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            uiVisible || uiAlpha > 0F
-        }
-    }
+    val uiInComposition by remember { computedStateOf { uiVisible || uiAlpha > 0F } }
     Box(modifier = modifier) {
         MediaPager(
             state = pagerState,

@@ -35,11 +35,10 @@ import androidx.compose.material3.MotionScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.computedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 
@@ -85,11 +84,7 @@ inline fun DefaultAnimatedVisibility(
         targetValue = if (visible) 1F else 0F,
         animationSpec = defaultAnimationSpec(),
     )
-    val contentInComposition by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            visible || contentAlpha > 0F
-        }
-    }
+    val contentInComposition by remember { computedStateOf { visible || contentAlpha > 0F } }
     if (contentInComposition) {
         Box(
             modifier = Modifier

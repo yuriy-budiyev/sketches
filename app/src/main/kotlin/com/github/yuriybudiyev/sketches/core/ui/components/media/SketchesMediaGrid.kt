@@ -43,7 +43,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.computedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,7 +53,6 @@ import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateSet
-import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -158,11 +157,7 @@ fun SketchesMediaGrid(
             contentType = { SketchesMediaGridContentType.Media },
         ) { index ->
             val file by rememberUpdatedState(files[index])
-            val fileSelected by remember {
-                derivedStateOf(structuralEqualityPolicy()) {
-                    selectedFiles.contains(file.id)
-                }
-            }
+            val fileSelected by remember { computedStateOf { selectedFiles.contains(file.id) } }
             MediaItem(
                 file = file,
                 fileSelected = fileSelected,
@@ -277,11 +272,7 @@ fun SketchesGroupingMediaGrid(
                     contentType = { SketchesMediaGridContentType.Media },
                 ) { index ->
                     val file by rememberUpdatedState(files[index + groupOffset])
-                    val fileSelected by remember {
-                        derivedStateOf(structuralEqualityPolicy()) {
-                            selectedFiles.contains(file.id)
-                        }
-                    }
+                    val fileSelected by remember { computedStateOf { selectedFiles.contains(file.id) } }
                     MediaItem(
                         file = file,
                         fileSelected = fileSelected,

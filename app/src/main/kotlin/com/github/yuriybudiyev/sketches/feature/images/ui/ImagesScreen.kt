@@ -41,7 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.computedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,7 +50,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -233,23 +232,15 @@ fun ImagesScreen(
         }
     }
     val appBarVisible by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
+        computedStateOf {
             !mediaGridState.canScrollForward && !mediaGridState.canScrollBackward ||
                 mediaGridScrollConnection.neverScrolled ||
                 mediaGridScrollConnection.lastScrolledBackward ||
                 selectedFiles.isNotEmpty()
         }
     }
-    val inSelectionMode by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            selectedFiles.isNotEmpty()
-        }
-    }
-    val allFilesSelected by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            selectedFiles.size >= allFiles.size
-        }
-    }
+    val inSelectionMode by remember { computedStateOf { selectedFiles.isNotEmpty() } }
+    val allFilesSelected by remember { computedStateOf { selectedFiles.size >= allFiles.size } }
     Box(
         modifier = Modifier
             .fillMaxSize()

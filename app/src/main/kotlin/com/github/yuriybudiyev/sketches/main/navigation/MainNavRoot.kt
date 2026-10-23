@@ -58,7 +58,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.computedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,7 +69,6 @@ import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -290,15 +289,13 @@ fun MainNavRoot(
     val colorScheme = MaterialTheme.colorScheme
     val dimens = LocalDimens.current
     val navMenuVisible by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            navBackStack.lastOrNull() is RootNavRoute &&
-                navMenuController.isNavMenuVisible
+        computedStateOf {
+            navBackStack.lastOrNull() is RootNavRoute && navMenuController.isNavMenuVisible
         }
     }
     val navBarVisible by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            navBackStack.lastOrNull() is RootNavRoute &&
-                systemBarsController.isSystemBarsVisible
+        computedStateOf {
+            navBackStack.lastOrNull() is RootNavRoute && systemBarsController.isSystemBarsVisible
         }
     }
     SharedTransitionScope { transitionModifier ->
@@ -373,9 +370,7 @@ fun MainNavRoot(
                     ) {
                         for (route in rootRoutes) {
                             val routeSelected by remember {
-                                derivedStateOf(structuralEqualityPolicy()) {
-                                    route == navBackStack.lastOrNull()
-                                }
+                                computedStateOf { route == navBackStack.lastOrNull() }
                             }
                             NavItem(
                                 route = route,
@@ -460,11 +455,7 @@ private fun NavItem(
         targetValue = if (hintVisible) 1F else 0F,
         animationSpec = defaultAnimationSpec(),
     )
-    val hintInComposition by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            hintVisible || hintAlpha > 0F
-        }
-    }
+    val hintInComposition by remember { computedStateOf { hintVisible || hintAlpha > 0F } }
     var hideHintJob by remember { mutableStateOf<Job?>(null) }
     val title = stringResource(route.titleRes)
     val view = LocalView.current

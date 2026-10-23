@@ -28,13 +28,12 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.computedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -48,11 +47,7 @@ fun rememberLastScrollDirectionScrollConnection(
     state: LazyGridState,
 ): LastScrollDirectionScrollConnection {
     val state by rememberUpdatedState(state)
-    val orientation by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            state.layoutInfo.orientation
-        }
-    }
+    val orientation by remember { computedStateOf { state.layoutInfo.orientation } }
     return rememberLastScrollDirectionScrollConnection(orientation)
 }
 

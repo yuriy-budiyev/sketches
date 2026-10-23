@@ -50,7 +50,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.computedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,7 +59,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateSet
-import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -223,23 +222,15 @@ fun BucketsScreen(
         }
     }
     val appBarVisible by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
+        computedStateOf {
             !bucketsGridState.canScrollForward && !bucketsGridState.canScrollBackward ||
                 bucketsGridScrollConnection.neverScrolled ||
                 bucketsGridScrollConnection.lastScrolledBackward ||
                 selectedBuckets.isNotEmpty()
         }
     }
-    val inSelectionMode by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            selectedBuckets.isNotEmpty()
-        }
-    }
-    val allBucketsSelected by remember {
-        derivedStateOf(structuralEqualityPolicy()) {
-            selectedBuckets.size >= allBuckets.size
-        }
-    }
+    val inSelectionMode by remember { computedStateOf { selectedBuckets.isNotEmpty() } }
+    val allBucketsSelected by remember { computedStateOf { selectedBuckets.size >= allBuckets.size } }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -388,11 +379,7 @@ private fun BucketsMediaGrid(
             contentType = { null },
         ) { index ->
             val bucket by rememberUpdatedState(buckets[index])
-            val bucketSelected by remember {
-                derivedStateOf(structuralEqualityPolicy()) {
-                    selectedBuckets.contains(bucket.id)
-                }
-            }
+            val bucketSelected by remember { computedStateOf { selectedBuckets.contains(bucket.id) } }
             Column(
                 modifier = Modifier
                     .defaultAnimateItem()
