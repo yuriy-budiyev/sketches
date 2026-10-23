@@ -336,7 +336,7 @@ private fun HeaderItem(
             ),
         color = colorScheme.onBackground,
         fontSize = 16.sp,
-        overflow = TextOverflow.Clip,
+        overflow = TextOverflow.Ellipsis,
         maxLines = 1,
     )
 }
