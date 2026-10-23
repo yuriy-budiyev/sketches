@@ -136,7 +136,9 @@ inline fun SketchesAppBar(
         if (text != null) {
             Text(
                 text = text,
-                modifier = Modifier.weight(1F),
+                modifier = Modifier
+                    .weight(1F)
+                    .padding(end = 4.dp),
                 fontSize = 22.sp,
                 lineHeight = 28.sp,
                 maxLines = 1,
