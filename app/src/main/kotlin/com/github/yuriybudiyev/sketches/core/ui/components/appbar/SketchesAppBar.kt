@@ -140,7 +140,7 @@ inline fun SketchesAppBar(
                 fontSize = 22.sp,
                 lineHeight = 28.sp,
                 maxLines = 1,
-                overflow = TextOverflow.MiddleEllipsis,
+                overflow = TextOverflow.Clip,
             )
         }
         actions()
