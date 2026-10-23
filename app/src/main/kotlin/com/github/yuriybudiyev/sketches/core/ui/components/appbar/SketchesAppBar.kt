@@ -137,8 +137,8 @@ inline fun SketchesAppBar(
             Text(
                 text = text,
                 modifier = Modifier
-                    .weight(1F)
-                    .padding(end = 4.dp),
+                    .padding(end = 4.dp)
+                    .weight(1F),
                 fontSize = 22.sp,
                 lineHeight = 28.sp,
                 maxLines = 1,
