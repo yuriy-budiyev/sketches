@@ -163,7 +163,7 @@ fun ImageRoute(viewModel: ImageScreenViewModel) {
                 fileId = fileId,
             )
             navResultStore.putNavResult(
-                result = ImageScreenNavResult(
+                ImageScreenNavResult(
                     fileIndex = index,
                     fileId = fileId,
                 ),
