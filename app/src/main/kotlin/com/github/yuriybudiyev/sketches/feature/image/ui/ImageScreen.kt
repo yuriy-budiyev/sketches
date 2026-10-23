@@ -245,7 +245,8 @@ private fun ImageScreenLayout(
         }
     }
     val files by rememberUpdatedState(files)
-    val hasBookmark by remember { computedStateOf { files[currentIndex].bookmark != null } }
+    val currentFile by remember { computedStateOf { files[currentIndex] } }
+    val hasBookmark by remember { computedStateOf { currentFile.bookmark != null } }
     val context = LocalContext.current
     val shareManager by rememberUpdatedState(LocalShareManager.current)
     val onChange by rememberUpdatedState(onChange)
@@ -535,7 +536,7 @@ private fun ImageScreenLayout(
                         R.string.create_bookmark
                     },
                     onClick = {
-                        val file = files[currentIndex]
+                        val file = currentFile
                         if (file.bookmark != null) {
                             deleteBookmarkDialogVisible = true
                         } else {
@@ -556,7 +557,7 @@ private fun ImageScreenLayout(
                     hint = shareHint,
                     onClick = {
                         coroutineScope.launch {
-                            val file = files[currentIndex]
+                            val file = currentFile
                             shareManager.startChooserActivity(
                                 file.uri.toUri(),
                                 file.mimeType,
@@ -576,13 +577,13 @@ private fun ImageScreenLayout(
                         coroutineScope.launch {
                             deleteRequestLauncher.launchDeleteMediaRequest(
                                 context,
-                                listOf(files[currentIndex].uri.toUri()),
+                                listOf(currentFile.uri.toUri()),
                             )
                         }
                     } else {
                         onDeleteImage(
                             currentIndex,
-                            files[currentIndex],
+                            currentFile,
                         )
                     }
                 },
@@ -596,7 +597,7 @@ private fun ImageScreenLayout(
                 count = 1,
                 onDelete = {
                     deleteBookmarkDialogVisible = false
-                    onDeleteBookmark(files[currentIndex].id)
+                    onDeleteBookmark(currentFile.id)
                 },
                 onDismiss = {
                     deleteBookmarkDialogVisible = false
@@ -605,7 +606,7 @@ private fun ImageScreenLayout(
         }
         if (infoBottomSheetVisible) {
             MediaInfoBottomSheet(
-                file = files[currentIndex],
+                file = currentFile,
                 state = infoBottomSheetState,
                 onDismissRequest = {
                     infoBottomSheetVisible = false
