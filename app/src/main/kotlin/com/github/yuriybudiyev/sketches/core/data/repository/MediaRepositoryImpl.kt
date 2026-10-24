@@ -660,12 +660,11 @@ class MediaRepositoryImpl @Inject constructor(
 
         override fun onChange(selfChange: Boolean) {
             val currentCallTime = SystemClock.uptimeMillis()
-            val elapsedTime = currentCallTime - lastCallTime
-            if (elapsedTime > MediaUpdateInterval) {
+            if (currentCallTime - lastCallTime > MediaUpdateInterval) {
                 lastCallTime = currentCallTime
                 updateMedia(nonCancellable = true)
             } else {
-                updateMedia(delayMillis = MediaUpdateInterval - elapsedTime)
+                updateMedia(delayMillis = MediaUpdateInterval)
             }
         }
 
