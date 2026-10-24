@@ -73,6 +73,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -215,6 +216,7 @@ class MediaRepositoryImpl @Inject constructor(
                 MediaStore.MediaColumns.SIZE,
                 MediaStore.MediaColumns.RELATIVE_PATH,
                 MediaStore.MediaColumns.ORIENTATION,
+                MediaStore.MediaColumns.DURATION,
             )
         } else {
             when (mediaType) {
@@ -246,6 +248,7 @@ class MediaRepositoryImpl @Inject constructor(
                         MediaStore.MediaColumns.HEIGHT,
                         MediaStore.MediaColumns.SIZE,
                         MediaStore.MediaColumns.DATA,
+                        MediaStore.MediaColumns.DURATION,
                     )
             }
         }
@@ -265,14 +268,22 @@ class MediaRepositoryImpl @Inject constructor(
             val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE)
             val pathColumn: Int
             val orientationColumn: Int
+            val durationColumn: Int
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 pathColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.RELATIVE_PATH)
                 orientationColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.ORIENTATION)
+                durationColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DURATION)
             } else {
                 pathColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)
-                orientationColumn = when (mediaType) {
-                    MediaType.Image -> cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.ORIENTATION)
-                    MediaType.Video -> -1
+                when (mediaType) {
+                    MediaType.Image -> {
+                        orientationColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.ORIENTATION)
+                        durationColumn = -1
+                    }
+                    MediaType.Video -> {
+                        orientationColumn = -1
+                        durationColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DURATION)
+                    }
                 }
             }
             while (cursor.moveToNext()) {
@@ -321,6 +332,12 @@ class MediaRepositoryImpl @Inject constructor(
                                     ZoneId.systemDefault(),
                                 )
                             },
+                        duration =
+                            if (durationColumn == -1 || cursor.isNull(durationColumn)) {
+                                null
+                            } else {
+                                Duration.ofMillis(cursor.getLong(durationColumn))
+                            },
                         mediaType = mediaType,
                         mimeType = cursor.getStringOrDefault(mimeTypeColumn) { mediaType.mimeType() },
                         width = width,
@@ -351,6 +368,7 @@ class MediaRepositoryImpl @Inject constructor(
                             name = entity.name,
                             dateAdded = entity.dateAdded,
                             dateTaken = entity.dateTaken,
+                            duration = entity.duration,
                             mediaType = entity.mediaType,
                             mimeType = entity.mimeType,
                             width = entity.width,
@@ -607,6 +625,7 @@ class MediaRepositoryImpl @Inject constructor(
         val bucketName: String,
         val dateAdded: LocalDateTime,
         val dateTaken: LocalDateTime?,
+        val duration: Duration?,
         val mediaType: MediaType,
         val mimeType: String,
         val width: Int,

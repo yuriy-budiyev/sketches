@@ -64,5 +64,6 @@
     <string name="media_info_field_height">Высота</string>
     <string name="media_info_field_size">Размер</string>
     <string name="media_info_field_mime_type">Тип медиа</string>
+    <string name="media_info_field_duration">Продолжительность</string>
     <string name="back">Назад</string>
 </resources>

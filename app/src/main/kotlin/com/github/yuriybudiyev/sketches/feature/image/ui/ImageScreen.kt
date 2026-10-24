@@ -102,6 +102,7 @@ import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -670,6 +671,20 @@ private fun MediaInfoBottomSheet(
                 MediaInfoBottomSheetField(
                     name = stringResource(R.string.media_info_field_date_taken),
                     value = dateFormatter.format(dateTaken).capitalizeFirstChar(),
+                )
+            }
+            val duration = file.duration
+            if (duration != null && duration.isPositive) {
+                val seconds = duration.seconds
+                MediaInfoBottomSheetField(
+                    name = stringResource(R.string.media_info_field_duration),
+                    value = String.format(
+                        LocalLocale.current.platformLocale,
+                        "%02d:%02d:%02d",
+                        seconds / 3600,
+                        seconds % 3600 / 60,
+                        seconds % 60,
+                    ),
                 )
             }
             val width = file.width

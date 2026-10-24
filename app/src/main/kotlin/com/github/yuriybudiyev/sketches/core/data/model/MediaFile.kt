@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.data.model
 
 import androidx.compose.runtime.Immutable
+import java.time.Duration
 import java.time.LocalDateTime
 
 @Immutable
@@ -35,6 +36,7 @@ data class MediaFile(
     val name: String,
     val dateAdded: LocalDateTime,
     val dateTaken: LocalDateTime?,
+    val duration: Duration?,
     val mediaType: MediaType,
     val mimeType: String,
     val width: Int,
