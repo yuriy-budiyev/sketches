@@ -582,7 +582,7 @@ class MediaRepositoryImpl @Inject constructor(
         startBookmarksGarbageCollection()
         startHiddenBucketsFlow()
         startHiddenBucketsGarbageCollection()
-        updateMedia()
+        updateMedia(nonCancellable = true)
         val mediaObserver = MediaObserver()
         with(appContext.contentResolver) {
             registerContentObserver(
