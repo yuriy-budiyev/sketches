@@ -263,7 +263,7 @@ class MainActivity: ComponentActivity() {
 
         const val ChooserCallbackActionExtra: String = "ChooserCallbackAction"
 
-        const val SplashScreenDelay: Long = 100L
+        const val SplashScreenDelay: Long = 200L
 
         fun splashScreenExitAnimation(splashScreenView: View): SpringAnimation =
             SpringAnimation(splashScreenView, SpringAnimation.ALPHA).apply {
