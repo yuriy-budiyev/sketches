@@ -137,7 +137,6 @@ import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBars
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
-import com.github.yuriybudiyev.sketches.core.ui.colors.MediumTransparencyAlpha
 import com.github.yuriybudiyev.sketches.core.ui.colors.bottomToTopBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
@@ -347,7 +346,7 @@ fun MainNavRoot(
                     predictivePopTransitionSpec = {
                         ContentTransform(
                             targetContentEnter = fadeIn(defaultAnimationSpec()),
-                            initialContentExit = fadeOut(defaultAnimationSpec(), MediumTransparencyAlpha),
+                            initialContentExit = fadeOut(defaultAnimationSpec()),
                             sizeTransform = null,
                         )
                     },
