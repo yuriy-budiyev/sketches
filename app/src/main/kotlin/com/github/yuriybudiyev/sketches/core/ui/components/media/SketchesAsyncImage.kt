@@ -175,14 +175,11 @@ fun SketchesPreviewAsyncImage(
         when (painterState) {
             is AsyncImagePainter.State.Empty,
             is AsyncImagePainter.State.Loading -> {
-                val painter = remember(
-                    uri,
-                    context,
-                ) {
+                val thumbnailPainter = remember(uri, context) {
                     context.imageMemoryCache[uri]?.asPainter(context)
                 }
-                if (painter != null) {
-                    val size = painter.intrinsicSize
+                if (thumbnailPainter != null) {
+                    val size = thumbnailPainter.intrinsicSize
                     if (size != Size.Zero && size != Size.Unspecified) {
                         val ratio = size.width / size.height
                         Box(
@@ -194,18 +191,13 @@ fun SketchesPreviewAsyncImage(
                                 .blur(
                                     radius = LocalDimens.current.placeholderBlurRadius,
                                     edgeTreatment = BlurredEdgeTreatment.Rectangle,
+                                )
+                                .paint(
+                                    painter = thumbnailPainter,
+                                    alignment = Alignment.Center,
+                                    contentScale = ContentScale.Fit,
                                 ),
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .matchParentSize()
-                                    .paint(
-                                        painter = painter,
-                                        alignment = Alignment.Center,
-                                        contentScale = ContentScale.Fit,
-                                    ),
-                            )
-                        }
+                        )
                     }
                 }
             }
