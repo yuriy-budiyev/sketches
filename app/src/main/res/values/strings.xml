@@ -60,4 +60,5 @@
     <string name="media_info_field_height">Height</string>
     <string name="media_info_field_size">Size</string>
     <string name="media_info_field_mime_type">Media type</string>
+    <string name="back">Back</string>
 </resources>

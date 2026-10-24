@@ -54,6 +54,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.computedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -245,9 +246,6 @@ fun BucketScreen(
         )
     }
     SystemBarsVisibility(visible = true)
-    val onBackPressedDispatcher by rememberUpdatedState(
-        LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher,
-    )
     val colorScheme = MaterialTheme.colorScheme
     val appBarVisible by remember {
         computedStateOf {
@@ -273,6 +271,10 @@ fun BucketScreen(
     ) {
         when (uiState) {
             is BucketScreenViewModel.UiState.Empty -> {
+                val onBackPressedDispatcherOwner = LocalOnBackPressedDispatcherOwner.current
+                SideEffect(onBackPressedDispatcherOwner) {
+                    onBackPressedDispatcherOwner?.onBackPressedDispatcher?.onBackPressed()
+                }
                 LaunchedEffect(Unit) {
                     mediaGridScrollConnection.reset()
                     if (selectedFiles.isNotEmpty()) {
@@ -281,7 +283,6 @@ fun BucketScreen(
                     if (allFiles.isNotEmpty()) {
                         allFiles = emptyList()
                     }
-                    onBackPressedDispatcher?.onBackPressed()
                 }
             }
             is BucketScreenViewModel.UiState.Loading -> {
@@ -328,6 +329,7 @@ fun BucketScreen(
             } else {
                 bucketName
             },
+            backButtonEnabled = true,
             visible = appBarVisible,
         ) {
             SimpleAction(

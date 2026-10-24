@@ -78,6 +78,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.computedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -189,9 +190,6 @@ fun ImageScreen(
     onCreateBookmark: (mediaId: Long) -> Unit,
     onDeleteBookmark: (mediaId: Long) -> Unit,
 ) {
-    val onBackPressedDispatcher by rememberUpdatedState(
-        LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher,
-    )
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -199,8 +197,9 @@ fun ImageScreen(
     ) {
         when (uiState) {
             is ImageScreenViewModel.UiState.Empty -> {
-                LaunchedEffect(Unit) {
-                    onBackPressedDispatcher?.onBackPressed()
+                val onBackPressedDispatcherOwner = LocalOnBackPressedDispatcherOwner.current
+                SideEffect(onBackPressedDispatcherOwner) {
+                    onBackPressedDispatcherOwner?.onBackPressedDispatcher?.onBackPressed()
                 }
             }
             is ImageScreenViewModel.UiState.Loading -> {
@@ -516,6 +515,7 @@ private fun ImageScreenLayout(
                 contentPaddingTop = contentPaddingTopVisible,
                 contentPaddingStart = contentPaddingStartVisible,
                 contentPaddingEnd = contentPaddingEndVisible,
+                backButtonEnabled = true,
             ) {
                 SimpleAction(
                     iconRes = R.drawable.ic_show_info,

@@ -60,7 +60,7 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.imageloader.cache.imageMemoryCache
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
-import com.github.yuriybudiyev.sketches.core.ui.components.ActionButtonHintPosition
+import com.github.yuriybudiyev.sketches.core.ui.components.HintPosition
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
@@ -261,7 +261,7 @@ fun SketchesMediaController(
                     R.string.play
                 },
             ),
-            hintPosition = ActionButtonHintPosition.Above,
+            hintPosition = HintPosition.Above,
             onClick = {
                 state.coroutineScope.launch {
                     if (state.isPlaying) {
@@ -333,7 +333,7 @@ fun SketchesMediaController(
                     R.string.enable_volume
                 },
             ),
-            hintPosition = ActionButtonHintPosition.Above,
+            hintPosition = HintPosition.Above,
             onClick = {
                 state.coroutineScope.launch {
                     if (state.isVolumeEnabled) {

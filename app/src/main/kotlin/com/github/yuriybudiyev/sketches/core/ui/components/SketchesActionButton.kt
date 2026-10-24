@@ -89,7 +89,7 @@ fun SketchesActionButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     iconColor: Color = MaterialTheme.colorScheme.onBackground,
-    hintPosition: ActionButtonHintPosition = ActionButtonHintPosition.Start,
+    hintPosition: HintPosition = HintPosition.Start,
 ) {
     val onClick by rememberUpdatedState(onClick)
     val coroutineScope = rememberCoroutineScope()
@@ -235,7 +235,7 @@ fun SketchesActionButton(
     }
 }
 
-enum class ActionButtonHintPosition {
+enum class HintPosition {
     Above,
     Below,
     Start,
@@ -243,7 +243,7 @@ enum class ActionButtonHintPosition {
 }
 
 private class HintPositionProvider(
-    private val position: ActionButtonHintPosition,
+    private val position: HintPosition,
 ): PopupPositionProvider {
 
     override fun calculatePosition(
@@ -253,13 +253,13 @@ private class HintPositionProvider(
         popupContentSize: IntSize,
     ): IntOffset =
         when (position) {
-            ActionButtonHintPosition.Above -> {
+            HintPosition.Above -> {
                 calculatePositionAbove(anchorBounds, windowSize, popupContentSize)
             }
-            ActionButtonHintPosition.Below -> {
+            HintPosition.Below -> {
                 calculatePositionBelow(anchorBounds, windowSize, popupContentSize)
             }
-            ActionButtonHintPosition.Start -> {
+            HintPosition.Start -> {
                 when (layoutDirection) {
                     LayoutDirection.Ltr -> {
                         calculatePositionLeft(anchorBounds, popupContentSize)
@@ -269,7 +269,7 @@ private class HintPositionProvider(
                     }
                 }
             }
-            ActionButtonHintPosition.End -> {
+            HintPosition.End -> {
                 when (layoutDirection) {
                     LayoutDirection.Ltr -> {
                         calculatePositionRight(anchorBounds, windowSize, popupContentSize)

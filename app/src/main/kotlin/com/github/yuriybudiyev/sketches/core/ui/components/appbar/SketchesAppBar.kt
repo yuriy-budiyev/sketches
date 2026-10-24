@@ -24,12 +24,14 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components.appbar
 
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
@@ -44,6 +46,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,18 +54,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.colors.topToBottomBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
+import com.github.yuriybudiyev.sketches.core.ui.components.HintPosition
+import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
 @Composable
 inline fun BoxScope.SketchesTopAppBar(
     text: String? = null,
+    backButtonEnabled: Boolean = false,
     visible: Boolean = true,
     actions: @Composable () -> Unit = {},
 ) {
@@ -100,6 +108,7 @@ inline fun BoxScope.SketchesTopAppBar(
                         shape = RectangleShape,
                     ),
                 text = text,
+                backButtonEnabled = backButtonEnabled,
                 contentPaddingStart = paddings.calculateStartPadding(layoutDirection),
                 contentPaddingEnd = paddings.calculateEndPadding(layoutDirection),
                 contentPaddingBottom = paddings.calculateBottomPadding(),
@@ -113,6 +122,7 @@ inline fun BoxScope.SketchesTopAppBar(
 inline fun SketchesAppBar(
     modifier: Modifier = Modifier,
     text: String? = null,
+    backButtonEnabled: Boolean = false,
     contentPaddingStart: Dp = 0.dp,
     contentPaddingTop: Dp = 0.dp,
     contentPaddingEnd: Dp = 0.dp,
@@ -127,24 +137,38 @@ inline fun SketchesAppBar(
             )
             .height(LocalDimens.current.material3AppBarHeight)
             .padding(
-                start = contentPaddingStart + 16.dp,
-                end = contentPaddingEnd + 4.dp,
+                start = contentPaddingStart,
+                end = contentPaddingEnd,
             ),
-        horizontalArrangement = Arrangement.End,
+        horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        Spacer(modifier = Modifier.width(4.dp))
+        if (backButtonEnabled) {
+            val onBackPressedDispatcherOwner = LocalOnBackPressedDispatcherOwner.current
+            SketchesActionButton(
+                icon = painterResource(R.drawable.ic_back),
+                hint = stringResource(R.string.back),
+                hintPosition = HintPosition.End,
+                onClick = {
+                    onBackPressedDispatcherOwner?.onBackPressedDispatcher?.onBackPressed()
+                },
+            )
+        }
+        Spacer(modifier = Modifier.width(12.dp))
         if (text != null) {
             Text(
                 text = text,
-                modifier = Modifier
-                    .padding(end = 4.dp)
-                    .weight(1F),
-                fontSize = 22.sp,
-                lineHeight = 28.sp,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1F),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+        } else {
+            Spacer(modifier = Modifier.weight(1F))
         }
+        Spacer(modifier = Modifier.width(12.dp))
         actions()
+        Spacer(modifier = Modifier.width(4.dp))
     }
 }
