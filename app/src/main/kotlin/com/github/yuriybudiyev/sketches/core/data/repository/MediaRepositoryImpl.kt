@@ -111,7 +111,7 @@ class MediaRepositoryImpl @Inject constructor(
                 val updated = appContext.checkMediaAccess()
                 currentMediaAccess = updated
                 if (current != updated || updated == MediaAccess.UserSelected) {
-                    updateMediaStoreEntities()
+                    updateMedia()
                 }
             }
         }
@@ -169,7 +169,7 @@ class MediaRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun updateMediaStoreEntities(
+    private fun updateMedia(
         delayMillis: Long = 0L,
         nonCancellable: Boolean = false,
     ) {
@@ -180,26 +180,26 @@ class MediaRepositoryImpl @Inject constructor(
                     updateAllFilesJob = defaultCoroutineScope.launch {
                         withContext(NonCancellable) {
                             delay(timeMillis = delayMillis)
-                            updateMediaStoreEntitiesImpl()
+                            updateMediaImpl()
                         }
                     }
                 } else {
                     updateAllFilesJob = defaultCoroutineScope.launch {
                         delay(timeMillis = delayMillis)
-                        updateMediaStoreEntitiesImpl()
+                        updateMediaImpl()
                     }
                 }
             }
         }
     }
 
-    private suspend fun updateMediaStoreEntitiesImpl() {
+    private suspend fun updateMediaImpl() {
         val imageEntities: List<MediaEntity>
         val videoEntities: List<MediaEntity>
         withContext(ioDispatcher) {
             contentProviderMutex.withLock {
-                imageEntities = queryMediaStoreEntities(MediaType.Image)
-                videoEntities = queryMediaStoreEntities(MediaType.Video)
+                imageEntities = queryMedia(MediaType.Image)
+                videoEntities = queryMedia(MediaType.Video)
             }
         }
         val allEntities = ArrayList<MediaEntity>(imageEntities.size + videoEntities.size)
@@ -209,7 +209,7 @@ class MediaRepositoryImpl @Inject constructor(
         entitiesFlow.emit(allEntities)
     }
 
-    private fun queryMediaStoreEntities(mediaType: MediaType): List<MediaEntity> {
+    private fun queryMedia(mediaType: MediaType): List<MediaEntity> {
         val contentUri = mediaType.contentUri()
         val projection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             arrayOf(
@@ -610,7 +610,7 @@ class MediaRepositoryImpl @Inject constructor(
         startBookmarksGarbageCollection()
         startHiddenBucketsFlow()
         startHiddenBucketsGarbageCollection()
-        updateMediaStoreEntities()
+        updateMedia()
         val mediaObserver = MediaObserver()
         with(appContext.contentResolver) {
             registerContentObserver(
@@ -624,6 +624,11 @@ class MediaRepositoryImpl @Inject constructor(
                 mediaObserver,
             )
         }
+    }
+
+    private companion object {
+
+        const val MediaUpdateInterval: Long = 2000L
     }
 
     private data class MediaEntity(
@@ -655,11 +660,12 @@ class MediaRepositoryImpl @Inject constructor(
 
         override fun onChange(selfChange: Boolean) {
             val currentCallTime = SystemClock.uptimeMillis()
-            if (currentCallTime - lastCallTime > 2000L) {
+            val elapsedTime = currentCallTime - lastCallTime
+            if (elapsedTime > MediaUpdateInterval) {
                 lastCallTime = currentCallTime
-                updateMediaStoreEntities(nonCancellable = true)
+                updateMedia(nonCancellable = true)
             } else {
-                updateMediaStoreEntities(delayMillis = 2000L)
+                updateMedia(delayMillis = MediaUpdateInterval - elapsedTime)
             }
         }
 
