@@ -36,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.paint
@@ -190,7 +191,10 @@ fun SketchesPreviewAsyncImage(
                                     ratio = ratio,
                                     matchHeightConstraintsFirst = ratio < 1F,
                                 )
-                                .blur(radius = LocalDimens.current.placeholderBlurRadius),
+                                .blur(
+                                    radius = LocalDimens.current.placeholderBlurRadius,
+                                    edgeTreatment = BlurredEdgeTreatment.Rectangle,
+                                ),
                         ) {
                             Box(
                                 modifier = Modifier
