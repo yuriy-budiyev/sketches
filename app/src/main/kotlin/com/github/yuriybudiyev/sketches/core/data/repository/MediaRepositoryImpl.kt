@@ -600,7 +600,7 @@ class MediaRepositoryImpl @Inject constructor(
 
     private companion object {
 
-        const val MediaUpdateInterval: Long = 2000L
+        const val MediaUpdateInterval: Long = 1500L
 
         fun <T> cachingMutableSharedFlow(): MutableSharedFlow<T> =
             MutableSharedFlow(
