@@ -541,53 +541,25 @@ class MediaRepositoryImpl @Inject constructor(
         CoroutineScope(defaultDispatcher + SupervisorJob())
 
     private val entitiesFlow: MutableSharedFlow<List<MediaEntity>> =
-        MutableSharedFlow(
-            replay = 1,
-            extraBufferCapacity = 0,
-            onBufferOverflow = BufferOverflow.DROP_OLDEST,
-        )
+        cachingMutableSharedFlow()
 
     private val mediaFilesFlow: MutableSharedFlow<List<MediaFile>> =
-        MutableSharedFlow(
-            replay = 1,
-            extraBufferCapacity = 0,
-            onBufferOverflow = BufferOverflow.DROP_OLDEST,
-        )
+        cachingMutableSharedFlow()
 
     private val mediaFilesExcludingHiddenBucketsFlow: MutableSharedFlow<List<MediaFile>> =
-        MutableSharedFlow(
-            replay = 1,
-            extraBufferCapacity = 0,
-            onBufferOverflow = BufferOverflow.DROP_OLDEST,
-        )
+        cachingMutableSharedFlow()
 
     private val bucketsFlow: MutableSharedFlow<List<MediaBucket>> =
-        MutableSharedFlow(
-            replay = 1,
-            extraBufferCapacity = 0,
-            onBufferOverflow = BufferOverflow.DROP_OLDEST,
-        )
+        cachingMutableSharedFlow()
 
     private val bookmarksFlow: MutableSharedFlow<List<MediaFile>> =
-        MutableSharedFlow(
-            replay = 1,
-            extraBufferCapacity = 0,
-            onBufferOverflow = BufferOverflow.DROP_OLDEST,
-        )
+        cachingMutableSharedFlow()
 
     private val bookmarksByMediaIdsFlow: MutableSharedFlow<Map<Long, Bookmark>> =
-        MutableSharedFlow(
-            replay = 1,
-            extraBufferCapacity = 0,
-            onBufferOverflow = BufferOverflow.DROP_OLDEST,
-        )
+        cachingMutableSharedFlow()
 
     private val hiddenBucketsFlow: MutableSharedFlow<Set<Long>> =
-        MutableSharedFlow(
-            replay = 1,
-            extraBufferCapacity = 0,
-            onBufferOverflow = BufferOverflow.DROP_OLDEST,
-        )
+        cachingMutableSharedFlow()
 
     @Volatile
     private var updateAllFilesJob: Job? = null
@@ -629,6 +601,13 @@ class MediaRepositoryImpl @Inject constructor(
     private companion object {
 
         const val MediaUpdateInterval: Long = 2000L
+
+        fun <T> cachingMutableSharedFlow(): MutableSharedFlow<T> =
+            MutableSharedFlow(
+                replay = 1,
+                extraBufferCapacity = 0,
+                onBufferOverflow = BufferOverflow.DROP_OLDEST,
+            )
     }
 
     private data class MediaEntity(
