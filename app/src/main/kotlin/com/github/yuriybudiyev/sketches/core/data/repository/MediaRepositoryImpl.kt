@@ -79,7 +79,6 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.EmptyCoroutineContext
 
 @Singleton
 class MediaRepositoryImpl @Inject constructor(
@@ -177,27 +176,37 @@ class MediaRepositoryImpl @Inject constructor(
         defaultCoroutineScope.launch {
             scheduleAllFilesUpdateMutex.withLock {
                 updateAllFilesJob?.cancel()
-                updateAllFilesJob = defaultCoroutineScope.launch {
-                    withContext(if (nonCancellable) NonCancellable else EmptyCoroutineContext) {
-                        delay(timeMillis = delayMillis)
-                        val imageEntities: List<MediaEntity>
-                        val videoEntities: List<MediaEntity>
-                        withContext(ioDispatcher) {
-                            contentProviderMutex.withLock {
-                                imageEntities = queryMediaStoreEntities(MediaType.Image)
-                                videoEntities = queryMediaStoreEntities(MediaType.Video)
-                            }
+                if (nonCancellable) {
+                    updateAllFilesJob = defaultCoroutineScope.launch {
+                        withContext(NonCancellable) {
+                            delay(timeMillis = delayMillis)
+                            updateMediaStoreEntitiesImpl()
                         }
-                        val allEntities =
-                            ArrayList<MediaEntity>(imageEntities.size + videoEntities.size)
-                        allEntities.addAll(imageEntities)
-                        allEntities.addAll(videoEntities)
-                        allEntities.sortByDescending { entity -> entity.dateAdded }
-                        entitiesFlow.emit(allEntities)
+                    }
+                } else {
+                    updateAllFilesJob = defaultCoroutineScope.launch {
+                        delay(timeMillis = delayMillis)
+                        updateMediaStoreEntitiesImpl()
                     }
                 }
             }
         }
+    }
+
+    private suspend fun updateMediaStoreEntitiesImpl() {
+        val imageEntities: List<MediaEntity>
+        val videoEntities: List<MediaEntity>
+        withContext(ioDispatcher) {
+            contentProviderMutex.withLock {
+                imageEntities = queryMediaStoreEntities(MediaType.Image)
+                videoEntities = queryMediaStoreEntities(MediaType.Video)
+            }
+        }
+        val allEntities = ArrayList<MediaEntity>(imageEntities.size + videoEntities.size)
+        allEntities.addAll(imageEntities)
+        allEntities.addAll(videoEntities)
+        allEntities.sortByDescending { entity -> entity.dateAdded }
+        entitiesFlow.emit(allEntities)
     }
 
     private fun queryMediaStoreEntities(mediaType: MediaType): List<MediaEntity> {
