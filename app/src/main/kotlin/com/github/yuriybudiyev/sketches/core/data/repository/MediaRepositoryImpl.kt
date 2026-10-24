@@ -646,11 +646,11 @@ class MediaRepositoryImpl @Inject constructor(
 
         override fun onChange(selfChange: Boolean) {
             val currentCallTime = SystemClock.uptimeMillis()
-            if (currentCallTime - lastCallTime > 1000L) {
+            if (currentCallTime - lastCallTime > 2000L) {
                 lastCallTime = currentCallTime
                 updateMediaStoreEntities(nonCancellable = true)
             } else {
-                updateMediaStoreEntities(delayMillis = 1000L)
+                updateMediaStoreEntities(delayMillis = 2000L)
             }
         }
 
