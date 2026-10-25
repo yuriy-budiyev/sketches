@@ -24,19 +24,16 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components.media
 
-import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
@@ -46,8 +43,6 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -64,13 +59,11 @@ import coil3.size.Scale
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.imageloader.cache.allowLocalCacheIntercept
 import com.github.yuriybudiyev.sketches.core.imageloader.cache.imageMemoryCache
-import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SketchesThumbnailAsyncImage(
@@ -148,7 +141,10 @@ fun SketchesPreviewAsyncImage(
     onTap: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
-    val request = remember(uri, context) {
+    val request = remember(
+        uri,
+        context,
+    ) {
         ImageRequest
             .Builder(context)
             .data(uri)
@@ -167,36 +163,6 @@ fun SketchesPreviewAsyncImage(
         contentScale = ContentScale.None,
         filterQuality = FilterQuality.High,
     )
-    val alphaAnim = remember {
-        Animatable(initialValue = 0F).apply {
-            updateBounds(lowerBound = 0F, upperBound = 1F)
-        }
-    }
-    var thumbnailVisible by remember { mutableStateOf(true) }
-    LaunchedEffect(uri, context) {
-        alphaAnim.snapTo(targetValue = 0F)
-        thumbnailVisible = true
-        snapshotFlow { painterState }.collectLatest { painterState ->
-            when (painterState) {
-                is AsyncImagePainter.State.Empty,
-                is AsyncImagePainter.State.Loading -> {
-                    alphaAnim.snapTo(targetValue = 0F)
-                    thumbnailVisible = true
-                }
-                is AsyncImagePainter.State.Success -> {
-                    alphaAnim.animateTo(
-                        targetValue = 1F,
-                        animationSpec = defaultAnimationSpec(),
-                    )
-                    thumbnailVisible = false
-                }
-                is AsyncImagePainter.State.Error -> {
-                    alphaAnim.snapTo(targetValue = 0F)
-                    thumbnailVisible = false
-                }
-            }
-        }
-    }
     Box(
         modifier = Modifier
             .semantics {
@@ -206,15 +172,10 @@ fun SketchesPreviewAsyncImage(
             .then(modifier),
         contentAlignment = Alignment.Center,
     ) {
-        if (painterState is AsyncImagePainter.State.Error) {
-            Icon(
-                painter = painterResource(R.drawable.ic_image_error),
-                contentDescription = contentDescription,
-                tint = MaterialTheme.colorScheme.onBackground,
-            )
-        } else {
-            if (thumbnailVisible) {
-                val thumbnailPainter: Painter? = remember(uri, context) {
+        when (painterState) {
+            is AsyncImagePainter.State.Empty,
+            is AsyncImagePainter.State.Loading -> {
+                val thumbnailPainter = remember(uri, context) {
                     context.imageMemoryCache[uri]?.asPainter(context)
                 }
                 if (thumbnailPainter != null) {
@@ -240,13 +201,9 @@ fun SketchesPreviewAsyncImage(
                     }
                 }
             }
-            if (painterState is AsyncImagePainter.State.Success) {
+            is AsyncImagePainter.State.Success -> {
                 SketchesZoomableBox(
-                    modifier = Modifier
-                        .graphicsLayer {
-                            alpha = alphaAnim.value
-                        }
-                        .matchParentSize(),
+                    modifier = Modifier.matchParentSize(),
                     zoomState = zoomState,
                     onTap = onTap,
                 ) {
@@ -268,6 +225,13 @@ fun SketchesPreviewAsyncImage(
                         )
                     }
                 }
+            }
+            is AsyncImagePainter.State.Error -> {
+                Icon(
+                    painter = painterResource(R.drawable.ic_image_error),
+                    contentDescription = contentDescription,
+                    tint = MaterialTheme.colorScheme.onBackground,
+                )
             }
         }
     }
