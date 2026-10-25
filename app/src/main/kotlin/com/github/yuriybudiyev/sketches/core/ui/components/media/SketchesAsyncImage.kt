@@ -155,13 +155,13 @@ fun SketchesPreviewAsyncImage(
             .allowLocalCacheIntercept(false)
             .build()
     }
-    var painterState by remember {
+    var previewPainterState by remember {
         mutableStateOf<AsyncImagePainter.State>(AsyncImagePainter.State.Empty)
     }
-    val painter = rememberAsyncImagePainter(
+    val previewPainter = rememberAsyncImagePainter(
         model = request,
         onState = { state ->
-            painterState = state
+            previewPainterState = state
         },
         contentScale = ContentScale.None,
         filterQuality = FilterQuality.High,
@@ -175,8 +175,8 @@ fun SketchesPreviewAsyncImage(
     LaunchedEffect(uri, context) {
         alphaAnim.snapTo(targetValue = 0F)
         thumbnailVisible = true
-        snapshotFlow { painterState }.collect { painterState ->
-            when (painterState) {
+        snapshotFlow { previewPainterState }.collect { previewPainterState ->
+            when (previewPainterState) {
                 is AsyncImagePainter.State.Empty,
                 is AsyncImagePainter.State.Loading -> {
                     alphaAnim.snapTo(targetValue = 0F)
@@ -205,7 +205,7 @@ fun SketchesPreviewAsyncImage(
             .then(modifier),
         contentAlignment = Alignment.Center,
     ) {
-        if (painterState is AsyncImagePainter.State.Error) {
+        if (previewPainterState is AsyncImagePainter.State.Error) {
             Icon(
                 painter = painterResource(R.drawable.ic_image_error),
                 contentDescription = contentDescription,
@@ -239,7 +239,7 @@ fun SketchesPreviewAsyncImage(
                     }
                 }
             }
-            if (painterState is AsyncImagePainter.State.Success) {
+            if (previewPainterState is AsyncImagePainter.State.Success) {
                 SketchesZoomableBox(
                     modifier = Modifier
                         .graphicsLayer {
@@ -249,7 +249,7 @@ fun SketchesPreviewAsyncImage(
                     zoomState = zoomState,
                     onTap = onTap,
                 ) {
-                    val size = painter.intrinsicSize
+                    val size = previewPainter.intrinsicSize
                     if (size != Size.Zero && size != Size.Unspecified) {
                         val ratio = size.width / size.height
                         Box(
@@ -260,7 +260,7 @@ fun SketchesPreviewAsyncImage(
                                     matchHeightConstraintsFirst = ratio < 1F,
                                 )
                                 .paint(
-                                    painter = painter,
+                                    painter = previewPainter,
                                     contentScale = ContentScale.Fit,
                                     alignment = Alignment.Center,
                                 ),
