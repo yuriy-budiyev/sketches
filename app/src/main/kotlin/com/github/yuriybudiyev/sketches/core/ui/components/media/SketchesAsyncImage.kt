@@ -70,6 +70,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SketchesThumbnailAsyncImage(
@@ -175,7 +176,7 @@ fun SketchesPreviewAsyncImage(
     LaunchedEffect(uri, context) {
         alphaAnim.snapTo(targetValue = 0F)
         thumbnailVisible = true
-        snapshotFlow { painterState }.collect { painterState ->
+        snapshotFlow { painterState }.collectLatest { painterState ->
             when (painterState) {
                 is AsyncImagePainter.State.Empty,
                 is AsyncImagePainter.State.Loading -> {
