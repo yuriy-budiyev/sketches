@@ -27,14 +27,15 @@ package com.github.yuriybudiyev.sketches.core.imageloader.utils
 import android.content.Context
 import android.graphics.Bitmap
 import coil3.size.Size
+import com.github.yuriybudiyev.sketches.core.math.floorEven
 import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
 import kotlin.math.sqrt
 
 /**
  * Max [Bitmap] size assuming most images have 32 bits per pixel,
- * allowing pixels to take 20% of max memory.
+ * allowing pixels to take 15% of max memory.
  */
 fun Context.getMaxBitmapSize(): Size {
-    val size = sqrt(getMaxMemory().toDouble() / 20.0).toInt()
+    val size = floorEven(sqrt(getMaxMemory().toDouble() * 0.0375).toInt())
     return Size(width = size, height = size)
 }

@@ -27,8 +27,14 @@ package com.github.yuriybudiyev.sketches.core.math
 /**
  * Closest even value to this integer [x] towards positive infinity.
  */
-fun closestEven(x: Int): Int =
+fun ceilEven(x: Int): Int =
     x + 1 and -2
+
+/**
+ * Closest even value to this integer [x] towards negative infinity.
+ */
+fun floorEven(x: Int): Int =
+    x and -2
 
 /**
  * Converts this [Long] value to [Int].
