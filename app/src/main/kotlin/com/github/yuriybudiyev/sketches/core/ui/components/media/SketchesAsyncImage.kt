@@ -24,15 +24,12 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components.media
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,12 +41,8 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -57,19 +50,13 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import coil3.BitmapImage
-import coil3.Image
 import coil3.compose.AsyncImagePainter
 import coil3.compose.asPainter
 import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
-import coil3.imageLoader
-import coil3.request.ErrorResult
 import coil3.request.ImageRequest
-import coil3.request.SuccessResult
 import coil3.size.Scale
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.imageloader.cache.allowLocalCacheIntercept
 import com.github.yuriybudiyev.sketches.core.imageloader.cache.imageMemoryCache
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
@@ -248,99 +235,4 @@ fun SketchesPreviewAsyncImage(
             }
         }
     }
-}
-
-@Composable
-fun SketchesPreviewAsyncImage2(
-    file: MediaFile,
-    contentDescription: String,
-    modifier: Modifier = Modifier,
-    zoomState: ZoomState = rememberZoomState(),
-    onTap: (() -> Unit)? = null,
-) {
-    val context = LocalContext.current
-    val request = remember(file, context) {
-        ImageRequest
-            .Builder(context)
-            .data(file.uri)
-            .size(coil3.size.Size.ORIGINAL)
-            .allowLocalCacheIntercept(false)
-            .build()
-    }
-    val imagePainter = remember(context) { SketchesPreviewPainter(context) }
-    LaunchedEffect(request, context) {
-        val imageResult = context.imageLoader.execute(request)
-        when (imageResult) {
-            is SuccessResult -> {
-                imagePainter.image = imageResult.image
-            }
-            is ErrorResult -> {
-                imagePainter.image = null
-            }
-        }
-    }
-}
-
-private class SketchesPreviewPainter(private val context: Context): Painter(), RememberObserver {
-
-    var image: Image? = null
-        set(value) {
-            field = value
-            painter = value?.asPainter(context, FilterQuality.High)
-        }
-
-    override fun applyAlpha(alpha: Float): Boolean {
-        this.alpha = alpha
-        return true
-    }
-
-    override fun applyColorFilter(colorFilter: ColorFilter?): Boolean {
-        this.colorFilter = colorFilter
-        return true
-    }
-
-    override fun DrawScope.onDraw() {
-        val painter = this@SketchesPreviewPainter.painter
-        if (!isRemembered || painter == null) {
-            return
-        }
-        with(painter) {
-            draw(size, alpha, colorFilter)
-        }
-    }
-
-    override val intrinsicSize: Size
-        get() = painter?.intrinsicSize ?: Size.Unspecified
-
-    override fun onRemembered() {
-        (painter as? RememberObserver)?.onRemembered()
-        isRemembered = true
-    }
-
-    override fun onForgotten() {
-        (painter as? RememberObserver)?.onForgotten()
-        clear()
-    }
-
-    override fun onAbandoned() {
-        (painter as? RememberObserver)?.onAbandoned()
-        clear()
-    }
-
-    private fun clear() {
-        isRemembered = false
-        val image = this.image
-        this.image = null
-        if (image is BitmapImage) {
-            val bitmap = image.bitmap
-            if (!bitmap.isRecycled) {
-                bitmap.recycle()
-            }
-        }
-    }
-
-    private var painter: Painter? by mutableStateOf(null)
-    private var isRemembered: Boolean = false
-    private var alpha: Float = DefaultAlpha
-    private var colorFilter: ColorFilter? = null
 }
