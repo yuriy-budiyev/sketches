@@ -134,7 +134,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndica
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SimpleAction
-import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesPreviewAsyncImage2
+import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesPreviewAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.SketchesMediaPlayer
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.rememberSketchesMediaState
@@ -864,7 +864,7 @@ private fun ImagePage(
             displayedPage = currentPage == number
         }
     }
-    SketchesPreviewAsyncImage2(
+    SketchesPreviewAsyncImage(
         uri = fileUri,
         contentDescription = stringResource(R.string.image),
         onTap = onPageTap,
