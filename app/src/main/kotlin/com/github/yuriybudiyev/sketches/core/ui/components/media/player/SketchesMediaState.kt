@@ -58,7 +58,7 @@ import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
-import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
+import com.github.yuriybudiyev.sketches.core.media.getMaxMediaBufferSize
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -192,11 +192,9 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
             .setLoadControl(
                 DefaultLoadControl
                     .Builder()
-                    .setTargetBufferBytes(
-                        (context.getMaxMemory() / 8L)
-                            .coerceAtMost(16777216L)
-                            .toInt(),
-                    )
+                    .setBufferDurationsMs(3000, 5000, 1000, 1000)
+                    .setTargetBufferBytes(context.getMaxMediaBufferSize())
+                    .setPrioritizeTimeOverSizeThresholds(false)
                     .build(),
             )
             .setMediaSourceFactory(ProgressiveMediaSource.Factory(DefaultDataSource.Factory(context)))

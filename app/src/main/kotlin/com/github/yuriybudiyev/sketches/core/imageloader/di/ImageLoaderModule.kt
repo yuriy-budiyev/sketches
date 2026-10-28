@@ -40,7 +40,7 @@ import coil3.video.VideoFrameDecoder
 import com.github.yuriybudiyev.sketches.core.imageloader.cache.LocalCacheInterceptor
 import com.github.yuriybudiyev.sketches.core.imageloader.cache.imageMemoryCache
 import com.github.yuriybudiyev.sketches.core.imageloader.executor.ImageLoaderExecutor
-import com.github.yuriybudiyev.sketches.core.imageloader.utils.getMaxBitmapSize
+import com.github.yuriybudiyev.sketches.core.media.getMaxBitmapSize
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.imageloader.utils
+package com.github.yuriybudiyev.sketches.core.media
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -39,3 +39,9 @@ fun Context.getMaxBitmapSize(): Size {
     val size = floorEven(sqrt(getMaxMemory().toDouble() * 0.0375).toInt())
     return Size(width = size, height = size)
 }
+
+/**
+ * Max media buffer size for single player instance (15% of max memory).
+ */
+fun Context.getMaxMediaBufferSize(): Int =
+    floorEven((getMaxMemory().toDouble() * 0.15).toInt())
