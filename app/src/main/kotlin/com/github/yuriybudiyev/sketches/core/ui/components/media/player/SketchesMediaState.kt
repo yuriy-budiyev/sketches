@@ -187,12 +187,10 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
 
     @OptIn(UnstableApi::class)
     private fun createPlayer(context: Context): Player =
-        ExoPlayer
-            .Builder(context)
+        ExoPlayer.Builder(context)
             .setLoadControl(
-                DefaultLoadControl
-                    .Builder()
-                    .setBufferDurationsMs(3000, 5000, 1000, 1000)
+                DefaultLoadControl.Builder()
+                    .setBufferDurationsMs(3000, 5000, 500, 500)
                     .setTargetBufferBytes(context.getMaxMediaBufferSize())
                     .setPrioritizeTimeOverSizeThresholds(false)
                     .build(),

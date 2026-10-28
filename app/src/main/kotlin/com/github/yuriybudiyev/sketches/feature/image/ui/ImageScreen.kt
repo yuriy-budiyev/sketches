@@ -757,6 +757,7 @@ private fun MediaPager(
     HorizontalPager(
         state = state,
         key = { page -> files[page].id },
+        beyondViewportPageCount = 0,
         flingBehavior = PagerDefaults.flingBehavior(
             state = state,
             snapAnimationSpec = defaultAnimationSpec(),
