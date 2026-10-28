@@ -77,7 +77,7 @@ private data object DefaultDimens: Dimens {
     override val mediaItemBorderThickness: Dp = 1.dp
     override val mediaBarItemSpacing: Dp = 1.dp
     override val mediaBarVideoIconPadding: Dp = 2.dp
-    override val placeholderBlurRadius: Dp = 4.dp
+    override val placeholderBlurRadius: Dp = 8.dp
     override val shadowBlurRadius: Dp = 4.dp
     override val actionButtonSize: Dp = 48.dp
 }

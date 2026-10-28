@@ -45,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Size
@@ -194,18 +195,16 @@ fun SketchesMediaDisplay(
                                 ratio = ratio,
                                 matchHeightConstraintsFirst = ratio < 1F,
                             )
-                            .blur(radius = LocalDimens.current.placeholderBlurRadius),
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .paint(
-                                    painter = thumbnailPainter,
-                                    alignment = Alignment.Center,
-                                    contentScale = ContentScale.Fit,
-                                ),
-                        )
-                    }
+                            .blur(
+                                radius = LocalDimens.current.placeholderBlurRadius,
+                                edgeTreatment = BlurredEdgeTreatment.Rectangle,
+                            )
+                            .paint(
+                                painter = thumbnailPainter,
+                                alignment = Alignment.Center,
+                                contentScale = ContentScale.Fit,
+                            ),
+                    )
                 }
             }
         }
