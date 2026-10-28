@@ -180,6 +180,7 @@ fun SketchesPreviewAsyncImage(
         val imageResult = context.imageLoader.execute(request)
         when (imageResult) {
             is SuccessResult -> {
+                errorVisible = false
                 val resultImage = imageResult.image
                 image = resultImage
                 imagePainter = resultImage.asPainter(context, FilterQuality.High)
@@ -187,8 +188,11 @@ fun SketchesPreviewAsyncImage(
                 thumbnailVisible = false
             }
             is ErrorResult -> {
-                thumbnailVisible = false
                 errorVisible = true
+                thumbnailVisible = false
+                imageAlpha.snapTo(0F)
+                imagePainter = null
+                image = null
             }
         }
     }
