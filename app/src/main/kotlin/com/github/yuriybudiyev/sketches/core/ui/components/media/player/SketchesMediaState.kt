@@ -190,7 +190,7 @@ private class SketchesMediaStateImpl @RememberInComposition constructor(
         ExoPlayer.Builder(context)
             .setLoadControl(
                 DefaultLoadControl.Builder()
-                    .setBufferDurationsMs(3000, 5000, 500, 500)
+                    .setBufferDurationsMs(2000, 4000, 500, 500)
                     .setTargetBufferBytes(context.getMaxMediaBufferSize())
                     .setPrioritizeTimeOverSizeThresholds(false)
                     .build(),
