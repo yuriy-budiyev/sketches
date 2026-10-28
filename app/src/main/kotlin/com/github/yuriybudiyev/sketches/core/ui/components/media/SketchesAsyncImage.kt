@@ -24,12 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components.media
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +46,8 @@ import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -50,15 +55,22 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import coil3.BitmapImage
+import coil3.Image
 import coil3.compose.AsyncImagePainter
 import coil3.compose.asPainter
 import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
+import coil3.imageLoader
+import coil3.request.CachePolicy
+import coil3.request.ErrorResult
 import coil3.request.ImageRequest
+import coil3.request.SuccessResult
 import coil3.size.Scale
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.imageloader.cache.allowLocalCacheIntercept
 import com.github.yuriybudiyev.sketches.core.imageloader.cache.imageMemoryCache
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
@@ -233,6 +245,146 @@ fun SketchesPreviewAsyncImage(
                     tint = MaterialTheme.colorScheme.onBackground,
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun SketchesPreviewAsyncImage2(
+    uri: String,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+    zoomState: ZoomState = rememberZoomState(),
+    onTap: (() -> Unit)? = null,
+) {
+    val context = LocalContext.current
+    val request = remember(
+        uri,
+        context,
+    ) {
+        ImageRequest
+            .Builder(context)
+            .data(uri)
+            .memoryCachePolicy(CachePolicy.DISABLED)
+            .diskCachePolicy(CachePolicy.DISABLED)
+            .size(coil3.size.Size.ORIGINAL)
+            .allowLocalCacheIntercept(false)
+            .build()
+    }
+    var thumbnailVisible by remember { mutableStateOf(true) }
+    var imageVisible by remember { mutableStateOf(false) }
+    var errorVisible by remember { mutableStateOf(false) }
+    val imageAlpha = remember { Animatable(0F).apply { updateBounds(0F, 1F) } }
+    var imagePainter by remember { mutableStateOf<Painter?>(null) }
+    var image by remember { mutableStateOf<Image?>(null) }
+    LaunchedEffect(request, context) {
+        thumbnailVisible = true
+        imageVisible = false
+        errorVisible = false
+        imageAlpha.snapTo(0F)
+        imagePainter = null
+        image = null
+        val imageResult = context.imageLoader.execute(request)
+        when (imageResult) {
+            is SuccessResult -> {
+                val resultImage = imageResult.image
+                image = resultImage
+                imagePainter = resultImage.asPainter(context)
+                imageVisible = true
+                imageAlpha.animateTo(1F, defaultAnimationSpec())
+                thumbnailVisible = false
+            }
+            is ErrorResult -> {
+                thumbnailVisible = false
+                errorVisible = true
+            }
+        }
+    }
+    DisposableEffect(image) {
+        val image = image
+        onDispose {
+            if (image is BitmapImage) {
+                val bitmap = image.bitmap
+                if (!bitmap.isRecycled) {
+                    bitmap.recycle()
+                }
+            }
+        }
+    }
+    Box(
+        modifier = Modifier
+            .semantics {
+                this.contentDescription = contentDescription
+                this.role = Role.Image
+            }
+            .then(modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (thumbnailVisible) {
+            val thumbnailPainter = remember(uri, context) {
+                context.imageMemoryCache[uri]?.asPainter(context)
+            }
+            if (thumbnailPainter != null) {
+                val size = thumbnailPainter.intrinsicSize
+                if (size != Size.Zero && size != Size.Unspecified) {
+                    val ratio = size.width / size.height
+                    Box(
+                        modifier = Modifier
+                            .aspectRatio(
+                                ratio = ratio,
+                                matchHeightConstraintsFirst = ratio < 1F,
+                            )
+                            .blur(
+                                radius = LocalDimens.current.placeholderBlurRadius,
+                                edgeTreatment = BlurredEdgeTreatment.Rectangle,
+                            )
+                            .paint(
+                                painter = thumbnailPainter,
+                                alignment = Alignment.Center,
+                                contentScale = ContentScale.Fit,
+                            ),
+                    )
+                }
+            }
+        }
+        if (imageVisible) {
+            val imagePainter = imagePainter
+            if (imagePainter != null) {
+                SketchesZoomableBox(
+                    modifier = Modifier
+                        .graphicsLayer {
+                            alpha = imageAlpha.value
+                        }
+                        .matchParentSize(),
+                    zoomState = zoomState,
+                    onTap = onTap,
+                ) {
+                    val size = imagePainter.intrinsicSize
+                    if (size != Size.Zero && size != Size.Unspecified) {
+                        val ratio = size.width / size.height
+                        Box(
+                            modifier = Modifier
+                                .zoomable()
+                                .aspectRatio(
+                                    ratio = ratio,
+                                    matchHeightConstraintsFirst = ratio < 1F,
+                                )
+                                .paint(
+                                    painter = imagePainter,
+                                    contentScale = ContentScale.Fit,
+                                    alignment = Alignment.Center,
+                                ),
+                        )
+                    }
+                }
+            }
+        }
+        if (errorVisible) {
+            Icon(
+                painter = painterResource(R.drawable.ic_image_error),
+                contentDescription = contentDescription,
+                tint = MaterialTheme.colorScheme.onBackground,
+            )
         }
     }
 }
