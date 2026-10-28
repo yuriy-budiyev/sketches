@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.ui.components.media.player
 
 import android.view.TextureView
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -36,10 +37,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -48,6 +51,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -59,6 +63,7 @@ import coil3.compose.asPainter
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.imageloader.cache.imageMemoryCache
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
+import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.HintPosition
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
@@ -85,7 +90,6 @@ fun SketchesMediaPlayer(
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     controlsBackgroundColor: Color = backgroundColor.withLowTransparency(),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
-    enablePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
     Box(modifier = modifier) {
@@ -96,7 +100,6 @@ fun SketchesMediaPlayer(
             onTap = onDisplayTap,
             backgroundColor = backgroundColor,
             indicatorColor = controlsColor,
-            enablePlaceholder = enablePlaceholder,
             enableErrorIndicator = enableErrorIndicator,
         )
         DefaultAnimatedVisibility(
@@ -141,17 +144,77 @@ fun SketchesMediaDisplay(
     onTap: (() -> Unit)? = null,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     indicatorColor: Color = MaterialTheme.colorScheme.onBackground,
-    enablePlaceholder: Boolean = true,
     enableErrorIndicator: Boolean = true,
 ) {
+    val videoAlpha = remember { Animatable(0F).apply { updateBounds(0F, 1F) } }
+    var thumbnailVisible by remember { mutableStateOf(true) }
+    LaunchedEffect(state) {
+        videoAlpha.snapTo(0F)
+        thumbnailVisible = true
+        snapshotFlow { state.isVideoSizeInitialized }.collect { initialized ->
+            if (initialized) {
+                videoAlpha.animateTo(1F, defaultAnimationSpec())
+                thumbnailVisible = false
+            } else {
+                videoAlpha.snapTo(0F)
+                thumbnailVisible = true
+            }
+        }
+    }
     Box(modifier = modifier) {
-        SketchesZoomableBox(
+        Box(
             modifier = Modifier
                 .matchParentSize()
                 .background(
                     color = backgroundColor,
                     shape = RectangleShape,
                 ),
+        )
+        if (thumbnailVisible) {
+            val context = LocalContext.current
+            val stateUri = state.uri
+            val thumbnailPainter = remember(
+                context,
+                stateUri,
+            ) {
+                if (stateUri != null) {
+                    context.imageMemoryCache[stateUri]?.asPainter(context, FilterQuality.High)
+                } else {
+                    null
+                }
+            }
+            if (thumbnailPainter != null) {
+                val size = thumbnailPainter.intrinsicSize
+                if (size != Size.Zero && size != Size.Unspecified) {
+                    val ratio = size.width / size.height
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .aspectRatio(
+                                ratio = ratio,
+                                matchHeightConstraintsFirst = ratio < 1F,
+                            )
+                            .blur(radius = LocalDimens.current.placeholderBlurRadius),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .paint(
+                                    painter = thumbnailPainter,
+                                    alignment = Alignment.Center,
+                                    contentScale = ContentScale.Fit,
+                                ),
+                        )
+                    }
+                }
+            }
+        }
+        SketchesZoomableBox(
+            modifier = Modifier
+                .graphicsLayer {
+                    alpha = videoAlpha.value
+                }
+                .matchParentSize(),
             zoomState = zoomState,
             onTap = onTap,
         ) {
@@ -169,68 +232,13 @@ fun SketchesMediaDisplay(
                 onRelease = { view -> state.clearVideoView(view) },
             )
         }
-        if (!state.isVideoSizeInitialized) {
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .background(
-                        color = backgroundColor,
-                        shape = RectangleShape,
-                    ),
+        if (!state.isVideoSizeInitialized && state.isPlaybackError && enableErrorIndicator) {
+            Icon(
+                painter = painterResource(R.drawable.ic_image_error),
+                contentDescription = stringResource(R.string.image_error),
+                modifier = Modifier.align(Alignment.Center),
+                tint = indicatorColor,
             )
-            if (state.isPlaybackError) {
-                if (enableErrorIndicator) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_image_error),
-                        contentDescription = stringResource(R.string.image_error),
-                        modifier = Modifier.align(Alignment.Center),
-                        tint = indicatorColor,
-                    )
-                }
-            } else {
-                if (enablePlaceholder) {
-                    val context = LocalContext.current
-                    val stateUri = state.uri
-                    val painter = remember(
-                        context,
-                        stateUri,
-                    ) {
-                        if (stateUri != null) {
-                            context.imageMemoryCache[stateUri]?.asPainter(
-                                context = context,
-                                filterQuality = FilterQuality.High,
-                            )
-                        } else {
-                            null
-                        }
-                    }
-                    if (painter != null) {
-                        val size = painter.intrinsicSize
-                        if (size != Size.Zero && size != Size.Unspecified) {
-                            val ratio = size.width / size.height
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .aspectRatio(
-                                        ratio = ratio,
-                                        matchHeightConstraintsFirst = ratio < 1F,
-                                    )
-                                    .blur(radius = LocalDimens.current.placeholderBlurRadius),
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .matchParentSize()
-                                        .paint(
-                                            painter = painter,
-                                            alignment = Alignment.Center,
-                                            contentScale = ContentScale.Fit,
-                                        ),
-                                )
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }

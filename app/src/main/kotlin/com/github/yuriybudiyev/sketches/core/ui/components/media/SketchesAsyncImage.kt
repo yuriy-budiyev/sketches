@@ -167,14 +167,12 @@ fun SketchesPreviewAsyncImage(
             .build()
     }
     var thumbnailVisible by remember { mutableStateOf(true) }
-    var imageVisible by remember { mutableStateOf(false) }
     var errorVisible by remember { mutableStateOf(false) }
     val imageAlpha = remember { Animatable(0F).apply { updateBounds(0F, 1F) } }
     var imagePainter by remember { mutableStateOf<Painter?>(null) }
     var image by remember { mutableStateOf<Image?>(null) }
     LaunchedEffect(request, context) {
         thumbnailVisible = true
-        imageVisible = false
         errorVisible = false
         imageAlpha.snapTo(0F)
         imagePainter = null
@@ -184,8 +182,7 @@ fun SketchesPreviewAsyncImage(
             is SuccessResult -> {
                 val resultImage = imageResult.image
                 image = resultImage
-                imagePainter = resultImage.asPainter(context)
-                imageVisible = true
+                imagePainter = resultImage.asPainter(context, FilterQuality.High)
                 imageAlpha.animateTo(1F, defaultAnimationSpec())
                 thumbnailVisible = false
             }
@@ -217,7 +214,7 @@ fun SketchesPreviewAsyncImage(
     ) {
         if (thumbnailVisible) {
             val thumbnailPainter = remember(uri, context) {
-                context.imageMemoryCache[uri]?.asPainter(context)
+                context.imageMemoryCache[uri]?.asPainter(context, FilterQuality.High)
             }
             if (thumbnailPainter != null) {
                 val size = thumbnailPainter.intrinsicSize
@@ -242,35 +239,33 @@ fun SketchesPreviewAsyncImage(
                 }
             }
         }
-        if (imageVisible) {
+        SketchesZoomableBox(
+            modifier = Modifier
+                .graphicsLayer {
+                    alpha = imageAlpha.value
+                }
+                .matchParentSize(),
+            zoomState = zoomState,
+            onTap = onTap,
+        ) {
             val imagePainter = imagePainter
             if (imagePainter != null) {
-                SketchesZoomableBox(
-                    modifier = Modifier
-                        .graphicsLayer {
-                            alpha = imageAlpha.value
-                        }
-                        .matchParentSize(),
-                    zoomState = zoomState,
-                    onTap = onTap,
-                ) {
-                    val size = imagePainter.intrinsicSize
-                    if (size != Size.Zero && size != Size.Unspecified) {
-                        val ratio = size.width / size.height
-                        Box(
-                            modifier = Modifier
-                                .zoomable()
-                                .aspectRatio(
-                                    ratio = ratio,
-                                    matchHeightConstraintsFirst = ratio < 1F,
-                                )
-                                .paint(
-                                    painter = imagePainter,
-                                    contentScale = ContentScale.Fit,
-                                    alignment = Alignment.Center,
-                                ),
-                        )
-                    }
+                val size = imagePainter.intrinsicSize
+                if (size != Size.Zero && size != Size.Unspecified) {
+                    val ratio = size.width / size.height
+                    Box(
+                        modifier = Modifier
+                            .zoomable()
+                            .aspectRatio(
+                                ratio = ratio,
+                                matchHeightConstraintsFirst = ratio < 1F,
+                            )
+                            .paint(
+                                painter = imagePainter,
+                                contentScale = ContentScale.Fit,
+                                alignment = Alignment.Center,
+                            ),
+                    )
                 }
             }
         }
