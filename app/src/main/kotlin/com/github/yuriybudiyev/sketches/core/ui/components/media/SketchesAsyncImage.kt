@@ -194,10 +194,10 @@ fun SketchesPreviewAsyncImage(
         }
     }
     DisposableEffect(image) {
-        val image = image
+        val currentImage = image
         onDispose {
-            if (image is BitmapImage) {
-                val bitmap = image.bitmap
+            if (currentImage is BitmapImage) {
+                val bitmap = currentImage.bitmap
                 if (!bitmap.isRecycled) {
                     bitmap.recycle()
                 }
