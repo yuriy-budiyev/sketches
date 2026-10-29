@@ -39,8 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.BlurredEdgeTreatment
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Size
@@ -69,13 +67,12 @@ import coil3.request.SuccessResult
 import coil3.size.Scale
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.imageloader.cache.allowLocalCacheIntercept
-import com.github.yuriybudiyev.sketches.core.imageloader.cache.imageMemoryCache
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
+import com.github.yuriybudiyev.sketches.core.ui.components.media.common.MediaPreviewPlaceholder
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
-import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
 @Composable
 fun SketchesThumbnailAsyncImage(
@@ -166,13 +163,13 @@ fun SketchesPreviewAsyncImage(
             .allowLocalCacheIntercept(false)
             .build()
     }
-    var thumbnailVisible by remember { mutableStateOf(true) }
+    var placeholderVisible by remember { mutableStateOf(true) }
     var errorVisible by remember { mutableStateOf(false) }
     val imageAlpha = remember { Animatable(0F).apply { updateBounds(0F, 1F) } }
     var imagePainter by remember { mutableStateOf<Painter?>(null) }
     var image by remember { mutableStateOf<Image?>(null) }
     LaunchedEffect(request, context) {
-        thumbnailVisible = true
+        placeholderVisible = true
         errorVisible = false
         imageAlpha.snapTo(0F)
         imagePainter = null
@@ -185,11 +182,11 @@ fun SketchesPreviewAsyncImage(
                 image = resultImage
                 imagePainter = resultImage.asPainter(context, FilterQuality.High)
                 imageAlpha.animateTo(1F, defaultAnimationSpec())
-                thumbnailVisible = false
+                placeholderVisible = false
             }
             is ErrorResult -> {
                 errorVisible = true
-                thumbnailVisible = false
+                placeholderVisible = false
                 imageAlpha.snapTo(0F)
                 imagePainter = null
                 image = null
@@ -216,32 +213,8 @@ fun SketchesPreviewAsyncImage(
             .then(modifier),
         contentAlignment = Alignment.Center,
     ) {
-        if (thumbnailVisible) {
-            val thumbnailPainter = remember(uri, context) {
-                context.imageMemoryCache[uri]?.asPainter(context, FilterQuality.High)
-            }
-            if (thumbnailPainter != null) {
-                val size = thumbnailPainter.intrinsicSize
-                if (size != Size.Zero && size != Size.Unspecified) {
-                    val ratio = size.width / size.height
-                    Box(
-                        modifier = Modifier
-                            .aspectRatio(
-                                ratio = ratio,
-                                matchHeightConstraintsFirst = ratio < 1F,
-                            )
-                            .blur(
-                                radius = LocalDimens.current.placeholderBlurRadius,
-                                edgeTreatment = BlurredEdgeTreatment.Rectangle,
-                            )
-                            .paint(
-                                painter = thumbnailPainter,
-                                alignment = Alignment.Center,
-                                contentScale = ContentScale.Fit,
-                            ),
-                    )
-                }
-            }
+        if (placeholderVisible) {
+            MediaPreviewPlaceholder(uri)
         }
         SketchesZoomableBox(
             modifier = Modifier
@@ -252,9 +225,9 @@ fun SketchesPreviewAsyncImage(
             zoomState = zoomState,
             onTap = onTap,
         ) {
-            val imagePainter = imagePainter
-            if (imagePainter != null) {
-                val size = imagePainter.intrinsicSize
+            val painter = imagePainter
+            if (painter != null) {
+                val size = painter.intrinsicSize
                 if (size != Size.Zero && size != Size.Unspecified) {
                     val ratio = size.width / size.height
                     Box(
@@ -265,7 +238,7 @@ fun SketchesPreviewAsyncImage(
                                 matchHeightConstraintsFirst = ratio < 1F,
                             )
                             .paint(
-                                painter = imagePainter,
+                                painter = painter,
                                 contentScale = ContentScale.Fit,
                                 alignment = Alignment.Center,
                             ),

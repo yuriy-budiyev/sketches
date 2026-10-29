@@ -45,24 +45,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.BlurredEdgeTreatment
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.paint
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import coil3.compose.asPainter
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.imageloader.cache.imageMemoryCache
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
@@ -71,8 +62,8 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesSlider
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
+import com.github.yuriybudiyev.sketches.core.ui.components.media.common.MediaPreviewPlaceholder
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
-import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import kotlinx.coroutines.launch
 import kotlin.math.roundToLong
 
@@ -148,17 +139,17 @@ fun SketchesMediaDisplay(
     enableErrorIndicator: Boolean = true,
 ) {
     val videoAlpha = remember { Animatable(0F).apply { updateBounds(0F, 1F) } }
-    var thumbnailVisible by remember { mutableStateOf(true) }
+    var placeholderVisible by remember { mutableStateOf(true) }
     LaunchedEffect(state) {
         videoAlpha.snapTo(0F)
-        thumbnailVisible = true
+        placeholderVisible = true
         snapshotFlow { state.isVideoSizeInitialized }.collect { initialized ->
             if (initialized) {
                 videoAlpha.animateTo(1F, defaultAnimationSpec())
-                thumbnailVisible = false
+                placeholderVisible = false
             } else {
                 videoAlpha.snapTo(0F)
-                thumbnailVisible = true
+                placeholderVisible = true
             }
         }
     }
@@ -171,42 +162,11 @@ fun SketchesMediaDisplay(
                     shape = RectangleShape,
                 ),
         )
-        if (thumbnailVisible) {
-            val context = LocalContext.current
-            val stateUri = state.uri
-            val thumbnailPainter = remember(
-                context,
-                stateUri,
-            ) {
-                if (stateUri != null) {
-                    context.imageMemoryCache[stateUri]?.asPainter(context, FilterQuality.High)
-                } else {
-                    null
-                }
-            }
-            if (thumbnailPainter != null) {
-                val size = thumbnailPainter.intrinsicSize
-                if (size != Size.Zero && size != Size.Unspecified) {
-                    val ratio = size.width / size.height
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .aspectRatio(
-                                ratio = ratio,
-                                matchHeightConstraintsFirst = ratio < 1F,
-                            )
-                            .blur(
-                                radius = LocalDimens.current.placeholderBlurRadius,
-                                edgeTreatment = BlurredEdgeTreatment.Rectangle,
-                            )
-                            .paint(
-                                painter = thumbnailPainter,
-                                alignment = Alignment.Center,
-                                contentScale = ContentScale.Fit,
-                            ),
-                    )
-                }
-            }
+        if (placeholderVisible) {
+            MediaPreviewPlaceholder(
+                uri = state.uri,
+                modifier = Modifier.align(Alignment.Center),
+            )
         }
         SketchesZoomableBox(
             modifier = Modifier
