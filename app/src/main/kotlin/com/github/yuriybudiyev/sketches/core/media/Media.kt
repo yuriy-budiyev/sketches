@@ -26,6 +26,10 @@ package com.github.yuriybudiyev.sketches.core.media
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.renderscript.Allocation
+import android.renderscript.Element
+import android.renderscript.RenderScript
+import android.renderscript.ScriptIntrinsicBlur
 import coil3.size.Size
 import com.github.yuriybudiyev.sketches.core.math.floorEven
 import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
@@ -45,3 +49,30 @@ fun Context.getMaxBitmapSize(): Size {
  */
 fun Context.getMaxMediaBufferSize(): Int =
     floorEven((getMaxMemory().toDouble() * 0.15).toInt())
+
+/**
+ * Blur [Bitmap] using [RenderScript], deprecated for API 31 and higher.
+ */
+@Suppress("DEPRECATION")
+fun blurBitmapLegacy(context: Context, source: Bitmap, radius: Float): Bitmap {
+    require(radius > 0F && radius <= 25F) { "Radius out of range (0 < radius <= 25)" }
+    val renderScript = RenderScript.create(context)
+    val workBitmap = source.copy(Bitmap.Config.ARGB_8888, true)
+    val input = Allocation.createFromBitmap(
+        renderScript,
+        workBitmap,
+        Allocation.MipmapControl.MIPMAP_NONE,
+        Allocation.USAGE_SCRIPT,
+    )
+    val output = Allocation.createTyped(renderScript, input.type)
+    val blurScript = ScriptIntrinsicBlur.create(renderScript, Element.U8_4(renderScript))
+    blurScript.setRadius(radius)
+    blurScript.setInput(input)
+    blurScript.forEach(output)
+    output.copyTo(workBitmap)
+    blurScript.destroy()
+    output.destroy()
+    input.destroy()
+    renderScript.destroy()
+    return workBitmap
+}
