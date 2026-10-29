@@ -24,6 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components.media.common
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
@@ -46,9 +48,24 @@ fun MediaPreviewPlaceholder(
     uri: String?,
     modifier: Modifier = Modifier,
 ) {
+    if (uri != null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            MediaPreviewPlaceholderImpl31(uri, modifier)
+        } else {
+            MediaPreviewPlaceholderImplLegacy(uri, modifier)
+        }
+    }
+}
+
+@Composable
+@RequiresApi(Build.VERSION_CODES.S)
+private fun MediaPreviewPlaceholderImpl31(
+    uri: String,
+    modifier: Modifier = Modifier,
+) {
     val context = LocalContext.current
     val painter = remember(uri, context) {
-        uri?.let { uri -> context.imageMemoryCache[uri]?.asPainter(context, FilterQuality.High) }
+        context.imageMemoryCache[uri]?.asPainter(context, FilterQuality.High)
     }
     if (painter != null) {
         val size = painter.intrinsicSize
@@ -72,4 +89,12 @@ fun MediaPreviewPlaceholder(
             )
         }
     }
+}
+
+@Composable
+private fun MediaPreviewPlaceholderImplLegacy(
+    uri: String,
+    modifier: Modifier = Modifier,
+) {
+    //TODO
 }
