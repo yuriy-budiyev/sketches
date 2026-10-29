@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.ui.components.media.common
 
 import android.os.Build
+import androidx.annotation.DeprecatedSinceApi
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -92,6 +93,7 @@ private fun MediaPreviewPlaceholderImpl31(
 }
 
 @Composable
+@DeprecatedSinceApi(Build.VERSION_CODES.S)
 private fun MediaPreviewPlaceholderImpl(
     uri: String,
     modifier: Modifier = Modifier,

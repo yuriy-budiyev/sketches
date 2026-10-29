@@ -26,10 +26,12 @@ package com.github.yuriybudiyev.sketches.core.media
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Build
 import android.renderscript.Allocation
 import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
+import androidx.annotation.DeprecatedSinceApi
 import coil3.size.Size
 import com.github.yuriybudiyev.sketches.core.math.floorEven
 import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
@@ -51,10 +53,11 @@ fun Context.getMaxMediaBufferSize(): Int =
     floorEven((getMaxMemory().toDouble() * 0.15).toInt())
 
 /**
- * Blur [Bitmap] using [RenderScript], deprecated for API 31 and higher.
+ * Create blurred [Bitmap] from [source] with blur [radius] using [RenderScript].
  */
 @Suppress("DEPRECATION")
-fun blurBitmapLegacy(context: Context, source: Bitmap, radius: Float): Bitmap {
+@DeprecatedSinceApi(Build.VERSION_CODES.S, "RenderScript has been deprecated in API level 31")
+fun createBlurredBitmap(context: Context, source: Bitmap, radius: Float): Bitmap {
     require(radius > 0F && radius <= 25F) { "Radius out of range (0 < radius <= 25)" }
     val renderScript = RenderScript.create(context)
     val workBitmap = source.copy(Bitmap.Config.ARGB_8888, true)
