@@ -52,7 +52,7 @@ fun MediaPreviewPlaceholder(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             MediaPreviewPlaceholderImpl31(uri, modifier)
         } else {
-            MediaPreviewPlaceholderImplLegacy(uri, modifier)
+            MediaPreviewPlaceholderImpl(uri, modifier)
         }
     }
 }
@@ -92,7 +92,7 @@ private fun MediaPreviewPlaceholderImpl31(
 }
 
 @Composable
-private fun MediaPreviewPlaceholderImplLegacy(
+private fun MediaPreviewPlaceholderImpl(
     uri: String,
     modifier: Modifier = Modifier,
 ) {
