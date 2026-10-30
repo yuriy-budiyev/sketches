@@ -69,6 +69,7 @@ import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -123,6 +124,7 @@ import androidx.navigation3.scene.rememberSceneState
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigationevent.NavigationEventTransitionState
 import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.NavigationEventState
 import androidx.navigationevent.compose.rememberNavigationEventState
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.compose.LocalSavedStateRegistryOwner
@@ -303,15 +305,13 @@ fun MainNavRoot(
         )
         val navMenuVisible by remember {
             computedStateOf {
-                navBackStack.size > 0 && navBackStack[navBackStack.lastIndex] is RootNavRoute
-                    && navMenuController.isNavMenuVisible
+                checkCurrentlyInRootOrNavigatingBackToRoot(navBackStack, navEventState) &&
+                    navMenuController.isNavMenuVisible
             }
         }
         val navBarVisible by remember {
             computedStateOf {
-                (navBackStack.size > 1 && navBackStack[navBackStack.lastIndex - 1] is RootNavRoute &&
-                    navEventState.transitionState is NavigationEventTransitionState.InProgress ||
-                    navBackStack.size > 0 && navBackStack[navBackStack.lastIndex] is RootNavRoute) &&
+                checkCurrentlyInRootOrNavigatingBackToRoot(navBackStack, navEventState) &&
                     systemBarsController.isSystemBarsVisible
             }
         }
@@ -699,3 +699,11 @@ private object RootNavMenuControllerImplSaver: Saver<RootNavMenuControllerImpl, 
         return controller
     }
 }
+
+private fun checkCurrentlyInRootOrNavigatingBackToRoot(
+    navBackStack: SnapshotStateList<NavRoute>,
+    navEventState: NavigationEventState<SceneInfo<NavRoute>>,
+): Boolean =
+    (navBackStack.size > 1 && navBackStack[navBackStack.lastIndex - 1] is RootNavRoute &&
+        navEventState.transitionState is NavigationEventTransitionState.InProgress ||
+        navBackStack.size > 0 && navBackStack[navBackStack.lastIndex] is RootNavRoute)
