@@ -485,9 +485,9 @@ private suspend inline fun PointerInputScope.detectTransformGestures(
                             zoomChange,
                         )
                     }
-                }
-                event.changes.fastForEach { change ->
-                    onPointerInputChange(change)
+                    event.changes.fastForEach { change ->
+                        onPointerInputChange(change)
+                    }
                 }
             }
         } while (!canceled && event.changes.fastAny { change -> change.pressed })
