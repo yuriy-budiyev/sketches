@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.core.ui.animation
 
 import androidx.compose.animation.core.FiniteAnimationSpec
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
@@ -42,8 +41,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 
-const val DefaultSpringStiffness: Float = Spring.StiffnessMedium
-const val DefaultSpringDampingRatio: Float = Spring.DampingRatioNoBouncy
+const val DefaultSpringStiffness: Float = 1000F
+const val DefaultSpringDampingRatio: Float = 1F
 
 @Stable
 @Suppress("UNCHECKED_CAST")
