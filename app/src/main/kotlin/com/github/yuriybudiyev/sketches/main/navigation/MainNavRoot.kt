@@ -403,10 +403,7 @@ fun MainNavRoot(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(
-                                WindowInsets.navigationBars.asPaddingValues()
-                                    .calculateBottomPadding(),
-                            )
+                            .height(WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding())
                             .background(
                                 brush = colorScheme.bottomToTopBackgroundGradientBrush(),
                                 shape = RectangleShape,

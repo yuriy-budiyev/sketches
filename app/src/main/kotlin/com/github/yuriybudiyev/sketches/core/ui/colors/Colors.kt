@@ -30,9 +30,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 
+const val LowestTransparencyAlpha: Float = 0.95F
 const val LowTransparencyAlpha: Float = 0.75F
 const val MediumTransparencyAlpha: Float = 0.35F
 const val HighTransparencyAlpha: Float = 0.15F
+
+@Stable
+fun Color.withLowestTransparency(): Color =
+    copy(alpha = LowestTransparencyAlpha)
 
 @Stable
 fun Color.withLowTransparency(): Color =
@@ -53,7 +58,7 @@ fun ColorScheme.topToBottomBackgroundGradientBrush(
 ): Brush =
     Brush.verticalGradient(
         colors = listOf(
-            background,
+            background.withLowestTransparency(),
             background.withLowTransparency(),
         ),
         startY = startY,
@@ -69,7 +74,7 @@ fun ColorScheme.bottomToTopBackgroundGradientBrush(
     Brush.verticalGradient(
         colors = listOf(
             background.withLowTransparency(),
-            background,
+            background.withLowestTransparency(),
         ),
         startY = startY,
         endY = endY,
