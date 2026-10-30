@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.core.ui.animation
 
 import androidx.compose.animation.core.FiniteAnimationSpec
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
@@ -41,6 +40,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+
+const val DefaultSpringStiffness: Float = 1000F
+const val DefaultSpringDampingRatio: Float = 1F
 
 @Stable
 @Suppress("UNCHECKED_CAST")
@@ -99,8 +101,8 @@ inline fun DefaultAnimatedVisibility(
 @Stable
 private val DefaultAnimationSpec: SpringSpec<Any> =
     SpringSpec(
-        dampingRatio = Spring.DampingRatioNoBouncy,
-        stiffness = Spring.StiffnessMedium,
+        dampingRatio = DefaultSpringDampingRatio,
+        stiffness = DefaultSpringStiffness,
         visibilityThreshold = null,
     )
 
@@ -108,21 +110,21 @@ private val DefaultAnimationSpec: SpringSpec<Any> =
 @Suppress("UNCHECKED_CAST")
 private data object DefaultMotionScheme: MotionScheme {
 
-    override fun <T> defaultEffectsSpec(): FiniteAnimationSpec<T> =
-        DefaultAnimationSpec as FiniteAnimationSpec<T>
-
     override fun <T> defaultSpatialSpec(): FiniteAnimationSpec<T> =
-        DefaultAnimationSpec as FiniteAnimationSpec<T>
-
-    override fun <T> fastEffectsSpec(): FiniteAnimationSpec<T> =
         DefaultAnimationSpec as FiniteAnimationSpec<T>
 
     override fun <T> fastSpatialSpec(): FiniteAnimationSpec<T> =
         DefaultAnimationSpec as FiniteAnimationSpec<T>
 
-    override fun <T> slowEffectsSpec(): FiniteAnimationSpec<T> =
+    override fun <T> slowSpatialSpec(): FiniteAnimationSpec<T> =
         DefaultAnimationSpec as FiniteAnimationSpec<T>
 
-    override fun <T> slowSpatialSpec(): FiniteAnimationSpec<T> =
+    override fun <T> defaultEffectsSpec(): FiniteAnimationSpec<T> =
+        DefaultAnimationSpec as FiniteAnimationSpec<T>
+
+    override fun <T> fastEffectsSpec(): FiniteAnimationSpec<T> =
+        DefaultAnimationSpec as FiniteAnimationSpec<T>
+
+    override fun <T> slowEffectsSpec(): FiniteAnimationSpec<T> =
         DefaultAnimationSpec as FiniteAnimationSpec<T>
 }

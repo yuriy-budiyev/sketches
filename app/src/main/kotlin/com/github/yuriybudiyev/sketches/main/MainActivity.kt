@@ -65,6 +65,8 @@ import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.share.ShareManager
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.platform.systembars.SystemBarsController
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultSpringDampingRatio
+import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultSpringStiffness
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.dimens.defaultDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.DefaultTheme
@@ -268,8 +270,8 @@ class MainActivity: ComponentActivity() {
         fun splashScreenExitAnimation(splashScreenView: View): SpringAnimation =
             SpringAnimation(splashScreenView, SpringAnimation.ALPHA).apply {
                 spring = SpringForce().apply {
-                    stiffness = SpringForce.STIFFNESS_MEDIUM
-                    dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+                    stiffness = DefaultSpringStiffness
+                    dampingRatio = DefaultSpringDampingRatio
                     finalPosition = 0F
                 }
             }
