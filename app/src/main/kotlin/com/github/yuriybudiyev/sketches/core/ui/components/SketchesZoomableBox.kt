@@ -61,7 +61,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.util.fastAny
@@ -258,7 +257,7 @@ fun SketchesZoomableBox(
                             }
                         }
                     },
-                    onAfterGesture = { change ->
+                    onPointerInputChange = { change ->
                         if (currentScale.value > 1F) {
                             change.consume()
                         }
@@ -453,7 +452,7 @@ private inline fun invalidateZoom(
 
 private suspend inline fun PointerInputScope.detectTransformGestures(
     crossinline onGesture: (centroid: Offset, pan: Offset, zoom: Float) -> Unit,
-    crossinline onAfterGesture: (change: PointerInputChange) -> Unit,
+    crossinline onPointerInputChange: (change: PointerInputChange) -> Unit,
 ) {
     awaitEachGesture {
         var zoom = 1F
@@ -486,11 +485,9 @@ private suspend inline fun PointerInputScope.detectTransformGestures(
                             zoomChange,
                         )
                     }
-                    event.changes.fastForEach { change ->
-                        if (change.positionChanged()) {
-                            onAfterGesture(change)
-                        }
-                    }
+                }
+                event.changes.fastForEach { change ->
+                    onPointerInputChange(change)
                 }
             }
         } while (!canceled && event.changes.fastAny { change -> change.pressed })
