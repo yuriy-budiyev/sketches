@@ -380,7 +380,7 @@ fun MainNavRoot(
                             val routeSelected by remember {
                                 computedStateOf { route == navBackStack.lastOrNull() }
                             }
-                            NavItem(
+                            NavMenuItem(
                                 route = route,
                                 selected = routeSelected,
                                 onClick = {
@@ -424,7 +424,7 @@ fun MainNavRoot(
 }
 
 @Composable
-private fun NavItem(
+private fun NavMenuItem(
     route: RootNavRoute,
     selected: Boolean,
     onClick: () -> Unit,
