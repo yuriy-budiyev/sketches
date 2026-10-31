@@ -32,7 +32,7 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
-import com.github.yuriybudiyev.sketches.core.navigation.registerNavRoute
+import com.github.yuriybudiyev.sketches.core.navigation.navRouteEntry
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
 import kotlinx.parcelize.IgnoredOnParcel
@@ -54,11 +54,11 @@ data object ImagesNavRoute: RootNavRoute {
     override val unselectedIconRes: Int = R.drawable.ic_images_unselected
 }
 
-fun EntryProviderScope<NavRoute>.registerImagesNavRoute(
+fun EntryProviderScope<NavRoute>.imagesNavRouteEntry(
     onImageClick: (index: Int, file: MediaFile) -> Unit,
     onRequestMediaAccess: OnRequestMediaAccess,
 ) {
-    registerNavRoute<ImagesNavRoute> {
+    navRouteEntry<ImagesNavRoute> {
         ImagesRoute(
             viewModel = hiltViewModel(),
             onImageClick = onImageClick,

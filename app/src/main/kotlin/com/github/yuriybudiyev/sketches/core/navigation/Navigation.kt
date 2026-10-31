@@ -27,7 +27,7 @@ package com.github.yuriybudiyev.sketches.core.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.EntryProviderScope
 
-inline fun <reified T: NavRoute> EntryProviderScope<NavRoute>.registerNavRoute(
+inline fun <reified T: NavRoute> EntryProviderScope<NavRoute>.navRouteEntry(
     noinline content: @Composable (T) -> Unit,
 ) {
     addEntryProvider(

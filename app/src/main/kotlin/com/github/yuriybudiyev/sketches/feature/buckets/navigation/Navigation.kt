@@ -32,7 +32,7 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaBucket
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
-import com.github.yuriybudiyev.sketches.core.navigation.registerNavRoute
+import com.github.yuriybudiyev.sketches.core.navigation.navRouteEntry
 import com.github.yuriybudiyev.sketches.feature.buckets.ui.BucketsRoute
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -53,10 +53,10 @@ data object BucketsNavRoute: RootNavRoute {
     override val unselectedIconRes: Int = R.drawable.ic_buckets_unselected
 }
 
-fun EntryProviderScope<NavRoute>.registerBucketsNavRoute(
+fun EntryProviderScope<NavRoute>.bucketsNavRouteEntry(
     onBucketClick: (index: Int, bucket: MediaBucket) -> Unit,
 ) {
-    registerNavRoute<BucketsNavRoute> {
+    navRouteEntry<BucketsNavRoute> {
         BucketsRoute(
             viewModel = hiltViewModel(),
             onBucketClick = onBucketClick,

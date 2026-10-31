@@ -32,7 +32,7 @@ import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
-import com.github.yuriybudiyev.sketches.core.navigation.registerNavRoute
+import com.github.yuriybudiyev.sketches.core.navigation.navRouteEntry
 import com.github.yuriybudiyev.sketches.feature.bookmarks.ui.BookmarksRoute
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -53,10 +53,10 @@ object BookmarksNavRoute: RootNavRoute {
     override val unselectedIconRes: Int = R.drawable.ic_bookmarks_unselected
 }
 
-fun EntryProviderScope<NavRoute>.registerBookmarksNavRoute(
+fun EntryProviderScope<NavRoute>.bookmarksNavRouteEntry(
     onImageClick: (index: Int, file: MediaFile) -> Unit,
 ) {
-    registerNavRoute<BookmarksNavRoute> {
+    navRouteEntry<BookmarksNavRoute> {
         BookmarksRoute(
             viewModel = hiltViewModel(),
             onImageClick = onImageClick,

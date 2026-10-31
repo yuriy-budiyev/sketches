@@ -147,15 +147,15 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.bottomToTopBackgroundGrad
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
-import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.registerBookmarksNavRoute
+import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.bookmarksNavRouteEntry
 import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavRoute
-import com.github.yuriybudiyev.sketches.feature.bucket.navigation.registerBucketNavRoute
+import com.github.yuriybudiyev.sketches.feature.bucket.navigation.bucketNavRouteEntry
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
-import com.github.yuriybudiyev.sketches.feature.buckets.navigation.registerBucketsNavRoute
+import com.github.yuriybudiyev.sketches.feature.buckets.navigation.bucketsNavRouteEntry
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageNavRoute
-import com.github.yuriybudiyev.sketches.feature.image.navigation.registerImageNavRoute
+import com.github.yuriybudiyev.sketches.feature.image.navigation.imageNavRouteEntry
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
-import com.github.yuriybudiyev.sketches.feature.images.navigation.registerImagesNavRoute
+import com.github.yuriybudiyev.sketches.feature.images.navigation.imagesNavRouteEntry
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -179,7 +179,7 @@ fun MainNavRoot(
     }
     val navEntryProvider = remember {
         entryProvider {
-            registerImagesNavRoute(
+            imagesNavRouteEntry(
                 onImageClick = { index, file ->
                     navBackStack.add(
                         ImageNavRoute(
@@ -192,7 +192,7 @@ fun MainNavRoot(
                 },
                 onRequestMediaAccess = onRequestMediaAccess,
             )
-            registerBucketsNavRoute(
+            bucketsNavRouteEntry(
                 onBucketClick = { _, bucket ->
                     navBackStack.add(
                         BucketNavRoute(
@@ -202,7 +202,7 @@ fun MainNavRoot(
                     )
                 },
             )
-            registerBookmarksNavRoute(
+            bookmarksNavRouteEntry(
                 onImageClick = { index, file ->
                     navBackStack.add(
                         ImageNavRoute(
@@ -214,7 +214,7 @@ fun MainNavRoot(
                     )
                 },
             )
-            registerBucketNavRoute(
+            bucketNavRouteEntry(
                 onImageClick = { index, file ->
                     navBackStack.add(
                         ImageNavRoute(
@@ -227,7 +227,7 @@ fun MainNavRoot(
                     )
                 },
             )
-            registerImageNavRoute()
+            imageNavRouteEntry()
         }
     }
     val saveableStateHolder = rememberSaveableStateHolder()
