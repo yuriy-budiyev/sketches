@@ -174,9 +174,7 @@ fun MainNavRoot(
         )
     }
     val initialRoute = remember { rootRoutes.first() }
-    val navBackStack = rememberSaveableSnapshotStateList<NavRoute> {
-        add(initialRoute)
-    }
+    val navBackStack = rememberSaveableSnapshotStateList<NavRoute> { add(initialRoute) }
     val navEntryProvider = remember {
         entryProvider {
             imagesNavRouteEntry(
