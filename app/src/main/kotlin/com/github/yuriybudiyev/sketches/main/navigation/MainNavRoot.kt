@@ -115,11 +115,14 @@ import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberDecoratedNavEntries
+import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneInfo
-import androidx.navigation3.scene.SinglePaneSceneStrategy
+import androidx.navigation3.scene.SceneStrategy
+import androidx.navigation3.scene.SceneStrategyScope
 import androidx.navigation3.scene.rememberSceneState
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigationevent.NavigationEventTransitionState
@@ -294,7 +297,7 @@ fun MainNavRoot(
     SharedTransitionScope { transitionModifier ->
         val sceneState = rememberSceneState(
             entries = navEntries,
-            sceneStrategies = listOf(SinglePaneSceneStrategy()),
+            sceneStrategies = listOf(NavRouteSceneStrategy()),
             sharedTransitionScope = this@SharedTransitionScope,
             onBack = { navBackStack.removeLastOrNull() },
         )
@@ -649,6 +652,50 @@ private class ViewModelStoreViewModel: ViewModel() {
     }
 
     private val viewModelStores: MutableMap<Any, ViewModelStore> = LinkedHashMap()
+}
+
+private class NavRouteScene(
+    val entry: NavEntry<NavRoute>,
+    override val previousEntries: List<NavEntry<NavRoute>>,
+): Scene<NavRoute> {
+
+    override val key: Any = entry.contentKey
+
+    override val entries: List<NavEntry<NavRoute>> = listOf(entry)
+
+    override val content: @Composable (() -> Unit) = { entry.Content() }
+
+    override fun equals(other: Any?): Boolean =
+        when {
+            other === this -> true
+            other is NavRouteScene ->
+                other.entry == this.entry && other.previousEntries == this.previousEntries
+            else -> false
+        }
+
+    override fun hashCode(): Int {
+        var result = 17
+        result = 31 * result + entry.hashCode()
+        result = 31 * result + previousEntries.hashCode()
+        return result
+    }
+
+    override fun toString(): String =
+        "NavRouteScene(entry=$entry, previousEntries=$previousEntries)"
+}
+
+private class NavRouteSceneStrategy: SceneStrategy<NavRoute> {
+
+    override fun SceneStrategyScope<NavRoute>.calculateScene(
+        entries: List<NavEntry<NavRoute>>,
+    ): Scene<NavRoute> =
+        NavRouteScene(
+            entry = entries.last(),
+            previousEntries = entries.dropLast(1),
+        )
+
+    override fun toString(): String =
+        "NavRouteSceneStrategy"
 }
 
 @Composable
