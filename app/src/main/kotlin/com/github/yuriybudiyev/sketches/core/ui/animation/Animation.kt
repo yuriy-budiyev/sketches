@@ -32,7 +32,6 @@ import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.material3.MotionScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.computedStateOf
 import androidx.compose.runtime.getValue
@@ -53,7 +52,6 @@ fun <T> defaultAnimationSpec(): SpringSpec<T> =
 fun defaultMotionScheme(): MotionScheme =
     DefaultMotionScheme
 
-@Stable
 context(scope: LazyItemScope)
 fun Modifier.defaultAnimateItem(): Modifier =
     with(scope) {
@@ -64,7 +62,6 @@ fun Modifier.defaultAnimateItem(): Modifier =
         )
     }
 
-@Stable
 context(scope: LazyGridItemScope)
 fun Modifier.defaultAnimateItem(): Modifier =
     with(scope) {
@@ -98,7 +95,6 @@ inline fun DefaultAnimatedVisibility(
     }
 }
 
-@Stable
 private val DefaultAnimationSpec: SpringSpec<Any> =
     SpringSpec(
         dampingRatio = DefaultSpringDampingRatio,
@@ -106,7 +102,6 @@ private val DefaultAnimationSpec: SpringSpec<Any> =
         visibilityThreshold = null,
     )
 
-@Immutable
 @Suppress("UNCHECKED_CAST")
 private data object DefaultMotionScheme: MotionScheme {
 
