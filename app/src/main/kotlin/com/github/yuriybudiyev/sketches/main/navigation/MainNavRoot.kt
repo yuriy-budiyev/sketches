@@ -432,7 +432,7 @@ private fun NavMenuItem(
 ) {
     val onClick by rememberUpdatedState(onClick)
     val coroutineScope = rememberCoroutineScope()
-    val hintPositionProvider = remember { HintPositionProvider() }
+    val hintPositionProvider = remember { NavMenuHintPositionProvider() }
     val interactionSource = remember { MutableInteractionSource() }
     val colorScheme = MaterialTheme.colorScheme
     val shapes = MaterialTheme.shapes
@@ -611,7 +611,7 @@ private fun NavMenuItem(
     }
 }
 
-private class HintPositionProvider: PopupPositionProvider {
+private class NavMenuHintPositionProvider: PopupPositionProvider {
 
     override fun calculatePosition(
         anchorBounds: IntRect,

@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.saveable
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisallowComposableCalls
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.SaverScope
@@ -34,13 +35,9 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 @Composable
 inline fun <T: Any> rememberSaveableSnapshotStateList(
     vararg inputs: Any?,
-    crossinline onInit: SnapshotStateList<T>.() -> Unit = {},
+    crossinline onInit: @DisallowComposableCalls SnapshotStateList<T>.() -> Unit = {},
 ): SnapshotStateList<T> =
-    @Suppress("UNCHECKED_CAST")
-    rememberSaveable(
-        inputs = inputs,
-        saver = snapshotStateListSaver(),
-    ) {
+    rememberSaveable(inputs = inputs, saver = snapshotStateListSaver()) {
         SnapshotStateList<T>().apply(onInit)
     }
 
