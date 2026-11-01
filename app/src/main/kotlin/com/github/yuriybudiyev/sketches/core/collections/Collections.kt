@@ -34,6 +34,7 @@ fun <E> newLinkedHashSet(numElements: Int): java.util.LinkedHashSet<E> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
         java.util.LinkedHashSet.newLinkedHashSet(numElements)
     } else {
+        require(numElements >= 0) { "Negative number of elements: $numElements" }
         java.util.LinkedHashSet(
             ceil(numElements.toDouble() / 0.75).toInt(),
             0.75F,
@@ -47,6 +48,7 @@ fun <K, V> newLinkedHashMap(numElements: Int): java.util.LinkedHashMap<K, V> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
         java.util.LinkedHashMap.newLinkedHashMap(numElements)
     } else {
+        require(numElements >= 0) { "Negative number of elements: $numElements" }
         java.util.LinkedHashMap(
             ceil(numElements.toDouble() / 0.75).toInt(),
             0.75F,
