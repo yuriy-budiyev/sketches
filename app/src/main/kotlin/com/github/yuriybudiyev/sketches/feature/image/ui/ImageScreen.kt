@@ -58,6 +58,7 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.layout.LazyLayoutCacheWindow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerDefaults
@@ -969,6 +970,11 @@ private fun MediaBar(
             alignment = Alignment.CenterHorizontally,
         ),
         verticalAlignment = Alignment.CenterVertically,
+        cacheWindow = LazyLayoutCacheWindow(
+            aheadFraction = 0.25F,
+            behindFraction = 0.25F,
+            isNonScrollCachingEnabled = true,
+        ),
     ) {
         items(
             count = files.size,
