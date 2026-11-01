@@ -35,10 +35,7 @@ fun <E> newLinkedHashSet(numElements: Int): java.util.LinkedHashSet<E> =
         java.util.LinkedHashSet.newLinkedHashSet(numElements)
     } else {
         require(numElements >= 0) { "Negative number of elements: $numElements" }
-        java.util.LinkedHashSet(
-            ceil(numElements.toDouble() / 0.75).toInt(),
-            0.75F,
-        )
+        java.util.LinkedHashSet(ceil(numElements.toDouble() / 0.75).toInt(), 0.75F)
     }
 
 /**
@@ -49,8 +46,5 @@ fun <K, V> newLinkedHashMap(numElements: Int): java.util.LinkedHashMap<K, V> =
         java.util.LinkedHashMap.newLinkedHashMap(numElements)
     } else {
         require(numElements >= 0) { "Negative number of elements: $numElements" }
-        java.util.LinkedHashMap(
-            ceil(numElements.toDouble() / 0.75).toInt(),
-            0.75F,
-        )
+        java.util.LinkedHashMap(ceil(numElements.toDouble() / 0.75).toInt(), 0.75F)
     }
