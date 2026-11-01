@@ -101,8 +101,8 @@ fun SketchesLazyGrid(
         horizontalArrangement = Arrangement.spacedBy(space = dimens.lazyGridItemSpacing),
         verticalArrangement = Arrangement.spacedBy(space = dimens.lazyGridItemSpacing),
         cacheWindow = LazyLayoutCacheWindow(
-            aheadFraction = 0.5F,
-            behindFraction = 0.5F,
+            aheadFraction = 0.25F,
+            behindFraction = 0.25F,
             isNonScrollCachingEnabled = true,
         ),
         content = content,
