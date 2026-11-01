@@ -749,6 +749,6 @@ private fun checkCurrentlyInRootOrNavigatingBackToRoot(
     navBackStack: SnapshotStateList<NavRoute>,
     navEventState: NavigationEventState<SceneInfo<NavRoute>>,
 ): Boolean =
-    (navBackStack.size > 1 && navBackStack[navBackStack.lastIndex - 1] is RootNavRoute &&
+    navBackStack.size > 1 && navBackStack[navBackStack.lastIndex - 1] is RootNavRoute &&
         navEventState.transitionState is NavigationEventTransitionState.InProgress ||
-        navBackStack.size > 0 && navBackStack[navBackStack.lastIndex] is RootNavRoute)
+        navBackStack.size > 0 && navBackStack[navBackStack.lastIndex] is RootNavRoute
