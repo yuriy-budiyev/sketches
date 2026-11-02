@@ -96,6 +96,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastCoerceAtLeast
 import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
@@ -689,7 +690,7 @@ private class NavRouteSceneStrategy: SceneStrategy<NavRoute> {
     ): Scene<NavRoute> =
         NavRouteScene(
             entry = entries.last(),
-            previousEntries = entries.dropLast(1),
+            previousEntries = entries.fastDropLast(),
         )
 
     override fun toString(): String =
@@ -752,3 +753,15 @@ private fun checkCurrentlyInRootOrNavigatingBackToRoot(
     navBackStack.size > 1 && navBackStack[navBackStack.lastIndex - 1] is RootNavRoute &&
         navEventState.transitionState is NavigationEventTransitionState.InProgress ||
         navBackStack.size > 0 && navBackStack[navBackStack.lastIndex] is RootNavRoute
+
+/**
+ * Receiver should be [RandomAccess].
+ */
+private fun <T> List<T>.fastDropLast(): List<T> {
+    val resultSize = (size - 1).fastCoerceAtLeast(0)
+    val result = ArrayList<T>(resultSize)
+    for (index in 0..<resultSize) {
+        result.add(this[index])
+    }
+    return result
+}

@@ -208,22 +208,16 @@ class ImageMemoryCache private constructor(private val maxSizeBytes: Long) {
     private inner class CallbacksImpl: ComponentCallbacks2 {
 
         override fun onTrimMemory(level: Int) {
-            when {
-                level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND -> {
-                    imageCache.evictAll()
-                }
-                level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN -> {
-                    imageCache.trimToSize(imageCache.size() / 2)
-                }
+            if (level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND) {
+                imageCache.trimToSize(imageCache.maxSize() / 2)
             }
         }
 
         override fun onConfigurationChanged(newConfig: Configuration) {}
 
-        @Suppress("DEPRECATION")
         @Deprecated("Deprecated in Java")
         override fun onLowMemory() {
-            onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_COMPLETE)
+            // Do nothing
         }
     }
 
@@ -242,10 +236,7 @@ class ImageMemoryCache private constructor(private val maxSizeBytes: Long) {
             newValue: Image?,
         ) {
             synchronized(keyCache) {
-                keyCache.remove(
-                    key.uri,
-                    key,
-                )
+                keyCache.remove(key.uri)
             }
         }
     }
