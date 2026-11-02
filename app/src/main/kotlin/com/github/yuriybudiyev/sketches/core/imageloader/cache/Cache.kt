@@ -235,8 +235,10 @@ class ImageMemoryCache private constructor(maxSize: Int) {
             oldValue: Image,
             newValue: Image?,
         ) {
-            synchronized(keyCache) {
-                keyCache.remove(key.uri)
+            if (newValue == null) {
+                synchronized(keyCache) {
+                    keyCache.remove(key.uri)
+                }
             }
         }
     }
