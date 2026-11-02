@@ -169,7 +169,7 @@ class LocalCacheInterceptor(
 inline val Context.imageMemoryCache: ImageMemoryCache
     get() = ImageMemoryCache.instance(this)
 
-class ImageMemoryCache private constructor(private val maxSizeBytes: Long) {
+class ImageMemoryCache private constructor(maxSize: Int) {
 
     operator fun set(
         key: ImageKey,
@@ -201,7 +201,7 @@ class ImageMemoryCache private constructor(private val maxSizeBytes: Long) {
         put(key, image)
     }
 
-    private val imageCache: LruCache<ImageKey, Image> = CacheImpl()
+    private val imageCache: LruCache<ImageKey, Image> = CacheImpl(maxSize)
     private val keyCache: MutableMap<String, ImageKey> = LinkedHashMap()
     private val memoryCallbacks: ComponentCallbacks2 = CallbacksImpl()
 
@@ -221,7 +221,7 @@ class ImageMemoryCache private constructor(private val maxSizeBytes: Long) {
         }
     }
 
-    private inner class CacheImpl: LruCache<ImageKey, Image>(maxSizeBytes.toIntClamped()) {
+    private inner class CacheImpl(maxSize: Int): LruCache<ImageKey, Image>(maxSize) {
 
         override fun sizeOf(
             key: ImageKey,
@@ -252,7 +252,7 @@ class ImageMemoryCache private constructor(private val maxSizeBytes: Long) {
                 instance = this.instance
                 if (instance === null) {
                     val appContext = context.applicationContext
-                    instance = ImageMemoryCache(appContext.getMaxMemory() / 4L)
+                    instance = ImageMemoryCache((appContext.getMaxMemory() / 4L).toIntClamped())
                     appContext.registerComponentCallbacks(instance.memoryCallbacks)
                     this.instance = instance
                 }
