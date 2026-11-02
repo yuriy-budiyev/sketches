@@ -27,13 +27,15 @@ package com.github.yuriybudiyev.sketches.core.math
 /**
  * Closest even value to this integer [x] towards positive infinity.
  */
-fun ceilEven(x: Int): Int =
+@Suppress("NOTHING_TO_INLINE")
+inline fun ceilEven(x: Int): Int =
     x + 1 and -2
 
 /**
  * Closest even value to this integer [x] towards negative infinity.
  */
-fun floorEven(x: Int): Int =
+@Suppress("NOTHING_TO_INLINE")
+inline fun floorEven(x: Int): Int =
     x and -2
 
 /**

@@ -439,10 +439,10 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
         Orientation.Vertical -> spec.mediaItemSize.height
         Orientation.Horizontal -> spec.mediaItemSize.width
     }
-    val scrollThreshold = when (layoutInfo.orientation) {
+    val scrollThreshold = (when (layoutInfo.orientation) {
         Orientation.Vertical -> layoutInfo.viewportSize.height
         Orientation.Horizontal -> layoutInfo.viewportSize.width
-    }
+    }.toFloat() * 0.75F).toInt()
     val maxSpan = layoutInfo.maxSpan
     val itemSpacing = layoutInfo.mainAxisItemSpacing
     var scrollIndex = 0
