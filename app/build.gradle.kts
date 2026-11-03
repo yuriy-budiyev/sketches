@@ -26,8 +26,8 @@ android {
         applicationId = "com.github.yuriybudiyev.sketches.app"
         minSdk = 26
         targetSdk = 37
-        versionCode = 157
-        versionName = "1.6.24"
+        versionCode = 158
+        versionName = "1.6.25"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
