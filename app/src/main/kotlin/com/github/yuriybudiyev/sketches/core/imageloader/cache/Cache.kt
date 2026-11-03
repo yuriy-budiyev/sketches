@@ -46,6 +46,7 @@ import coil3.request.allowHardware
 import coil3.size.Dimension
 import coil3.target.ViewTarget
 import coil3.toBitmap
+import com.github.yuriybudiyev.sketches.core.math.floorEven
 import com.github.yuriybudiyev.sketches.core.math.toIntClamped
 import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
 
@@ -254,7 +255,7 @@ class ImageMemoryCache private constructor(maxSize: Int) {
                 instance = this.instance
                 if (instance === null) {
                     val appContext = context.applicationContext
-                    instance = ImageMemoryCache((appContext.getMaxMemory() / 4L).toIntClamped())
+                    instance = ImageMemoryCache(floorEven((appContext.getMaxMemory() / 4L).toIntClamped()))
                     appContext.registerComponentCallbacks(instance.memoryCallbacks)
                     this.instance = instance
                 }
