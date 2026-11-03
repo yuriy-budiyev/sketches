@@ -71,7 +71,6 @@ fun MediaPreviewPlaceholder(
     } else {
         MediaPreviewPlaceholderImpl(uri, modifier)
     }
-
 }
 
 @Composable
