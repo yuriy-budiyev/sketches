@@ -24,8 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.core.navigation
 
-import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import android.os.Parcelable
 
 /**
  * Implementations of this interface should be stable data classes or data objects,

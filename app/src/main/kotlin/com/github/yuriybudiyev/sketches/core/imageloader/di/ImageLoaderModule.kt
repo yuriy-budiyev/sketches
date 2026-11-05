@@ -24,8 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.core.imageloader.di
 
+import javax.inject.Singleton
+import kotlinx.coroutines.asCoroutineDispatcher
 import android.content.Context
 import android.os.Build
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import coil3.ImageLoader
 import coil3.disk.DiskCache
 import coil3.gif.AnimatedImageDecoder
@@ -41,14 +48,7 @@ import com.github.yuriybudiyev.sketches.core.imageloader.cache.LocalCacheInterce
 import com.github.yuriybudiyev.sketches.core.imageloader.cache.imageMemoryCache
 import com.github.yuriybudiyev.sketches.core.imageloader.executor.ImageLoaderExecutor
 import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxBitmapSize
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.asCoroutineDispatcher
 import okio.Path.Companion.toPath
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)

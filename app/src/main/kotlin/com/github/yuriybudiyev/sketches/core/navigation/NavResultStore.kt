@@ -24,6 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.core.navigation
 
+import kotlinx.coroutines.flow.map
+import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,8 +39,6 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import kotlinx.coroutines.flow.map
-import kotlinx.parcelize.Parcelize
 
 @Composable
 inline fun <reified T: NavResult> NavResultHandler(crossinline onNavResult: suspend (result: T) -> Unit) {

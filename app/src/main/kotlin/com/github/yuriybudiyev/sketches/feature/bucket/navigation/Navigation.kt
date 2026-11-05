@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.bucket.navigation
 
+import kotlinx.parcelize.Parcelize
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.EntryProviderScope
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
@@ -31,7 +32,6 @@ import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.navRouteEntry
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketRoute
 import com.github.yuriybudiyev.sketches.feature.bucket.ui.BucketScreenViewModel
-import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class BucketNavRoute(

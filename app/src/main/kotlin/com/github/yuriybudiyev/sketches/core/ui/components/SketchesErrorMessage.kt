@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import kotlinx.coroutines.launch
 import android.content.ClipData
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,7 +43,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.github.yuriybudiyev.sketches.BuildConfig
 import com.github.yuriybudiyev.sketches.R
-import kotlinx.coroutines.launch
 
 @Composable
 fun SketchesErrorMessage(

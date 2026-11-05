@@ -24,6 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.feature.buckets.navigation
 
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -34,8 +36,6 @@ import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.navRouteEntry
 import com.github.yuriybudiyev.sketches.feature.buckets.ui.BucketsRoute
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data object BucketsNavRoute: RootNavRoute {

@@ -24,13 +24,13 @@
 
 package com.github.yuriybudiyev.sketches.core.coroutines.di
 
+import javax.inject.Qualifier
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.MainCoroutineDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.MainCoroutineDispatcher
-import javax.inject.Qualifier
 
 @Module
 @InstallIn(SingletonComponent::class)

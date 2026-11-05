@@ -24,9 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.core.domain
 
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaRepository
-import dagger.Reusable
 import javax.inject.Inject
+import dagger.Reusable
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaRepository
 
 @Reusable
 class ShowBucketUseCase @Inject constructor(private val repository: MediaRepository) {

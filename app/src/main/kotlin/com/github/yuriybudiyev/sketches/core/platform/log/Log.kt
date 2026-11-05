@@ -24,11 +24,11 @@
 
 package com.github.yuriybudiyev.sketches.core.platform.log
 
-import android.util.Log
-import com.github.yuriybudiyev.sketches.BuildConfig
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import android.util.Log
+import com.github.yuriybudiyev.sketches.BuildConfig
 
 /**
  * Send a debug log [message] with given [tag] and [throwable] if [BuildConfig.DEBUG] is `true`

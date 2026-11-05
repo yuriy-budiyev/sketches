@@ -24,17 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.bookmarks.ui
 
-import android.net.Uri
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
-import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
-import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
-import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarksUseCase
-import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
-import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
-import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,7 +34,17 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import android.net.Uri
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatcher
+import com.github.yuriybudiyev.sketches.core.coroutines.di.Dispatchers
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
+import com.github.yuriybudiyev.sketches.core.domain.DeleteBookmarksUseCase
+import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetBookmarksUseCase
+import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 
 @HiltViewModel
 class BookmarksScreenViewModel @Inject constructor(

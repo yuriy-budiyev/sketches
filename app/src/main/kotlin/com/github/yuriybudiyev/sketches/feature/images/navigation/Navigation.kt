@@ -24,6 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.feature.images.navigation
 
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -35,8 +37,6 @@ import com.github.yuriybudiyev.sketches.core.navigation.RootNavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.navRouteEntry
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.OnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.feature.images.ui.ImagesRoute
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data object ImagesNavRoute: RootNavRoute {

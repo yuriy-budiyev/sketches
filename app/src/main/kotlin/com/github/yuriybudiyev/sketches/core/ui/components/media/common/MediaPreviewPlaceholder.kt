@@ -24,6 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components.media.common
 
+import kotlin.math.min
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import android.graphics.Bitmap
 import android.os.Build
 import androidx.annotation.DeprecatedSinceApi
@@ -54,9 +57,6 @@ import coil3.compose.asPainter
 import com.github.yuriybudiyev.sketches.core.imageloader.cache.imageMemoryCache
 import com.github.yuriybudiyev.sketches.core.media.createBlurredBitmap
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlin.math.min
 
 @Composable
 fun MediaPreviewPlaceholder(

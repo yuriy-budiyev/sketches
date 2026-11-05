@@ -24,6 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
+import kotlin.math.abs
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
 import androidx.annotation.FloatRange
 import androidx.compose.animation.core.Animatable
@@ -67,15 +76,6 @@ import androidx.compose.ui.util.fastAny
 import androidx.compose.ui.util.fastCoerceIn
 import androidx.compose.ui.util.fastForEach
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
-import kotlin.math.abs
 
 @Composable
 fun rememberZoomState(): ZoomState =

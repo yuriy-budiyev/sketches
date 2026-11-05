@@ -24,6 +24,11 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.ui
 
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import kotlin.math.ceil
+import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import android.os.Build
 import android.os.Parcelable
 import android.text.format.Formatter.formatFileSize
@@ -144,11 +149,6 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.utils.fastAnimateScrollToItemCentered
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemCentered
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
-import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-import kotlin.math.ceil
 
 @Composable
 fun ImageRoute(viewModel: ImageScreenViewModel) {

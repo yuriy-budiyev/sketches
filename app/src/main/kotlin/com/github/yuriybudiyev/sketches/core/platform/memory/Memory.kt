@@ -24,12 +24,12 @@
 
 package com.github.yuriybudiyev.sketches.core.platform.memory
 
+import kotlin.math.sqrt
 import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import coil3.size.Size
 import com.github.yuriybudiyev.sketches.core.math.floorEven
-import kotlin.math.sqrt
 
 /**
  * Maximum available memory in bytes

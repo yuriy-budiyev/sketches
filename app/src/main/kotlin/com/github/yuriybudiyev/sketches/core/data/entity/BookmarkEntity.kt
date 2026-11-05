@@ -24,10 +24,10 @@
 
 package com.github.yuriybudiyev.sketches.core.data.entity
 
+import java.time.LocalDateTime
 import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
-import java.time.LocalDateTime
 
 @Entity(tableName = "bookmarks")
 data class BookmarkEntity(

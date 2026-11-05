@@ -24,6 +24,10 @@
 
 package com.github.yuriybudiyev.sketches.main.navigation
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
 import android.view.HapticFeedbackConstants
 import android.view.SoundEffectConstants
@@ -157,10 +161,6 @@ import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageNavRoute
 import com.github.yuriybudiyev.sketches.feature.image.navigation.imageNavRouteEntry
 import com.github.yuriybudiyev.sketches.feature.images.navigation.ImagesNavRoute
 import com.github.yuriybudiyev.sketches.feature.images.navigation.imagesNavRouteEntry
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 
 @Composable
 fun MainNavRoot(

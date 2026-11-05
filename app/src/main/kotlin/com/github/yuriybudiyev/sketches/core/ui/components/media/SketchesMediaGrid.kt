@@ -24,6 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components.media
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatterBuilder
+import java.time.format.TextStyle
+import java.time.temporal.ChronoField
+import java.util.Locale
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
+import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -77,15 +86,6 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withMediumTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import kotlinx.parcelize.Parcelize
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatterBuilder
-import java.time.format.TextStyle
-import java.time.temporal.ChronoField
-import java.util.Locale
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
 
 @Immutable
 sealed interface SketchesMediaGridKey: Parcelable {

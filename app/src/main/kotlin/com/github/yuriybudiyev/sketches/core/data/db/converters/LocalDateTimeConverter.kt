@@ -24,9 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.core.data.db.converters
 
-import androidx.room3.ColumnTypeConverter
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import androidx.room3.ColumnTypeConverter
 
 object LocalDateTimeConverter {
 

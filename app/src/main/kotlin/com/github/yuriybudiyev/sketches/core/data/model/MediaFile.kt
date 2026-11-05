@@ -24,9 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.core.data.model
 
-import androidx.compose.runtime.Immutable
 import java.time.Duration
 import java.time.LocalDateTime
+import androidx.compose.runtime.Immutable
 
 @Immutable
 data class MediaFile(

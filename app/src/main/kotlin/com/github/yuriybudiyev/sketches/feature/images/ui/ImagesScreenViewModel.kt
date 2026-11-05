@@ -24,14 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.images.ui
 
-import android.net.Uri
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
-import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
-import com.github.yuriybudiyev.sketches.core.domain.GetFilesExcludingHiddenBucketsUseCase
-import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -39,7 +32,14 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import android.net.Uri
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
+import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetFilesExcludingHiddenBucketsUseCase
+import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 
 @HiltViewModel
 class ImagesScreenViewModel @Inject constructor(

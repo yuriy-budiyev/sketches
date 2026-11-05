@@ -24,17 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
-import android.net.Uri
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.consumable.Consumable
-import com.github.yuriybudiyev.sketches.core.data.model.MediaBucket
-import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
-import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
-import com.github.yuriybudiyev.sketches.core.domain.GetBucketsContentUseCase
-import com.github.yuriybudiyev.sketches.core.domain.GetBucketsUseCase
-import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -44,7 +34,17 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import android.net.Uri
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import com.github.yuriybudiyev.sketches.core.consumable.Consumable
+import com.github.yuriybudiyev.sketches.core.data.model.MediaBucket
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
+import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetBucketsContentUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetBucketsUseCase
+import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
 
 @HiltViewModel
 class BucketsScreenViewModel @Inject constructor(

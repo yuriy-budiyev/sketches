@@ -24,15 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components.media.share
 
+import java.util.EnumSet
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.platform.content.mimeType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaDescriptor
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptor
-import java.util.EnumSet
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 
 @OptIn(ExperimentalContracts::class)
 inline fun Collection<MediaFile>.prepareForSharing(

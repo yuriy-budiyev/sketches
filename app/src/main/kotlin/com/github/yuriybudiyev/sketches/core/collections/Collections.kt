@@ -24,8 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.core.collections
 
-import android.os.Build
 import kotlin.math.ceil
+import android.os.Build
 
 /**
  * Backport of [java.util.LinkedHashSet.newLinkedHashSet] for older APIs

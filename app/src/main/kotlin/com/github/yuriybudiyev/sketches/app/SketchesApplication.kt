@@ -24,15 +24,15 @@
 
 package com.github.yuriybudiyev.sketches.app
 
+import javax.inject.Inject
 import android.app.Application
 import androidx.compose.runtime.Composer
 import androidx.compose.runtime.tooling.ComposeStackTraceMode
+import dagger.hilt.android.HiltAndroidApp
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.annotation.DelicateCoilApi
 import com.github.yuriybudiyev.sketches.BuildConfig
-import dagger.hilt.android.HiltAndroidApp
-import javax.inject.Inject
 
 @HiltAndroidApp
 class SketchesApplication: Application() {

@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.utils
 
+import kotlin.math.abs
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
@@ -40,7 +41,6 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.unit.LayoutDirection
-import kotlin.math.abs
 
 @Composable
 fun rememberLastScrollDirectionScrollConnection(

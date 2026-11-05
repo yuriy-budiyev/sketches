@@ -24,11 +24,11 @@
 
 package com.github.yuriybudiyev.sketches.core.domain
 
+import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import dagger.Reusable
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.data.repository.MediaRepository
-import dagger.Reusable
-import kotlinx.coroutines.flow.Flow
-import javax.inject.Inject
 
 @Reusable
 class GetFilesExcludingHiddenBucketsUseCase @Inject constructor(

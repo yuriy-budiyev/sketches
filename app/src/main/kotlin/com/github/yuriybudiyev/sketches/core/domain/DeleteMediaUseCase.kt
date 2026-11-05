@@ -24,10 +24,10 @@
 
 package com.github.yuriybudiyev.sketches.core.domain
 
-import android.net.Uri
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaRepository
-import dagger.Reusable
 import javax.inject.Inject
+import android.net.Uri
+import dagger.Reusable
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaRepository
 
 @Reusable
 class DeleteMediaUseCase @Inject constructor(private val repository: MediaRepository) {

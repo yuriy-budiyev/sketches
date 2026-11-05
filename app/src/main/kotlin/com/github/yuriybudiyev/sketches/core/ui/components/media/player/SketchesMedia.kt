@@ -24,6 +24,8 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components.media.player
 
+import kotlin.math.roundToLong
+import kotlinx.coroutines.launch
 import android.view.TextureView
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
@@ -64,8 +66,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.common.MediaPreviewPlaceholder
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
-import kotlinx.coroutines.launch
-import kotlin.math.roundToLong
 
 @Composable
 fun SketchesMediaPlayer(

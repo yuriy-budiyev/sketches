@@ -24,17 +24,17 @@
 
 package com.github.yuriybudiyev.sketches.core.data.db.di
 
+import javax.inject.Singleton
 import android.content.Context
 import androidx.room3.Room
-import com.github.yuriybudiyev.sketches.core.data.dao.BookmarksDao
-import com.github.yuriybudiyev.sketches.core.data.dao.HiddenBucketsDao
-import com.github.yuriybudiyev.sketches.core.data.db.MainDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import com.github.yuriybudiyev.sketches.core.data.dao.BookmarksDao
+import com.github.yuriybudiyev.sketches.core.data.dao.HiddenBucketsDao
+import com.github.yuriybudiyev.sketches.core.data.db.MainDatabase
 
 @Module
 @InstallIn(SingletonComponent::class)

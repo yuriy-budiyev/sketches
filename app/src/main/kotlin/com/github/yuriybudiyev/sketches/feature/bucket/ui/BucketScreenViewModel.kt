@@ -24,21 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.feature.bucket.ui
 
-import android.net.Uri
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
-import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
-import com.github.yuriybudiyev.sketches.core.domain.GetFilesUseCase
-import com.github.yuriybudiyev.sketches.core.domain.GetHiddenBucketsUseCase
-import com.github.yuriybudiyev.sketches.core.domain.HideBucketUseCase
-import com.github.yuriybudiyev.sketches.core.domain.ShowBucketUseCase
-import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
-import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavRoute
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -47,6 +32,21 @@ import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
+import android.net.Uri
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
+import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
+import com.github.yuriybudiyev.sketches.core.domain.DeleteMediaUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetFilesUseCase
+import com.github.yuriybudiyev.sketches.core.domain.GetHiddenBucketsUseCase
+import com.github.yuriybudiyev.sketches.core.domain.HideBucketUseCase
+import com.github.yuriybudiyev.sketches.core.domain.ShowBucketUseCase
+import com.github.yuriybudiyev.sketches.core.domain.UpdateMediaAccessUseCase
+import com.github.yuriybudiyev.sketches.feature.bucket.navigation.BucketNavRoute
 
 @HiltViewModel(assistedFactory = BucketScreenViewModel.Factory::class)
 class BucketScreenViewModel @AssistedInject constructor(

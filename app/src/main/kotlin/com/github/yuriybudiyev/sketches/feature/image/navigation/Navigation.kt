@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.image.navigation
 
+import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.EntryProviderScope
@@ -32,7 +33,6 @@ import com.github.yuriybudiyev.sketches.core.navigation.NavRoute
 import com.github.yuriybudiyev.sketches.core.navigation.navRouteEntry
 import com.github.yuriybudiyev.sketches.feature.image.ui.ImageRoute
 import com.github.yuriybudiyev.sketches.feature.image.ui.ImageScreenViewModel
-import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ImageNavRoute(val data: Data): NavRoute {

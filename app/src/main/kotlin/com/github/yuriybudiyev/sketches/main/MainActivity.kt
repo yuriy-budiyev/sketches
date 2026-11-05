@@ -24,6 +24,10 @@
 
 package com.github.yuriybudiyev.sketches.main
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -59,6 +63,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.platform.insets.MutableAndroidWindowInsets
 import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
@@ -72,11 +77,6 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.defaultDimens
 import com.github.yuriybudiyev.sketches.core.ui.theme.DefaultTheme
 import com.github.yuriybudiyev.sketches.core.ui.wsc.LocalWindowSizeClass
 import com.github.yuriybudiyev.sketches.main.ui.MainScreen
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity: ComponentActivity() {

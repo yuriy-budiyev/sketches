@@ -24,12 +24,12 @@
 
 package com.github.yuriybudiyev.sketches.core.data.repository.di
 
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaRepository
-import com.github.yuriybudiyev.sketches.core.data.repository.MediaRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaRepository
+import com.github.yuriybudiyev.sketches.core.data.repository.MediaRepositoryImpl
 
 @Module
 @InstallIn(SingletonComponent::class)

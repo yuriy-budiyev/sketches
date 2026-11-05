@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
+import kotlinx.coroutines.launch
 import android.app.Activity
 import android.net.Uri
 import android.os.Build
@@ -106,7 +107,6 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
-import kotlinx.coroutines.launch
 
 @Composable
 fun BucketsRoute(

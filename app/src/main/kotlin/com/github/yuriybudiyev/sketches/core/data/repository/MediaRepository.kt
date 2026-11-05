@@ -24,10 +24,10 @@
 
 package com.github.yuriybudiyev.sketches.core.data.repository
 
+import kotlinx.coroutines.flow.Flow
 import android.net.Uri
 import com.github.yuriybudiyev.sketches.core.data.model.MediaBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
-import kotlinx.coroutines.flow.Flow
 
 interface MediaRepository {
 

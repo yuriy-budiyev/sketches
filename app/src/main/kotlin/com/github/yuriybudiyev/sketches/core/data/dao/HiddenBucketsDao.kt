@@ -24,11 +24,11 @@
 
 package com.github.yuriybudiyev.sketches.core.data.dao
 
+import kotlinx.coroutines.flow.Flow
 import androidx.room3.Dao
 import androidx.room3.Query
 import androidx.room3.Upsert
 import com.github.yuriybudiyev.sketches.core.data.entity.HiddenBucketEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HiddenBucketsDao {
