@@ -58,7 +58,7 @@ import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
-import com.github.yuriybudiyev.sketches.core.media.getMaxMediaBufferSize
+import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMediaBufferSize
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

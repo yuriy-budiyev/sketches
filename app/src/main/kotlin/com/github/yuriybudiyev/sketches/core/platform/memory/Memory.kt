@@ -27,6 +27,9 @@ package com.github.yuriybudiyev.sketches.core.platform.memory
 import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.ApplicationInfo
+import coil3.size.Size
+import com.github.yuriybudiyev.sketches.core.math.floorEven
+import kotlin.math.sqrt
 
 /**
  * Maximum available memory in bytes
@@ -41,3 +44,18 @@ fun Context.getMaxMemory(): Long {
         return Runtime.getRuntime().maxMemory()
     }
 }
+
+/**
+ * Max [android.graphics.Bitmap] size assuming most images have 32 bits per pixel,
+ * allowing pixels to take 15% of max memory.
+ */
+fun Context.getMaxBitmapSize(): Size {
+    val size = floorEven(sqrt(getMaxMemory().toDouble() * 0.0375).toInt())
+    return Size(width = size, height = size)
+}
+
+/**
+ * Max media buffer size for single player instance (15% of max memory).
+ */
+fun Context.getMaxMediaBufferSize(): Int =
+    floorEven((getMaxMemory().toDouble() * 0.15).toInt())

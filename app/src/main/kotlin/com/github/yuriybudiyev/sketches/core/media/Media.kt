@@ -32,25 +32,6 @@ import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
 import androidx.annotation.DeprecatedSinceApi
-import coil3.size.Size
-import com.github.yuriybudiyev.sketches.core.math.floorEven
-import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
-import kotlin.math.sqrt
-
-/**
- * Max [Bitmap] size assuming most images have 32 bits per pixel,
- * allowing pixels to take 15% of max memory.
- */
-fun Context.getMaxBitmapSize(): Size {
-    val size = floorEven(sqrt(getMaxMemory().toDouble() * 0.0375).toInt())
-    return Size(width = size, height = size)
-}
-
-/**
- * Max media buffer size for single player instance (15% of max memory).
- */
-fun Context.getMaxMediaBufferSize(): Int =
-    floorEven((getMaxMemory().toDouble() * 0.15).toInt())
 
 /**
  * Create blurred [Bitmap] from [source] with blur [radius] using [RenderScript].
