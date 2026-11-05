@@ -24,12 +24,12 @@
 
 package com.github.yuriybudiyev.sketches
 
+import kotlin.test.assertEquals
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlin.test.assertEquals
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -45,9 +45,9 @@ class SketchesInstrumentedTest {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals(
             if (BuildConfig.DEBUG) {
-                "com.github.yuriybudiyev.sketches.debug"
+                "com.github.yuriybudiyev.sketches.app.debug"
             } else {
-                "com.github.yuriybudiyev.sketches"
+                "com.github.yuriybudiyev.sketches.app"
             },
             appContext.packageName,
         )
