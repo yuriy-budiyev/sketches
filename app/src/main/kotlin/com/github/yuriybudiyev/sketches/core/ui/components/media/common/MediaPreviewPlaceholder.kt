@@ -101,6 +101,7 @@ private fun MediaPreviewPlaceholderImpl31(
                 )
                 .paint(
                     painter = painter,
+                    sizeToIntrinsics = false,
                     alignment = Alignment.Center,
                     contentScale = ContentScale.Fit,
                 ),
@@ -161,6 +162,7 @@ private fun MediaPreviewPlaceholderImpl(
                 )
                 .paint(
                     painter = currentPainter,
+                    sizeToIntrinsics = false,
                     alignment = Alignment.Center,
                     contentScale = ContentScale.Fit,
                 ),

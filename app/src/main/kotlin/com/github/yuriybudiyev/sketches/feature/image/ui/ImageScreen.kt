@@ -939,7 +939,6 @@ private fun VideoPage(
         controlsEndPadding = controlsEndPadding,
         modifier = modifier,
         zoomState = zoomState,
-        enableErrorIndicator = true,
     )
 }
 

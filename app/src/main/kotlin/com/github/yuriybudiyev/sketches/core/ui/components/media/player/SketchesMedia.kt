@@ -82,7 +82,6 @@ fun SketchesMediaPlayer(
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     controlsBackgroundColor: Color = backgroundColor.withLowTransparency(),
     controlsColor: Color = MaterialTheme.colorScheme.onBackground,
-    enableErrorIndicator: Boolean = true,
 ) {
     Box(modifier = modifier) {
         SketchesMediaDisplay(
@@ -92,7 +91,6 @@ fun SketchesMediaPlayer(
             onTap = onDisplayTap,
             backgroundColor = backgroundColor,
             indicatorColor = controlsColor,
-            enableErrorIndicator = enableErrorIndicator,
         )
         DefaultAnimatedVisibility(
             visible = controllerVisible,
@@ -136,7 +134,6 @@ fun SketchesMediaDisplay(
     onTap: (() -> Unit)? = null,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     indicatorColor: Color = MaterialTheme.colorScheme.onBackground,
-    enableErrorIndicator: Boolean = true,
 ) {
     val videoAlpha = remember { Animatable(0F).apply { updateBounds(0F, 1F) } }
     var placeholderVisible by remember { mutableStateOf(true) }
@@ -191,7 +188,7 @@ fun SketchesMediaDisplay(
                 onRelease = { view -> state.clearVideoView(view) },
             )
         }
-        if (!state.isVideoSizeInitialized && state.isPlaybackError && enableErrorIndicator) {
+        if (!state.isVideoSizeInitialized && state.isPlaybackError) {
             Icon(
                 painter = painterResource(R.drawable.ic_image_error),
                 contentDescription = stringResource(R.string.image_error),

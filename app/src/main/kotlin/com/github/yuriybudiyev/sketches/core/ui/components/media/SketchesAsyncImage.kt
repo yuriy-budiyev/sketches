@@ -60,7 +60,6 @@ import coil3.compose.asPainter
 import coil3.compose.rememberAsyncImagePainter
 import coil3.compose.rememberConstraintsSizeResolver
 import coil3.imageLoader
-import coil3.request.CachePolicy
 import coil3.request.ErrorResult
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
@@ -119,24 +118,31 @@ fun SketchesThumbnailAsyncImage(
             .then(modifier)
             .then(sizeResolver),
     ) {
-        if (painterState is AsyncImagePainter.State.Success) {
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .clipToBounds()
-                    .paint(
-                        painter = painter,
-                        contentScale = ContentScale.Crop,
-                        alignment = Alignment.Center,
-                    ),
-            )
-        } else if (painterState is AsyncImagePainter.State.Error) {
-            Icon(
-                painter = painterResource(R.drawable.ic_image_error),
-                contentDescription = contentDescription,
-                modifier = Modifier.align(Alignment.Center),
-                tint = colorScheme.onBackground,
-            )
+        when (painterState) {
+            is AsyncImagePainter.State.Success -> {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clipToBounds()
+                        .paint(
+                            painter = painter,
+                            sizeToIntrinsics = false,
+                            contentScale = ContentScale.Crop,
+                            alignment = Alignment.Center,
+                        ),
+                )
+            }
+            is AsyncImagePainter.State.Error -> {
+                Icon(
+                    painter = painterResource(R.drawable.ic_image_error),
+                    contentDescription = contentDescription,
+                    modifier = Modifier.align(Alignment.Center),
+                    tint = colorScheme.onBackground,
+                )
+            }
+            else -> {
+                // Do nothing
+            }
         }
     }
 }
@@ -157,8 +163,6 @@ fun SketchesPreviewAsyncImage(
         ImageRequest
             .Builder(context)
             .data(uri)
-            .memoryCachePolicy(CachePolicy.DISABLED)
-            .diskCachePolicy(CachePolicy.DISABLED)
             .size(coil3.size.Size.ORIGINAL)
             .allowLocalCacheIntercept(false)
             .build()
@@ -239,6 +243,7 @@ fun SketchesPreviewAsyncImage(
                             )
                             .paint(
                                 painter = painter,
+                                sizeToIntrinsics = false,
                                 contentScale = ContentScale.Fit,
                                 alignment = Alignment.Center,
                             ),
