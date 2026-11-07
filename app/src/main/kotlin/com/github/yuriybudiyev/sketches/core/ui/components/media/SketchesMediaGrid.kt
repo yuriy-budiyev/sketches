@@ -43,6 +43,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
@@ -76,6 +77,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.data.model.MediaBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
@@ -92,14 +94,20 @@ sealed interface SketchesMediaGridKey: Parcelable {
 
     @Parcelize
     @Immutable
-    data class Header(
+    data class Date(
         val year: Int,
         val month: Int,
     ): SketchesMediaGridKey
 
     @Parcelize
     @Immutable
-    data class Media(
+    data class File(
+        val id: Long,
+    ): SketchesMediaGridKey
+
+    @Parcelize
+    @Immutable
+    data class Bucket(
         val id: Long,
     ): SketchesMediaGridKey
 }
@@ -107,11 +115,64 @@ sealed interface SketchesMediaGridKey: Parcelable {
 @Immutable
 sealed interface SketchesMediaGridContentType {
 
-    @Immutable
-    data object Header: SketchesMediaGridContentType
+    val span: LazyGridItemSpanScope.() -> GridItemSpan
 
     @Immutable
-    data object Media: SketchesMediaGridContentType
+    data object Date: SketchesMediaGridContentType {
+
+        override val span: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(maxLineSpan) }
+    }
+
+    @Immutable
+    data object File: SketchesMediaGridContentType {
+
+        override val span: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(1) }
+    }
+
+    @Immutable
+    data object Bucket: SketchesMediaGridContentType {
+
+        override val span: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(1) }
+    }
+}
+
+@Immutable
+sealed interface SketchesMediaGridItem {
+
+    val key: SketchesMediaGridKey
+
+    val type: SketchesMediaGridContentType
+
+    @Immutable
+    data class Date(
+        val year: Int,
+        val month: Int,
+    ): SketchesMediaGridItem {
+
+        override val key: SketchesMediaGridKey = SketchesMediaGridKey.Date(year, month)
+
+        override val type: SketchesMediaGridContentType = SketchesMediaGridContentType.Date
+    }
+
+    @Immutable
+    data class File(
+        val file: MediaFile,
+    ): SketchesMediaGridItem {
+
+        override val key: SketchesMediaGridKey = SketchesMediaGridKey.File(file.id)
+
+        override val type: SketchesMediaGridContentType = SketchesMediaGridContentType.File
+    }
+
+    @Immutable
+    data class Bucket(
+        val bucket: MediaBucket,
+    ): SketchesMediaGridItem {
+
+        override val key: SketchesMediaGridKey = SketchesMediaGridKey.Bucket(bucket.id)
+
+        override val type: SketchesMediaGridContentType = SketchesMediaGridContentType.Bucket
+    }
 }
 
 @Composable
@@ -124,12 +185,17 @@ class SketchesMediaGridSpec {
     /**
      * Do not set manually.
      */
-    var headerItemSize: IntSize by mutableStateOf(IntSize.Zero)
+    var dateSize: IntSize by mutableStateOf(IntSize.Zero)
 
     /**
      * Do not set manually.
      */
-    var mediaItemSize: IntSize by mutableStateOf(IntSize.Zero)
+    var fileSize: IntSize by mutableStateOf(IntSize.Zero)
+
+    /**
+     * Do not set manually.
+     */
+    var bucketSize: IntSize by mutableStateOf(IntSize.Zero)
 }
 
 @Composable
@@ -153,8 +219,8 @@ fun SketchesMediaGrid(
     ) {
         items(
             count = files.size,
-            key = { index -> SketchesMediaGridKey.Media(id = files[index].id) },
-            contentType = { SketchesMediaGridContentType.Media },
+            key = { index -> SketchesMediaGridKey.File(id = files[index].id) },
+            contentType = { SketchesMediaGridContentType.File },
         ) { index ->
             val file by rememberUpdatedState(files[index])
             val fileSelected by remember { computedStateOf { selectedFiles.contains(file.id) } }
@@ -244,11 +310,11 @@ fun SketchesGroupingMediaGrid(
                 val groupOffset = index
                 index += groupSize
                 item(
-                    key = SketchesMediaGridKey.Header(
+                    key = SketchesMediaGridKey.Date(
                         year = groupDate.year,
                         month = groupDate.monthValue,
                     ),
-                    contentType = SketchesMediaGridContentType.Header,
+                    contentType = SketchesMediaGridContentType.Date,
                     span = { GridItemSpan(maxLineSpan) },
                 ) {
                     HeaderItem(
@@ -261,15 +327,15 @@ fun SketchesGroupingMediaGrid(
                             .defaultAnimateItem()
                             .onSizeChanged { size ->
                                 if (size != IntSize.Zero) {
-                                    spec.headerItemSize = size
+                                    spec.dateSize = size
                                 }
                             },
                     )
                 }
                 items(
                     count = groupSize,
-                    key = { index -> SketchesMediaGridKey.Media(files[index + groupOffset].id) },
-                    contentType = { SketchesMediaGridContentType.Media },
+                    key = { index -> SketchesMediaGridKey.File(files[index + groupOffset].id) },
+                    contentType = { SketchesMediaGridContentType.File },
                 ) { index ->
                     val file by rememberUpdatedState(files[index + groupOffset])
                     val fileSelected by remember { computedStateOf { selectedFiles.contains(file.id) } }
@@ -296,7 +362,7 @@ fun SketchesGroupingMediaGrid(
                             .defaultAnimateItem()
                             .onSizeChanged { size ->
                                 if (size != IntSize.Zero) {
-                                    spec.mediaItemSize = size
+                                    spec.fileSize = size
                                 }
                             },
                     )
@@ -433,12 +499,12 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
         return
     }
     val headerItemSize = when (layoutInfo.orientation) {
-        Orientation.Vertical -> spec.headerItemSize.height
-        Orientation.Horizontal -> spec.headerItemSize.width
+        Orientation.Vertical -> spec.dateSize.height
+        Orientation.Horizontal -> spec.dateSize.width
     }
     val mediaItemSize = when (layoutInfo.orientation) {
-        Orientation.Vertical -> spec.mediaItemSize.height
-        Orientation.Horizontal -> spec.mediaItemSize.width
+        Orientation.Vertical -> spec.fileSize.height
+        Orientation.Horizontal -> spec.fileSize.width
     }
     val scrollThreshold = when (layoutInfo.orientation) {
         Orientation.Vertical -> layoutInfo.viewportSize.height
@@ -529,25 +595,30 @@ inline fun calculateMediaIndexWithGroups(
 
 @Parcelize
 private data class SketchesMediaGridSpecConfig(
-    val headerItemWidth: Int,
-    val headerItemHeight: Int,
-    val mediaItemWidth: Int,
-    val mediaItemHeight: Int,
+    val dateWidth: Int,
+    val dateHeight: Int,
+    val fileWidth: Int,
+    val fileHeight: Int,
+    val bucketWidth: Int,
+    val bucketHeight: Int,
 ): Parcelable
 
 private object SketchesMediaGridSpecSaver: Saver<SketchesMediaGridSpec, SketchesMediaGridSpecConfig> {
 
     override fun SaverScope.save(value: SketchesMediaGridSpec): SketchesMediaGridSpecConfig =
         SketchesMediaGridSpecConfig(
-            headerItemWidth = value.headerItemSize.width,
-            headerItemHeight = value.headerItemSize.height,
-            mediaItemWidth = value.mediaItemSize.width,
-            mediaItemHeight = value.mediaItemSize.height,
+            dateWidth = value.dateSize.width,
+            dateHeight = value.dateSize.height,
+            fileWidth = value.fileSize.width,
+            fileHeight = value.fileSize.height,
+            bucketWidth = value.bucketSize.width,
+            bucketHeight = value.bucketSize.height,
         )
 
     override fun restore(value: SketchesMediaGridSpecConfig): SketchesMediaGridSpec =
         SketchesMediaGridSpec().apply {
-            headerItemSize = IntSize(value.headerItemWidth, value.headerItemHeight)
-            mediaItemSize = IntSize(value.mediaItemWidth, value.mediaItemHeight)
+            dateSize = IntSize(value.dateWidth, value.dateHeight)
+            fileSize = IntSize(value.fileWidth, value.fileHeight)
+            bucketSize = IntSize(value.bucketWidth, value.bucketHeight)
         }
 }
