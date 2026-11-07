@@ -77,12 +77,6 @@ interface LastScrollDirectionScrollConnection: NestedScrollConnection {
     fun reset()
 }
 
-enum class ScrollDirection {
-    None,
-    Backward,
-    Forward,
-}
-
 @Stable
 private class LastScrollDirectionScrollConnectionImpl: LastScrollDirectionScrollConnection {
 

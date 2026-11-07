@@ -89,8 +89,20 @@ fun LazyGridState.getItemInfoAtOffset(offset: Offset): LazyGridItemInfo? {
     val viewportSize = layoutInfo.viewportSize
     val viewportWidth = viewportSize.width
     val viewportHeight = viewportSize.height
-    val offsetX = offset.x.roundToInt()
-    val offsetY = offset.y.roundToInt()
+    val paddingX: Int
+    val paddingY: Int
+    when (layoutInfo.orientation) {
+        Orientation.Vertical -> {
+            paddingX = 0
+            paddingY = layoutInfo.beforeContentPadding
+        }
+        Orientation.Horizontal -> {
+            paddingX = layoutInfo.beforeContentPadding
+            paddingY = 0
+        }
+    }
+    val offsetX = offset.x.roundToInt() - paddingX
+    val offsetY = offset.y.roundToInt() - paddingY
     if (offsetX < 0 || offsetY < 0 || offsetX > viewportWidth || offsetY > viewportHeight) {
         return null
     }
@@ -105,6 +117,3 @@ fun LazyGridState.getItemInfoAtOffset(offset: Offset): LazyGridItemInfo? {
             offsetY >= itemStartOffsetY && offsetY <= itemEndOffsetY
     }
 }
-
-inline fun <reified K> LazyGridState.getItemKeyAtOffset(offset: Offset): K? =
-    getItemInfoAtOffset(offset)?.key as? K
