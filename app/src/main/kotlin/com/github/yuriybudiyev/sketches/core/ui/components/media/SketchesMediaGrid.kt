@@ -56,6 +56,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.computedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.referentialEqualityPolicy
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.Saver
@@ -173,6 +174,84 @@ sealed interface SketchesMediaGridItem {
 
         override val type: SketchesMediaGridContentType = SketchesMediaGridContentType.Bucket
     }
+}
+
+@Composable
+fun rememberSketchesMediaGridState(
+    initialFirstVisibleItemIndex: Int = 0,
+    initialFirstVisibleItemScrollOffset: Int = 0,
+): SketchesMediaGridState {
+    val state = rememberLazyGridState(initialFirstVisibleItemIndex, initialFirstVisibleItemScrollOffset)
+    return rememberSaveable(state, saver = remember(state) { SketchesMediaGridStateImplSaver(state) }) {
+        SketchesMediaGridStateImpl(state)
+    }
+}
+
+@Stable
+sealed interface SketchesMediaGridState {
+
+    var items: List<SketchesMediaGridItem>
+
+    suspend fun scrollToItem(
+        index: Int,
+        snapToClosestEdge: Boolean = false,
+        onlyIfItemAtIndexIsNotVisible: Boolean = false,
+    )
+
+    suspend fun animateScrollToStart()
+}
+
+private class SketchesMediaGridStateImpl(private val state: LazyGridState): SketchesMediaGridState {
+
+    override var items: List<SketchesMediaGridItem>
+        by mutableStateOf(emptyList(), referentialEqualityPolicy())
+
+    override suspend fun scrollToItem(
+        index: Int,
+        snapToClosestEdge: Boolean,
+        onlyIfItemAtIndexIsNotVisible: Boolean,
+    ) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun animateScrollToStart() {
+        TODO("Not yet implemented")
+    }
+
+    var dateSize: IntSize by mutableStateOf(IntSize.Zero)
+    var fileSize: IntSize by mutableStateOf(IntSize.Zero)
+    var bucketSize: IntSize by mutableStateOf(IntSize.Zero)
+}
+
+@Parcelize
+private data class SketchesMediaGridStateImplConfig(
+    val dateWidth: Int,
+    val dateHeight: Int,
+    val fileWidth: Int,
+    val fileHeight: Int,
+    val bucketWidth: Int,
+    val bucketHeight: Int,
+): Parcelable
+
+private class SketchesMediaGridStateImplSaver(private val state: LazyGridState):
+    Saver<SketchesMediaGridStateImpl, SketchesMediaGridStateImplConfig> {
+
+    override fun SaverScope.save(value: SketchesMediaGridStateImpl): SketchesMediaGridStateImplConfig =
+        SketchesMediaGridStateImplConfig(
+            dateWidth = value.dateSize.width,
+            dateHeight = value.dateSize.height,
+            fileWidth = value.fileSize.width,
+            fileHeight = value.fileSize.height,
+            bucketWidth = value.bucketSize.width,
+            bucketHeight = value.bucketSize.height,
+        )
+
+    override fun restore(value: SketchesMediaGridStateImplConfig): SketchesMediaGridStateImpl =
+        SketchesMediaGridStateImpl(state).apply {
+            dateSize = IntSize(value.dateWidth, value.dateHeight)
+            fileSize = IntSize(value.fileWidth, value.fileHeight)
+            bucketSize = IntSize(value.bucketWidth, value.bucketHeight)
+        }
 }
 
 @Composable
