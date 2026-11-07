@@ -425,6 +425,7 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
     spec: SketchesMediaGridSpec,
     files: List<MediaFile>,
 ) {
+    val layoutInfo = layoutInfo
     if (layoutInfo.totalItemsCount == 0) {
         return
     }

@@ -113,6 +113,7 @@ fun SketchesLazyGrid(
  * For [SketchesLazyGrid] with single content type and same sized items
  */
 suspend fun LazyGridState.fastAnimateScrollToStart() {
+    val layoutInfo = layoutInfo
     if (layoutInfo.totalItemsCount == 0) {
         return
     }

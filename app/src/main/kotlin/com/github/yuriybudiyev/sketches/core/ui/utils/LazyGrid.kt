@@ -24,9 +24,13 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.utils
 
+import kotlin.math.roundToInt
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.lazy.grid.LazyGridItemInfo
 import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.util.fastFirstOrNull
 
 suspend fun LazyGridState.scrollToItem(
     index: Int,
@@ -34,6 +38,7 @@ suspend fun LazyGridState.scrollToItem(
     snapToClosestEdge: Boolean = false,
     onlyIfItemAtIndexIsNotVisible: Boolean = false,
 ) {
+    val layoutInfo = layoutInfo
     val visibleItemsInfo = layoutInfo.visibleItemsInfo
     val firstItemOfType = visibleItemsInfo.firstOrNull { info -> info.contentType == itemType }
     val itemAtIndex = visibleItemsInfo.firstOrNull { info -> info.index == index }
@@ -78,3 +83,28 @@ suspend fun LazyGridState.scrollToItem(
         scrollOffset = offset,
     )
 }
+
+fun LazyGridState.getItemInfoAtOffset(offset: Offset): LazyGridItemInfo? {
+    val layoutInfo = layoutInfo
+    val viewportSize = layoutInfo.viewportSize
+    val viewportWidth = viewportSize.width
+    val viewportHeight = viewportSize.height
+    val offsetX = offset.x.roundToInt()
+    val offsetY = offset.y.roundToInt()
+    if (offsetX < 0 || offsetY < 0 || offsetX > viewportWidth || offsetY > viewportHeight) {
+        return null
+    }
+    return layoutInfo.visibleItemsInfo.fastFirstOrNull { info ->
+        val itemStartOffset = info.offset
+        val itemSize = info.size
+        val itemStartOffsetX = itemStartOffset.x
+        val itemStartOffsetY = itemStartOffset.y
+        val itemEndOffsetX = itemStartOffsetX + itemSize.width
+        val itemEndOffsetY = itemStartOffsetY + itemSize.height
+        offsetX >= itemStartOffsetX && offsetX <= itemEndOffsetX &&
+            offsetY >= itemStartOffsetY && offsetY <= itemEndOffsetY
+    }
+}
+
+inline fun <reified K> LazyGridState.getItemKeyAtOffset(offset: Offset): K? =
+    getItemInfoAtOffset(offset)?.key as? K
