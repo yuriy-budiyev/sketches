@@ -77,6 +77,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastFirstOrNull
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.data.model.MediaBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
@@ -213,6 +214,7 @@ sealed interface SketchesMediaGridState {
 
     suspend fun scrollToItem(
         index: Int,
+        type: SketchesMediaGridItemType? = null,
         snapToClosestEdge: Boolean = false,
         onlyIfItemAtIndexIsNotVisible: Boolean = false,
     )
@@ -227,10 +229,59 @@ private class SketchesMediaGridStateImpl(private val state: LazyGridState): Sket
 
     override suspend fun scrollToItem(
         index: Int,
+        type: SketchesMediaGridItemType?,
         snapToClosestEdge: Boolean,
         onlyIfItemAtIndexIsNotVisible: Boolean,
     ) {
-        TODO("Not yet implemented")
+        val itemsCount = items.size
+        if (itemsCount == 0) {
+            return
+        }
+        val layoutInfo = state.layoutInfo
+        if (layoutInfo.totalItemsCount != itemsCount) {
+            return
+        }
+        val orientation = layoutInfo.orientation
+        var index = index
+        if (index < 0) {
+            index = 0
+        }
+        if (index >= itemsCount) {
+            index = itemsCount - 1
+        }
+        if (type != null) {
+            for (index2 in 0..index) {
+                if (items[index2].type != type) {
+                    index++
+                }
+            }
+            if (index >= itemsCount) {
+                index = itemsCount - 1
+            }
+        }
+        val visibleItemsInfo = layoutInfo.visibleItemsInfo
+        if (onlyIfItemAtIndexIsNotVisible) {
+            val visibleItem = visibleItemsInfo.fastFirstOrNull { info -> info.index == index }
+            if (visibleItem != null) {
+                val itemOffset = visibleItem.offset.mainAxis(orientation)
+                val itemSize = visibleItem.size.mainAxis(orientation)
+                val viewportStart = layoutInfo.viewportStartOffset
+                val viewportEnd = layoutInfo.viewportEndOffset
+                if (itemOffset >= viewportStart && itemOffset + itemSize <= viewportEnd) {
+                    return
+                }
+            }
+        }
+        val item = items[index]
+        var offset = 0
+        if (snapToClosestEdge && visibleItemsInfo.isNotEmpty()) {
+            val firstItem = visibleItemsInfo[0]
+            val lastItem = visibleItemsInfo[visibleItemsInfo.lastIndex]
+            if (firstItem !== lastItem && index > (lastItem.index - firstItem.index) / 2) {
+                offset = layoutInfo.viewportEndOffset - itemSizeMainAxis(item.type, orientation)
+            }
+        }
+        state.scrollToItem(index, offset)
     }
 
     override suspend fun animateScrollToStart() {
@@ -245,7 +296,7 @@ private class SketchesMediaGridStateImpl(private val state: LazyGridState): Sket
             return
         }
         val layoutInfo = state.layoutInfo
-        if (layoutInfo.totalItemsCount == 0) {
+        if (layoutInfo.totalItemsCount != itemsCount) {
             return
         }
         val orientation = layoutInfo.orientation
@@ -267,7 +318,7 @@ private class SketchesMediaGridStateImpl(private val state: LazyGridState): Sket
                 }
                 nextGroupType = items[nextIndex].type
             }
-            val itemSize = itemSize(groupType, orientation)
+            val itemSize = itemSizeMainAxis(groupType, orientation)
             when (groupType.span) {
                 SketchesMediaGridItemSpan.Single -> {
                     repeat(groupSize % maxSpan) {
@@ -299,17 +350,14 @@ private class SketchesMediaGridStateImpl(private val state: LazyGridState): Sket
             itemIndex += groupSize
         }
         if (firstVisibleItemIndex > scrollIndex) {
-            scrollToItem(index = scrollIndex)
+            scrollToItem(scrollIndex)
         } else {
             scrollAmount += firstVisibleItemScrollOffset
         }
-        state.animateScrollBy(
-            value = -scrollAmount.toFloat(),
-            animationSpec = defaultAnimationSpec(),
-        )
+        state.animateScrollBy(-scrollAmount.toFloat(), defaultAnimationSpec())
     }
 
-    private fun itemSize(type: SketchesMediaGridItemType, orientation: Orientation): Int =
+    private fun itemSizeMainAxis(type: SketchesMediaGridItemType, orientation: Orientation): Int =
         when (type) {
             SketchesMediaGridItemType.Date -> dateItemSize.mainAxis(orientation)
             SketchesMediaGridItemType.File -> fileItemSize.mainAxis(orientation)
