@@ -138,22 +138,38 @@ sealed interface SketchesMediaGridItemType {
 
     val span: SketchesMediaGridItemSpan
 
+    val isClickable: Boolean
+
+    val isSelectable: Boolean
+
     @Immutable
     data object Date: SketchesMediaGridItemType {
 
         override val span: SketchesMediaGridItemSpan = SketchesMediaGridItemSpan.Line
+
+        override val isClickable: Boolean = false
+
+        override val isSelectable: Boolean = false
     }
 
     @Immutable
     data object File: SketchesMediaGridItemType {
 
         override val span: SketchesMediaGridItemSpan = SketchesMediaGridItemSpan.Single
+
+        override val isClickable: Boolean = true
+
+        override val isSelectable: Boolean = true
     }
 
     @Immutable
     data object Bucket: SketchesMediaGridItemType {
 
         override val span: SketchesMediaGridItemSpan = SketchesMediaGridItemSpan.Single
+
+        override val isClickable: Boolean = true
+
+        override val isSelectable: Boolean = true
     }
 }
 
@@ -212,6 +228,8 @@ sealed interface SketchesMediaGridState {
 
     var items: List<SketchesMediaGridItem>
 
+    val selectedItems: Set<SketchesMediaGridItemKey>
+
     suspend fun scrollToItem(
         index: Int,
         type: SketchesMediaGridItemType? = null,
@@ -225,8 +243,13 @@ sealed interface SketchesMediaGridState {
 @Composable
 fun SketchesMediaGrid(
     state: SketchesMediaGridState,
+    onItemClick: (index: Int, item: SketchesMediaGridItem) -> Unit,
+    modifier: Modifier = Modifier,
+    overlayTop: Boolean = false,
+    overlayBottom: Boolean = false,
 ) {
     require(state is SketchesMediaGridStateImpl) { "Use rememberSketchesMediaGridState to obtain the state" }
+    val onItemClick by rememberUpdatedState(onItemClick)
     //TODO
 }
 
@@ -234,6 +257,9 @@ private class SketchesMediaGridStateImpl(private val state: LazyGridState): Sket
 
     override var items: List<SketchesMediaGridItem>
         by mutableStateOf(emptyList(), referentialEqualityPolicy())
+
+    //TODO: Save
+    override val selectedItems: SnapshotStateSet<SketchesMediaGridItemKey> = SnapshotStateSet()
 
     override suspend fun scrollToItem(
         index: Int,
