@@ -76,7 +76,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.ShareA
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SimpleAction
 import com.github.yuriybudiyev.sketches.core.ui.components.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGrid
-import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
+import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridItemType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchHandler
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
@@ -204,7 +204,7 @@ private fun BookmarksScreen(
     NavResultHandler<ImageScreenNavResult> { result ->
         mediaGridState.scrollToItem(
             index = result.fileIndex,
-            itemType = SketchesMediaGridContentType.File,
+            itemType = SketchesMediaGridItemType.File,
             snapToClosestEdge = true,
             onlyIfItemAtIndexIsNotVisible = true,
         )
