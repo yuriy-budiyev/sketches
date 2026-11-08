@@ -41,7 +41,9 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope
@@ -299,9 +301,7 @@ fun SketchesMediaGrid(
                         modifier = Modifier
                             .defaultAnimateItem()
                             .onSizeChanged { size ->
-                                if (size != IntSize.Zero) {
-                                    state.dateItemSize = size
-                                }
+                                state.dateItemSize = size
                             },
                     )
                 }
@@ -325,7 +325,11 @@ fun SketchesMediaGrid(
                                 onItemClick(index, item)
                             }
                         },
-                        modifier = Modifier.defaultAnimateItem(),
+                        modifier = Modifier
+                            .defaultAnimateItem()
+                            .onSizeChanged { size ->
+                                state.fileItemSize = size
+                            },
                     )
                 }
                 is SketchesMediaGridItem.Bucket -> {
@@ -348,7 +352,11 @@ fun SketchesMediaGrid(
                                 onItemClick(index, item)
                             }
                         },
-                        modifier = Modifier.defaultAnimateItem(),
+                        modifier = Modifier
+                            .defaultAnimateItem()
+                            .onSizeChanged { size ->
+                                state.bucketItemSize = size
+                            },
                     )
                 }
             }
@@ -856,7 +864,107 @@ private fun MediaBucketItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    //TODO
+    val colorScheme = MaterialTheme.colorScheme
+    val dimens = LocalDimens.current
+    Column(
+        modifier = modifier
+            .clipToBounds()
+            .combinedClickable(
+                onLongClick = onLongClick,
+                onClick = onClick,
+            ),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(ratio = 1F)
+                .border(
+                    width = dimens.mediaItemBorderThickness,
+                    color = if (isSelected) {
+                        colorScheme.onBackground.withLowTransparency()
+                    } else {
+                        colorScheme.onBackground.withHighTransparency()
+                    },
+                    shape = RectangleShape,
+                )
+                .clipToBounds(),
+        ) {
+            val coverUri = bucket.coverUri
+            SketchesThumbnailAsyncImage(
+                uri = coverUri,
+                contentDescription = stringResource(R.string.bucket_cover),
+                modifier = Modifier.matchParentSize(),
+            )
+            if (isSelected) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(
+                            color = colorScheme.background.withMediumTransparency(),
+                            shape = RectangleShape,
+                        ),
+                )
+                Icon(
+                    painter = painterResource(R.drawable.ic_media_selected),
+                    contentDescription = stringResource(R.string.selected),
+                    tint = colorScheme.onBackground,
+                    modifier = Modifier
+                        .align(alignment = Alignment.TopStart)
+                        .padding(all = dimens.mediaGridIconPadding)
+                        .dropShadow(
+                            shape = CircleShape,
+                            shadow = Shadow(
+                                radius = dimens.shadowBlurRadius,
+                                color = colorScheme.background.withLowTransparency(),
+                            ),
+                        ),
+                )
+            }
+            if (bucket.isHidden) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_bucket_hidden),
+                    contentDescription = stringResource(R.string.hidden_bucket),
+                    tint = colorScheme.onBackground,
+                    modifier = Modifier
+                        .align(alignment = Alignment.BottomStart)
+                        .padding(all = dimens.mediaGridIconPadding)
+                        .dropShadow(
+                            shape = CircleShape,
+                            shadow = Shadow(
+                                radius = dimens.shadowBlurRadius,
+                                color = colorScheme.background.withLowTransparency(),
+                            ),
+                        ),
+                )
+            }
+        }
+        Text(
+            text = bucket.name,
+            modifier = Modifier.padding(
+                start = 4.dp,
+                top = 4.dp,
+                end = 4.dp,
+                bottom = 0.dp,
+            ),
+            color = colorScheme.onBackground,
+            fontSize = 16.sp,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
+        )
+        Text(
+            text = bucket.size.toString(),
+            modifier = Modifier.padding(
+                start = 4.dp,
+                top = 0.dp,
+                end = 4.dp,
+                bottom = 4.dp,
+            ),
+            color = colorScheme.onBackground,
+            fontSize = 14.sp,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
+        )
+    }
 }
 
 /**
