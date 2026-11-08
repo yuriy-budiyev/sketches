@@ -32,6 +32,7 @@ import java.time.temporal.ChronoField
 import java.util.Locale
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
+import kotlin.math.min
 import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
 import androidx.compose.foundation.background
@@ -221,6 +222,18 @@ sealed interface SketchesMediaGridState {
     )
 
     suspend fun animateScrollToStart()
+}
+
+inline fun <reified T: SketchesMediaGridItem> SketchesMediaGridState.selectedItems(): List<T> {
+    val selectedItems = selectedItems.toSet()
+    val items = items
+    val result = ArrayList<T>(min(selectedItems.size, items.size))
+    for (item in items) {
+        if (item is T && item.key in selectedItems) {
+            result.add(item)
+        }
+    }
+    return result
 }
 
 @Composable
