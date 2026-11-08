@@ -228,7 +228,7 @@ sealed interface SketchesMediaGridState {
 
     var items: List<SketchesMediaGridItem>
 
-    val selectedItems: MutableSet<SketchesMediaGridItemKey>
+    val selectedItems: SnapshotStateSet<SketchesMediaGridItemKey>
 
     suspend fun scrollToItem(
         index: Int,
