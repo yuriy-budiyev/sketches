@@ -212,7 +212,7 @@ sealed interface SketchesMediaGridState {
 
     var items: List<SketchesMediaGridItem>
 
-    val selectedItems: SnapshotStateSet<SketchesMediaGridItemKey>
+    val selectedItemKeys: SnapshotStateSet<SketchesMediaGridItemKey>
 
     suspend fun scrollToItem(
         index: Int,
@@ -225,11 +225,11 @@ sealed interface SketchesMediaGridState {
 }
 
 inline fun <reified T: SketchesMediaGridItem> SketchesMediaGridState.selectedItems(): List<T> {
-    val selectedItems = selectedItems.toSet()
+    val selected = selectedItemKeys.toSet()
     val items = items
-    val result = ArrayList<T>(min(selectedItems.size, items.size))
+    val result = ArrayList<T>(min(selected.size, items.size))
     for (item in items) {
-        if (item is T && selectedItems.contains(item.key)) {
+        if (item is T && selected.contains(item.key)) {
             result.add(item)
         }
     }
@@ -282,7 +282,7 @@ fun SketchesMediaGrid(
         ) { index ->
             val item = state.items[index]
             val itemSelected by remember(item.key) {
-                computedStateOf { state.selectedItems.contains(item.key) }
+                computedStateOf { state.selectedItemKeys.contains(item.key) }
             }
             when (item) {
                 is SketchesMediaGridItem.Date -> {
@@ -310,16 +310,16 @@ fun SketchesMediaGrid(
                         file = item.file,
                         fileSelected = itemSelected,
                         onLongClick = {
-                            if (state.selectedItems.isEmpty()) {
-                                state.selectedItems.add(item.key)
+                            if (state.selectedItemKeys.isEmpty()) {
+                                state.selectedItemKeys.add(item.key)
                             }
                         },
                         onClick = {
-                            if (state.selectedItems.isNotEmpty()) {
+                            if (state.selectedItemKeys.isNotEmpty()) {
                                 if (itemSelected) {
-                                    state.selectedItems.remove(item.key)
+                                    state.selectedItemKeys.remove(item.key)
                                 } else {
-                                    state.selectedItems.add(item.key)
+                                    state.selectedItemKeys.add(item.key)
                                 }
                             } else {
                                 onItemClick(index, item)
@@ -341,7 +341,7 @@ private class SketchesMediaGridStateImpl(val lazyGridState: LazyGridState): Sket
     override var items: List<SketchesMediaGridItem>
         by mutableStateOf(emptyList(), referentialEqualityPolicy())
 
-    override val selectedItems: SnapshotStateSet<SketchesMediaGridItemKey> = SnapshotStateSet()
+    override val selectedItemKeys: SnapshotStateSet<SketchesMediaGridItemKey> = SnapshotStateSet()
 
     override suspend fun scrollToItem(
         index: Int,
@@ -507,7 +507,7 @@ private class SketchesMediaGridStateImplSaver(private val state: LazyGridState):
             fileItemHeight = value.fileItemSize.height,
             bucketItemWidth = value.bucketItemSize.width,
             bucketItemHeight = value.bucketItemSize.height,
-            selectedItems = value.selectedItems.toSet().let { items ->
+            selectedItems = value.selectedItemKeys.toSet().let { items ->
                 items.mapTo(ArrayList(items.size)) { item -> item }
             },
         )
@@ -517,7 +517,7 @@ private class SketchesMediaGridStateImplSaver(private val state: LazyGridState):
             dateItemSize = IntSize(value.dateItemWidth, value.dateItemHeight)
             fileItemSize = IntSize(value.fileItemWidth, value.fileItemHeight)
             bucketItemSize = IntSize(value.bucketItemWidth, value.bucketItemHeight)
-            selectedItems.addAll(value.selectedItems)
+            selectedItemKeys.addAll(value.selectedItems)
         }
 }
 
