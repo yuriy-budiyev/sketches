@@ -306,9 +306,9 @@ fun SketchesMediaGrid(
                     )
                 }
                 is SketchesMediaGridItem.File -> {
-                    MediaItem(
+                    MediaFileItem(
                         file = item.file,
-                        fileSelected = itemSelected,
+                        isSelected = itemSelected,
                         onLongClick = {
                             if (state.selectedItemKeys.isEmpty()) {
                                 state.selectedItemKeys.add(item.key)
@@ -329,7 +329,27 @@ fun SketchesMediaGrid(
                     )
                 }
                 is SketchesMediaGridItem.Bucket -> {
-                    //TODO
+                    MediaBucketItem(
+                        bucket = item.bucket,
+                        isSelected = itemSelected,
+                        onLongClick = {
+                            if (state.selectedItemKeys.isEmpty()) {
+                                state.selectedItemKeys.add(item.key)
+                            }
+                        },
+                        onClick = {
+                            if (state.selectedItemKeys.isNotEmpty()) {
+                                if (itemSelected) {
+                                    state.selectedItemKeys.remove(item.key)
+                                } else {
+                                    state.selectedItemKeys.add(item.key)
+                                }
+                            } else {
+                                onItemClick(index, item)
+                            }
+                        },
+                        modifier = Modifier.defaultAnimateItem(),
+                    )
                 }
             }
         }
@@ -570,9 +590,9 @@ fun SketchesMediaGrid(
         ) { index ->
             val file by rememberUpdatedState(files[index])
             val fileSelected by remember { computedStateOf { selectedFiles.contains(file.id) } }
-            MediaItem(
+            MediaFileItem(
                 file = file,
-                fileSelected = fileSelected,
+                isSelected = fileSelected,
                 onLongClick = {
                     if (selectedFiles.isEmpty()) {
                         selectedFiles.add(file.id)
@@ -685,9 +705,9 @@ fun SketchesGroupingMediaGrid(
                 ) { index ->
                     val file by rememberUpdatedState(files[index + groupOffset])
                     val fileSelected by remember { computedStateOf { selectedFiles.contains(file.id) } }
-                    MediaItem(
+                    MediaFileItem(
                         file = file,
-                        fileSelected = fileSelected,
+                        isSelected = fileSelected,
                         onLongClick = {
                             if (selectedFiles.isEmpty()) {
                                 selectedFiles.add(file.id)
@@ -745,15 +765,13 @@ private fun HeaderItem(
 }
 
 @Composable
-private fun MediaItem(
+private fun MediaFileItem(
     file: MediaFile,
-    fileSelected: Boolean,
+    isSelected: Boolean,
     onLongClick: () -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val file by rememberUpdatedState(file)
-    val fileSelected by rememberUpdatedState(fileSelected)
     val colorScheme = MaterialTheme.colorScheme
     val dimens = LocalDimens.current
     Box(
@@ -761,7 +779,7 @@ private fun MediaItem(
             .aspectRatio(ratio = 1F)
             .border(
                 width = dimens.mediaItemBorderThickness,
-                color = if (fileSelected) {
+                color = if (isSelected) {
                     colorScheme.onBackground.withLowTransparency()
                 } else {
                     colorScheme.onBackground.withHighTransparency()
@@ -785,7 +803,7 @@ private fun MediaItem(
             ),
             modifier = Modifier.matchParentSize(),
         )
-        if (fileSelected) {
+        if (isSelected) {
             Box(
                 modifier = Modifier
                     .matchParentSize()
@@ -828,6 +846,17 @@ private fun MediaItem(
             )
         }
     }
+}
+
+@Composable
+private fun MediaBucketItem(
+    bucket: MediaBucket,
+    isSelected: Boolean,
+    onLongClick: () -> Unit,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    //TODO
 }
 
 /**
