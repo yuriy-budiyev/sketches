@@ -233,22 +233,107 @@ private class SketchesMediaGridStateImpl(private val state: LazyGridState): Sket
     }
 
     override suspend fun animateScrollToStart() {
-        TODO("Not yet implemented")
+        val items = items
+        val itemsCount = items.size
+        if (itemsCount == 0) {
+            return
+        }
+        val firstVisibleItemIndex = state.firstVisibleItemIndex
+        val firstVisibleItemScrollOffset = state.firstVisibleItemScrollOffset
+        if (firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0) {
+            return
+        }
+        val layoutInfo = state.layoutInfo
+        if (layoutInfo.totalItemsCount == 0) {
+            return
+        }
+        val orientation = layoutInfo.orientation
+        val scrollThreshold = layoutInfo.viewportSize.mainAxis(orientation) * 3 / 4
+        val maxSpan = layoutInfo.maxSpan
+        val itemSpacing = layoutInfo.mainAxisItemSpacing
+        var itemIndex = 0
+        var scrollAmount = 0
+        var scrollIndex = 0
+        scrollLoop@ while (itemIndex < itemsCount) {
+            val groupType = items[itemIndex].type
+            var nextGroupType = groupType
+            var groupSize = 0
+            groupLoop@ while (groupType == nextGroupType) {
+                groupSize++
+                val nextIndex = itemIndex + groupSize
+                if (nextIndex >= itemsCount) {
+                    break@groupLoop
+                }
+                nextGroupType = items[nextIndex].type
+            }
+            val itemSize = itemSize(groupType, orientation)
+            when (groupType.span) {
+                SketchesMediaGridSpan.Single -> {
+                    repeat(groupSize % maxSpan) {
+                        scrollAmount += itemSize + itemSpacing
+                        scrollIndex += maxSpan
+                        if (scrollAmount >= scrollThreshold || scrollIndex >= firstVisibleItemIndex) {
+                            break@scrollLoop
+                        }
+                    }
+                    val remainingItems = groupSize % maxSpan
+                    if (remainingItems > 0) {
+                        scrollAmount += itemSize + itemSpacing
+                        scrollIndex += remainingItems
+                        if (scrollAmount >= scrollThreshold || scrollIndex >= firstVisibleItemIndex) {
+                            break@scrollLoop
+                        }
+                    }
+                }
+                SketchesMediaGridSpan.Line -> {
+                    repeat(groupSize) {
+                        scrollAmount += itemSize + itemSpacing
+                        scrollIndex += 1
+                        if (scrollAmount >= scrollThreshold || scrollIndex >= firstVisibleItemIndex) {
+                            break@scrollLoop
+                        }
+                    }
+                }
+            }
+            itemIndex += groupSize
+        }
+        if (firstVisibleItemIndex > scrollIndex) {
+            scrollToItem(index = scrollIndex)
+        } else {
+            scrollAmount += firstVisibleItemScrollOffset
+        }
+        state.animateScrollBy(
+            value = -scrollAmount.toFloat(),
+            animationSpec = defaultAnimationSpec(),
+        )
     }
 
-    var dateSize: IntSize by mutableStateOf(IntSize.Zero)
-    var fileSize: IntSize by mutableStateOf(IntSize.Zero)
-    var bucketSize: IntSize by mutableStateOf(IntSize.Zero)
+    private fun itemSize(type: SketchesMediaGridContentType, orientation: Orientation): Int =
+        when (type) {
+            SketchesMediaGridContentType.Date -> dateItemSize.mainAxis(orientation)
+            SketchesMediaGridContentType.File -> fileItemSize.mainAxis(orientation)
+            SketchesMediaGridContentType.Bucket -> bucketItemSize.mainAxis(orientation)
+        }
+
+    private fun IntSize.mainAxis(orientation: Orientation): Int =
+        when (orientation) {
+            Orientation.Vertical -> height
+            Orientation.Horizontal -> width
+        }
+
+    var dateItemSize: IntSize = IntSize.Zero
+    var fileItemSize: IntSize = IntSize.Zero
+    var bucketItemSize: IntSize = IntSize.Zero
 }
 
 @Parcelize
 private data class SketchesMediaGridStateImplConfig(
-    val dateWidth: Int,
-    val dateHeight: Int,
-    val fileWidth: Int,
-    val fileHeight: Int,
-    val bucketWidth: Int,
-    val bucketHeight: Int,
+    val dateItemWidth: Int,
+    val dateItemHeight: Int,
+    val fileItemWidth: Int,
+    val fileItemHeight: Int,
+    val bucketItemWidth: Int,
+    val bucketItemHeight: Int,
 ): Parcelable
 
 private class SketchesMediaGridStateImplSaver(private val state: LazyGridState):
@@ -256,19 +341,19 @@ private class SketchesMediaGridStateImplSaver(private val state: LazyGridState):
 
     override fun SaverScope.save(value: SketchesMediaGridStateImpl): SketchesMediaGridStateImplConfig =
         SketchesMediaGridStateImplConfig(
-            dateWidth = value.dateSize.width,
-            dateHeight = value.dateSize.height,
-            fileWidth = value.fileSize.width,
-            fileHeight = value.fileSize.height,
-            bucketWidth = value.bucketSize.width,
-            bucketHeight = value.bucketSize.height,
+            dateItemWidth = value.dateItemSize.width,
+            dateItemHeight = value.dateItemSize.height,
+            fileItemWidth = value.fileItemSize.width,
+            fileItemHeight = value.fileItemSize.height,
+            bucketItemWidth = value.bucketItemSize.width,
+            bucketItemHeight = value.bucketItemSize.height,
         )
 
     override fun restore(value: SketchesMediaGridStateImplConfig): SketchesMediaGridStateImpl =
         SketchesMediaGridStateImpl(state).apply {
-            dateSize = IntSize(value.dateWidth, value.dateHeight)
-            fileSize = IntSize(value.fileWidth, value.fileHeight)
-            bucketSize = IntSize(value.bucketWidth, value.bucketHeight)
+            dateItemSize = IntSize(value.dateItemWidth, value.dateItemHeight)
+            fileItemSize = IntSize(value.fileItemWidth, value.fileItemHeight)
+            bucketItemSize = IntSize(value.bucketItemWidth, value.bucketItemHeight)
         }
 }
 
