@@ -24,8 +24,19 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.utils
 
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.runtime.Stable
+import androidx.compose.ui.unit.IntSize
+
 enum class ScrollDirection {
     None,
     Backward,
     Forward,
 }
+
+@Stable
+fun IntSize.mainAxis(orientation: Orientation): Int =
+    when (orientation) {
+        Orientation.Vertical -> height
+        Orientation.Horizontal -> width
+    }
