@@ -24,13 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.utils
 
-import kotlin.math.roundToInt
 import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.lazy.grid.LazyGridItemInfo
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.util.fastFirstOrNull
 
 suspend fun LazyGridState.scrollToItem(
     index: Int,
@@ -82,38 +78,4 @@ suspend fun LazyGridState.scrollToItem(
         index = index,
         scrollOffset = offset,
     )
-}
-
-fun LazyGridState.getItemInfoAtOffset(offset: Offset): LazyGridItemInfo? {
-    val layoutInfo = layoutInfo
-    val viewportSize = layoutInfo.viewportSize
-    val viewportWidth = viewportSize.width
-    val viewportHeight = viewportSize.height
-    val paddingX: Int
-    val paddingY: Int
-    when (layoutInfo.orientation) {
-        Orientation.Vertical -> {
-            paddingX = 0
-            paddingY = layoutInfo.beforeContentPadding
-        }
-        Orientation.Horizontal -> {
-            paddingX = layoutInfo.beforeContentPadding
-            paddingY = 0
-        }
-    }
-    val offsetX = offset.x.roundToInt() - paddingX
-    val offsetY = offset.y.roundToInt() - paddingY
-    if (offsetX < 0 || offsetY < 0 || offsetX > viewportWidth || offsetY > viewportHeight) {
-        return null
-    }
-    return layoutInfo.visibleItemsInfo.fastFirstOrNull { info ->
-        val itemStartOffset = info.offset
-        val itemSize = info.size
-        val itemStartOffsetX = itemStartOffset.x
-        val itemStartOffsetY = itemStartOffset.y
-        val itemEndOffsetX = itemStartOffsetX + itemSize.width
-        val itemEndOffsetY = itemStartOffsetY + itemSize.height
-        offsetX >= itemStartOffsetX && offsetX <= itemEndOffsetX &&
-            offsetY >= itemStartOffsetY && offsetY <= itemEndOffsetY
-    }
 }
