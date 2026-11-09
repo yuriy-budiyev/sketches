@@ -91,76 +91,76 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 
 @Immutable
-sealed interface SketchesMediaGridItemKey: Parcelable {
+sealed interface SketchesMediaGridKey: Parcelable {
 
     @Parcelize
     @Immutable
     data class Date(
         val year: Int,
         val month: Int,
-    ): SketchesMediaGridItemKey
+    ): SketchesMediaGridKey
 
     @Parcelize
     @Immutable
     data class File(
         val id: Long,
-    ): SketchesMediaGridItemKey
+    ): SketchesMediaGridKey
 
     @Parcelize
     @Immutable
     data class Bucket(
         val id: Long,
-    ): SketchesMediaGridItemKey
+    ): SketchesMediaGridKey
 }
 
 @Immutable
-sealed interface SketchesMediaGridItemSpan {
+sealed interface SketchesMediaGridSpan {
 
     val factory: LazyGridItemSpanScope.() -> GridItemSpan
 
     @Immutable
-    data object Single: SketchesMediaGridItemSpan {
+    data object Single: SketchesMediaGridSpan {
 
         override val factory: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(1) }
     }
 
     @Immutable
-    data object Line: SketchesMediaGridItemSpan {
+    data object Line: SketchesMediaGridSpan {
 
         override val factory: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(maxLineSpan) }
     }
 }
 
 @Immutable
-sealed interface SketchesMediaGridItemType {
+sealed interface SketchesMediaGridContentType {
 
-    val span: SketchesMediaGridItemSpan
+    val span: SketchesMediaGridSpan
 
     @Immutable
-    data object Date: SketchesMediaGridItemType {
+    data object Date: SketchesMediaGridContentType {
 
-        override val span: SketchesMediaGridItemSpan = SketchesMediaGridItemSpan.Line
+        override val span: SketchesMediaGridSpan = SketchesMediaGridSpan.Line
     }
 
     @Immutable
-    data object File: SketchesMediaGridItemType {
+    data object File: SketchesMediaGridContentType {
 
-        override val span: SketchesMediaGridItemSpan = SketchesMediaGridItemSpan.Single
+        override val span: SketchesMediaGridSpan = SketchesMediaGridSpan.Single
     }
 
     @Immutable
-    data object Bucket: SketchesMediaGridItemType {
+    data object Bucket: SketchesMediaGridContentType {
 
-        override val span: SketchesMediaGridItemSpan = SketchesMediaGridItemSpan.Single
+        override val span: SketchesMediaGridSpan = SketchesMediaGridSpan.Single
     }
 }
 
 @Immutable
 sealed interface SketchesMediaGridItem {
 
-    val key: SketchesMediaGridItemKey
+    val key: SketchesMediaGridKey
 
-    val type: SketchesMediaGridItemType
+    val type: SketchesMediaGridContentType
 
     @Immutable
     data class Date(
@@ -168,9 +168,9 @@ sealed interface SketchesMediaGridItem {
         val month: Int,
     ): SketchesMediaGridItem {
 
-        override val key: SketchesMediaGridItemKey = SketchesMediaGridItemKey.Date(year, month)
+        override val key: SketchesMediaGridKey = SketchesMediaGridKey.Date(year, month)
 
-        override val type: SketchesMediaGridItemType = SketchesMediaGridItemType.Date
+        override val type: SketchesMediaGridContentType = SketchesMediaGridContentType.Date
     }
 
     @Immutable
@@ -178,9 +178,9 @@ sealed interface SketchesMediaGridItem {
         val file: MediaFile,
     ): SketchesMediaGridItem {
 
-        override val key: SketchesMediaGridItemKey = SketchesMediaGridItemKey.File(file.id)
+        override val key: SketchesMediaGridKey = SketchesMediaGridKey.File(file.id)
 
-        override val type: SketchesMediaGridItemType = SketchesMediaGridItemType.File
+        override val type: SketchesMediaGridContentType = SketchesMediaGridContentType.File
     }
 
     @Immutable
@@ -188,9 +188,9 @@ sealed interface SketchesMediaGridItem {
         val bucket: MediaBucket,
     ): SketchesMediaGridItem {
 
-        override val key: SketchesMediaGridItemKey = SketchesMediaGridItemKey.Bucket(bucket.id)
+        override val key: SketchesMediaGridKey = SketchesMediaGridKey.Bucket(bucket.id)
 
-        override val type: SketchesMediaGridItemType = SketchesMediaGridItemType.Bucket
+        override val type: SketchesMediaGridContentType = SketchesMediaGridContentType.Bucket
     }
 }
 
@@ -268,7 +268,7 @@ private class SketchesMediaGridStateImpl(private val state: LazyGridState): Sket
             }
             val itemSize = itemSize(groupType, orientation)
             when (groupType.span) {
-                SketchesMediaGridItemSpan.Single -> {
+                SketchesMediaGridSpan.Single -> {
                     repeat(groupSize % maxSpan) {
                         scrollAmount += itemSize + itemSpacing
                         scrollIndex += maxSpan
@@ -285,7 +285,7 @@ private class SketchesMediaGridStateImpl(private val state: LazyGridState): Sket
                         }
                     }
                 }
-                SketchesMediaGridItemSpan.Line -> {
+                SketchesMediaGridSpan.Line -> {
                     repeat(groupSize) {
                         scrollAmount += itemSize + itemSpacing
                         scrollIndex += 1
@@ -308,11 +308,11 @@ private class SketchesMediaGridStateImpl(private val state: LazyGridState): Sket
         )
     }
 
-    private fun itemSize(type: SketchesMediaGridItemType, orientation: Orientation): Int =
+    private fun itemSize(type: SketchesMediaGridContentType, orientation: Orientation): Int =
         when (type) {
-            SketchesMediaGridItemType.Date -> dateItemSize.mainAxis(orientation)
-            SketchesMediaGridItemType.File -> fileItemSize.mainAxis(orientation)
-            SketchesMediaGridItemType.Bucket -> bucketItemSize.mainAxis(orientation)
+            SketchesMediaGridContentType.Date -> dateItemSize.mainAxis(orientation)
+            SketchesMediaGridContentType.File -> fileItemSize.mainAxis(orientation)
+            SketchesMediaGridContentType.Bucket -> bucketItemSize.mainAxis(orientation)
         }
 
     private fun IntSize.mainAxis(orientation: Orientation): Int =
@@ -401,8 +401,8 @@ fun SketchesMediaGrid(
     ) {
         items(
             count = files.size,
-            key = { index -> SketchesMediaGridItemKey.File(id = files[index].id) },
-            contentType = { SketchesMediaGridItemType.File },
+            key = { index -> SketchesMediaGridKey.File(id = files[index].id) },
+            contentType = { SketchesMediaGridContentType.File },
         ) { index ->
             val file by rememberUpdatedState(files[index])
             val fileSelected by remember { computedStateOf { selectedFiles.contains(file.id) } }
@@ -492,11 +492,11 @@ fun SketchesGroupingMediaGrid(
                 val groupOffset = index
                 index += groupSize
                 item(
-                    key = SketchesMediaGridItemKey.Date(
+                    key = SketchesMediaGridKey.Date(
                         year = groupDate.year,
                         month = groupDate.monthValue,
                     ),
-                    contentType = SketchesMediaGridItemType.Date,
+                    contentType = SketchesMediaGridContentType.Date,
                     span = { GridItemSpan(maxLineSpan) },
                 ) {
                     HeaderItem(
@@ -516,8 +516,8 @@ fun SketchesGroupingMediaGrid(
                 }
                 items(
                     count = groupSize,
-                    key = { index -> SketchesMediaGridItemKey.File(files[index + groupOffset].id) },
-                    contentType = { SketchesMediaGridItemType.File },
+                    key = { index -> SketchesMediaGridKey.File(files[index + groupOffset].id) },
+                    contentType = { SketchesMediaGridContentType.File },
                 ) { index ->
                     val file by rememberUpdatedState(files[index + groupOffset])
                     val fileSelected by remember { computedStateOf { selectedFiles.contains(file.id) } }
