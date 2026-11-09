@@ -229,7 +229,7 @@ inline fun <reified T: SketchesMediaGridItem> SketchesMediaGridState.selectedIte
     val items = items
     val result = ArrayList<T>(min(selectedItems.size, items.size))
     for (item in items) {
-        if (item is T && selectedItems.contains(item.key)) {
+        if (item is T && item.key in selectedItems) {
             result.add(item)
         }
     }
