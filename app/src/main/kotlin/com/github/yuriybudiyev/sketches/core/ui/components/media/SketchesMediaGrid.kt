@@ -222,14 +222,6 @@ sealed interface SketchesMediaGridState {
     suspend fun animateScrollToStart()
 }
 
-@Composable
-fun SketchesMediaGrid(
-    state: SketchesMediaGridState,
-) {
-    require(state is SketchesMediaGridStateImpl) { "Use rememberSketchesMediaGridState to obtain the state" }
-    //TODO
-}
-
 private class SketchesMediaGridStateImpl(private val state: LazyGridState): SketchesMediaGridState {
 
     override var items: List<SketchesMediaGridItem>
