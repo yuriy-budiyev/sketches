@@ -226,18 +226,13 @@ sealed interface SketchesMediaGridState {
     suspend fun animateScrollToStart()
 }
 
-inline fun <reified I: SketchesMediaGridItem> SketchesMediaGridState.selectedItems(): List<I> =
-    selectedItems<I, I> { item -> item }
-
-inline fun <reified I: SketchesMediaGridItem, reified R: Any> SketchesMediaGridState.selectedItems(
-    transform: (item: I) -> R,
-): List<R> {
+inline fun <reified T: SketchesMediaGridItem> SketchesMediaGridState.selectedItems(): List<T> {
     val selected = selectedItemKeys.toSet()
     val items = items
-    val result = ArrayList<R>(min(selected.size, items.size))
+    val result = ArrayList<T>(min(selected.size, items.size))
     for (item in items) {
-        if (item is I && selected.contains(item.key)) {
-            result.add(transform(item))
+        if (item is T && selected.contains(item.key)) {
+            result.add(item)
         }
     }
     return result
