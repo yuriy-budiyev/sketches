@@ -92,7 +92,7 @@ sealed interface SketchesMediaGridKey: Parcelable {
 
     @Parcelize
     @Immutable
-    data class Header(
+    data class Date(
         val year: Int,
         val month: Int,
     ): SketchesMediaGridKey
@@ -108,7 +108,7 @@ sealed interface SketchesMediaGridKey: Parcelable {
 sealed interface SketchesMediaGridContentType {
 
     @Immutable
-    data object Header: SketchesMediaGridContentType
+    data object Date: SketchesMediaGridContentType
 
     @Immutable
     data object Media: SketchesMediaGridContentType
@@ -124,7 +124,7 @@ class SketchesMediaGridSpec {
     /**
      * Do not set manually.
      */
-    var headerItemSize: IntSize by mutableStateOf(IntSize.Zero)
+    var dateItemSize: IntSize by mutableStateOf(IntSize.Zero)
 
     /**
      * Do not set manually.
@@ -244,11 +244,11 @@ fun SketchesGroupingMediaGrid(
                 val groupOffset = index
                 index += groupSize
                 item(
-                    key = SketchesMediaGridKey.Header(
+                    key = SketchesMediaGridKey.Date(
                         year = groupDate.year,
                         month = groupDate.monthValue,
                     ),
-                    contentType = SketchesMediaGridContentType.Header,
+                    contentType = SketchesMediaGridContentType.Date,
                     span = { GridItemSpan(maxLineSpan) },
                 ) {
                     HeaderItem(
@@ -261,7 +261,7 @@ fun SketchesGroupingMediaGrid(
                             .defaultAnimateItem()
                             .onSizeChanged { size ->
                                 if (size != IntSize.Zero) {
-                                    spec.headerItemSize = size
+                                    spec.dateItemSize = size
                                 }
                             },
                     )
@@ -433,8 +433,8 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
         return
     }
     val headerItemSize = when (layoutInfo.orientation) {
-        Orientation.Vertical -> spec.headerItemSize.height
-        Orientation.Horizontal -> spec.headerItemSize.width
+        Orientation.Vertical -> spec.dateItemSize.height
+        Orientation.Horizontal -> spec.dateItemSize.width
     }
     val mediaItemSize = when (layoutInfo.orientation) {
         Orientation.Vertical -> spec.mediaItemSize.height
@@ -529,8 +529,8 @@ inline fun calculateMediaIndexWithGroups(
 
 @Parcelize
 private data class SketchesMediaGridSpecConfig(
-    val headerItemWidth: Int,
-    val headerItemHeight: Int,
+    val dateItemWidth: Int,
+    val dateItemHeight: Int,
     val mediaItemWidth: Int,
     val mediaItemHeight: Int,
 ): Parcelable
@@ -539,15 +539,15 @@ private object SketchesMediaGridSpecSaver: Saver<SketchesMediaGridSpec, Sketches
 
     override fun SaverScope.save(value: SketchesMediaGridSpec): SketchesMediaGridSpecConfig =
         SketchesMediaGridSpecConfig(
-            headerItemWidth = value.headerItemSize.width,
-            headerItemHeight = value.headerItemSize.height,
+            dateItemWidth = value.dateItemSize.width,
+            dateItemHeight = value.dateItemSize.height,
             mediaItemWidth = value.mediaItemSize.width,
             mediaItemHeight = value.mediaItemSize.height,
         )
 
     override fun restore(value: SketchesMediaGridSpecConfig): SketchesMediaGridSpec =
         SketchesMediaGridSpec().apply {
-            headerItemSize = IntSize(value.headerItemWidth, value.headerItemHeight)
+            dateItemSize = IntSize(value.dateItemWidth, value.dateItemHeight)
             mediaItemSize = IntSize(value.mediaItemWidth, value.mediaItemHeight)
         }
 }
