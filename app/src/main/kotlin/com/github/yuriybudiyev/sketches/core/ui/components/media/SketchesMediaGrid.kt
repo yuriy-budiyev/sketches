@@ -114,44 +114,26 @@ sealed interface SketchesMediaGridKey: Parcelable {
 }
 
 @Immutable
-sealed interface SketchesMediaGridSpan {
-
-    val factory: LazyGridItemSpanScope.() -> GridItemSpan
-
-    @Immutable
-    data object Single: SketchesMediaGridSpan {
-
-        override val factory: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(1) }
-    }
-
-    @Immutable
-    data object Line: SketchesMediaGridSpan {
-
-        override val factory: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(maxLineSpan) }
-    }
-}
-
-@Immutable
 sealed interface SketchesMediaGridContentType {
 
-    val span: SketchesMediaGridSpan
+    val span: LazyGridItemSpanScope.() -> GridItemSpan
 
     @Immutable
     data object Date: SketchesMediaGridContentType {
 
-        override val span: SketchesMediaGridSpan = SketchesMediaGridSpan.Line
+        override val span: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(maxLineSpan) }
     }
 
     @Immutable
     data object File: SketchesMediaGridContentType {
 
-        override val span: SketchesMediaGridSpan = SketchesMediaGridSpan.Single
+        override val span: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(1) }
     }
 
     @Immutable
     data object Bucket: SketchesMediaGridContentType {
 
-        override val span: SketchesMediaGridSpan = SketchesMediaGridSpan.Single
+        override val span: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(1) }
     }
 }
 
