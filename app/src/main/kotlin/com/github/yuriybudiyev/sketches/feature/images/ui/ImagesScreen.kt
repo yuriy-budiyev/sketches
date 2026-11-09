@@ -386,7 +386,7 @@ private suspend inline fun LazyGridState.scrollToItem(
     if (itemIndex != -1) {
         scrollToItem(
             index = itemIndex,
-            itemType = SketchesMediaGridContentType.File,
+            itemType = SketchesMediaGridContentType.Media,
             snapToClosestEdge = snapToClosestEdge,
             onlyIfItemAtIndexIsNotVisible = true,
         )

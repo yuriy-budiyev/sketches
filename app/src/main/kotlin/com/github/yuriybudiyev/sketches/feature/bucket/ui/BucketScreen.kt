@@ -240,7 +240,7 @@ fun BucketScreen(
     NavResultHandler<ImageScreenNavResult> { result ->
         mediaGridState.scrollToItem(
             index = result.fileIndex,
-            itemType = SketchesMediaGridContentType.File,
+            itemType = SketchesMediaGridContentType.Media,
             snapToClosestEdge = true,
             onlyIfItemAtIndexIsNotVisible = true,
         )
