@@ -258,6 +258,7 @@ private class SketchesMediaGridStateImpl(private val state: LazyGridState): Sket
     override var items: List<SketchesMediaGridItem>
         by mutableStateOf(emptyList(), referentialEqualityPolicy())
 
+    //TODO: Save
     override val selectedItems: SnapshotStateSet<SketchesMediaGridItemKey> = SnapshotStateSet()
 
     override suspend fun scrollToItem(
