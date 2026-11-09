@@ -89,7 +89,6 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withMediumTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.utils.mainAxis
 
 @Immutable
 sealed interface SketchesMediaGridItemKey: Parcelable {
@@ -314,6 +313,12 @@ private class SketchesMediaGridStateImpl(private val state: LazyGridState): Sket
             SketchesMediaGridItemType.Date -> dateItemSize.mainAxis(orientation)
             SketchesMediaGridItemType.File -> fileItemSize.mainAxis(orientation)
             SketchesMediaGridItemType.Bucket -> bucketItemSize.mainAxis(orientation)
+        }
+
+    private fun IntSize.mainAxis(orientation: Orientation): Int =
+        when (orientation) {
+            Orientation.Vertical -> height
+            Orientation.Horizontal -> width
         }
 
     var dateItemSize: IntSize = IntSize.Zero
