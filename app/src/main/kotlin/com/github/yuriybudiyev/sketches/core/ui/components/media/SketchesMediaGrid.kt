@@ -411,7 +411,6 @@ private data class SketchesMediaGridStateImplConfig(
     val fileItemHeight: Int,
     val bucketItemWidth: Int,
     val bucketItemHeight: Int,
-    val selectedItems: ArrayList<SketchesMediaGridItemKey>,
 ): Parcelable
 
 private class SketchesMediaGridStateImplSaver(private val state: LazyGridState):
@@ -425,9 +424,6 @@ private class SketchesMediaGridStateImplSaver(private val state: LazyGridState):
             fileItemHeight = value.fileItemSize.height,
             bucketItemWidth = value.bucketItemSize.width,
             bucketItemHeight = value.bucketItemSize.height,
-            selectedItems = value.selectedItems.toSet().let { items ->
-                items.mapTo(ArrayList(items.size)) { item -> item }
-            },
         )
 
     override fun restore(value: SketchesMediaGridStateImplConfig): SketchesMediaGridStateImpl =
@@ -435,7 +431,6 @@ private class SketchesMediaGridStateImplSaver(private val state: LazyGridState):
             dateItemSize = IntSize(value.dateItemWidth, value.dateItemHeight)
             fileItemSize = IntSize(value.fileItemWidth, value.fileItemHeight)
             bucketItemSize = IntSize(value.bucketItemWidth, value.bucketItemHeight)
-            selectedItems.addAll(value.selectedItems)
         }
 }
 
