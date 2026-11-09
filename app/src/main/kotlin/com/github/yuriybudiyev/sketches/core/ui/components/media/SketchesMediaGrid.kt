@@ -116,20 +116,20 @@ sealed interface SketchesMediaGridItemKey: Parcelable {
 }
 
 @Immutable
-sealed interface SketchesMediaGridItemSpan: (LazyGridItemSpanScope) -> GridItemSpan {
+sealed interface SketchesMediaGridItemSpan {
+
+    val factory: LazyGridItemSpanScope.() -> GridItemSpan
 
     @Immutable
     data object Single: SketchesMediaGridItemSpan {
 
-        override operator fun invoke(scope: LazyGridItemSpanScope): GridItemSpan =
-            GridItemSpan(1)
+        override val factory: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(1) }
     }
 
     @Immutable
     data object Line: SketchesMediaGridItemSpan {
 
-        override operator fun invoke(scope: LazyGridItemSpanScope): GridItemSpan =
-            GridItemSpan(scope.maxLineSpan)
+        override val factory: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(maxLineSpan) }
     }
 }
 
@@ -138,22 +138,38 @@ sealed interface SketchesMediaGridItemType {
 
     val span: SketchesMediaGridItemSpan
 
+    val isClickable: Boolean
+
+    val isSelectable: Boolean
+
     @Immutable
     data object Date: SketchesMediaGridItemType {
 
         override val span: SketchesMediaGridItemSpan = SketchesMediaGridItemSpan.Line
+
+        override val isClickable: Boolean = false
+
+        override val isSelectable: Boolean = false
     }
 
     @Immutable
     data object File: SketchesMediaGridItemType {
 
         override val span: SketchesMediaGridItemSpan = SketchesMediaGridItemSpan.Single
+
+        override val isClickable: Boolean = true
+
+        override val isSelectable: Boolean = true
     }
 
     @Immutable
     data object Bucket: SketchesMediaGridItemType {
 
         override val span: SketchesMediaGridItemSpan = SketchesMediaGridItemSpan.Single
+
+        override val isClickable: Boolean = true
+
+        override val isSelectable: Boolean = true
     }
 }
 
@@ -166,10 +182,11 @@ sealed interface SketchesMediaGridItem {
 
     @Immutable
     data class Date(
-        val date: LocalDateTime,
+        val year: Int,
+        val month: Int,
     ): SketchesMediaGridItem {
 
-        override val key: SketchesMediaGridItemKey = SketchesMediaGridItemKey.Date(date.year, date.monthValue)
+        override val key: SketchesMediaGridItemKey = SketchesMediaGridItemKey.Date(year, month)
 
         override val type: SketchesMediaGridItemType = SketchesMediaGridItemType.Date
     }
@@ -233,97 +250,10 @@ fun SketchesMediaGrid(
 ) {
     require(state is SketchesMediaGridStateImpl) { "Use rememberSketchesMediaGridState to obtain the state" }
     val onItemClick by rememberUpdatedState(onItemClick)
-    val nowDate = remember { LocalDate.now() }
-    val dateFormatterMonth = remember {
-        DateTimeFormatterBuilder()
-            .appendText(
-                ChronoField.MONTH_OF_YEAR,
-                TextStyle.FULL_STANDALONE,
-            )
-            .toFormatter(Locale.getDefault())
-    }
-    val dateFormatterMonthYear = remember {
-        DateTimeFormatterBuilder()
-            .appendText(
-                ChronoField.MONTH_OF_YEAR,
-                TextStyle.FULL_STANDALONE,
-            )
-            .appendLiteral(' ')
-            .appendText(
-                ChronoField.YEAR,
-                TextStyle.FULL_STANDALONE,
-            )
-            .toFormatter(Locale.getDefault())
-    }
-    SketchesLazyGrid(
-        modifier = modifier,
-        state = state.lazyGridState,
-        overlayTop = overlayTop,
-        overlayBottom = overlayBottom,
-    ) {
-        items(
-            count = state.items.size,
-            key = { index -> state.items[index].key },
-            span = { index -> state.items[index].type.span(this) },
-            contentType = { index -> state.items[index].type },
-        ) { index ->
-            val item = state.items[index]
-            val itemSelected by remember(item.key) {
-                computedStateOf { state.selectedItems.contains(item.key) }
-            }
-            when (item) {
-                is SketchesMediaGridItem.Date -> {
-                    val date = item.date
-                    val dateText = remember(date) {
-                        if (nowDate.year == date.year) {
-                            dateFormatterMonth.format(date)
-                        } else {
-                            dateFormatterMonthYear.format(date)
-                        }
-                    }
-                    HeaderItem(
-                        text = dateText,
-                        modifier = Modifier
-                            .defaultAnimateItem()
-                            .onSizeChanged { size ->
-                                if (size != IntSize.Zero) {
-                                    state.dateItemSize = size
-                                }
-                            },
-                    )
-                }
-                is SketchesMediaGridItem.File -> {
-                    MediaItem(
-                        file = item.file,
-                        fileSelected = itemSelected,
-                        onLongClick = {
-                            if (state.selectedItems.isEmpty()) {
-                                state.selectedItems.add(item.key)
-                            }
-                        },
-                        onClick = {
-                            if (state.selectedItems.isNotEmpty()) {
-                                if (itemSelected) {
-                                    state.selectedItems.remove(item.key)
-                                } else {
-                                    state.selectedItems.add(item.key)
-                                }
-                            } else {
-                                onItemClick(index, item)
-                            }
-                        },
-                        modifier = Modifier.defaultAnimateItem(),
-                    )
-                }
-                is SketchesMediaGridItem.Bucket -> {
-                    //TODO
-                }
-            }
-        }
-    }
+    //TODO
 }
 
-private class SketchesMediaGridStateImpl(val lazyGridState: LazyGridState): SketchesMediaGridState {
+private class SketchesMediaGridStateImpl(private val state: LazyGridState): SketchesMediaGridState {
 
     override var items: List<SketchesMediaGridItem>
         by mutableStateOf(emptyList(), referentialEqualityPolicy())
@@ -340,7 +270,7 @@ private class SketchesMediaGridStateImpl(val lazyGridState: LazyGridState): Sket
         if (itemsCount == 0) {
             return
         }
-        val layoutInfo = lazyGridState.layoutInfo
+        val layoutInfo = state.layoutInfo
         if (layoutInfo.totalItemsCount != itemsCount) {
             return
         }
@@ -384,7 +314,7 @@ private class SketchesMediaGridStateImpl(val lazyGridState: LazyGridState): Sket
                 offset = layoutInfo.viewportEndOffset - itemSizeMainAxis(item.type, orientation)
             }
         }
-        lazyGridState.scrollToItem(index, offset)
+        state.scrollToItem(index, offset)
     }
 
     override suspend fun animateScrollToStart() {
@@ -393,12 +323,12 @@ private class SketchesMediaGridStateImpl(val lazyGridState: LazyGridState): Sket
         if (itemsCount == 0) {
             return
         }
-        val firstVisibleItemIndex = lazyGridState.firstVisibleItemIndex
-        val firstVisibleItemScrollOffset = lazyGridState.firstVisibleItemScrollOffset
+        val firstVisibleItemIndex = state.firstVisibleItemIndex
+        val firstVisibleItemScrollOffset = state.firstVisibleItemScrollOffset
         if (firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0) {
             return
         }
-        val layoutInfo = lazyGridState.layoutInfo
+        val layoutInfo = state.layoutInfo
         if (layoutInfo.totalItemsCount != itemsCount) {
             return
         }
@@ -457,7 +387,7 @@ private class SketchesMediaGridStateImpl(val lazyGridState: LazyGridState): Sket
         } else {
             scrollAmount += firstVisibleItemScrollOffset
         }
-        lazyGridState.animateScrollBy(-scrollAmount.toFloat(), defaultAnimationSpec())
+        state.animateScrollBy(-scrollAmount.toFloat(), defaultAnimationSpec())
     }
 
     private fun itemSizeMainAxis(type: SketchesMediaGridItemType, orientation: Orientation): Int =
