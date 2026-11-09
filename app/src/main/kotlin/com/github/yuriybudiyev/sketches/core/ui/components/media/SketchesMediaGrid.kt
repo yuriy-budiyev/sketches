@@ -160,7 +160,6 @@ sealed interface SketchesMediaGridItemType {
     }
 }
 
-//TODO: Ui model
 @Immutable
 sealed interface SketchesMediaGridItem {
 
