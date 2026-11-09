@@ -107,12 +107,6 @@ sealed interface SketchesMediaGridItemKey: Parcelable {
 
     @Parcelize
     @Immutable
-    data class Header(
-        val id: Long,
-    ): SketchesMediaGridItemKey
-
-    @Parcelize
-    @Immutable
     data class File(
         val id: Long,
     ): SketchesMediaGridItemKey
@@ -154,12 +148,6 @@ sealed interface SketchesMediaGridItemType {
     }
 
     @Immutable
-    data object Header: SketchesMediaGridItemType {
-
-        override val span: SketchesMediaGridItemSpan = SketchesMediaGridItemSpan.Line
-    }
-
-    @Immutable
     data object File: SketchesMediaGridItemType {
 
         override val span: SketchesMediaGridItemSpan = SketchesMediaGridItemSpan.Single
@@ -188,17 +176,6 @@ sealed interface SketchesMediaGridItem {
         override val key: SketchesMediaGridItemKey = SketchesMediaGridItemKey.Date(date.year, date.monthValue)
 
         override val type: SketchesMediaGridItemType = SketchesMediaGridItemType.Date
-    }
-
-    @Immutable
-    data class Header(
-        val id: Long,
-        val text: String,
-    ): SketchesMediaGridItem {
-
-        override val key: SketchesMediaGridItemKey = SketchesMediaGridItemKey.Header(id)
-
-        override val type: SketchesMediaGridItemType = SketchesMediaGridItemType.Header
     }
 
     @Immutable
@@ -330,17 +307,7 @@ fun SketchesMediaGrid(
                         modifier = Modifier
                             .defaultAnimateItem()
                             .onSizeChanged { size ->
-                                state.headerItemSize = size
-                            },
-                    )
-                }
-                is SketchesMediaGridItem.Header -> {
-                    HeaderItem(
-                        text = item.text,
-                        modifier = Modifier
-                            .defaultAnimateItem()
-                            .onSizeChanged { size ->
-                                state.headerItemSize = size
+                                state.dateItemSize = size
                             },
                     )
                 }
@@ -542,21 +509,20 @@ private class SketchesMediaGridStateImpl(val lazyGridState: LazyGridState): Sket
 
     private fun itemSizeMainAxis(type: SketchesMediaGridItemType, orientation: Orientation): Int =
         when (type) {
-            SketchesMediaGridItemType.Date,
-            SketchesMediaGridItemType.Header -> headerItemSize.mainAxis(orientation)
+            SketchesMediaGridItemType.Date -> dateItemSize.mainAxis(orientation)
             SketchesMediaGridItemType.File -> fileItemSize.mainAxis(orientation)
             SketchesMediaGridItemType.Bucket -> bucketItemSize.mainAxis(orientation)
         }
 
-    var headerItemSize: IntSize = IntSize.Zero
+    var dateItemSize: IntSize = IntSize.Zero
     var fileItemSize: IntSize = IntSize.Zero
     var bucketItemSize: IntSize = IntSize.Zero
 }
 
 @Parcelize
 private data class SketchesMediaGridStateImplConfig(
-    val headerItemWidth: Int,
-    val headerItemHeight: Int,
+    val dateItemWidth: Int,
+    val dateItemHeight: Int,
     val fileItemWidth: Int,
     val fileItemHeight: Int,
     val bucketItemWidth: Int,
@@ -569,8 +535,8 @@ private class SketchesMediaGridStateImplSaver(private val state: LazyGridState):
 
     override fun SaverScope.save(value: SketchesMediaGridStateImpl): SketchesMediaGridStateImplConfig =
         SketchesMediaGridStateImplConfig(
-            headerItemWidth = value.headerItemSize.width,
-            headerItemHeight = value.headerItemSize.height,
+            dateItemWidth = value.dateItemSize.width,
+            dateItemHeight = value.dateItemSize.height,
             fileItemWidth = value.fileItemSize.width,
             fileItemHeight = value.fileItemSize.height,
             bucketItemWidth = value.bucketItemSize.width,
@@ -582,7 +548,7 @@ private class SketchesMediaGridStateImplSaver(private val state: LazyGridState):
 
     override fun restore(value: SketchesMediaGridStateImplConfig): SketchesMediaGridStateImpl =
         SketchesMediaGridStateImpl(state).apply {
-            headerItemSize = IntSize(value.headerItemWidth, value.headerItemHeight)
+            dateItemSize = IntSize(value.dateItemWidth, value.dateItemHeight)
             fileItemSize = IntSize(value.fileItemWidth, value.fileItemHeight)
             bucketItemSize = IntSize(value.bucketItemWidth, value.bucketItemHeight)
             selectedItemKeys.addAll(value.selectedItems)
