@@ -96,8 +96,8 @@ import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.Select
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.ShareAction
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SimpleAction
 import com.github.yuriybudiyev.sketches.core.ui.components.fastAnimateScrollToStart
-import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGrid
-import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
+import com.github.yuriybudiyev.sketches.core.ui.components.media.MediaGrid
+import com.github.yuriybudiyev.sketches.core.ui.components.media.MediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchHandler
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
@@ -240,7 +240,7 @@ fun BucketScreen(
     NavResultHandler<ImageScreenNavResult> { result ->
         mediaGridState.scrollToItem(
             index = result.fileIndex,
-            itemType = SketchesMediaGridContentType.Media,
+            itemType = MediaGridContentType.Media,
             snapToClosestEdge = true,
             onlyIfItemAtIndexIsNotVisible = true,
         )
@@ -292,7 +292,7 @@ fun BucketScreen(
                 val files = uiState.files
                 bucketHidden = uiState.isBucketHidden
                 allFiles = files
-                SketchesMediaGrid(
+                MediaGrid(
                     files = files,
                     selectedFiles = selectedFiles,
                     onItemClick = onImageClick,

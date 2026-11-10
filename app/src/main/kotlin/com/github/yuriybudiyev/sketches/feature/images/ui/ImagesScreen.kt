@@ -75,16 +75,16 @@ import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesTopApp
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SelectAction
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.ShareAction
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SimpleAction
-import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesGroupingMediaGrid
-import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridContentType
+import com.github.yuriybudiyev.sketches.core.ui.components.media.GroupingByMonthMediaGrid
+import com.github.yuriybudiyev.sketches.core.ui.components.media.MediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchHandler
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
-import com.github.yuriybudiyev.sketches.core.ui.components.media.calculateMediaIndexWithGroups
+import com.github.yuriybudiyev.sketches.core.ui.components.media.calculateMediaIndexWithMonthGroups
 import com.github.yuriybudiyev.sketches.core.ui.components.media.fastAnimateScrollToStart
-import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberSketchesMediaGridSpec
+import com.github.yuriybudiyev.sketches.core.ui.components.media.rememberMediaGridSpec
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
@@ -125,7 +125,7 @@ fun ImagesScreen(
     val selectedFiles = rememberSaveableSnapshotStateSet<Long>()
     var deleteDialogVisible by rememberSaveable { mutableStateOf(false) }
     val mediaGridState = rememberLazyGridState()
-    val mediaGridSpec = rememberSketchesMediaGridSpec()
+    val mediaGridSpec = rememberMediaGridSpec()
     val mediaGridScrollConnection = rememberLastScrollDirectionScrollConnection(mediaGridState)
     val mediaBatchState = rememberMediaBatchState()
     val deleteRequestLauncher = rememberLauncherForActivityResult(
@@ -267,7 +267,7 @@ fun ImagesScreen(
             }
             is ImagesScreenViewModel.UiState.Images -> {
                 allFiles = uiState.files
-                SketchesGroupingMediaGrid(
+                GroupingByMonthMediaGrid(
                     files = uiState.files,
                     selectedFiles = selectedFiles,
                     onItemClick = onImageClick,
@@ -379,14 +379,14 @@ private suspend inline fun LazyGridState.scrollToItem(
     if (files.isEmpty()) {
         return
     }
-    val itemIndex = calculateMediaIndexWithGroups(
+    val itemIndex = calculateMediaIndexWithMonthGroups(
         files = files,
         predicate = predicate,
     )
     if (itemIndex != -1) {
         scrollToItem(
             index = itemIndex,
-            itemType = SketchesMediaGridContentType.Media,
+            itemType = MediaGridContentType.Media,
             snapToClosestEdge = snapToClosestEdge,
             onlyIfItemAtIndexIsNotVisible = true,
         )
