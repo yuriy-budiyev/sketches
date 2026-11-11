@@ -367,7 +367,7 @@ class MediaRepositoryImpl @Inject constructor(
                 bookmarksByMediaIdsFlow,
             ) { entities, bookmarks ->
                 emit(entities to bookmarks)
-            }.collectLatest { (entities, bookmarks) ->
+            }.collectLatest { [entities, bookmarks] ->
                 mediaFilesFlow.emit(
                     entities.mapTo(ArrayList(entities.size)) { entity ->
                         MediaFile(
@@ -399,7 +399,7 @@ class MediaRepositoryImpl @Inject constructor(
                 hiddenBucketsFlow,
             ) { files, hiddenBuckets ->
                 emit(files to hiddenBuckets)
-            }.collectLatest { (files, hiddenBuckets) ->
+            }.collectLatest { [files, hiddenBuckets] ->
                 mediaFilesExcludingHiddenBucketsFlow.emit(
                     if (hiddenBuckets.isNotEmpty()) {
                         files.filterTo(ArrayList(files.size)) { file ->
@@ -422,7 +422,7 @@ class MediaRepositoryImpl @Inject constructor(
                 hiddenBucketsFlow,
             ) { entities, hiddenBuckets ->
                 emit(entities to hiddenBuckets)
-            }.collectLatest { (entities, hiddenBuckets) ->
+            }.collectLatest { [entities, hiddenBuckets] ->
                 val bucketsInfo = newLinkedHashMap<Long, MediaBucketInfo>(entities.size)
                 for (entity in entities) {
                     val bucketId = entity.bucketId
@@ -440,7 +440,7 @@ class MediaRepositoryImpl @Inject constructor(
                     bucketInfo.size++
                 }
                 val buckets = ArrayList<MediaBucket>(bucketsInfo.size)
-                for ((_, bucketInfo) in bucketsInfo) {
+                for ([_, bucketInfo] in bucketsInfo) {
                     val bucketId = bucketInfo.id
                     buckets.add(
                         MediaBucket(
@@ -494,8 +494,8 @@ class MediaRepositoryImpl @Inject constructor(
                     entities.mapTo(newLinkedHashSet(entities.size)) { entity -> entity.id }
                 val bookmarksByMediaIds = bookmarksByMediaIdsFlow.first()
                 val bookmarksToDelete = bookmarksByMediaIds.asSequence()
-                    .filter { (mediaId, _) -> !entitiesIds.contains(mediaId) }
-                    .map { (mediaId, _) -> mediaId }
+                    .filter { [mediaId, _] -> !entitiesIds.contains(mediaId) }
+                    .map { [mediaId, _] -> mediaId }
                     .toCollection(ArrayList(bookmarksByMediaIds.size))
                     .apply { trimToSize() }
                 if (bookmarksToDelete.isNotEmpty()) {

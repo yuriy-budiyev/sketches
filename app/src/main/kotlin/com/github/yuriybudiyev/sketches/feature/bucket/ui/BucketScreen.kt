@@ -155,7 +155,7 @@ fun BucketScreen(
     val mediaBatchState = rememberMediaBatchState()
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
-        onResult = { (resultCode, _) ->
+        onResult = { [resultCode, _] ->
             coroutineScope.launch {
                 if (resultCode == Activity.RESULT_OK) {
                     selectedFiles.removeAll(mediaBatchState.currentBatch)

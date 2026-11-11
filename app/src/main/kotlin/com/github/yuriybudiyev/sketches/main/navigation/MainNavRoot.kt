@@ -645,7 +645,7 @@ private class ViewModelStoreViewModel: ViewModel() {
     }
 
     override fun onCleared() {
-        for ((_, viewModelStore) in viewModelStores) {
+        for ([_, viewModelStore] in viewModelStores) {
             viewModelStore.clear()
         }
     }

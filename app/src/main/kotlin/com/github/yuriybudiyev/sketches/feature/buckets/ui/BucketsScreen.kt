@@ -148,7 +148,7 @@ fun BucketsScreen(
     val bucketsGridScrollConnection = rememberLastScrollDirectionScrollConnection(bucketsGridState)
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
-        onResult = { (resultCode, _) ->
+        onResult = { [resultCode, _] ->
             coroutineScope.launch {
                 if (resultCode == Activity.RESULT_OK) {
                     mediaBatchState.proceed()

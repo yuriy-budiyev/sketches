@@ -125,7 +125,7 @@ fun SketchesZoomableBox(
         }
     }
     LaunchedEffect(Unit) {
-        snapshotFlow { containerSize to contentSize }.collect { (containerSize, contentSize) ->
+        snapshotFlow { containerSize to contentSize }.collect { [containerSize, contentSize] ->
             if (containerSize != Size.Zero && contentSize != Size.Zero) {
                 invalidateZoom(
                     target = Offset.Zero,

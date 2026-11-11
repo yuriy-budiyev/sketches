@@ -502,7 +502,7 @@ inline fun calculateMediaIndexWithMonthGroups(
     var offset = 0
     var fileIndex = -1
     var previousDate = LocalDateTime.MAX
-    for ((index, file) in files.withIndex()) {
+    for ([index, file] in files.withIndex()) {
         val currentDate = file.dateAdded
         if (previousDate.year != currentDate.year || previousDate.monthValue != currentDate.monthValue) {
             offset++
