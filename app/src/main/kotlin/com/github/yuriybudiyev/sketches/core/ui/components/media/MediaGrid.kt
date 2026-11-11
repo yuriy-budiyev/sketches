@@ -37,7 +37,6 @@ import android.os.Parcelable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -86,6 +85,7 @@ import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withMediumTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.utils.mainAxis
 
 @Immutable
 sealed interface MediaGridKey: Parcelable {
@@ -432,18 +432,10 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
     if (firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0) {
         return
     }
-    val headerItemSize = when (layoutInfo.orientation) {
-        Orientation.Vertical -> spec.dateItemSize.height
-        Orientation.Horizontal -> spec.dateItemSize.width
-    }
-    val mediaItemSize = when (layoutInfo.orientation) {
-        Orientation.Vertical -> spec.mediaItemSize.height
-        Orientation.Horizontal -> spec.mediaItemSize.width
-    }
-    val scrollThreshold = when (layoutInfo.orientation) {
-        Orientation.Vertical -> layoutInfo.viewportSize.height
-        Orientation.Horizontal -> layoutInfo.viewportSize.width
-    } * 3 / 4
+    val orientation = layoutInfo.orientation
+    val dateItemSize = spec.dateItemSize.mainAxis(orientation)
+    val mediaItemSize = spec.mediaItemSize.mainAxis(orientation)
+    val scrollThreshold = layoutInfo.viewportSize.mainAxis(orientation) * 3 / 4
     val maxSpan = layoutInfo.maxSpan
     val itemSpacing = layoutInfo.mainAxisItemSpacing
     var scrollIndex = 0
@@ -468,7 +460,7 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
             break@scrollLoop
         }
         scrollIndex++
-        scrollAmount += headerItemSize + itemSpacing
+        scrollAmount += dateItemSize + itemSpacing
         if (scrollIndex >= firstVisibleItemIndex) {
             break@scrollLoop
         }

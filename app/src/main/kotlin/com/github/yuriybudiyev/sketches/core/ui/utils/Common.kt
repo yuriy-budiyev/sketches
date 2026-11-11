@@ -24,8 +24,38 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.utils
 
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
+
 enum class ScrollDirection {
     None,
     Backward,
     Forward,
 }
+
+fun Size.mainAxis(orientation: Orientation): Float =
+    when (orientation) {
+        Orientation.Vertical -> height
+        Orientation.Horizontal -> width
+    }
+
+fun IntSize.mainAxis(orientation: Orientation): Int =
+    when (orientation) {
+        Orientation.Vertical -> height
+        Orientation.Horizontal -> width
+    }
+
+fun Offset.mainAxis(orientation: Orientation): Float =
+    when (orientation) {
+        Orientation.Vertical -> y
+        Orientation.Horizontal -> x
+    }
+
+fun IntOffset.mainAxis(orientation: Orientation): Int =
+    when (orientation) {
+        Orientation.Vertical -> y
+        Orientation.Horizontal -> x
+    }

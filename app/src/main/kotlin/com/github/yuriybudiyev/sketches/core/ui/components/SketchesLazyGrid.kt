@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.components
 
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -49,6 +48,7 @@ import androidx.compose.ui.unit.coerceAtLeast
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.utils.mainAxis
 
 @Composable
 fun SketchesLazyGrid(
@@ -120,15 +120,10 @@ suspend fun LazyGridState.fastAnimateScrollToStart() {
     if (firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0) {
         return
     }
+    val orientation = layoutInfo.orientation
     val item = layoutInfo.visibleItemsInfo.firstOrNull() ?: return
-    val itemSize = when (layoutInfo.orientation) {
-        Orientation.Vertical -> item.size.height
-        Orientation.Horizontal -> item.size.width
-    }
-    val scrollThreshold = when (layoutInfo.orientation) {
-        Orientation.Vertical -> layoutInfo.viewportSize.height
-        Orientation.Horizontal -> layoutInfo.viewportSize.width
-    } * 3 / 4
+    val itemSize = item.size.mainAxis(orientation)
+    val scrollThreshold = layoutInfo.viewportSize.mainAxis(orientation) * 3 / 4
     val maxSpan = layoutInfo.maxSpan
     val itemSpacing = layoutInfo.mainAxisItemSpacing
     var scrollSpans = scrollThreshold / itemSize

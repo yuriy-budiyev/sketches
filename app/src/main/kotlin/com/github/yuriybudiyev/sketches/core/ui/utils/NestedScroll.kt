@@ -125,10 +125,7 @@ private class LastScrollDirectionScrollConnectionImpl: LastScrollDirectionScroll
         source: NestedScrollSource,
     ): Offset {
         val orientation = orientation
-        val delta = when (orientation) {
-            Orientation.Vertical -> available.y
-            Orientation.Horizontal -> available.x
-        }
+        val delta = available.mainAxis(orientation)
         accumulated += delta
         if (abs(accumulated) >= threshold) {
             val forward =

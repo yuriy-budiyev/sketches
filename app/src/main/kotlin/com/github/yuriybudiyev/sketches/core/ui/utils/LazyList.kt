@@ -24,7 +24,6 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.utils
 
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.ui.util.fastFirstOrNull
@@ -34,14 +33,12 @@ import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
  * For lists with same constant item size
  */
 suspend fun LazyListState.scrollToItemCentered(index: Int) {
+    val layoutInfo = layoutInfo
     if (layoutInfo.totalItemsCount == 0) {
         return
     }
     val itemSize = layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: return
-    val viewportSize = when (layoutInfo.orientation) {
-        Orientation.Vertical -> layoutInfo.viewportSize.height
-        Orientation.Horizontal -> layoutInfo.viewportSize.width
-    }
+    val viewportSize = layoutInfo.viewportSize.mainAxis(layoutInfo.orientation)
     val centerScrollOffset = viewportSize / 2 - layoutInfo.beforeContentPadding
     scrollToItem(
         index = index,
@@ -53,14 +50,12 @@ suspend fun LazyListState.scrollToItemCentered(index: Int) {
  * For lists with same constant item size
  */
 suspend fun LazyListState.fastAnimateScrollToItemCentered(index: Int) {
+    val layoutInfo = layoutInfo
     if (layoutInfo.totalItemsCount == 0) {
         return
     }
     val itemSize = layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: return
-    val viewportSize = when (layoutInfo.orientation) {
-        Orientation.Vertical -> layoutInfo.viewportSize.height
-        Orientation.Horizontal -> layoutInfo.viewportSize.width
-    }
+    val viewportSize = layoutInfo.viewportSize.mainAxis(layoutInfo.orientation)
     val centerScrollOffset = viewportSize / 2 - layoutInfo.beforeContentPadding
     var targetItem = layoutInfo.visibleItemsInfo.fastFirstOrNull { item -> item.index == index }
     if (targetItem != null) {

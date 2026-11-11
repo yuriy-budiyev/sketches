@@ -24,9 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.utils
 
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.util.fastFirstOrNull
 
 suspend fun LazyGridState.scrollToItem(
     index: Int,
@@ -36,35 +36,21 @@ suspend fun LazyGridState.scrollToItem(
 ) {
     val layoutInfo = layoutInfo
     val visibleItemsInfo = layoutInfo.visibleItemsInfo
-    val firstItemOfType = visibleItemsInfo.firstOrNull { info -> info.contentType == itemType }
-    val itemAtIndex = visibleItemsInfo.firstOrNull { info -> info.index == index }
-    val orientationAwareViewportSize = when (layoutInfo.orientation) {
-        Orientation.Vertical -> layoutInfo.viewportSize.height
-        Orientation.Horizontal -> layoutInfo.viewportSize.width
-    }
+    val firstItemOfType = visibleItemsInfo.fastFirstOrNull { info -> info.contentType == itemType }
+    val itemAtIndex = visibleItemsInfo.fastFirstOrNull { info -> info.index == index }
+    val orientation = layoutInfo.orientation
+    val viewportSize = layoutInfo.viewportSize.mainAxis(orientation)
     val viewportSizeWithAppliedPaddings =
-        orientationAwareViewportSize - layoutInfo.beforeContentPadding - layoutInfo.afterContentPadding
+        viewportSize - layoutInfo.beforeContentPadding - layoutInfo.afterContentPadding
     if (onlyIfItemAtIndexIsNotVisible && itemAtIndex != null) {
-        val orientationAwareItemOffset = when (layoutInfo.orientation) {
-            Orientation.Vertical -> itemAtIndex.offset.y
-            Orientation.Horizontal -> itemAtIndex.offset.x
-        }
-        val orientationAwareItemSize = when (layoutInfo.orientation) {
-            Orientation.Vertical -> itemAtIndex.size.height
-            Orientation.Horizontal -> itemAtIndex.size.width
-        }
-        if (
-            orientationAwareItemOffset >= 0
-            && orientationAwareItemOffset + orientationAwareItemSize <= viewportSizeWithAppliedPaddings
-        ) {
+        val itemOffset = itemAtIndex.offset.mainAxis(orientation)
+        val itemSize = itemAtIndex.size.mainAxis(orientation)
+        if (itemOffset >= 0 && itemOffset + itemSize <= viewportSizeWithAppliedPaddings) {
             return
         }
     }
     val itemSize = itemAtIndex?.size ?: firstItemOfType?.size ?: IntSize.Zero
-    val orientationAwareItemSize = when (layoutInfo.orientation) {
-        Orientation.Vertical -> itemSize.height
-        Orientation.Horizontal -> itemSize.width
-    }
+    val orientationAwareItemSize = itemSize.mainAxis(orientation)
     var offset = 0
     if (snapToClosestEdge) {
         val lastItem = visibleItemsInfo.lastOrNull()
