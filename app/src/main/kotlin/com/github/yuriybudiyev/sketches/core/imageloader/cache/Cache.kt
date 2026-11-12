@@ -168,7 +168,7 @@ class LocalCacheInterceptor(
 }
 
 inline val Context.imageMemoryCache: ImageMemoryCache
-    get() = ImageMemoryCache.getInstance(this)
+    get() = ImageMemoryCache.get(this)
 
 class ImageMemoryCache private constructor(maxSize: Int) {
 
@@ -246,7 +246,7 @@ class ImageMemoryCache private constructor(maxSize: Int) {
 
     companion {
 
-        fun getInstance(context: Context): ImageMemoryCache {
+        fun get(context: Context): ImageMemoryCache {
             var instance = _instance
             if (instance !== null) {
                 return instance
