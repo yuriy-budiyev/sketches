@@ -168,7 +168,7 @@ sealed interface MediaBatchState {
         data class Reset(val payload: Parcelable?): Action
     }
 
-    companion object {
+    companion {
 
         const val BatchSize: Int = MediaStoreBatchSize
     }

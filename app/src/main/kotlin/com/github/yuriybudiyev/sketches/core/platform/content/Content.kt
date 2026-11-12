@@ -24,6 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.core.platform.content
 
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
@@ -33,6 +36,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.annotation.RequiresApi
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
+
+const val MediaStoreBatchSize: Int = 500
 
 fun MediaType.contentUri(): Uri =
     when (this) {
@@ -79,22 +84,38 @@ fun ActivityResultLauncher<IntentSenderRequest>.launchDeleteMediaRequestOrThrow(
     }
 }
 
+@OptIn(ExperimentalContracts::class)
 inline fun Cursor.getStringOrDefault(
     index: Int,
     default: () -> String,
-): String =
-    if (index == -1 || isNull(index)) default() else getString(index)
+): String {
+    contract {
+        callsInPlace(default, InvocationKind.AT_MOST_ONCE)
+        returnsResultOf(default)
+    }
+    return if (index == -1 || isNull(index)) default() else getString(index)
+}
 
+@OptIn(ExperimentalContracts::class)
 inline fun Cursor.getLongOrDefault(
     index: Int,
     default: () -> Long,
-): Long =
-    if (index == -1 || isNull(index)) default() else getLong(index)
+): Long {
+    contract {
+        callsInPlace(default, InvocationKind.AT_MOST_ONCE)
+        returnsResultOf(default)
+    }
+    return if (index == -1 || isNull(index)) default() else getLong(index)
+}
 
+@OptIn(ExperimentalContracts::class)
 inline fun Cursor.getIntOrDefault(
     index: Int,
     default: () -> Int,
-): Int =
-    if (index == -1 || isNull(index)) default() else getInt(index)
-
-const val MediaStoreBatchSize: Int = 500
+): Int {
+    contract {
+        callsInPlace(default, InvocationKind.AT_MOST_ONCE)
+        returnsResultOf(default)
+    }
+    return if (index == -1 || isNull(index)) default() else getInt(index)
+}

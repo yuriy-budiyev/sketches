@@ -258,16 +258,16 @@ class MainActivity: ComponentActivity() {
 
     private val shareManager: ShareManagerImpl = ShareManagerImpl()
 
-    private companion object {
+    companion {
 
-        const val ChooserCallbackResendAction: String =
+        private const val ChooserCallbackResendAction: String =
             "com.github.yuriybudiyev.sketches.main.ChooserCallbackResendAction"
 
-        const val ChooserCallbackActionExtra: String = "ChooserCallbackAction"
+        private const val ChooserCallbackActionExtra: String = "ChooserCallbackAction"
 
-        const val SplashScreenDelay: Long = 300L
+        private const val SplashScreenDelay: Long = 300L
 
-        fun splashScreenExitAnimation(splashScreenView: View): SpringAnimation =
+        private fun splashScreenExitAnimation(splashScreenView: View): SpringAnimation =
             SpringAnimation(splashScreenView, SpringAnimation.ALPHA).apply {
                 spring = SpringForce().apply {
                     stiffness = DefaultSpringStiffness

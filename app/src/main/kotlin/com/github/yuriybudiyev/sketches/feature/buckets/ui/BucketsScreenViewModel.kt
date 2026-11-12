@@ -25,6 +25,9 @@
 package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
 import javax.inject.Inject
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -101,10 +104,14 @@ class BucketsScreenViewModel @Inject constructor(
             initialValue = UiState.Loading,
         )
 
+    @OptIn(ExperimentalContracts::class)
     private suspend inline fun FlowCollector<UiState>.startBucketsAction(
         buckets: Collection<MediaBucket>,
         action: (files: List<MediaFile>) -> UiState.Buckets.Action,
     ) {
+        contract {
+            callsInPlace(action, InvocationKind.UNKNOWN)
+        }
         val files = getBucketsContent(buckets)
         if (files.isNotEmpty()) {
             val oldState = uiState.value

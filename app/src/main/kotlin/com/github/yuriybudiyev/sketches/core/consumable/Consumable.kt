@@ -61,9 +61,7 @@ class Consumable<T> private constructor(value: Any?) {
     override fun toString(): String =
         "Consumable($valueInternal)"
 
-    private data object Empty
-
-    companion object {
+    companion {
 
         fun <T> from(value: T): Consumable<T> =
             Consumable(value)
@@ -71,4 +69,6 @@ class Consumable<T> private constructor(value: Any?) {
         fun <T> empty(): Consumable<T> =
             Consumable(Empty)
     }
+
+    private data object Empty
 }

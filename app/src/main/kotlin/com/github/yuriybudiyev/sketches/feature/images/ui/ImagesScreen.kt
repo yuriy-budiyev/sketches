@@ -24,6 +24,9 @@
 
 package com.github.yuriybudiyev.sketches.feature.images.ui
 
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlinx.coroutines.launch
 import android.app.Activity
 import android.net.Uri
@@ -371,11 +374,15 @@ fun ImagesScreen(
     }
 }
 
+@OptIn(ExperimentalContracts::class)
 private suspend inline fun LazyGridState.scrollToItem(
     files: Collection<MediaFile>,
     snapToClosestEdge: Boolean,
     predicate: (index: Int, file: MediaFile) -> Boolean,
 ) {
+    contract {
+        callsInPlace(predicate, InvocationKind.UNKNOWN)
+    }
     if (files.isEmpty()) {
         return
     }

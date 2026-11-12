@@ -31,6 +31,7 @@ import java.time.format.TextStyle
 import java.time.temporal.ChronoField
 import java.util.Locale
 import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
@@ -498,7 +499,9 @@ inline fun calculateMediaIndexWithMonthGroups(
     files: Collection<MediaFile>,
     predicate: (index: Int, file: MediaFile) -> Boolean,
 ): Int {
-    contract { callsInPlace(predicate) }
+    contract {
+        callsInPlace(predicate, InvocationKind.UNKNOWN)
+    }
     var offset = 0
     var fileIndex = -1
     var previousDate = LocalDateTime.MAX

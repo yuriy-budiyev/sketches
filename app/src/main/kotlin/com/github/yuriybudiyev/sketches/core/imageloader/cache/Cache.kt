@@ -168,7 +168,7 @@ class LocalCacheInterceptor(
 }
 
 inline val Context.imageMemoryCache: ImageMemoryCache
-    get() = ImageMemoryCache.instance(this)
+    get() = ImageMemoryCache.getInstance(this)
 
 class ImageMemoryCache private constructor(maxSize: Int) {
 
@@ -244,27 +244,29 @@ class ImageMemoryCache private constructor(maxSize: Int) {
         }
     }
 
-    companion object {
+    companion {
 
-        fun instance(context: Context): ImageMemoryCache {
-            var instance = this.instance
+        fun getInstance(context: Context): ImageMemoryCache {
+            var instance = _instance
             if (instance !== null) {
                 return instance
             }
-            synchronized(this) {
-                instance = this.instance
+            synchronized(_instanceLock) {
+                instance = _instance
                 if (instance === null) {
                     val appContext = context.applicationContext
                     instance = ImageMemoryCache(floorEven((appContext.getMaxMemory() / 4L).toIntClamped()))
                     appContext.registerComponentCallbacks(instance.memoryCallbacks)
-                    this.instance = instance
+                    _instance = instance
                 }
                 return instance
             }
         }
 
         @Volatile
-        private var instance: ImageMemoryCache? = null
+        private var _instance: ImageMemoryCache? = null
+
+        private val _instanceLock: Any = Any()
     }
 }
 

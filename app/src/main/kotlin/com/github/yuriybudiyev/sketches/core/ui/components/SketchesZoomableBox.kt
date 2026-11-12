@@ -416,10 +416,7 @@ private inline fun invalidateZoom(
     invalidate: (newScale: Float, newOffsetX: Float, newOffsetY: Float) -> Unit,
 ) {
     contract {
-        callsInPlace(
-            invalidate,
-            InvocationKind.EXACTLY_ONCE,
-        )
+        callsInPlace(invalidate, InvocationKind.EXACTLY_ONCE)
     }
     val scaleFactor = newScale / currentScale
     val relativeTarget = containerSize.center - target

@@ -41,17 +41,11 @@ inline fun Collection<MediaFile>.prepareForSharing(
     onDataReady: (media: List<MediaDescriptor>, mimeType: String) -> Unit,
 ) {
     contract {
-        callsInPlace(
-            onDataReady,
-            InvocationKind.EXACTLY_ONCE,
-        )
+        callsInPlace(onDataReady, InvocationKind.EXACTLY_ONCE)
     }
     val size = this.size.coerceAtMost(filterIds.size).coerceAtMost(mediaSizeLimit)
     if (size == 0) {
-        onDataReady(
-            emptyList(),
-            "*/*",
-        )
+        onDataReady(emptyList(), "*/*")
         return
     }
     val media = ArrayList<MediaDescriptor>(size)
@@ -65,12 +59,10 @@ inline fun Collection<MediaFile>.prepareForSharing(
             break
         }
     }
-    onDataReady(
-        media,
-        if (mediaTypes.size == 1) {
-            mediaTypes.first().mimeType()
-        } else {
-            "*/*"
-        },
-    )
+    val mimeType = if (mediaTypes.size == 1) {
+        mediaTypes.first().mimeType()
+    } else {
+        "*/*"
+    }
+    onDataReady(media, mimeType)
 }

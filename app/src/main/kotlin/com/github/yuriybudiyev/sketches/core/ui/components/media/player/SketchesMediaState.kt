@@ -173,7 +173,7 @@ sealed interface SketchesMediaState {
 
     fun release()
 
-    companion object {
+    companion {
 
         const val UnknownTime: Long = Long.MIN_VALUE
     }
@@ -663,10 +663,7 @@ private inline fun Player.withCheck(
     available: Player.() -> Unit,
 ) {
     contract {
-        callsInPlace(
-            available,
-            InvocationKind.AT_MOST_ONCE,
-        )
+        callsInPlace(available, InvocationKind.AT_MOST_ONCE)
     }
     if (isCommandAvailable(command)) {
         available()
@@ -681,14 +678,10 @@ private inline fun <T> Player.withCheck(
     unavailable: Player.() -> T,
 ): T {
     contract {
-        callsInPlace(
-            available,
-            InvocationKind.AT_MOST_ONCE,
-        )
-        callsInPlace(
-            unavailable,
-            InvocationKind.AT_MOST_ONCE,
-        )
+        callsInPlace(available, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(unavailable, InvocationKind.AT_MOST_ONCE)
+        returnsResultOf(available)
+        returnsResultOf(unavailable)
     }
     return if (isCommandAvailable(command)) {
         available()
