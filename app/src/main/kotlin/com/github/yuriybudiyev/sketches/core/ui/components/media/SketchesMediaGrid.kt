@@ -134,7 +134,7 @@ class MediaGridSpec {
 }
 
 @Composable
-fun MediaGrid(
+fun SketchesMediaGrid(
     files: List<MediaFile>,
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaFile) -> Unit,
@@ -185,7 +185,7 @@ fun MediaGrid(
 }
 
 @Composable
-fun GroupingByMonthMediaGrid(
+fun SketchesGroupingByMonthMediaGrid(
     files: List<MediaFile>,
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaFile) -> Unit,
@@ -420,7 +420,7 @@ private fun MediaItem(
 }
 
 /**
- * For [GroupingByMonthMediaGrid] only
+ * For [SketchesGroupingByMonthMediaGrid] only
  */
 suspend fun LazyGridState.fastAnimateScrollToStart(
     spec: MediaGridSpec,
