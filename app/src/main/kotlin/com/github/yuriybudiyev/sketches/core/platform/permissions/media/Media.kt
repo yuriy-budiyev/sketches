@@ -144,7 +144,7 @@ value class MediaAccessRequestLauncher(
 
 @Composable
 inline fun rememberMediaAccessRequestLauncher(
-    crossinline onResult: (MediaAccess) -> Unit,
+    crossinline onResult: @DisallowComposableCalls (MediaAccess) -> Unit,
 ): MediaAccessRequestLauncher {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
