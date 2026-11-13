@@ -178,7 +178,7 @@ private fun BookmarksScreen(
                     if (bucketIndex != -1) {
                         mediaGridState.scrollToItem(
                             index = bucketIndex,
-                            itemType = null,
+                            contentType = MediaGridContentType.Media,
                             snapToClosestEdge = false,
                             onlyIfItemAtIndexIsNotVisible = true,
                         )
@@ -204,7 +204,7 @@ private fun BookmarksScreen(
     NavResultHandler<ImageScreenNavResult> { result ->
         mediaGridState.scrollToItem(
             index = result.fileIndex,
-            itemType = MediaGridContentType.Media,
+            contentType = MediaGridContentType.Media,
             snapToClosestEdge = true,
             onlyIfItemAtIndexIsNotVisible = true,
         )

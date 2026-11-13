@@ -393,7 +393,7 @@ private suspend inline fun LazyGridState.scrollToItem(
     if (itemIndex != -1) {
         scrollToItem(
             index = itemIndex,
-            itemType = MediaGridContentType.Media,
+            contentType = MediaGridContentType.Media,
             snapToClosestEdge = snapToClosestEdge,
             onlyIfItemAtIndexIsNotVisible = true,
         )

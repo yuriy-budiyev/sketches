@@ -34,15 +34,15 @@ import androidx.compose.ui.util.fastFirstOrNull
 
 suspend fun LazyGridState.scrollToItem(
     index: Int,
-    itemType: Any?,
-    snapToClosestEdge: Boolean = false,
-    onlyIfItemAtIndexIsNotVisible: Boolean = false,
+    contentType: Any?,
+    snapToClosestEdge: Boolean,
+    onlyIfItemAtIndexIsNotVisible: Boolean,
 ) {
-    val firstItemOfType = layoutInfo.visibleItemsInfo.fastFirstOrNull { info -> info.contentType == itemType }
     val itemAtIndex = layoutInfo.visibleItemsInfo.fastFirstOrNull { info -> info.index == index }
-    val viewportSize = layoutInfo.viewportSize.mainAxis(layoutInfo.orientation)
     val viewportSizeWithPaddings =
-        viewportSize - layoutInfo.beforeContentPadding - layoutInfo.afterContentPadding
+        layoutInfo.viewportSize.mainAxis(layoutInfo.orientation) -
+            layoutInfo.beforeContentPadding -
+            layoutInfo.afterContentPadding
     if (onlyIfItemAtIndexIsNotVisible && itemAtIndex != null) {
         val itemOffset = itemAtIndex.offset.mainAxis(layoutInfo.orientation)
         val itemSize = itemAtIndex.size.mainAxis(layoutInfo.orientation)
@@ -50,14 +50,21 @@ suspend fun LazyGridState.scrollToItem(
             return
         }
     }
-    val itemSize = itemAtIndex?.size ?: firstItemOfType?.size ?: IntSize.Zero
-    val orientationAwareItemSize = itemSize.mainAxis(layoutInfo.orientation)
     var offset = 0
     if (snapToClosestEdge) {
+        val firstItem = layoutInfo.visibleItemsInfo.firstOrNull()
         val lastItem = layoutInfo.visibleItemsInfo.lastOrNull()
-        if (firstItemOfType != null && lastItem != null && firstItemOfType !== lastItem) {
-            if (index > firstItemOfType.index + (lastItem.index - firstItemOfType.index) / 2) {
-                offset = -(viewportSizeWithPaddings - orientationAwareItemSize)
+        if (firstItem != null && lastItem != null && firstItem !== lastItem) {
+            if (index > firstItem.index + (lastItem.index - firstItem.index) / 2) {
+                var itemSize = itemAtIndex?.size
+                if (itemSize == null) {
+                    itemSize = layoutInfo.visibleItemsInfo
+                        .fastFirstOrNull { info -> info.contentType == contentType }?.size
+                }
+                if (itemSize == null) {
+                    itemSize = IntSize.Zero
+                }
+                offset = -(viewportSizeWithPaddings - itemSize.mainAxis(layoutInfo.orientation))
             }
         }
     }
