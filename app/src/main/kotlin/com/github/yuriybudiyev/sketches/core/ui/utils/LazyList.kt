@@ -33,7 +33,6 @@ import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
  * For lists with same constant item size
  */
 suspend fun LazyListState.scrollToItemCentered(index: Int) {
-    val layoutInfo = layoutInfo
     if (layoutInfo.totalItemsCount == 0) {
         return
     }
@@ -50,7 +49,6 @@ suspend fun LazyListState.scrollToItemCentered(index: Int) {
  * For lists with same constant item size
  */
 suspend fun LazyListState.fastAnimateScrollToItemCentered(index: Int) {
-    val layoutInfo = layoutInfo
     if (layoutInfo.totalItemsCount == 0) {
         return
     }

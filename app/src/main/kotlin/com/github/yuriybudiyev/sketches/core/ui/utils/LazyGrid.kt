@@ -34,29 +34,26 @@ suspend fun LazyGridState.scrollToItem(
     snapToClosestEdge: Boolean = false,
     onlyIfItemAtIndexIsNotVisible: Boolean = false,
 ) {
-    val layoutInfo = layoutInfo
-    val visibleItemsInfo = layoutInfo.visibleItemsInfo
-    val firstItemOfType = visibleItemsInfo.fastFirstOrNull { info -> info.contentType == itemType }
-    val itemAtIndex = visibleItemsInfo.fastFirstOrNull { info -> info.index == index }
-    val orientation = layoutInfo.orientation
-    val viewportSize = layoutInfo.viewportSize.mainAxis(orientation)
-    val viewportSizeWithAppliedPaddings =
+    val firstItemOfType = layoutInfo.visibleItemsInfo.fastFirstOrNull { info -> info.contentType == itemType }
+    val itemAtIndex = layoutInfo.visibleItemsInfo.fastFirstOrNull { info -> info.index == index }
+    val viewportSize = layoutInfo.viewportSize.mainAxis(layoutInfo.orientation)
+    val viewportSizeWithPaddings =
         viewportSize - layoutInfo.beforeContentPadding - layoutInfo.afterContentPadding
     if (onlyIfItemAtIndexIsNotVisible && itemAtIndex != null) {
-        val itemOffset = itemAtIndex.offset.mainAxis(orientation)
-        val itemSize = itemAtIndex.size.mainAxis(orientation)
-        if (itemOffset >= 0 && itemOffset + itemSize <= viewportSizeWithAppliedPaddings) {
+        val itemOffset = itemAtIndex.offset.mainAxis(layoutInfo.orientation)
+        val itemSize = itemAtIndex.size.mainAxis(layoutInfo.orientation)
+        if (itemOffset >= 0 && itemOffset + itemSize <= viewportSizeWithPaddings) {
             return
         }
     }
     val itemSize = itemAtIndex?.size ?: firstItemOfType?.size ?: IntSize.Zero
-    val orientationAwareItemSize = itemSize.mainAxis(orientation)
+    val orientationAwareItemSize = itemSize.mainAxis(layoutInfo.orientation)
     var offset = 0
     if (snapToClosestEdge) {
-        val lastItem = visibleItemsInfo.lastOrNull()
+        val lastItem = layoutInfo.visibleItemsInfo.lastOrNull()
         if (firstItemOfType != null && lastItem != null && firstItemOfType !== lastItem) {
             if (index > firstItemOfType.index + (lastItem.index - firstItemOfType.index) / 2) {
-                offset = -(viewportSizeWithAppliedPaddings - orientationAwareItemSize)
+                offset = -(viewportSizeWithPaddings - orientationAwareItemSize)
             }
         }
     }

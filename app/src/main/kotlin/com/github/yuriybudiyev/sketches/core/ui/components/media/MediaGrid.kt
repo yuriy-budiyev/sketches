@@ -426,17 +426,15 @@ suspend fun LazyGridState.fastAnimateScrollToStart(
     spec: MediaGridSpec,
     files: List<MediaFile>,
 ) {
-    val layoutInfo = layoutInfo
     if (layoutInfo.totalItemsCount == 0) {
         return
     }
     if (firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0) {
         return
     }
-    val orientation = layoutInfo.orientation
-    val dateItemSize = spec.dateItemSize.mainAxis(orientation)
-    val mediaItemSize = spec.mediaItemSize.mainAxis(orientation)
-    val scrollThreshold = layoutInfo.viewportSize.mainAxis(orientation) * 3 / 4
+    val dateItemSize = spec.dateItemSize.mainAxis(layoutInfo.orientation)
+    val mediaItemSize = spec.mediaItemSize.mainAxis(layoutInfo.orientation)
+    val scrollThreshold = layoutInfo.viewportSize.mainAxis(layoutInfo.orientation) * 3 / 4
     val maxSpan = layoutInfo.maxSpan
     val itemSpacing = layoutInfo.mainAxisItemSpacing
     var scrollIndex = 0

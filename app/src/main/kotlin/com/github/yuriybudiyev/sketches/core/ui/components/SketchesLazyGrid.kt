@@ -113,17 +113,15 @@ fun SketchesLazyGrid(
  * For [SketchesLazyGrid] with single content type and same sized items
  */
 suspend fun LazyGridState.fastAnimateScrollToStart() {
-    val layoutInfo = layoutInfo
     if (layoutInfo.totalItemsCount == 0) {
         return
     }
     if (firstVisibleItemIndex == 0 && firstVisibleItemScrollOffset == 0) {
         return
     }
-    val orientation = layoutInfo.orientation
     val item = layoutInfo.visibleItemsInfo.firstOrNull() ?: return
-    val itemSize = item.size.mainAxis(orientation)
-    val scrollThreshold = layoutInfo.viewportSize.mainAxis(orientation) * 3 / 4
+    val itemSize = item.size.mainAxis(layoutInfo.orientation)
+    val scrollThreshold = layoutInfo.viewportSize.mainAxis(layoutInfo.orientation) * 3 / 4
     val maxSpan = layoutInfo.maxSpan
     val itemSpacing = layoutInfo.mainAxisItemSpacing
     var scrollSpans = scrollThreshold / itemSize
