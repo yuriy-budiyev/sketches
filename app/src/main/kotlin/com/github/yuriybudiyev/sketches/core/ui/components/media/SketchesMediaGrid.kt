@@ -100,7 +100,13 @@ sealed interface MediaGridKey: Parcelable {
 
     @Parcelize
     @Immutable
-    data class Media(
+    data class File(
+        val id: Long,
+    ): MediaGridKey
+
+    @Parcelize
+    @Immutable
+    data class Bucket(
         val id: Long,
     ): MediaGridKey
 }
@@ -112,7 +118,10 @@ sealed interface MediaGridContentType {
     data object Date: MediaGridContentType
 
     @Immutable
-    data object Media: MediaGridContentType
+    data object File: MediaGridContentType
+
+    @Immutable
+    data object Bucket: MediaGridContentType
 }
 
 @Composable
@@ -154,14 +163,15 @@ fun SketchesMediaGrid(
     ) {
         items(
             count = files.size,
-            key = { index -> MediaGridKey.Media(id = files[index].id) },
-            contentType = { MediaGridContentType.Media },
+            key = { index -> MediaGridKey.File(id = files[index].id) },
+            contentType = { MediaGridContentType.File },
         ) { index ->
             val file by rememberUpdatedState(files[index])
             val fileSelected by remember { computedStateOf { selectedFiles.contains(file.id) } }
             MediaItem(
-                file = file,
-                fileSelected = fileSelected,
+                uri = file.uri,
+                mediaType = file.mediaType,
+                isSelected = fileSelected,
                 onLongClick = {
                     if (selectedFiles.isEmpty()) {
                         selectedFiles.add(file.id)
@@ -269,14 +279,15 @@ fun SketchesGroupingByMonthMediaGrid(
                 }
                 items(
                     count = groupSize,
-                    key = { index -> MediaGridKey.Media(files[index + groupOffset].id) },
-                    contentType = { MediaGridContentType.Media },
+                    key = { index -> MediaGridKey.File(files[index + groupOffset].id) },
+                    contentType = { MediaGridContentType.File },
                 ) { index ->
                     val file by rememberUpdatedState(files[index + groupOffset])
                     val fileSelected by remember { computedStateOf { selectedFiles.contains(file.id) } }
                     MediaItem(
-                        file = file,
-                        fileSelected = fileSelected,
+                        uri = file.uri,
+                        mediaType = file.mediaType,
+                        isSelected = fileSelected,
                         onLongClick = {
                             if (selectedFiles.isEmpty()) {
                                 selectedFiles.add(file.id)
@@ -335,14 +346,13 @@ private fun HeaderItem(
 
 @Composable
 private fun MediaItem(
-    file: MediaFile,
-    fileSelected: Boolean,
+    uri: String,
+    mediaType: MediaType,
+    isSelected: Boolean,
     onLongClick: () -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val file by rememberUpdatedState(file)
-    val fileSelected by rememberUpdatedState(fileSelected)
     val colorScheme = MaterialTheme.colorScheme
     val dimens = LocalDimens.current
     Box(
@@ -350,7 +360,7 @@ private fun MediaItem(
             .aspectRatio(ratio = 1F)
             .border(
                 width = dimens.mediaItemBorderThickness,
-                color = if (fileSelected) {
+                color = if (isSelected) {
                     colorScheme.onBackground.withLowTransparency()
                 } else {
                     colorScheme.onBackground.withHighTransparency()
@@ -363,18 +373,17 @@ private fun MediaItem(
                 onClick = onClick,
             ),
     ) {
-        val fileUri = file.uri
         SketchesThumbnailAsyncImage(
-            uri = fileUri,
+            uri = uri,
             contentDescription = stringResource(
-                id = when (file.mediaType) {
+                id = when (mediaType) {
                     MediaType.Image -> R.string.image
                     MediaType.Video -> R.string.video
                 },
             ),
             modifier = Modifier.matchParentSize(),
         )
-        if (fileSelected) {
+        if (isSelected) {
             Box(
                 modifier = Modifier
                     .matchParentSize()
@@ -399,7 +408,7 @@ private fun MediaItem(
                     ),
             )
         }
-        if (file.mediaType == MediaType.Video) {
+        if (mediaType == MediaType.Video) {
             Icon(
                 painter = painterResource(R.drawable.ic_video),
                 contentDescription = stringResource(R.string.video),

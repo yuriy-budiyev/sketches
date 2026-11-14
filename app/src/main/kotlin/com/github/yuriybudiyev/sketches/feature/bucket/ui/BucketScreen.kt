@@ -215,7 +215,7 @@ fun BucketScreen(
                     if (bucketIndex != -1) {
                         mediaGridState.scrollToItem(
                             index = bucketIndex,
-                            contentType = MediaGridContentType.Media,
+                            contentType = MediaGridContentType.File,
                             snapToClosestEdge = false,
                             onlyIfItemAtIndexIsNotVisible = true,
                         )
@@ -240,7 +240,7 @@ fun BucketScreen(
     NavResultHandler<ImageScreenNavResult> { result ->
         mediaGridState.scrollToItem(
             index = result.fileIndex,
-            contentType = MediaGridContentType.Media,
+            contentType = MediaGridContentType.File,
             snapToClosestEdge = true,
             onlyIfItemAtIndexIsNotVisible = true,
         )
