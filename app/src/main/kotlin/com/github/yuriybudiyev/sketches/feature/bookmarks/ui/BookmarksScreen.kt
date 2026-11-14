@@ -75,8 +75,8 @@ import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.Select
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.ShareAction
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SimpleAction
 import com.github.yuriybudiyev.sketches.core.ui.components.fastAnimateScrollToStart
-import com.github.yuriybudiyev.sketches.core.ui.components.media.MediaGridContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaFilesGrid
+import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGridItemContentType
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchHandler
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
@@ -178,7 +178,7 @@ private fun BookmarksScreen(
                     if (bucketIndex != -1) {
                         mediaGridState.scrollToItem(
                             index = bucketIndex,
-                            contentType = MediaGridContentType.File,
+                            contentType = SketchesMediaGridItemContentType.File,
                             snapToClosestEdge = false,
                             onlyIfItemAtIndexIsNotVisible = true,
                         )
@@ -204,7 +204,7 @@ private fun BookmarksScreen(
     NavResultHandler<ImageScreenNavResult> { result ->
         mediaGridState.scrollToItem(
             index = result.fileIndex,
-            contentType = MediaGridContentType.File,
+            contentType = SketchesMediaGridItemContentType.File,
             snapToClosestEdge = true,
             onlyIfItemAtIndexIsNotVisible = true,
         )

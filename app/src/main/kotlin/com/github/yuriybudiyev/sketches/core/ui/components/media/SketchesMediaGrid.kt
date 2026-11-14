@@ -94,47 +94,40 @@ import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.utils.mainAxis
 
 @Immutable
-sealed interface MediaGridKey: Parcelable {
+sealed interface SketchesMediaGridItemKey: Parcelable {
 
     @Parcelize
     @Immutable
-    data class Date(
-        val year: Int,
-        val month: Int,
-    ): MediaGridKey
+    data class Date(val year: Int, val month: Int): SketchesMediaGridItemKey
 
     @Parcelize
     @Immutable
-    data class File(
-        val id: Long,
-    ): MediaGridKey
+    data class File(val id: Long): SketchesMediaGridItemKey
 
     @Parcelize
     @Immutable
-    data class Bucket(
-        val id: Long,
-    ): MediaGridKey
+    data class Bucket(val id: Long): SketchesMediaGridItemKey
 }
 
 @Immutable
-sealed interface MediaGridContentType {
+sealed interface SketchesMediaGridItemContentType {
 
     @Immutable
-    data object Date: MediaGridContentType
+    data object Date: SketchesMediaGridItemContentType
 
     @Immutable
-    data object File: MediaGridContentType
+    data object File: SketchesMediaGridItemContentType
 
     @Immutable
-    data object Bucket: MediaGridContentType
+    data object Bucket: SketchesMediaGridItemContentType
 }
 
 @Composable
-fun rememberMediaGridSpec(): MediaGridSpec =
-    rememberSaveable(saver = MediaGridSpecSaver) { MediaGridSpec() }
+fun rememberSketchesMediaGridSpec(): SketchesMediaGridSpec =
+    rememberSaveable(saver = SketchesMediaGridSpecSaver) { SketchesMediaGridSpec() }
 
 @Stable
-class MediaGridSpec {
+class SketchesMediaGridSpec {
 
     /**
      * Do not set manually.
@@ -168,8 +161,8 @@ fun SketchesMediaFilesGrid(
     ) {
         items(
             count = files.size,
-            key = { index -> MediaGridKey.File(id = files[index].id) },
-            contentType = { MediaGridContentType.File },
+            key = { index -> SketchesMediaGridItemKey.File(id = files[index].id) },
+            contentType = { SketchesMediaGridItemContentType.File },
         ) { index ->
             val file by rememberUpdatedState(files[index])
             val fileSelected by remember { computedStateOf { selectedFiles.contains(file.id) } }
@@ -206,7 +199,7 @@ fun SketchesGroupingByMonthMediaFilesGrid(
     onItemClick: (index: Int, file: MediaFile) -> Unit,
     modifier: Modifier = Modifier,
     state: LazyGridState = rememberLazyGridState(),
-    spec: MediaGridSpec = rememberMediaGridSpec(),
+    spec: SketchesMediaGridSpec = rememberSketchesMediaGridSpec(),
     overlayTop: Boolean = false,
     overlayBottom: Boolean = false,
 ) {
@@ -238,12 +231,12 @@ fun SketchesGroupingByMonthMediaFilesGrid(
                 val groupOffset = index
                 index += groupSize
                 item(
-                    key = MediaGridKey.Date(
+                    key = SketchesMediaGridItemKey.Date(
                         year = groupDate.year,
                         month = groupDate.monthValue,
                     ),
                     span = { GridItemSpan(maxLineSpan) },
-                    contentType = MediaGridContentType.Date,
+                    contentType = SketchesMediaGridItemContentType.Date,
                 ) {
                     DateItem(
                         date = groupDate.toLocalDate(),
@@ -258,8 +251,8 @@ fun SketchesGroupingByMonthMediaFilesGrid(
                 }
                 items(
                     count = groupSize,
-                    key = { index -> MediaGridKey.File(files[index + groupOffset].id) },
-                    contentType = { MediaGridContentType.File },
+                    key = { index -> SketchesMediaGridItemKey.File(files[index + groupOffset].id) },
+                    contentType = { SketchesMediaGridItemContentType.File },
                 ) { index ->
                     val file by rememberUpdatedState(files[index + groupOffset])
                     val fileSelected by remember { computedStateOf { selectedFiles.contains(file.id) } }
@@ -318,8 +311,8 @@ fun SketchesMediaBucketsGrid(
     ) {
         items(
             count = buckets.size,
-            key = { index -> MediaGridKey.Bucket(id = buckets[index].id) },
-            contentType = { MediaGridContentType.Bucket },
+            key = { index -> SketchesMediaGridItemKey.Bucket(id = buckets[index].id) },
+            contentType = { SketchesMediaGridItemContentType.Bucket },
         ) { index ->
             val bucket by rememberUpdatedState(buckets[index])
             val bucketSelected by remember { computedStateOf { selectedBuckets.contains(bucket.id) } }
@@ -586,7 +579,7 @@ private fun ItemIcon(
  * For [SketchesGroupingByMonthMediaFilesGrid] only
  */
 suspend fun LazyGridState.fastAnimateScrollToStart(
-    spec: MediaGridSpec,
+    spec: SketchesMediaGridSpec,
     files: List<MediaFile>,
 ) {
     if (layoutInfo.totalItemsCount == 0) {
@@ -684,25 +677,25 @@ inline fun calculateMediaIndexWithMonthGroups(
 }
 
 @Parcelize
-private data class MediaGridSpecConfig(
+private data class SketchesMediaGridSpecConfig(
     val dateItemWidth: Int,
     val dateItemHeight: Int,
     val mediaItemWidth: Int,
     val mediaItemHeight: Int,
 ): Parcelable
 
-private object MediaGridSpecSaver: Saver<MediaGridSpec, MediaGridSpecConfig> {
+private object SketchesMediaGridSpecSaver: Saver<SketchesMediaGridSpec, SketchesMediaGridSpecConfig> {
 
-    override fun SaverScope.save(value: MediaGridSpec): MediaGridSpecConfig =
-        MediaGridSpecConfig(
+    override fun SaverScope.save(value: SketchesMediaGridSpec): SketchesMediaGridSpecConfig =
+        SketchesMediaGridSpecConfig(
             dateItemWidth = value.dateItemSize.width,
             dateItemHeight = value.dateItemSize.height,
             mediaItemWidth = value.mediaItemSize.width,
             mediaItemHeight = value.mediaItemSize.height,
         )
 
-    override fun restore(value: MediaGridSpecConfig): MediaGridSpec =
-        MediaGridSpec().apply {
+    override fun restore(value: SketchesMediaGridSpecConfig): SketchesMediaGridSpec =
+        SketchesMediaGridSpec().apply {
             dateItemSize = IntSize(value.dateItemWidth, value.dateItemHeight)
             mediaItemSize = IntSize(value.mediaItemWidth, value.mediaItemHeight)
         }
