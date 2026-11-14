@@ -47,6 +47,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
@@ -110,6 +111,26 @@ sealed interface SketchesMediaGridItemKey: Parcelable {
 }
 
 @Immutable
+sealed interface SketchesMediaGridItemSpan {
+
+    fun get(scope: LazyGridItemSpanScope): GridItemSpan
+
+    @Immutable
+    data object Line: SketchesMediaGridItemSpan {
+
+        override fun get(scope: LazyGridItemSpanScope): GridItemSpan =
+            GridItemSpan(scope.maxLineSpan)
+    }
+
+    @Immutable
+    data object Single: SketchesMediaGridItemSpan {
+
+        override fun get(scope: LazyGridItemSpanScope): GridItemSpan =
+            GridItemSpan(1)
+    }
+}
+
+@Immutable
 sealed interface SketchesMediaGridItemContentType {
 
     @Immutable
@@ -162,6 +183,7 @@ fun SketchesMediaFilesGrid(
         items(
             count = files.size,
             key = { index -> SketchesMediaGridItemKey.File(id = files[index].id) },
+            span = { SketchesMediaGridItemSpan.Single.get(this) },
             contentType = { SketchesMediaGridItemContentType.File },
         ) { index ->
             val file by rememberUpdatedState(files[index])
@@ -235,7 +257,7 @@ fun SketchesGroupingByMonthMediaFilesGrid(
                         year = groupDate.year,
                         month = groupDate.monthValue,
                     ),
-                    span = { GridItemSpan(maxLineSpan) },
+                    span = { SketchesMediaGridItemSpan.Line.get(this) },
                     contentType = SketchesMediaGridItemContentType.Date,
                 ) {
                     DateItem(
@@ -252,6 +274,7 @@ fun SketchesGroupingByMonthMediaFilesGrid(
                 items(
                     count = groupSize,
                     key = { index -> SketchesMediaGridItemKey.File(files[index + groupOffset].id) },
+                    span = { SketchesMediaGridItemSpan.Single.get(this) },
                     contentType = { SketchesMediaGridItemContentType.File },
                 ) { index ->
                     val file by rememberUpdatedState(files[index + groupOffset])
@@ -312,6 +335,7 @@ fun SketchesMediaBucketsGrid(
         items(
             count = buckets.size,
             key = { index -> SketchesMediaGridItemKey.Bucket(id = buckets[index].id) },
+            span = { SketchesMediaGridItemSpan.Single.get(this) },
             contentType = { SketchesMediaGridItemContentType.Bucket },
         ) { index ->
             val bucket by rememberUpdatedState(buckets[index])
