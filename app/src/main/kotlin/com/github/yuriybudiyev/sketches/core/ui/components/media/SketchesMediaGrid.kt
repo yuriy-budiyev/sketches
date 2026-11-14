@@ -35,6 +35,8 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
@@ -441,45 +443,13 @@ private fun MediaFileItem(
             modifier = Modifier.matchParentSize(),
         )
         if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .background(
-                        color = colorScheme.background.withMediumTransparency(),
-                        shape = RectangleShape,
-                    ),
-            )
-            Icon(
-                painter = painterResource(R.drawable.ic_media_selected),
-                contentDescription = stringResource(R.string.selected),
-                tint = colorScheme.onBackground,
-                modifier = Modifier
-                    .align(alignment = Alignment.TopStart)
-                    .padding(all = dimens.mediaGridIconPadding)
-                    .dropShadow(
-                        shape = CircleShape,
-                        shadow = Shadow(
-                            radius = dimens.shadowBlurRadius,
-                            color = colorScheme.background.withLowTransparency(),
-                        ),
-                    ),
-            )
+            ItemSelectionMarker(modifier = Modifier.matchParentSize())
         }
         if (mediaType == MediaType.Video) {
-            Icon(
-                painter = painterResource(R.drawable.ic_video),
-                contentDescription = stringResource(R.string.video),
-                tint = colorScheme.onBackground,
-                modifier = Modifier
-                    .align(alignment = Alignment.BottomStart)
-                    .padding(all = dimens.mediaGridIconPadding)
-                    .dropShadow(
-                        shape = CircleShape,
-                        shadow = Shadow(
-                            radius = dimens.shadowBlurRadius,
-                            color = colorScheme.background.withLowTransparency(),
-                        ),
-                    ),
+            ItemIcon(
+                iconRes = R.drawable.ic_video,
+                descriptionRes = R.string.video,
+                modifier = Modifier.align(Alignment.BottomStart),
             )
         }
     }
@@ -527,45 +497,13 @@ private fun MediaBucketItem(
                 modifier = Modifier.matchParentSize(),
             )
             if (isSelected) {
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .background(
-                            color = colorScheme.background.withMediumTransparency(),
-                            shape = RectangleShape,
-                        ),
-                )
-                Icon(
-                    painter = painterResource(R.drawable.ic_media_selected),
-                    contentDescription = stringResource(R.string.selected),
-                    tint = colorScheme.onBackground,
-                    modifier = Modifier
-                        .align(alignment = Alignment.TopStart)
-                        .padding(all = dimens.mediaGridIconPadding)
-                        .dropShadow(
-                            shape = CircleShape,
-                            shadow = Shadow(
-                                radius = dimens.shadowBlurRadius,
-                                color = colorScheme.background.withLowTransparency(),
-                            ),
-                        ),
-                )
+                ItemSelectionMarker(modifier = Modifier.matchParentSize())
             }
             if (isHidden) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_bucket_hidden),
-                    contentDescription = stringResource(R.string.hidden_bucket),
-                    tint = colorScheme.onBackground,
-                    modifier = Modifier
-                        .align(alignment = Alignment.BottomStart)
-                        .padding(all = dimens.mediaGridIconPadding)
-                        .dropShadow(
-                            shape = CircleShape,
-                            shadow = Shadow(
-                                radius = dimens.shadowBlurRadius,
-                                color = colorScheme.background.withLowTransparency(),
-                            ),
-                        ),
+                ItemIcon(
+                    iconRes = R.drawable.ic_bucket_hidden,
+                    descriptionRes = R.string.hidden_bucket,
+                    modifier = Modifier.align(Alignment.BottomStart),
                 )
             }
         }
@@ -596,6 +534,52 @@ private fun MediaBucketItem(
             maxLines = 1,
         )
     }
+}
+
+@Composable
+private fun ItemSelectionMarker(modifier: Modifier = Modifier) {
+    val colorScheme = MaterialTheme.colorScheme
+    Box(modifier = modifier) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(
+                    color = colorScheme.background.withMediumTransparency(),
+                    shape = RectangleShape,
+                ),
+        )
+        ItemIcon(
+            iconRes = R.drawable.ic_media_selected,
+            descriptionRes = R.string.selected,
+            modifier = Modifier.align(Alignment.TopStart),
+        )
+    }
+}
+
+@Composable
+private fun ItemIcon(
+    @DrawableRes
+    iconRes: Int,
+    @StringRes
+    descriptionRes: Int,
+    modifier: Modifier = Modifier,
+) {
+    val colorScheme = MaterialTheme.colorScheme
+    val dimens = LocalDimens.current
+    Icon(
+        painter = painterResource(iconRes),
+        contentDescription = stringResource(descriptionRes),
+        tint = colorScheme.onBackground,
+        modifier = modifier
+            .padding(all = dimens.mediaGridIconPadding)
+            .dropShadow(
+                shape = CircleShape,
+                shadow = Shadow(
+                    radius = dimens.shadowBlurRadius,
+                    color = colorScheme.background.withLowTransparency(),
+                ),
+            ),
+    )
 }
 
 /**
