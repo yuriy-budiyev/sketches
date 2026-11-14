@@ -117,9 +117,8 @@ fun SketchesMediaPlayer(
                     .clickable(
                         interactionSource = null,
                         indication = null,
-                    ) {
-                        // Do nothing
-                    },
+                        onClick = { /* no-op */ },
+                    ),
                 color = controlsColor,
             )
         }

@@ -141,7 +141,7 @@ fun SketchesThumbnailAsyncImage(
                 )
             }
             else -> {
-                // Do nothing
+                /* no-op */
             }
         }
     }

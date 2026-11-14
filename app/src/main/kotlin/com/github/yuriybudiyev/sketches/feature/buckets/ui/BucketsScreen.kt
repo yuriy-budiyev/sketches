@@ -167,7 +167,7 @@ fun BucketsScreen(
                         deleteDialogMedia.addAll(action.files.toMediaDescriptorList())
                     }
                     else -> {
-                        // Do nothing
+                        /* no-op */
                     }
                 }
             }

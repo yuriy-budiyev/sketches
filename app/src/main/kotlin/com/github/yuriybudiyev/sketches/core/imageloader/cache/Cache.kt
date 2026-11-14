@@ -143,10 +143,10 @@ class LocalCacheInterceptor(
                 }
                 diskCache.fileSystem.write(editor.data) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, 95, outputStream())
+                        bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, ThumbnailQuality, outputStream())
                     } else {
                         @Suppress("DEPRECATION")
-                        bitmap.compress(Bitmap.CompressFormat.WEBP, 95, outputStream())
+                        bitmap.compress(Bitmap.CompressFormat.WEBP, ThumbnailQuality, outputStream())
                     }
                 }
                 editor.commit()
@@ -164,6 +164,11 @@ class LocalCacheInterceptor(
             )
         }
         return result
+    }
+
+    companion {
+
+        private const val ThumbnailQuality: Int = 85
     }
 }
 
@@ -214,11 +219,13 @@ class ImageMemoryCache private constructor(maxSize: Int) {
             }
         }
 
-        override fun onConfigurationChanged(newConfig: Configuration) {}
+        override fun onConfigurationChanged(newConfig: Configuration) {
+            /* no-op */
+        }
 
         @Deprecated("Deprecated in Java")
         override fun onLowMemory() {
-            // Do nothing
+            /* no-op */
         }
     }
 

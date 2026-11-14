@@ -47,9 +47,9 @@ class ImageLoaderExecutor: ScheduledThreadPoolExecutor(
             try {
                 r.get()
             } catch (_: CancellationException) {
-                // Do nothing
+                /* no-op */
             } catch (_: InterruptedException) {
-                // Do nothing
+                /* no-op */
             } catch (e: ExecutionException) {
                 throw RuntimeException(e.cause)
             }
