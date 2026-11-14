@@ -977,7 +977,8 @@ private fun MediaBar(
     ) {
         items(
             count = files.size,
-            key = { position -> MediaBarKey(files[position].id) },
+            key = { position -> MediaBarItemKey(files[position].id) },
+            contentType = { MediaBarItemContentType },
         ) { position ->
             val file = files[position]
             Box(
@@ -1001,9 +1002,8 @@ private fun MediaBar(
                         )
                     },
             ) {
-                val fileUri = file.uri
                 SketchesThumbnailAsyncImage(
-                    uri = fileUri,
+                    uri = file.uri,
                     contentDescription = stringResource(
                         id = when (file.mediaType) {
                             MediaType.Image -> R.string.image
@@ -1036,4 +1036,7 @@ private fun MediaBar(
 
 @Immutable
 @Parcelize
-private data class MediaBarKey(val fileId: Long): Parcelable
+private data class MediaBarItemKey(val id: Long): Parcelable
+
+@Immutable
+private data object MediaBarItemContentType
