@@ -40,7 +40,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -76,6 +78,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.yuriybudiyev.sketches.R
+import com.github.yuriybudiyev.sketches.core.data.model.MediaBucket
 import com.github.yuriybudiyev.sketches.core.data.model.MediaFile
 import com.github.yuriybudiyev.sketches.core.data.model.MediaType
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
@@ -143,7 +146,7 @@ class MediaGridSpec {
 }
 
 @Composable
-fun SketchesMediaGrid(
+fun SketchesMediaFilesGrid(
     files: List<MediaFile>,
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaFile) -> Unit,
@@ -168,7 +171,7 @@ fun SketchesMediaGrid(
         ) { index ->
             val file by rememberUpdatedState(files[index])
             val fileSelected by remember { computedStateOf { selectedFiles.contains(file.id) } }
-            MediaItem(
+            MediaFileItem(
                 uri = file.uri,
                 mediaType = file.mediaType,
                 isSelected = fileSelected,
@@ -195,7 +198,7 @@ fun SketchesMediaGrid(
 }
 
 @Composable
-fun SketchesGroupingByMonthMediaGrid(
+fun SketchesGroupingByMonthMediaFilesGrid(
     files: List<MediaFile>,
     selectedFiles: SnapshotStateSet<Long>,
     onItemClick: (index: Int, file: MediaFile) -> Unit,
@@ -208,28 +211,6 @@ fun SketchesGroupingByMonthMediaGrid(
     val files by rememberUpdatedState(files)
     val selectedFiles by rememberUpdatedState(selectedFiles)
     val onItemClick by rememberUpdatedState(onItemClick)
-    val nowDate = remember { LocalDate.now() }
-    val dateFormatterMonth = remember {
-        DateTimeFormatterBuilder()
-            .appendText(
-                ChronoField.MONTH_OF_YEAR,
-                TextStyle.FULL_STANDALONE,
-            )
-            .toFormatter(Locale.getDefault())
-    }
-    val dateFormatterMonthYear = remember {
-        DateTimeFormatterBuilder()
-            .appendText(
-                ChronoField.MONTH_OF_YEAR,
-                TextStyle.FULL_STANDALONE,
-            )
-            .appendLiteral(' ')
-            .appendText(
-                ChronoField.YEAR,
-                TextStyle.FULL_STANDALONE,
-            )
-            .toFormatter(Locale.getDefault())
-    }
     SketchesLazyGrid(
         modifier = modifier,
         state = state,
@@ -259,15 +240,11 @@ fun SketchesGroupingByMonthMediaGrid(
                         year = groupDate.year,
                         month = groupDate.monthValue,
                     ),
-                    contentType = MediaGridContentType.Date,
                     span = { GridItemSpan(maxLineSpan) },
+                    contentType = MediaGridContentType.Date,
                 ) {
-                    HeaderItem(
-                        text = if (nowDate.year == groupDate.year) {
-                            dateFormatterMonth.format(groupDate)
-                        } else {
-                            dateFormatterMonthYear.format(groupDate)
-                        },
+                    DateItem(
+                        date = groupDate.toLocalDate(),
                         modifier = Modifier
                             .defaultAnimateItem()
                             .onSizeChanged { size ->
@@ -284,7 +261,7 @@ fun SketchesGroupingByMonthMediaGrid(
                 ) { index ->
                     val file by rememberUpdatedState(files[index + groupOffset])
                     val fileSelected by remember { computedStateOf { selectedFiles.contains(file.id) } }
-                    MediaItem(
+                    MediaFileItem(
                         uri = file.uri,
                         mediaType = file.mediaType,
                         isSelected = fileSelected,
@@ -319,13 +296,93 @@ fun SketchesGroupingByMonthMediaGrid(
 }
 
 @Composable
-private fun HeaderItem(
-    text: String,
+fun SketchesMediaBucketsGrid(
+    buckets: List<MediaBucket>,
+    selectedBuckets: SnapshotStateSet<Long>,
+    onItemClick: (index: Int, file: MediaBucket) -> Unit,
+    modifier: Modifier = Modifier,
+    state: LazyGridState = rememberLazyGridState(),
+    overlayTop: Boolean = false,
+    overlayBottom: Boolean = false,
+) {
+    val buckets by rememberUpdatedState(buckets)
+    val selectedBuckets by rememberUpdatedState(selectedBuckets)
+    val onItemClick by rememberUpdatedState(onItemClick)
+    SketchesLazyGrid(
+        modifier = modifier,
+        state = state,
+        overlayTop = overlayTop,
+        overlayBottom = overlayBottom,
+    ) {
+        items(
+            count = buckets.size,
+            key = { index -> MediaGridKey.Bucket(id = buckets[index].id) },
+            contentType = { MediaGridContentType.Bucket },
+        ) { index ->
+            val bucket by rememberUpdatedState(buckets[index])
+            val bucketSelected by remember { computedStateOf { selectedBuckets.contains(bucket.id) } }
+            MediaBucketItem(
+                name = bucket.name,
+                size = bucket.size,
+                coverUri = bucket.coverUri,
+                isHidden = bucket.isHidden,
+                isSelected = bucketSelected,
+                onLongClick = {
+                    if (selectedBuckets.isEmpty()) {
+                        selectedBuckets.add(bucket.id)
+                    }
+                },
+                onClick = {
+                    if (selectedBuckets.isNotEmpty()) {
+                        if (bucketSelected) {
+                            selectedBuckets.remove(bucket.id)
+                        } else {
+                            selectedBuckets.add(bucket.id)
+                        }
+                    } else {
+                        onItemClick(index, bucket)
+                    }
+                },
+                modifier = Modifier.defaultAnimateItem(),
+            )
+        }
+    }
+}
+
+@Composable
+private fun DateItem(
+    date: LocalDate,
     modifier: Modifier = Modifier,
 ) {
+    val nowDate = remember { LocalDate.now() }
+    val dateFormatterMonth = remember {
+        DateTimeFormatterBuilder()
+            .appendText(
+                ChronoField.MONTH_OF_YEAR,
+                TextStyle.FULL_STANDALONE,
+            )
+            .toFormatter(Locale.getDefault())
+    }
+    val dateFormatterMonthYear = remember {
+        DateTimeFormatterBuilder()
+            .appendText(
+                ChronoField.MONTH_OF_YEAR,
+                TextStyle.FULL_STANDALONE,
+            )
+            .appendLiteral(' ')
+            .appendText(
+                ChronoField.YEAR,
+                TextStyle.FULL_STANDALONE,
+            )
+            .toFormatter(Locale.getDefault())
+    }
     val colorScheme = MaterialTheme.colorScheme
     Text(
-        text = text.capitalizeFirstChar(),
+        text = if (nowDate.year == date.year) {
+            dateFormatterMonth.format(date).capitalizeFirstChar()
+        } else {
+            dateFormatterMonthYear.format(date).capitalizeFirstChar()
+        },
         modifier = modifier
             .background(
                 color = colorScheme.background,
@@ -345,7 +402,7 @@ private fun HeaderItem(
 }
 
 @Composable
-private fun MediaItem(
+private fun MediaFileItem(
     uri: String,
     mediaType: MediaType,
     isSelected: Boolean,
@@ -428,8 +485,121 @@ private fun MediaItem(
     }
 }
 
+@Composable
+private fun MediaBucketItem(
+    name: String,
+    size: Int,
+    coverUri: String,
+    isHidden: Boolean,
+    isSelected: Boolean,
+    onLongClick: () -> Unit,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val colorScheme = MaterialTheme.colorScheme
+    val dimens = LocalDimens.current
+    Column(
+        modifier = modifier
+            .clipToBounds()
+            .combinedClickable(
+                onLongClick = onLongClick,
+                onClick = onClick,
+            ),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(ratio = 1F)
+                .border(
+                    width = dimens.mediaItemBorderThickness,
+                    color = if (isSelected) {
+                        colorScheme.onBackground.withLowTransparency()
+                    } else {
+                        colorScheme.onBackground.withHighTransparency()
+                    },
+                    shape = RectangleShape,
+                )
+                .clipToBounds(),
+        ) {
+            SketchesThumbnailAsyncImage(
+                uri = coverUri,
+                contentDescription = stringResource(R.string.bucket_cover),
+                modifier = Modifier.matchParentSize(),
+            )
+            if (isSelected) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(
+                            color = colorScheme.background.withMediumTransparency(),
+                            shape = RectangleShape,
+                        ),
+                )
+                Icon(
+                    painter = painterResource(R.drawable.ic_media_selected),
+                    contentDescription = stringResource(R.string.selected),
+                    tint = colorScheme.onBackground,
+                    modifier = Modifier
+                        .align(alignment = Alignment.TopStart)
+                        .padding(all = dimens.mediaGridIconPadding)
+                        .dropShadow(
+                            shape = CircleShape,
+                            shadow = Shadow(
+                                radius = dimens.shadowBlurRadius,
+                                color = colorScheme.background.withLowTransparency(),
+                            ),
+                        ),
+                )
+            }
+            if (isHidden) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_bucket_hidden),
+                    contentDescription = stringResource(R.string.hidden_bucket),
+                    tint = colorScheme.onBackground,
+                    modifier = Modifier
+                        .align(alignment = Alignment.BottomStart)
+                        .padding(all = dimens.mediaGridIconPadding)
+                        .dropShadow(
+                            shape = CircleShape,
+                            shadow = Shadow(
+                                radius = dimens.shadowBlurRadius,
+                                color = colorScheme.background.withLowTransparency(),
+                            ),
+                        ),
+                )
+            }
+        }
+        Text(
+            text = name,
+            modifier = Modifier.padding(
+                start = 4.dp,
+                top = 4.dp,
+                end = 4.dp,
+                bottom = 0.dp,
+            ),
+            color = colorScheme.onBackground,
+            fontSize = 16.sp,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
+        )
+        Text(
+            text = size.toString(),
+            modifier = Modifier.padding(
+                start = 4.dp,
+                top = 0.dp,
+                end = 4.dp,
+                bottom = 4.dp,
+            ),
+            color = colorScheme.onBackground,
+            fontSize = 14.sp,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
+        )
+    }
+}
+
 /**
- * For [SketchesGroupingByMonthMediaGrid] only
+ * For [SketchesGroupingByMonthMediaFilesGrid] only
  */
 suspend fun LazyGridState.fastAnimateScrollToStart(
     spec: MediaGridSpec,

@@ -24,6 +24,7 @@
 
 package com.github.yuriybudiyev.sketches.feature.buckets.ui
 
+import kotlin.math.min
 import kotlinx.coroutines.launch
 import android.app.Activity
 import android.net.Uri
@@ -34,20 +35,10 @@ import androidx.activity.result.component1
 import androidx.activity.result.component2
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -59,20 +50,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.snapshots.SnapshotStateSet
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -84,27 +65,21 @@ import com.github.yuriybudiyev.sketches.core.navigation.LocalRootNavMenuControll
 import com.github.yuriybudiyev.sketches.core.platform.content.launchDeleteMediaRequestOrThrow
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
-import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
-import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
-import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
-import com.github.yuriybudiyev.sketches.core.ui.colors.withMediumTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesCenteredMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
-import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLoadingIndicator
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.SketchesTopAppBar
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SelectAction
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SimpleAction
 import com.github.yuriybudiyev.sketches.core.ui.components.fastAnimateScrollToStart
-import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesThumbnailAsyncImage
+import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaBucketsGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchHandler
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaDescriptor
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
-import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
 import com.github.yuriybudiyev.sketches.feature.buckets.navigation.BucketsNavRoute
 
@@ -144,8 +119,8 @@ fun BucketsScreen(
     val selectedBuckets = rememberSaveableSnapshotStateSet<Long>()
     val deleteDialogMedia = rememberSaveableSnapshotStateList<MediaDescriptor>()
     val mediaBatchState = rememberMediaBatchState()
-    val bucketsGridState = rememberLazyGridState()
-    val bucketsGridScrollConnection = rememberLastScrollDirectionScrollConnection(bucketsGridState)
+    val mediaGridState = rememberLazyGridState()
+    val mediaGridScrollConnection = rememberLastScrollDirectionScrollConnection(mediaGridState)
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { [resultCode, _] ->
@@ -212,8 +187,8 @@ fun BucketsScreen(
         rootNavMenuController.setOnClickListener(BucketsNavRoute) {
             coroutineScope.launch {
                 if (allBuckets.isNotEmpty()) {
-                    bucketsGridScrollConnection.reset()
-                    bucketsGridState.fastAnimateScrollToStart()
+                    mediaGridScrollConnection.reset()
+                    mediaGridState.fastAnimateScrollToStart()
                 }
             }
         }
@@ -223,9 +198,9 @@ fun BucketsScreen(
     }
     val appBarVisible by remember {
         computedStateOf {
-            !bucketsGridState.canScrollForward && !bucketsGridState.canScrollBackward ||
-                bucketsGridScrollConnection.neverScrolled ||
-                bucketsGridScrollConnection.lastScrolledBackward ||
+            !mediaGridState.canScrollForward && !mediaGridState.canScrollBackward ||
+                mediaGridScrollConnection.neverScrolled ||
+                mediaGridScrollConnection.lastScrolledBackward ||
                 selectedBuckets.isNotEmpty()
         }
     }
@@ -243,7 +218,7 @@ fun BucketsScreen(
                     modifier = Modifier.matchParentSize(),
                 )
                 LaunchedEffect(Unit) {
-                    bucketsGridScrollConnection.reset()
+                    mediaGridScrollConnection.reset()
                     if (selectedBuckets.isNotEmpty()) {
                         selectedBuckets.clear()
                     }
@@ -261,14 +236,16 @@ fun BucketsScreen(
             is BucketsScreenViewModel.UiState.Buckets -> {
                 val buckets = uiState.buckets
                 allBuckets = buckets
-                BucketsMediaGrid(
-                    state = bucketsGridState,
+                SketchesMediaBucketsGrid(
                     buckets = buckets,
                     selectedBuckets = selectedBuckets,
-                    onBucketClick = onBucketClick,
+                    onItemClick = onBucketClick,
                     modifier = Modifier
                         .matchParentSize()
-                        .nestedScroll(bucketsGridScrollConnection),
+                        .nestedScroll(mediaGridScrollConnection),
+                    state = mediaGridState,
+                    overlayTop = true,
+                    overlayBottom = true,
                 )
             }
             is BucketsScreenViewModel.UiState.Error -> {
@@ -277,7 +254,7 @@ fun BucketsScreen(
                     modifier = Modifier.matchParentSize(),
                 )
                 LaunchedEffect(Unit) {
-                    bucketsGridScrollConnection.reset()
+                    mediaGridScrollConnection.reset()
                     if (selectedBuckets.isNotEmpty()) {
                         selectedBuckets.clear()
                     }
@@ -354,155 +331,8 @@ fun BucketsScreen(
     }
 }
 
-@Composable
-private fun BucketsMediaGrid(
-    state: LazyGridState,
-    buckets: List<MediaBucket>,
-    selectedBuckets: SnapshotStateSet<Long>,
-    onBucketClick: (index: Int, bucket: MediaBucket) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val buckets by rememberUpdatedState(buckets)
-    val selectedBuckets by rememberUpdatedState(selectedBuckets)
-    val onBucketClick by rememberUpdatedState(onBucketClick)
-    val colorScheme = MaterialTheme.colorScheme
-    val dimens = LocalDimens.current
-    SketchesLazyGrid(
-        modifier = modifier,
-        state = state,
-        overlayTop = true,
-        overlayBottom = true,
-    ) {
-        items(
-            count = buckets.size,
-            key = { index -> buckets[index].id },
-            contentType = { null },
-        ) { index ->
-            val bucket by rememberUpdatedState(buckets[index])
-            val bucketSelected by remember { computedStateOf { selectedBuckets.contains(bucket.id) } }
-            Column(
-                modifier = Modifier
-                    .defaultAnimateItem()
-                    .clipToBounds()
-                    .combinedClickable(
-                        onLongClick = {
-                            if (selectedBuckets.isEmpty()) {
-                                selectedBuckets.add(bucket.id)
-                            }
-                        },
-                        onClick = {
-                            if (selectedBuckets.isNotEmpty()) {
-                                if (bucketSelected) {
-                                    selectedBuckets.remove(bucket.id)
-                                } else {
-                                    selectedBuckets.add(bucket.id)
-                                }
-                            } else {
-                                onBucketClick(
-                                    index,
-                                    bucket,
-                                )
-                            }
-                        },
-                    ),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(ratio = 1F)
-                        .border(
-                            width = dimens.mediaItemBorderThickness,
-                            color = if (bucketSelected) {
-                                colorScheme.onBackground.withLowTransparency()
-                            } else {
-                                colorScheme.onBackground.withHighTransparency()
-                            },
-                            shape = RectangleShape,
-                        )
-                        .clipToBounds(),
-                ) {
-                    val coverUri = bucket.coverUri
-                    SketchesThumbnailAsyncImage(
-                        uri = coverUri,
-                        contentDescription = stringResource(R.string.bucket_cover),
-                        modifier = Modifier.matchParentSize(),
-                    )
-                    if (bucketSelected) {
-                        Box(
-                            modifier = Modifier
-                                .matchParentSize()
-                                .background(
-                                    color = colorScheme.background.withMediumTransparency(),
-                                    shape = RectangleShape,
-                                ),
-                        )
-                        Icon(
-                            painter = painterResource(R.drawable.ic_media_selected),
-                            contentDescription = stringResource(R.string.selected),
-                            tint = colorScheme.onBackground,
-                            modifier = Modifier
-                                .align(alignment = Alignment.TopStart)
-                                .padding(all = dimens.mediaGridIconPadding)
-                                .dropShadow(
-                                    shape = CircleShape,
-                                    shadow = Shadow(
-                                        radius = dimens.shadowBlurRadius,
-                                        color = colorScheme.background.withLowTransparency(),
-                                    ),
-                                ),
-                        )
-                    }
-                    if (bucket.isHidden) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_bucket_hidden),
-                            contentDescription = stringResource(R.string.hidden_bucket),
-                            tint = colorScheme.onBackground,
-                            modifier = Modifier
-                                .align(alignment = Alignment.BottomStart)
-                                .padding(all = dimens.mediaGridIconPadding)
-                                .dropShadow(
-                                    shape = CircleShape,
-                                    shadow = Shadow(
-                                        radius = dimens.shadowBlurRadius,
-                                        color = colorScheme.background.withLowTransparency(),
-                                    ),
-                                ),
-                        )
-                    }
-                }
-                Text(
-                    text = bucket.name,
-                    modifier = Modifier.padding(
-                        start = 4.dp,
-                        top = 4.dp,
-                        end = 4.dp,
-                        bottom = 0.dp,
-                    ),
-                    color = colorScheme.onBackground,
-                    fontSize = 16.sp,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                )
-                Text(
-                    text = bucket.size.toString(),
-                    modifier = Modifier.padding(
-                        start = 4.dp,
-                        top = 0.dp,
-                        end = 4.dp,
-                        bottom = 4.dp,
-                    ),
-                    color = colorScheme.onBackground,
-                    fontSize = 14.sp,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                )
-            }
-        }
-    }
-}
-
 private fun Collection<MediaBucket>.filterByIds(ids: Set<Long>): List<MediaBucket> {
-    val size = this.size.coerceAtMost(ids.size)
+    val size = min(this.size, ids.size)
     if (size == 0) {
         return emptyList()
     }

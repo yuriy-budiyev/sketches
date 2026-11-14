@@ -76,7 +76,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.ShareA
 import com.github.yuriybudiyev.sketches.core.ui.components.appbar.actions.SimpleAction
 import com.github.yuriybudiyev.sketches.core.ui.components.fastAnimateScrollToStart
 import com.github.yuriybudiyev.sketches.core.ui.components.media.MediaGridContentType
-import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaGrid
+import com.github.yuriybudiyev.sketches.core.ui.components.media.SketchesMediaFilesGrid
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.BatchAction
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatchHandler
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
@@ -269,7 +269,7 @@ private fun BookmarksScreen(
             }
             is BookmarksScreenViewModel.UiState.Bookmarks -> {
                 allFiles = uiState.files
-                SketchesMediaGrid(
+                SketchesMediaFilesGrid(
                     files = uiState.files,
                     selectedFiles = selectedFiles,
                     onItemClick = onImageClick,
