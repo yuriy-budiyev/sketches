@@ -955,7 +955,6 @@ private fun MediaBar(
     val currentIndex by rememberUpdatedState(currentIndex)
     val files by rememberUpdatedState(files)
     val onItemClick by rememberUpdatedState(onItemClick)
-    val colorScheme = MaterialTheme.colorScheme
     val dimens = LocalDimens.current
     LazyRow(
         state = state,
@@ -981,55 +980,68 @@ private fun MediaBar(
             contentType = { MediaBarItemContentType },
         ) { position ->
             val file = files[position]
-            Box(
+            MediaBarItem(
+                uri = file.uri,
+                mediaType = file.mediaType,
+                isCurrentItem = position == currentIndex,
+                onClick = { onItemClick(position, file) },
+                modifier = Modifier.defaultAnimateItem(),
+            )
+        }
+    }
+}
+
+@Composable
+private fun MediaBarItem(
+    uri: String,
+    mediaType: MediaType,
+    isCurrentItem: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val colorScheme = MaterialTheme.colorScheme
+    val dimens = LocalDimens.current
+    Box(
+        modifier = modifier
+            .size(size = dimens.mediaBarItemSize)
+            .border(
+                width = dimens.mediaItemBorderThickness,
+                color = if (isCurrentItem) {
+                    colorScheme.onBackground.withLowTransparency()
+                } else {
+                    colorScheme.onBackground.withHighTransparency()
+                },
+                shape = RectangleShape,
+            )
+            .clipToBounds()
+            .clickable(onClick = onClick),
+    ) {
+        SketchesThumbnailAsyncImage(
+            uri = uri,
+            contentDescription = stringResource(
+                id = when (mediaType) {
+                    MediaType.Image -> R.string.image
+                    MediaType.Video -> R.string.video
+                },
+            ),
+            modifier = Modifier.matchParentSize(),
+        )
+        if (mediaType == MediaType.Video) {
+            Icon(
+                painter = painterResource(R.drawable.ic_video),
+                contentDescription = stringResource(R.string.video),
+                tint = colorScheme.onBackground,
                 modifier = Modifier
-                    .defaultAnimateItem()
-                    .size(size = dimens.mediaBarItemSize)
-                    .border(
-                        width = dimens.mediaItemBorderThickness,
-                        color = if (position == currentIndex) {
-                            colorScheme.onBackground.withLowTransparency()
-                        } else {
-                            colorScheme.onBackground.withHighTransparency()
-                        },
-                        shape = RectangleShape,
-                    )
-                    .clipToBounds()
-                    .clickable {
-                        onItemClick(
-                            position,
-                            file,
-                        )
-                    },
-            ) {
-                SketchesThumbnailAsyncImage(
-                    uri = file.uri,
-                    contentDescription = stringResource(
-                        id = when (file.mediaType) {
-                            MediaType.Image -> R.string.image
-                            MediaType.Video -> R.string.video
-                        },
+                    .align(alignment = Alignment.BottomStart)
+                    .padding(all = dimens.mediaBarVideoIconPadding)
+                    .dropShadow(
+                        shape = CircleShape,
+                        shadow = Shadow(
+                            radius = dimens.shadowBlurRadius,
+                            color = colorScheme.background.withLowTransparency(),
+                        ),
                     ),
-                    modifier = Modifier.matchParentSize(),
-                )
-                if (file.mediaType == MediaType.Video) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_video),
-                        contentDescription = stringResource(R.string.video),
-                        tint = colorScheme.onBackground,
-                        modifier = Modifier
-                            .align(alignment = Alignment.BottomStart)
-                            .padding(all = dimens.mediaBarVideoIconPadding)
-                            .dropShadow(
-                                shape = CircleShape,
-                                shadow = Shadow(
-                                    radius = dimens.shadowBlurRadius,
-                                    color = colorScheme.background.withLowTransparency(),
-                                ),
-                            ),
-                    )
-                }
-            }
+            )
         }
     }
 }
