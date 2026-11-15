@@ -25,8 +25,11 @@
 package com.github.yuriybudiyev.sketches.core.ui.utils
 
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.lazy.layout.LazyLayoutCacheWindow
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 
@@ -59,3 +62,13 @@ fun IntOffset.mainAxis(orientation: Orientation): Int =
         Orientation.Vertical -> y
         Orientation.Horizontal -> x
     }
+
+@Immutable
+object NoOpLazyLayoutCacheWindow: LazyLayoutCacheWindow {
+
+    override val isNonScrollCachingEnabled: Boolean = false
+
+    override fun Density.calculateAheadWindow(viewport: Int): Int = 0
+
+    override fun Density.calculateBehindWindow(viewport: Int): Int = 0
+}

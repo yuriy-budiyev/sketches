@@ -40,7 +40,6 @@ import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.layout.LazyLayoutCacheWindow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -48,6 +47,7 @@ import androidx.compose.ui.unit.coerceAtLeast
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.utils.NoOpLazyLayoutCacheWindow
 import com.github.yuriybudiyev.sketches.core.ui.utils.mainAxis
 
 @Composable
@@ -100,11 +100,7 @@ fun SketchesLazyGrid(
         ),
         horizontalArrangement = Arrangement.spacedBy(space = dimens.lazyGridItemSpacing),
         verticalArrangement = Arrangement.spacedBy(space = dimens.lazyGridItemSpacing),
-        cacheWindow = LazyLayoutCacheWindow(
-            aheadFraction = 0.25F,
-            behindFraction = 0.25F,
-            isNonScrollCachingEnabled = true,
-        ),
+        cacheWindow = NoOpLazyLayoutCacheWindow,
         content = content,
     )
 }

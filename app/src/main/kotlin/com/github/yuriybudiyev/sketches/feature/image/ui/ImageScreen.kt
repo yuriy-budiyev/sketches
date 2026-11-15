@@ -63,7 +63,6 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.layout.LazyLayoutCacheWindow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerDefaults
@@ -146,6 +145,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.player.Sketches
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.utils.NoOpLazyLayoutCacheWindow
 import com.github.yuriybudiyev.sketches.core.ui.utils.fastAnimateScrollToItemCentered
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemCentered
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
@@ -968,11 +968,7 @@ private fun MediaBar(
             alignment = Alignment.CenterHorizontally,
         ),
         verticalAlignment = Alignment.CenterVertically,
-        cacheWindow = LazyLayoutCacheWindow(
-            aheadFraction = 0.25F,
-            behindFraction = 0.25F,
-            isNonScrollCachingEnabled = true,
-        ),
+        cacheWindow = NoOpLazyLayoutCacheWindow,
     ) {
         items(
             count = files.size,
