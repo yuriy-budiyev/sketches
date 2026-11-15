@@ -143,10 +143,18 @@ class LocalCacheInterceptor(
                 }
                 diskCache.fileSystem.write(editor.data) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, 85, outputStream())
+                        bitmap.compress(
+                            Bitmap.CompressFormat.WEBP_LOSSY,
+                            DiskCacheImageQuality,
+                            outputStream(),
+                        )
                     } else {
                         @Suppress("DEPRECATION")
-                        bitmap.compress(Bitmap.CompressFormat.WEBP, 85, outputStream())
+                        bitmap.compress(
+                            Bitmap.CompressFormat.WEBP,
+                            DiskCacheImageQuality,
+                            outputStream(),
+                        )
                     }
                 }
                 editor.commit()
@@ -164,6 +172,11 @@ class LocalCacheInterceptor(
             )
         }
         return result
+    }
+
+    companion {
+
+        private const val DiskCacheImageQuality: Int = 85
     }
 }
 
