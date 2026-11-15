@@ -117,7 +117,7 @@ suspend fun LazyGridState.fastAnimateScrollToStart() {
     }
     val item = layoutInfo.visibleItemsInfo.firstOrNull() ?: return
     val itemSize = item.size.mainAxis(layoutInfo.orientation)
-    val scrollThreshold = layoutInfo.viewportSize.mainAxis(layoutInfo.orientation) * 3 / 4
+    val scrollThreshold = layoutInfo.viewportSize.mainAxis(layoutInfo.orientation)
     val maxSpan = layoutInfo.maxSpan
     val itemSpacing = layoutInfo.mainAxisItemSpacing
     var scrollSpans = scrollThreshold / itemSize
