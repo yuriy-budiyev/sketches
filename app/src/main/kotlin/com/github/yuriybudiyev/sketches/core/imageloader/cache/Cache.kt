@@ -176,7 +176,7 @@ class LocalCacheInterceptor(
 
     companion {
 
-        private const val DiskCacheImageQuality: Int = 85
+        private const val DiskCacheImageQuality: Int = 90
     }
 }
 
