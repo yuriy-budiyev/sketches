@@ -47,10 +47,10 @@ fun Context.getMaxMemory(): Long {
 
 /**
  * Max [android.graphics.Bitmap] size assuming most images have 32 bits per pixel,
- * allowing pixels to take 15% of max memory.
+ * allowing pixels to take 15% of max memory, but not larger than 4096x4096.
  */
 fun Context.getMaxBitmapSize(): Size {
-    val size = floorEven(sqrt(getMaxMemory().toDouble() * 0.0375).toInt())
+    val size = floorEven(sqrt(getMaxMemory().toDouble() * 0.0375).toInt()).coerceAtMost(4096)
     return Size(width = size, height = size)
 }
 
