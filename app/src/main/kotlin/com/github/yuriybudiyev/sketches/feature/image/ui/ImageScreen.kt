@@ -127,8 +127,8 @@ import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBars
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
-import com.github.yuriybudiyev.sketches.core.ui.colors.bottomToTopBackgroundGradientBrush
 import com.github.yuriybudiyev.sketches.core.ui.colors.topToBottomBackgroundGradientBrush
+import com.github.yuriybudiyev.sketches.core.ui.colors.verticalGradient
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
@@ -449,13 +449,16 @@ private fun ImageScreenLayout(
                         alpha = uiAlpha
                         translationY = ceil(mediaBarTranslation)
                     }
+                    .fillMaxWidth()
+                    .height(mediaBarHeight)
                     .run {
                         if (contentPaddingBottomVisible > 0.dp) {
-                            background(
-                                brush = colorScheme.bottomToTopBackgroundGradientBrush(
-                                    startY = with(LocalDensity.current) { dimens.mediaBarHeight.toPx() },
-                                ),
-                                shape = RectangleShape,
+                            verticalGradient(
+                                topColor = colorScheme.background.withLowTransparency(),
+                                bottomColor = colorScheme.background,
+                                start = with(LocalDensity.current) {
+                                    (dimens.mediaBarHeight.toPx() / mediaBarHeight.toPx()).coerceIn(0F, 1F)
+                                },
                             )
                         } else {
                             background(
@@ -463,9 +466,7 @@ private fun ImageScreenLayout(
                                 shape = RectangleShape,
                             )
                         }
-                    }
-                    .height(mediaBarHeight)
-                    .fillMaxWidth(),
+                    },
             )
             MediaBar(
                 currentIndex = currentIndex,
@@ -501,6 +502,7 @@ private fun ImageScreenLayout(
                     }
                     .run {
                         if (contentPaddingTopVisible > 0.dp) {
+                            //TODO
                             background(
                                 brush = colorScheme.topToBottomBackgroundGradientBrush(
                                     endY = with(LocalDensity.current) { contentPaddingTopVisible.toPx() },

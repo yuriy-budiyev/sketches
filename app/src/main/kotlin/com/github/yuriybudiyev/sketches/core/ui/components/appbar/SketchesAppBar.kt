@@ -61,7 +61,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
-import com.github.yuriybudiyev.sketches.core.ui.colors.topToBottomBackgroundGradientBrush
+import com.github.yuriybudiyev.sketches.core.ui.colors.verticalGradient
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.HintPosition
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
@@ -93,9 +93,9 @@ inline fun BoxScope.SketchesTopAppBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(contentPaddingTop)
-                    .background(
-                        brush = colorScheme.topToBottomBackgroundGradientBrush(),
-                        shape = RectangleShape,
+                    .verticalGradient(
+                        topColor = colorScheme.background,
+                        bottomColor = colorScheme.background.withLowTransparency(),
                     ),
             )
         }

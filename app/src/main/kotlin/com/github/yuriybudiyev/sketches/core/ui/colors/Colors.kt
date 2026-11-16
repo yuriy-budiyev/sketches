@@ -26,9 +26,17 @@ package com.github.yuriybudiyev.sketches.core.ui.colors
 
 import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.MeshGradientPainter
 import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.debugInspectorInfo
 
 const val LowTransparencyAlpha: Float = 0.75F
 const val MediumTransparencyAlpha: Float = 0.35F
@@ -75,3 +83,54 @@ fun ColorScheme.bottomToTopBackgroundGradientBrush(
         endY = endY,
         tileMode = TileMode.Clamp,
     )
+
+fun Modifier.verticalGradient(
+    topColor: Color,
+    bottomColor: Color,
+    start: Float = 0F,
+    end: Float = 1F,
+): Modifier {
+    require(start >= 0F) { "Start offset should be >= 0 ($start)" }
+    require(end <= 1F) { "End offset should be <= 1 ($end)" }
+    require(start < end) { "Start offset ($start) should be less than end offset ($end)" }
+    return composed(
+        debugInspectorInfo {
+            name = "verticalGradient"
+            properties["topColor"] = topColor
+            properties["bottomColor"] = bottomColor
+            properties["start"] = start
+            properties["end"] = end
+        },
+    ) {
+        val painter = remember(topColor, bottomColor, start, end) {
+            val hasStart = start > 0F
+            val hasEnd = end < 1F
+            var rows = 1
+            if (hasStart) rows++
+            if (hasEnd) rows++
+            return@remember MeshGradientPainter(rows = rows, columns = 1, hasBicubicColor = true) {
+                var row = 0
+                setVertex(row, 0, Offset(0F, 0F), topColor)
+                setVertex(row, 1, Offset(1F, 0F), topColor)
+                row++
+                if (start > 0F) {
+                    setVertex(row, 0, Offset(0F, start), topColor)
+                    setVertex(row, 1, Offset(1F, start), topColor)
+                    row++
+                }
+                if (end < 1F) {
+                    setVertex(row, 0, Offset(0F, end), bottomColor)
+                    setVertex(row, 1, Offset(1F, end), bottomColor)
+                    row++
+                }
+                setVertex(row, 0, Offset(0F, 1F), bottomColor)
+                setVertex(row, 1, Offset(1F, 1F), bottomColor)
+            }
+        }
+        return@composed paint(
+            painter = painter,
+            sizeToIntrinsics = false,
+            contentScale = ContentScale.FillBounds,
+        )
+    }
+}

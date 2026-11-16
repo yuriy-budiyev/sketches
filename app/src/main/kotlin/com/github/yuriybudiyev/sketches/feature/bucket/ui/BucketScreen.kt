@@ -68,7 +68,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -86,7 +85,7 @@ import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.systembars.SystemBarsVisibility
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
-import com.github.yuriybudiyev.sketches.core.ui.colors.bottomToTopBackgroundGradientBrush
+import com.github.yuriybudiyev.sketches.core.ui.colors.verticalGradient
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
@@ -384,9 +383,9 @@ fun BucketScreen(
                     .align(Alignment.BottomStart)
                     .fillMaxWidth()
                     .height(bottomNavBarHeight)
-                    .background(
-                        brush = colorScheme.bottomToTopBackgroundGradientBrush(),
-                        shape = RectangleShape,
+                    .verticalGradient(
+                        topColor = colorScheme.background.withLowTransparency(),
+                        bottomColor = colorScheme.background,
                     ),
             )
         }
