@@ -127,8 +127,8 @@ import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBars
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
-import com.github.yuriybudiyev.sketches.core.ui.colors.topToBottomBackgroundGradientBrush
-import com.github.yuriybudiyev.sketches.core.ui.colors.verticalGradient
+import com.github.yuriybudiyev.sketches.core.ui.colors.solidColorBackground
+import com.github.yuriybudiyev.sketches.core.ui.colors.verticalGradientBackground
 import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
@@ -453,7 +453,7 @@ private fun ImageScreenLayout(
                     .height(mediaBarHeight)
                     .run {
                         if (contentPaddingBottomVisible > 0.dp) {
-                            verticalGradient(
+                            verticalGradientBackground(
                                 topColor = colorScheme.background.withLowTransparency(),
                                 bottomColor = colorScheme.background,
                                 start = with(LocalDensity.current) {
@@ -461,10 +461,7 @@ private fun ImageScreenLayout(
                                 },
                             )
                         } else {
-                            background(
-                                color = colorScheme.background.withLowTransparency(),
-                                shape = RectangleShape,
-                            )
+                            solidColorBackground(colorScheme.background.withLowTransparency())
                         }
                     },
             )
@@ -492,33 +489,34 @@ private fun ImageScreenLayout(
                     .height(dimens.mediaBarHeight)
                     .fillMaxWidth(),
             )
+            val appBarHeight = dimens.material3AppBarHeight + contentPaddingTopVisible
             SketchesAppBar(
                 modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .fillMaxWidth()
                     .graphicsLayer {
                         alpha = uiAlpha
                         translationY = ceil(topAppBarTranslation)
                     }
+                    .align(Alignment.TopStart)
+                    .fillMaxWidth()
+                    .height(appBarHeight)
                     .run {
                         if (contentPaddingTopVisible > 0.dp) {
-                            //TODO
-                            background(
-                                brush = colorScheme.topToBottomBackgroundGradientBrush(
-                                    endY = with(LocalDensity.current) { contentPaddingTopVisible.toPx() },
-                                ),
-                                shape = RectangleShape,
+                            verticalGradientBackground(
+                                colorScheme.background,
+                                colorScheme.background.withLowTransparency(),
+                                end = with(LocalDensity.current) {
+                                    contentPaddingTopVisible.toPx() / appBarHeight.toPx()
+                                },
                             )
                         } else {
-                            background(
-                                color = colorScheme.background.withLowTransparency(),
-                                shape = RectangleShape,
-                            )
+                            solidColorBackground(colorScheme.background.withLowTransparency())
                         }
-                    },
-                contentPaddingTop = contentPaddingTopVisible,
-                contentPaddingStart = contentPaddingStartVisible,
-                contentPaddingEnd = contentPaddingEndVisible,
+                    }
+                    .padding(
+                        top = contentPaddingTopVisible,
+                        start = contentPaddingStartVisible,
+                        end = contentPaddingEndVisible,
+                    ),
                 backButtonEnabled = true,
             ) {
                 SimpleAction(

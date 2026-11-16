@@ -148,7 +148,7 @@ import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBars
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateList
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
-import com.github.yuriybudiyev.sketches.core.ui.colors.verticalGradient
+import com.github.yuriybudiyev.sketches.core.ui.colors.verticalGradientBackground
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
@@ -411,7 +411,7 @@ fun MainNavRoot(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding())
-                            .verticalGradient(
+                            .verticalGradientBackground(
                                 topColor = colorScheme.background.withLowTransparency(),
                                 bottomColor = colorScheme.background,
                             ),

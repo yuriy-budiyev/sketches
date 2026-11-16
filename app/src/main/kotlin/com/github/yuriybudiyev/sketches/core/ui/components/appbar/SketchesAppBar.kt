@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.core.ui.components.appbar
 
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -52,16 +51,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
-import com.github.yuriybudiyev.sketches.core.ui.colors.verticalGradient
+import com.github.yuriybudiyev.sketches.core.ui.colors.solidColorBackground
+import com.github.yuriybudiyev.sketches.core.ui.colors.verticalGradientBackground
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.HintPosition
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
@@ -93,7 +91,7 @@ inline fun BoxScope.SketchesTopAppBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(contentPaddingTop)
-                    .verticalGradient(
+                    .verticalGradientBackground(
                         topColor = colorScheme.background,
                         bottomColor = colorScheme.background.withLowTransparency(),
                     ),
@@ -102,16 +100,16 @@ inline fun BoxScope.SketchesTopAppBar(
         DefaultAnimatedVisibility(visible) {
             SketchesAppBar(
                 modifier = Modifier
+                    .solidColorBackground(colorScheme.background.withLowTransparency())
                     .fillMaxWidth()
-                    .background(
-                        color = colorScheme.background.withLowTransparency(),
-                        shape = RectangleShape,
-                    ),
+                    .padding(
+                        start = paddings.calculateStartPadding(layoutDirection),
+                        end = paddings.calculateEndPadding(layoutDirection),
+                        bottom = paddings.calculateBottomPadding(),
+                    )
+                    .height(LocalDimens.current.material3AppBarHeight),
                 text = text,
                 backButtonEnabled = backButtonEnabled,
-                contentPaddingStart = paddings.calculateStartPadding(layoutDirection),
-                contentPaddingEnd = paddings.calculateEndPadding(layoutDirection),
-                contentPaddingBottom = paddings.calculateBottomPadding(),
                 actions = actions,
             )
         }
@@ -123,23 +121,10 @@ inline fun SketchesAppBar(
     modifier: Modifier = Modifier,
     text: String? = null,
     backButtonEnabled: Boolean = false,
-    contentPaddingStart: Dp = 0.dp,
-    contentPaddingTop: Dp = 0.dp,
-    contentPaddingEnd: Dp = 0.dp,
-    contentPaddingBottom: Dp = 0.dp,
     actions: @Composable () -> Unit = {},
 ) {
     Row(
-        modifier = modifier
-            .padding(
-                top = contentPaddingTop,
-                bottom = contentPaddingBottom,
-            )
-            .height(LocalDimens.current.material3AppBarHeight)
-            .padding(
-                start = contentPaddingStart,
-                end = contentPaddingEnd,
-            ),
+        modifier = modifier,
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically,
     ) {

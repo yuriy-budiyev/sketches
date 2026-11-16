@@ -85,7 +85,7 @@ import com.github.yuriybudiyev.sketches.core.platform.share.LocalShareManager
 import com.github.yuriybudiyev.sketches.core.platform.systembars.SystemBarsVisibility
 import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotStateSet
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
-import com.github.yuriybudiyev.sketches.core.ui.colors.verticalGradient
+import com.github.yuriybudiyev.sketches.core.ui.colors.verticalGradientBackground
 import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesErrorMessage
@@ -383,7 +383,7 @@ fun BucketScreen(
                     .align(Alignment.BottomStart)
                     .fillMaxWidth()
                     .height(bottomNavBarHeight)
-                    .verticalGradient(
+                    .verticalGradientBackground(
                         topColor = colorScheme.background.withLowTransparency(),
                         bottomColor = colorScheme.background,
                     ),
