@@ -64,7 +64,7 @@ fun Modifier.verticalGradientBackground(
     end: Float = 1F,
 ): Modifier {
     require(topColor.isSpecified) { "Top color should be specified" }
-    require(bottomColor.isSpecified) { "Top color should be specified" }
+    require(bottomColor.isSpecified) { "Bottom color should be specified" }
     require(start >= 0F) { "Start offset should be >= 0 ($start)" }
     require(end <= 1F) { "End offset should be <= 1 ($end)" }
     require(start < end) { "Start offset ($start) should be less than end offset ($end)" }
