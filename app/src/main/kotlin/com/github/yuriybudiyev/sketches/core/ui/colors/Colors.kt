@@ -26,11 +26,11 @@ package com.github.yuriybudiyev.sketches.core.ui.colors
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.MeshGradientPainter
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
@@ -52,10 +52,10 @@ fun Color.withMediumTransparency(): Color =
 fun Color.withHighTransparency(): Color =
     copy(alpha = HighTransparencyAlpha)
 
-fun Modifier.solidColorBackground(color: Color): Modifier =
-    drawBehind {
-        drawRect(color)
-    }
+fun Modifier.solidColorBackground(color: Color): Modifier {
+    require(color.isSpecified) { "Color should be specified" }
+    return then(SolidColorBackgroundElement(color))
+}
 
 fun Modifier.verticalGradientBackground(
     topColor: Color,
@@ -63,10 +63,51 @@ fun Modifier.verticalGradientBackground(
     start: Float = 0F,
     end: Float = 1F,
 ): Modifier {
+    require(topColor.isSpecified) { "Top color should be specified" }
+    require(bottomColor.isSpecified) { "Top color should be specified" }
     require(start >= 0F) { "Start offset should be >= 0 ($start)" }
     require(end <= 1F) { "End offset should be <= 1 ($end)" }
     require(start < end) { "Start offset ($start) should be less than end offset ($end)" }
     return then(VerticalGradientBackgroundElement(topColor, bottomColor, start, end))
+}
+
+private class SolidColorBackgroundElement(
+    private val color: Color,
+): ModifierNodeElement<SolidColorBackgroundNode>() {
+
+    override fun create(): SolidColorBackgroundNode =
+        SolidColorBackgroundNode(color)
+
+    override fun update(node: SolidColorBackgroundNode) {
+        node.update(color)
+    }
+
+    override fun InspectorInfo.inspectableProperties() {
+        name = "solidColorBackground"
+        properties["color"] = color
+    }
+
+    override fun equals(other: Any?): Boolean =
+        when {
+            other === this -> true
+            other is SolidColorBackgroundElement -> other.color == this.color
+            else -> false
+        }
+
+    override fun hashCode(): Int =
+        color.hashCode()
+}
+
+private class SolidColorBackgroundNode(private var color: Color): Modifier.Node(), DrawModifierNode {
+
+    override fun ContentDrawScope.draw() {
+        drawRect(color)
+        drawContent()
+    }
+
+    fun update(color: Color) {
+        this.color = color
+    }
 }
 
 private class VerticalGradientBackgroundElement(
