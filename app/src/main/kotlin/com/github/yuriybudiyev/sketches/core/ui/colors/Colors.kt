@@ -31,6 +31,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.MeshGradientPainter
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.InspectorInfo
@@ -117,7 +118,7 @@ private class VerticalGradientBackgroundNode(
 ): Modifier.Node(), DrawModifierNode {
 
     override fun ContentDrawScope.draw() {
-        with(gradientPainter) {
+        with(painter) {
             draw(size)
         }
         drawContent()
@@ -147,11 +148,11 @@ private class VerticalGradientBackgroundNode(
             changed = true
         }
         if (changed) {
-            gradientPainter = createPainter()
+            painter = createPainter()
         }
     }
 
-    private fun createPainter(): MeshGradientPainter {
+    private fun createPainter(): Painter {
         var rows = 1
         if (start > 0F) rows++
         if (end < 1F) rows++
@@ -179,5 +180,5 @@ private class VerticalGradientBackgroundNode(
         }
     }
 
-    private var gradientPainter: MeshGradientPainter = createPainter()
+    private var painter: Painter = createPainter()
 }
