@@ -24,14 +24,17 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.colors
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.MeshGradientPainter
+import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.node.DrawModifierNode
+import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.platform.InspectorInfo
 
 const val LowTransparencyAlpha: Float = 0.75F
 const val MediumTransparencyAlpha: Float = 0.35F
@@ -54,7 +57,6 @@ fun Modifier.solidColorBackground(color: Color): Modifier =
         drawRect(color)
     }
 
-@Composable
 fun Modifier.verticalGradientBackground(
     topColor: Color,
     bottomColor: Color,
@@ -64,11 +66,101 @@ fun Modifier.verticalGradientBackground(
     require(start >= 0F) { "Start offset should be >= 0 ($start)" }
     require(end <= 1F) { "End offset should be <= 1 ($end)" }
     require(start < end) { "Start offset ($start) should be less than end offset ($end)" }
-    val painter = remember(topColor, bottomColor, start, end) {
+    return then(VerticalGradientBackgroundElement(topColor, bottomColor, start, end))
+}
+
+private class VerticalGradientBackgroundElement(
+    private val topColor: Color,
+    private val bottomColor: Color,
+    private val start: Float,
+    private val end: Float,
+): ModifierNodeElement<VerticalGradientBackgroundNode>() {
+
+    override fun create(): VerticalGradientBackgroundNode =
+        VerticalGradientBackgroundNode(topColor, bottomColor, start, end)
+
+    override fun update(node: VerticalGradientBackgroundNode) {
+        node.update(topColor, bottomColor, start, end)
+    }
+
+    override fun InspectorInfo.inspectableProperties() {
+        name = "verticalGradientBackground"
+        properties["topColor"] = topColor
+        properties["bottomColor"] = bottomColor
+        properties["start"] = start
+        properties["end"] = end
+    }
+
+    override fun equals(other: Any?): Boolean =
+        when {
+            other === this -> true
+            other is VerticalGradientBackgroundElement ->
+                other.topColor == this.topColor && other.bottomColor == this.bottomColor &&
+                    other.start == this.start && other.end == this.end
+            else -> false
+        }
+
+    override fun hashCode(): Int {
+        var result = 17
+        result = 31 * result + topColor.hashCode()
+        result = 31 * result + bottomColor.hashCode()
+        result = 31 * result + start.hashCode()
+        result = 31 * result + end.hashCode()
+        return result
+    }
+}
+
+private class VerticalGradientBackgroundNode(
+    private var topColor: Color,
+    private var bottomColor: Color,
+    private var start: Float,
+    private var end: Float,
+): Modifier.Node(), DrawModifierNode {
+
+    override fun ContentDrawScope.draw() {
+        with(painter) {
+            draw(size)
+        }
+        drawContent()
+    }
+
+    fun update(
+        topColor: Color,
+        bottomColor: Color,
+        start: Float,
+        end: Float,
+    ) {
+        var changed = false
+        if (this.topColor != topColor) {
+            this.topColor = topColor
+            changed = true
+        }
+        if (this.bottomColor != bottomColor) {
+            this.bottomColor = bottomColor
+            changed = true
+        }
+        if (this.start != start) {
+            this.start = start
+            changed = true
+        }
+        if (this.end != end) {
+            this.end = end
+            changed = true
+        }
+        if (changed) {
+            painter = createPainter()
+        }
+    }
+
+    private fun createPainter(): Painter {
         var rows = 1
         if (start > 0F) rows++
         if (end < 1F) rows++
-        return@remember MeshGradientPainter(rows = rows, columns = 1, hasBicubicColor = true) {
+        return MeshGradientPainter(
+            rows = rows,
+            columns = 1,
+            hasBicubicColor = true,
+        ) {
             var row = 0
             setVertex(row, 0, Offset(0F, 0F), topColor)
             setVertex(row, 1, Offset(1F, 0F), topColor)
@@ -87,9 +179,6 @@ fun Modifier.verticalGradientBackground(
             setVertex(row, 1, Offset(1F, 1F), bottomColor)
         }
     }
-    return drawBehind {
-        with(painter) {
-            draw(size)
-        }
-    }
+
+    private var painter: Painter = createPainter()
 }
