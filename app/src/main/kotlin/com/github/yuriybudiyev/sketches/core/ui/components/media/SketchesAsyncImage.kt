@@ -67,11 +67,11 @@ import coil3.size.Scale
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.imageloader.cache.allowLocalCacheIntercept
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
-import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.common.MediaPreviewPlaceholder
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
+import com.github.yuriybudiyev.sketches.core.ui.graphics.withHighTransparency
 
 @Composable
 fun SketchesThumbnailAsyncImage(

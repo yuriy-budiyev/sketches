@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.github.yuriybudiyev.sketches.core.ui.colors
+package com.github.yuriybudiyev.sketches.core.ui.graphics
 
 import android.graphics.LinearGradient
 import android.graphics.Shader

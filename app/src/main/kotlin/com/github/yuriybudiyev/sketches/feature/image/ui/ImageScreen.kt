@@ -127,10 +127,6 @@ import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBars
 import com.github.yuriybudiyev.sketches.core.text.capitalizeFirstChar
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
-import com.github.yuriybudiyev.sketches.core.ui.colors.solidColorBackground
-import com.github.yuriybudiyev.sketches.core.ui.colors.verticalGradientBackground
-import com.github.yuriybudiyev.sketches.core.ui.colors.withHighTransparency
-import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteBookmarksConfirmationDialog
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesDeleteImagesConfirmationDialog
@@ -145,6 +141,10 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.player.Sketches
 import com.github.yuriybudiyev.sketches.core.ui.components.media.player.rememberSketchesMediaState
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.graphics.solidColorBackground
+import com.github.yuriybudiyev.sketches.core.ui.graphics.verticalGradientBackground
+import com.github.yuriybudiyev.sketches.core.ui.graphics.withHighTransparency
+import com.github.yuriybudiyev.sketches.core.ui.graphics.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.utils.NoOpLazyLayoutCacheWindow
 import com.github.yuriybudiyev.sketches.core.ui.utils.fastAnimateScrollToItemCentered
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemCentered

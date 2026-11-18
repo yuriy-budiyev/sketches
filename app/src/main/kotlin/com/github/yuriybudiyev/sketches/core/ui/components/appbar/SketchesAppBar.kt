@@ -58,12 +58,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.github.yuriybudiyev.sketches.R
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
-import com.github.yuriybudiyev.sketches.core.ui.colors.solidColorBackground
-import com.github.yuriybudiyev.sketches.core.ui.colors.verticalGradientBackground
-import com.github.yuriybudiyev.sketches.core.ui.colors.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.components.HintPosition
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesActionButton
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.graphics.solidColorBackground
+import com.github.yuriybudiyev.sketches.core.ui.graphics.verticalGradientBackground
+import com.github.yuriybudiyev.sketches.core.ui.graphics.withLowTransparency
 
 @Composable
 inline fun BoxScope.SketchesTopAppBar(
