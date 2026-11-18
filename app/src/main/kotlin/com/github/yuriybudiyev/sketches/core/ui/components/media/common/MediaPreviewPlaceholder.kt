@@ -30,7 +30,6 @@ import kotlinx.coroutines.withContext
 import android.graphics.Bitmap
 import android.os.Build
 import androidx.annotation.DeprecatedSinceApi
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
@@ -74,7 +73,6 @@ fun MediaPreviewPlaceholder(
 }
 
 @Composable
-@RequiresApi(Build.VERSION_CODES.S)
 private fun MediaPreviewPlaceholderImpl31(
     uri: String,
     modifier: Modifier = Modifier,

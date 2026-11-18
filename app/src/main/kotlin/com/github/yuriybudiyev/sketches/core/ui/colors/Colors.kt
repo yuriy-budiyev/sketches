@@ -24,14 +24,24 @@
 
 package com.github.yuriybudiyev.sketches.core.ui.colors
 
+import android.graphics.LinearGradient
+import android.graphics.Shader
+import android.os.Build
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.MeshGradientPainter
+import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.InspectorInfo
@@ -193,7 +203,14 @@ private class VerticalGradientBackgroundNode(
         }
     }
 
-    private fun createPainter(): Painter {
+    private fun createPainter(): Painter =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            createMeshGradientPainter()
+        } else {
+            createLinearGradientPainter()
+        }
+
+    private fun createMeshGradientPainter(): Painter {
         var rows = 1
         if (start > 0F) rows++
         if (end < 1F) rows++
@@ -221,5 +238,74 @@ private class VerticalGradientBackgroundNode(
         }
     }
 
+    private fun createLinearGradientPainter(): Painter =
+        VerticalLinearGradientPainter(topColor, bottomColor, start, end)
+
     private var painter: Painter = createPainter()
+}
+
+private class VerticalLinearGradientPainter(
+    topColor: Color,
+    bottomColor: Color,
+    start: Float,
+    end: Float,
+): Painter() {
+
+    override val intrinsicSize: Size = Size.Unspecified
+
+    override fun DrawScope.onDraw() {
+        drawRect(brush = brush, alpha = alpha, colorFilter = colorFilter)
+    }
+
+    override fun applyAlpha(alpha: Float): Boolean {
+        this.alpha = alpha
+        return true
+    }
+
+    override fun applyColorFilter(colorFilter: ColorFilter?): Boolean {
+        this.colorFilter = colorFilter
+        return true
+    }
+
+    private val brush: ShaderBrush = VerticalLinearGradientBrush(topColor, bottomColor, start, end)
+    private var alpha: Float = DefaultAlpha
+    private var colorFilter: ColorFilter? = null
+}
+
+@Immutable
+private class VerticalLinearGradientBrush(
+    private val topColor: Color,
+    private val bottomColor: Color,
+    private val start: Float,
+    private val end: Float,
+): ShaderBrush() {
+
+    override fun createShader(size: Size): Shader =
+        LinearGradient(
+            0F,
+            size.height * start,
+            0F,
+            size.height * end,
+            topColor.toArgb(),
+            bottomColor.toArgb(),
+            Shader.TileMode.CLAMP,
+        )
+
+    override fun equals(other: Any?): Boolean =
+        when {
+            other === this -> true
+            other is VerticalLinearGradientBrush ->
+                other.topColor == this.topColor && other.bottomColor == this.bottomColor &&
+                    other.start == this.start && other.end == this.end
+            else -> false
+        }
+
+    override fun hashCode(): Int {
+        var result = 17
+        result = 31 * result + topColor.hashCode()
+        result = 31 * result + bottomColor.hashCode()
+        result = 31 * result + start.hashCode()
+        result = 31 * result + end.hashCode()
+        return result
+    }
 }
