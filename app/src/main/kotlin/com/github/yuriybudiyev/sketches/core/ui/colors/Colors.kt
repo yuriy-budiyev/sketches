@@ -270,6 +270,25 @@ private class VerticalLinearGradientPainter(
     private val brush: ShaderBrush = VerticalLinearGradientBrush(topColor, bottomColor, start, end)
     private var alpha: Float = DefaultAlpha
     private var colorFilter: ColorFilter? = null
+
+    override fun equals(other: Any?): Boolean =
+        when {
+            other === this -> true
+            other is VerticalLinearGradientPainter ->
+                other.brush == this.brush && other.alpha == this.alpha && other.colorFilter == this.colorFilter
+            else -> false
+        }
+
+    override fun hashCode(): Int {
+        var result = 17
+        result = 31 * result + brush.hashCode()
+        result = 31 * result + alpha.hashCode()
+        result = 31 * result + colorFilter.hashCode()
+        return result
+    }
+
+    override fun toString(): String =
+        "VerticalLinearGradientPainter(brush: $brush, alpha: $alpha, colorFilter: $colorFilter)"
 }
 
 @Immutable
@@ -308,4 +327,7 @@ private class VerticalLinearGradientBrush(
         result = 31 * result + end.hashCode()
         return result
     }
+
+    override fun toString(): String =
+        "VerticalLinearGradientBrush(topColor: $topColor, bottomColor: $bottomColor, start: $start, end: $end)"
 }
