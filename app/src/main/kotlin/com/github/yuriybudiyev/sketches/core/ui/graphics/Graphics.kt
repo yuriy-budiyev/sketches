@@ -65,7 +65,7 @@ fun Color.withHighTransparency(): Color =
 @Stable
 fun Modifier.solidColorBackground(color: Color): Modifier {
     require(color.isSpecified) { "Color should be specified" }
-    return then(SolidColorBackgroundElement(color))
+    return this.then(SolidColorBackgroundElement(color))
 }
 
 @Stable
@@ -80,7 +80,7 @@ fun Modifier.verticalGradientBackground(
     require(start >= 0F) { "Start offset should be >= 0 ($start)" }
     require(end <= 1F) { "End offset should be <= 1 ($end)" }
     require(start < end) { "Start offset ($start) should be less than end offset ($end)" }
-    return then(VerticalGradientBackgroundElement(topColor, bottomColor, start, end))
+    return this.then(VerticalGradientBackgroundElement(topColor, bottomColor, start, end))
 }
 
 private class SolidColorBackgroundElement(
