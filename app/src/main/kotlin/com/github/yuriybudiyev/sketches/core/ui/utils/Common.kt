@@ -64,11 +64,12 @@ fun IntOffset.mainAxis(orientation: Orientation): Int =
     }
 
 @Immutable
-object NoOpLazyLayoutCacheWindow: LazyLayoutCacheWindow {
+object DefaultLazyLayoutCacheWindow: LazyLayoutCacheWindow {
 
+    // Causes ArrayIndexOutOfBoundsException on screen orientation change when set to true
     override val isNonScrollCachingEnabled: Boolean = false
 
-    override fun Density.calculateAheadWindow(viewport: Int): Int = 0
+    override fun Density.calculateAheadWindow(viewport: Int): Int = viewport / 8
 
-    override fun Density.calculateBehindWindow(viewport: Int): Int = 0
+    override fun Density.calculateBehindWindow(viewport: Int): Int = viewport / 8
 }

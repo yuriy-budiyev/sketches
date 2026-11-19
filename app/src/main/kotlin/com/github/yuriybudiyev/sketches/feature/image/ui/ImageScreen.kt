@@ -145,7 +145,7 @@ import com.github.yuriybudiyev.sketches.core.ui.graphics.solidColorBackground
 import com.github.yuriybudiyev.sketches.core.ui.graphics.verticalGradientBackground
 import com.github.yuriybudiyev.sketches.core.ui.graphics.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.graphics.withLowTransparency
-import com.github.yuriybudiyev.sketches.core.ui.utils.NoOpLazyLayoutCacheWindow
+import com.github.yuriybudiyev.sketches.core.ui.utils.DefaultLazyLayoutCacheWindow
 import com.github.yuriybudiyev.sketches.core.ui.utils.fastAnimateScrollToItemCentered
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItemCentered
 import com.github.yuriybudiyev.sketches.feature.image.navigation.ImageScreenNavResult
@@ -968,7 +968,7 @@ private fun MediaBar(
             alignment = Alignment.CenterHorizontally,
         ),
         verticalAlignment = Alignment.CenterVertically,
-        cacheWindow = NoOpLazyLayoutCacheWindow,
+        cacheWindow = DefaultLazyLayoutCacheWindow,
     ) {
         items(
             count = files.size,

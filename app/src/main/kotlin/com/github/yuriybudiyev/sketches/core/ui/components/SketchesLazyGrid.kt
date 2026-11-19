@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.coerceAtLeast
 import com.github.yuriybudiyev.sketches.core.platform.systembars.LocalSystemBarsController
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
-import com.github.yuriybudiyev.sketches.core.ui.utils.NoOpLazyLayoutCacheWindow
+import com.github.yuriybudiyev.sketches.core.ui.utils.DefaultLazyLayoutCacheWindow
 import com.github.yuriybudiyev.sketches.core.ui.utils.mainAxis
 
 @Composable
@@ -100,7 +100,7 @@ fun SketchesLazyGrid(
         ),
         horizontalArrangement = Arrangement.spacedBy(space = dimens.lazyGridItemSpacing),
         verticalArrangement = Arrangement.spacedBy(space = dimens.lazyGridItemSpacing),
-        cacheWindow = NoOpLazyLayoutCacheWindow,
+        cacheWindow = DefaultLazyLayoutCacheWindow,
         content = content,
     )
 }

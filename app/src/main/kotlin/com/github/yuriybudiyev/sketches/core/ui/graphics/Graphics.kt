@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.platform.InspectorInfo
 
 const val LowTransparencyAlpha: Float = 0.75F
@@ -112,6 +113,8 @@ private class SolidColorBackgroundElement(
 
 private class SolidColorBackgroundNode(private var color: Color): Modifier.Node(), DrawModifierNode {
 
+    override val shouldAutoInvalidate: Boolean = false
+
     override fun ContentDrawScope.draw() {
         drawRect(color)
         drawContent()
@@ -119,6 +122,7 @@ private class SolidColorBackgroundNode(private var color: Color): Modifier.Node(
 
     fun update(color: Color) {
         this.color = color
+        invalidateDraw()
     }
 }
 
@@ -170,6 +174,8 @@ private class VerticalGradientBackgroundNode(
     private var end: Float,
 ): Modifier.Node(), DrawModifierNode {
 
+    override val shouldAutoInvalidate: Boolean = false
+
     override fun ContentDrawScope.draw() {
         with(painter) {
             draw(size)
@@ -202,6 +208,7 @@ private class VerticalGradientBackgroundNode(
         }
         if (changed) {
             painter = createPainter()
+            invalidateDraw()
         }
     }
 
