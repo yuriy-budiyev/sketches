@@ -1,5 +1,4 @@
 import com.android.build.api.variant.VariantOutputConfiguration
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
@@ -9,6 +8,15 @@ plugins {
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.room3)
+}
+
+kotlin {
+    jvmToolchain(17)
+    compilerOptions.freeCompilerArgs.apply {
+        add("-Xreturn-value-checker=full")
+        add("-Xname-based-destructuring=complete")
+        add("-Xcompanion-blocks-and-extensions")
+    }
 }
 
 android {
@@ -48,11 +56,6 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
     buildFeatures {
         compose = true
         buildConfig = true
@@ -68,38 +71,6 @@ android {
             excludes.add("/META-INF/**")
         }
     }
-}
-
-androidComponents {
-    onVariants(selector().withBuildType("release")) { variant ->
-        val output = variant.outputs.single { output ->
-            output.outputType == VariantOutputConfiguration.OutputType.SINGLE
-        }
-        @Suppress("UnstableApiUsage")
-        output.outputFileName = "${rootProject.name}-v${output.versionName.get()}.apk"
-    }
-}
-
-composeCompiler {
-    reportsDestination = layout.buildDirectory.dir("compose_compiler")
-    metricsDestination = layout.buildDirectory.dir("compose_compiler")
-    stabilityConfigurationFiles =
-        listOf(rootProject.layout.projectDirectory.file("compose_stability_config.conf"))
-}
-
-kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_17
-        freeCompilerArgs.apply {
-            add("-Xreturn-value-checker=full")
-            add("-Xname-based-destructuring=complete")
-            add("-Xcompanion-blocks-and-extensions") // Experimental in 2.5.0
-        }
-    }
-}
-
-room3 {
-    schemaDirectory(project.layout.projectDirectory.dir("schemas"))
 }
 
 dependencies {
@@ -141,6 +112,27 @@ dependencies {
     androidTestImplementation(libs.bundles.androidx.test.instrumented)
     androidTestImplementation(libs.androidx.compose.ui.test.junit)
     androidTestImplementation(libs.hilt.test)
+}
+
+androidComponents {
+    onVariants(selector().withBuildType("release")) { variant ->
+        val output = variant.outputs.single { output ->
+            output.outputType == VariantOutputConfiguration.OutputType.SINGLE
+        }
+        @Suppress("UnstableApiUsage")
+        output.outputFileName = "${rootProject.name}-v${output.versionName.get()}.apk"
+    }
+}
+
+composeCompiler {
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    metricsDestination = layout.buildDirectory.dir("compose_compiler")
+    stabilityConfigurationFiles =
+        listOf(rootProject.layout.projectDirectory.file("compose_stability_config.conf"))
+}
+
+room3 {
+    schemaDirectory(project.layout.projectDirectory.dir("schemas"))
 }
 
 tasks.named<Delete>("clean") {
