@@ -62,11 +62,13 @@ fun Color.withMediumTransparency(): Color =
 fun Color.withHighTransparency(): Color =
     copy(alpha = HighTransparencyAlpha)
 
+@Stable
 fun Modifier.solidColorBackground(color: Color): Modifier {
     require(color.isSpecified) { "Color should be specified" }
     return then(SolidColorBackgroundElement(color))
 }
 
+@Stable
 fun Modifier.verticalGradientBackground(
     topColor: Color,
     bottomColor: Color,
