@@ -111,7 +111,9 @@ private class SolidColorBackgroundElement(
         color.hashCode()
 }
 
-private class SolidColorBackgroundNode(private var color: Color): Modifier.Node(), DrawModifierNode {
+private class SolidColorBackgroundNode(
+    private var color: Color,
+): Modifier.Node(), DrawModifierNode {
 
     override val shouldAutoInvalidate: Boolean = false
 
@@ -227,8 +229,12 @@ private class VerticalGradientBackgroundNode(
 
     private fun createMeshGradientPainter(): Painter {
         var rows = 1
-        if (start > 0F) rows++
-        if (end < 1F) rows++
+        if (start > 0F) {
+            rows++
+        }
+        if (end < 1F) {
+            rows++
+        }
         return MeshGradientPainter(
             rows = rows,
             columns = 1,
