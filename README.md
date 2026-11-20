@@ -8,6 +8,6 @@ Based on **compose**, **coroutines/flow**, **navigation3**, **room3**, **media3*
 
 ### Screenshots
 
-<img src="https://github.com/yuriy-budiyev/sketches/blob/main/screenshots/images_screen.png?raw=true" width="360" alt="Images screen displays all media grouped by month added" title="Images screen screenshot">
+<img src="https://github.com/yuriy-budiyev/sketches/blob/main/screenshots/images_screen.png?raw=true" width="360" alt="Images screen">
 
-<img src="https://github.com/yuriy-budiyev/sketches/blob/main/screenshots/image_screen.png?raw=true" width="360" alt="Images screen displays all media grouped by month added" title="Images screen screenshot">
+<img src="https://github.com/yuriy-budiyev/sketches/blob/main/screenshots/image_screen.png?raw=true" width="360" alt="Image view screen">
