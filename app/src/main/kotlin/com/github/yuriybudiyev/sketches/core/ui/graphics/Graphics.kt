@@ -121,8 +121,14 @@ private class SolidColorBackgroundNode(private var color: Color): Modifier.Node(
     }
 
     fun update(color: Color) {
-        this.color = color
-        invalidateDraw()
+        var changed = false
+        if (this.color != color) {
+            this.color = color
+            changed = true
+        }
+        if (changed) {
+            invalidateDraw()
+        }
     }
 }
 
