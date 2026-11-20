@@ -33,7 +33,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.component1
 import androidx.activity.result.component2
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -82,6 +81,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.MediaBatc
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberMediaBatchState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
+import com.github.yuriybudiyev.sketches.core.ui.graphics.solidColorBackground
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
 import com.github.yuriybudiyev.sketches.core.ui.utils.scrollToItem
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
@@ -246,7 +246,7 @@ private fun BookmarksScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.background),
+            .solidColorBackground(MaterialTheme.colorScheme.background),
     ) {
         when (uiState) {
             is BookmarksScreenViewModel.UiState.Empty -> {

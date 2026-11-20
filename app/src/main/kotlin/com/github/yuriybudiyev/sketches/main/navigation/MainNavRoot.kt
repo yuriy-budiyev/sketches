@@ -80,7 +80,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.pointer.pointerInput
@@ -149,6 +148,7 @@ import com.github.yuriybudiyev.sketches.core.saveable.rememberSaveableSnapshotSt
 import com.github.yuriybudiyev.sketches.core.ui.animation.DefaultAnimatedVisibility
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.graphics.solidColorBackground
 import com.github.yuriybudiyev.sketches.core.ui.graphics.verticalGradientBackground
 import com.github.yuriybudiyev.sketches.core.ui.graphics.withLowTransparency
 import com.github.yuriybudiyev.sketches.feature.bookmarks.navigation.BookmarksNavRoute
@@ -369,10 +369,7 @@ fun MainNavRoot(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(dimens.navBarHeight)
-                            .background(
-                                color = colorScheme.background.withLowTransparency(),
-                                shape = RectangleShape,
-                            ),
+                            .solidColorBackground(colorScheme.background.withLowTransparency()),
                         horizontalArrangement = Arrangement.SpaceEvenly,
                     ) {
                         for (route in rootRoutes) {

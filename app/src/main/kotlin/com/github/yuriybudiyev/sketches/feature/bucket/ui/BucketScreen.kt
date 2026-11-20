@@ -34,7 +34,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.component1
 import androidx.activity.result.component2
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -101,6 +100,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.rememberM
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toMediaDescriptorList
 import com.github.yuriybudiyev.sketches.core.ui.components.media.batch.toUriList
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.graphics.solidColorBackground
 import com.github.yuriybudiyev.sketches.core.ui.graphics.verticalGradientBackground
 import com.github.yuriybudiyev.sketches.core.ui.graphics.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.utils.rememberLastScrollDirectionScrollConnection
@@ -266,7 +266,7 @@ fun BucketScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = colorScheme.background),
+            .solidColorBackground(colorScheme.background),
     ) {
         when (uiState) {
             is BucketScreenViewModel.UiState.Empty -> {

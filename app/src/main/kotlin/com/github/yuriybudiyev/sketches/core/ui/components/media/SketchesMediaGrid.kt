@@ -37,7 +37,6 @@ import kotlinx.parcelize.Parcelize
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.animateScrollBy
@@ -89,6 +88,7 @@ import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimateItem
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesLazyGrid
 import com.github.yuriybudiyev.sketches.core.ui.dimens.LocalDimens
+import com.github.yuriybudiyev.sketches.core.ui.graphics.solidColorBackground
 import com.github.yuriybudiyev.sketches.core.ui.graphics.withHighTransparency
 import com.github.yuriybudiyev.sketches.core.ui.graphics.withLowTransparency
 import com.github.yuriybudiyev.sketches.core.ui.graphics.withMediumTransparency
@@ -403,10 +403,7 @@ private fun DateItem(
             dateFormatterMonthYear.format(date).capitalizeFirstChar()
         },
         modifier = modifier
-            .background(
-                color = colorScheme.background,
-                shape = RectangleShape,
-            )
+            .solidColorBackground(colorScheme.background)
             .padding(
                 start = 4.dp,
                 top = 8.dp,
@@ -560,10 +557,7 @@ private fun ItemSelectionMarker(modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .matchParentSize()
-                .background(
-                    color = colorScheme.background.withMediumTransparency(),
-                    shape = RectangleShape,
-                ),
+                .solidColorBackground(colorScheme.background.withMediumTransparency()),
         )
         ItemIcon(
             iconRes = R.drawable.ic_media_selected,

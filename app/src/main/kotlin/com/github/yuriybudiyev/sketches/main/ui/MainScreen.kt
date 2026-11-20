@@ -30,7 +30,6 @@ import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,7 +51,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -65,6 +63,7 @@ import com.github.yuriybudiyev.sketches.core.platform.permissions.media.remember
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.rememberOnRequestMediaAccess
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesOutlinedButton
+import com.github.yuriybudiyev.sketches.core.ui.graphics.solidColorBackground
 import com.github.yuriybudiyev.sketches.main.navigation.MainNavRoot
 
 @Composable
@@ -86,10 +85,7 @@ fun MainScreen() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    color = colorScheme.surface,
-                    shape = RectangleShape,
-                )
+                .solidColorBackground(colorScheme.surface)
                 .clipToBounds(),
             propagateMinConstraints = true,
         ) {

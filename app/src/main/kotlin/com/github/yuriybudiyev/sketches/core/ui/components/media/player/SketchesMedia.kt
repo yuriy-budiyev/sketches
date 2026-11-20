@@ -28,7 +28,6 @@ import kotlin.math.roundToLong
 import kotlinx.coroutines.launch
 import android.view.TextureView
 import androidx.compose.animation.core.Animatable
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -48,7 +47,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -65,6 +63,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.common.MediaPreviewPlaceholder
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
+import com.github.yuriybudiyev.sketches.core.ui.graphics.solidColorBackground
 import com.github.yuriybudiyev.sketches.core.ui.graphics.withLowTransparency
 
 @Composable
@@ -106,10 +105,7 @@ fun SketchesMediaPlayer(
                     )
                     .fillMaxWidth()
                     .height(height = 64.dp)
-                    .background(
-                        color = controlsBackgroundColor,
-                        shape = RectangleShape,
-                    )
+                    .solidColorBackground(controlsBackgroundColor)
                     .padding(
                         start = controlsStartPadding + 4.dp,
                         end = controlsEndPadding + 4.dp,
@@ -153,10 +149,7 @@ fun SketchesMediaDisplay(
         Box(
             modifier = Modifier
                 .matchParentSize()
-                .background(
-                    color = backgroundColor,
-                    shape = RectangleShape,
-                ),
+                .solidColorBackground(backgroundColor),
         )
         if (placeholderVisible) {
             MediaPreviewPlaceholder(

@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.core.ui.components.media
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.material3.Icon
@@ -43,7 +42,6 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -71,6 +69,7 @@ import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
 import com.github.yuriybudiyev.sketches.core.ui.components.media.common.MediaPreviewPlaceholder
 import com.github.yuriybudiyev.sketches.core.ui.components.rememberZoomState
+import com.github.yuriybudiyev.sketches.core.ui.graphics.solidColorBackground
 import com.github.yuriybudiyev.sketches.core.ui.graphics.withHighTransparency
 
 @Composable
@@ -111,10 +110,7 @@ fun SketchesThumbnailAsyncImage(
                 this.contentDescription = contentDescription
                 this.role = Role.Image
             }
-            .background(
-                color = colorScheme.onBackground.withHighTransparency(),
-                shape = RectangleShape,
-            )
+            .solidColorBackground(colorScheme.onBackground.withHighTransparency())
             .then(modifier)
             .then(sizeResolver),
     ) {
