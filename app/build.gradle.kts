@@ -11,7 +11,7 @@ plugins {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(25)
     compilerOptions.freeCompilerArgs.apply {
         add("-Xreturn-value-checker=full")
         add("-Xname-based-destructuring=complete")
