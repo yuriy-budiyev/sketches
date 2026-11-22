@@ -79,7 +79,7 @@ private fun MediaPreviewPlaceholderImpl31(
 ) {
     val context = LocalContext.current
     val painter = remember(uri, context) {
-        context.imageMemoryCache[uri]?.asPainter(context, FilterQuality.High)
+        context.imageMemoryCache[uri]?.run { image.asPainter(context, FilterQuality.High) }
     }
     if (painter == null) {
         return
@@ -114,7 +114,7 @@ private fun MediaPreviewPlaceholderImpl(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    val image = remember(uri, context) { context.imageMemoryCache[uri] }
+    val image = remember(uri, context) { context.imageMemoryCache[uri]?.image }
     if (image == null) {
         return
     }

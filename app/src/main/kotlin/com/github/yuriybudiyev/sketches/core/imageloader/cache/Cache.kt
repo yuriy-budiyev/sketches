@@ -25,6 +25,7 @@
 package com.github.yuriybudiyev.sketches.core.imageloader.cache
 
 import kotlin.math.max
+import kotlin.math.min
 import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.res.Configuration
@@ -84,30 +85,37 @@ class LocalCacheInterceptor(
         val hardwareAllowed = request.allowHardware && request.target.let { target ->
             target !is ViewTarget<*> || target.view.isHardwareAccelerated
         }
-        val memoryImage = memoryCache[uri]
-        if (
-            memoryImage != null && memoryImage.hasRequiredSize(requiredSize) && memoryImage.let { image ->
-                image !is BitmapImage || image.bitmap.config != Bitmap.Config.HARDWARE || hardwareAllowed
+        val memoryEntry = memoryCache[uri]
+        if (memoryEntry != null) {
+            val memoryImage = memoryEntry.image
+            if (
+                memoryImage.hasRequiredSize(memoryEntry.minSize, requiredSize) && memoryImage.let { image ->
+                    image !is BitmapImage || image.bitmap.config != Bitmap.Config.HARDWARE || hardwareAllowed
+                }
+            ) {
+                return SuccessResult(
+                    image = memoryImage,
+                    request = request,
+                    dataSource = DataSource.MEMORY_CACHE,
+                    memoryCacheKey = null,
+                    diskCacheKey = null,
+                    isSampled = false,
+                    isPlaceholderCached = false,
+                )
             }
-        ) {
-            return SuccessResult(
-                image = memoryImage,
-                request = request,
-                dataSource = DataSource.MEMORY_CACHE,
-                memoryCacheKey = null,
-                diskCacheKey = null,
-                isSampled = false,
-                isPlaceholderCached = false,
-            )
         }
         diskCache.openSnapshot(uri)?.use { snapshot ->
+            val minSize = diskCache.fileSystem.read(snapshot.metadata) {
+                val lines = readString(Charsets.UTF_8).lines()
+                if (lines.size >= 3) min(lines[1].toInt(), lines[2].toInt()) else Int.MAX_VALUE
+            }
             val bitmap = diskCache.fileSystem.read(snapshot.data) {
                 val options = BitmapFactory.Options()
                 options.inJustDecodeBounds = true
                 BitmapFactory.decodeStream(peek().inputStream(), null, options)
                 val outWidth = options.outWidth
                 val outHeight = options.outHeight
-                if (!checkRequiredSize(outWidth, outHeight, requiredSize)) {
+                if (!checkSize(outWidth, outHeight, minSize, requiredSize)) {
                     return@read null
                 }
                 options.inJustDecodeBounds = false
@@ -126,7 +134,7 @@ class LocalCacheInterceptor(
             }
             if (bitmap != null) {
                 val diskImage = bitmap.asImage(shareable = !bitmap.isMutable)
-                memoryCache[uri] = diskImage
+                memoryCache[uri] = ImageMemoryCache.Entry(diskImage, minSize)
                 return SuccessResult(
                     image = diskImage,
                     request = request,
@@ -141,9 +149,13 @@ class LocalCacheInterceptor(
         val result = chain.withSize(Size(requiredSize, requiredSize)).proceed()
         if (result is SuccessResult) {
             val bitmap = result.image.toBitmap()
+            val width = bitmap.width
+            val height = bitmap.height
             diskCache.openEditor(uri)?.let { editor ->
                 diskCache.fileSystem.write(editor.metadata, mustCreate = false) {
                     writeUtf8("$uri\n")
+                    writeUtf8("$width\n")
+                    writeUtf8("$height\n")
                 }
                 diskCache.fileSystem.write(editor.data, mustCreate = false) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -164,7 +176,7 @@ class LocalCacheInterceptor(
                 editor.commit()
             }
             val resultImage = bitmap.asImage(shareable = true)
-            memoryCache[uri] = resultImage
+            memoryCache[uri] = ImageMemoryCache.Entry(resultImage, min(width, height))
             return SuccessResult(
                 image = resultImage,
                 request = request,
@@ -189,18 +201,18 @@ inline val Context.imageMemoryCache: ImageMemoryCache
 
 class ImageMemoryCache private constructor(maxSize: Int) {
 
-    operator fun set(uri: String, image: Image) {
+    operator fun set(uri: String, image: Entry) {
         imageCache[uri] = image
     }
 
-    operator fun get(uri: String): Image? = imageCache[uri]
+    operator fun get(uri: String): Entry? = imageCache[uri]
 
-    private val imageCache: LruCache<String, Image> = CacheImpl(maxSize)
+    private val imageCache: LruCache<String, Entry> = CacheImpl(maxSize)
     private val memoryCallbacks: ComponentCallbacks2 = CallbacksImpl()
 
-    private class CacheImpl(maxSize: Int): LruCache<String, Image>(maxSize) {
+    private class CacheImpl(maxSize: Int): LruCache<String, Entry>(maxSize) {
 
-        override fun sizeOf(key: String, value: Image): Int = value.size.toIntClamped()
+        override fun sizeOf(key: String, value: Entry): Int = value.image.size.toIntClamped()
     }
 
     private inner class CallbacksImpl: ComponentCallbacks2 {
@@ -220,6 +232,11 @@ class ImageMemoryCache private constructor(maxSize: Int) {
             /* no-op */
         }
     }
+
+    data class Entry(
+        val image: Image,
+        val minSize: Int,
+    )
 
     companion {
 
@@ -253,9 +270,9 @@ private inline operator fun <K: Any, V: Any> LruCache<K, V>.set(key: K, value: V
 }
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun Image.hasRequiredSize(requiredSize: Int): Boolean =
-    checkRequiredSize(width, height, requiredSize)
+private inline fun Image.hasRequiredSize(minSize: Int, requiredSize: Int): Boolean =
+    checkSize(width, height, minSize, requiredSize)
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun checkRequiredSize(width: Int, height: Int, requiredSize: Int): Boolean =
-    width >= requiredSize && height >= requiredSize
+private inline fun checkSize(width: Int, height: Int, minSize: Int, requiredSize: Int): Boolean =
+    minSize < requiredSize || width >= requiredSize && height >= requiredSize
