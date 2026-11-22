@@ -101,51 +101,45 @@ fun Context.checkMediaAccess(): MediaAccess =
         }
     }
 
-@JvmInline
-value class MediaAccessRequestLauncher(
-    private val launcher: ActivityResultLauncher<Array<String>>,
-) {
-
-    fun requestMediaAccess() {
-        launcher.launch(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                arrayOf(
-                    Manifest.permission.READ_MEDIA_IMAGES,
-                    Manifest.permission.READ_MEDIA_VIDEO,
-                    Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED,
-                    Manifest.permission.ACCESS_MEDIA_LOCATION,
-                )
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                arrayOf(
-                    Manifest.permission.READ_MEDIA_IMAGES,
-                    Manifest.permission.READ_MEDIA_VIDEO,
-                    Manifest.permission.ACCESS_MEDIA_LOCATION,
-                )
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.ACCESS_MEDIA_LOCATION,
-                )
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.ACCESS_MEDIA_LOCATION,
-                )
-            } else {
-                arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                )
-            },
-        )
-    }
+fun ActivityResultLauncher<Array<String>>.requestMediaAccess() {
+    launch(
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            arrayOf(
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO,
+                Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED,
+                Manifest.permission.ACCESS_MEDIA_LOCATION,
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arrayOf(
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO,
+                Manifest.permission.ACCESS_MEDIA_LOCATION,
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.ACCESS_MEDIA_LOCATION,
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.ACCESS_MEDIA_LOCATION,
+            )
+        } else {
+            arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            )
+        },
+    )
 }
 
 @Composable
 inline fun rememberMediaAccessRequestLauncher(
     crossinline onResult: @DisallowComposableCalls (MediaAccess) -> Unit,
-): MediaAccessRequestLauncher {
+): ActivityResultLauncher<Array<String>> {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
         onResult = { grantResults ->
@@ -205,7 +199,7 @@ inline fun rememberMediaAccessRequestLauncher(
             onResult(mediaAccess)
         },
     )
-    return MediaAccessRequestLauncher(launcher)
+    return launcher
 }
 
 @Composable

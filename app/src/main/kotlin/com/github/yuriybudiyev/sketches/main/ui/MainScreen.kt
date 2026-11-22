@@ -61,6 +61,7 @@ import com.github.yuriybudiyev.sketches.core.platform.permissions.media.MediaAcc
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.checkMediaAccess
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.rememberMediaAccessRequestLauncher
 import com.github.yuriybudiyev.sketches.core.platform.permissions.media.rememberOnRequestMediaAccess
+import com.github.yuriybudiyev.sketches.core.platform.permissions.media.requestMediaAccess
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesMessage
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesOutlinedButton
 import com.github.yuriybudiyev.sketches.core.ui.graphics.solidColorBackground
