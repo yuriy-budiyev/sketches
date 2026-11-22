@@ -193,11 +193,15 @@ class ImageMemoryCache private constructor(maxSize: Int) {
         imageCache[uri] = image
     }
 
-    operator fun get(uri: String): Image? =
-        imageCache[uri]
+    operator fun get(uri: String): Image? = imageCache[uri]
 
     private val imageCache: LruCache<String, Image> = CacheImpl(maxSize)
     private val memoryCallbacks: ComponentCallbacks2 = CallbacksImpl()
+
+    private class CacheImpl(maxSize: Int): LruCache<String, Image>(maxSize) {
+
+        override fun sizeOf(key: String, value: Image): Int = value.size.toIntClamped()
+    }
 
     private inner class CallbacksImpl: ComponentCallbacks2 {
 
@@ -215,11 +219,6 @@ class ImageMemoryCache private constructor(maxSize: Int) {
         override fun onLowMemory() {
             /* no-op */
         }
-    }
-
-    private class CacheImpl(maxSize: Int): LruCache<String, Image>(maxSize) {
-
-        override fun sizeOf(key: String, value: Image): Int = value.size.toIntClamped()
     }
 
     companion {
