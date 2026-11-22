@@ -69,7 +69,7 @@ private data object DefaultDimens: Dimens {
     override val navBarIndicatorHeight: Dp = 32.dp
     override val lazyGridOverlayTop: Dp = material3AppBarHeight
     override val lazyGridOverlayBottom: Dp = navBarHeight
-    override val lazyGridItemSize: Dp = 108.dp
+    override val lazyGridItemSize: Dp = 112.dp
     override val lazyGridItemSpacing: Dp = 1.dp
     override val mediaGridIconPadding: Dp = 4.dp
     override val mediaBarHeight: Dp = material3AppBarHeight
