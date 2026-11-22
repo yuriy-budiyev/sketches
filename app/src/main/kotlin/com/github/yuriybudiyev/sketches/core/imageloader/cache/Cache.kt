@@ -82,16 +82,15 @@ class LocalCacheInterceptor(
         val chainWidth = (chainSize.width as? Dimension.Pixels)?.px ?: return chain.proceed()
         val chainHeight = (chainSize.height as? Dimension.Pixels)?.px ?: return chain.proceed()
         val requiredSize = max(chainWidth, chainHeight)
-        val hardwareAllowed = request.allowHardware && request.target.let { target ->
+        val hardwareBitmapsAllowed = request.allowHardware && request.target.let { target ->
             target !is ViewTarget<*> || target.view.isHardwareAccelerated
         }
         val memoryEntry = memoryCache[uri]
         if (memoryEntry != null) {
             val memoryImage = memoryEntry.image
             if (
-                memoryImage.hasRequiredSize(memoryEntry.minSize, requiredSize) && memoryImage.let { image ->
-                    image !is BitmapImage || image.bitmap.config != Bitmap.Config.HARDWARE || hardwareAllowed
-                }
+                memoryImage.hasRequiredSize(memoryEntry.minSize, requiredSize) &&
+                (hardwareBitmapsAllowed || !memoryImage.isHardwareBitmap())
             ) {
                 return SuccessResult(
                     image = memoryImage,
@@ -121,7 +120,7 @@ class LocalCacheInterceptor(
                 options.inJustDecodeBounds = false
                 options.inMutable = false
                 options.inPreferredConfig =
-                    if (hardwareAllowed) {
+                    if (hardwareBitmapsAllowed) {
                         Bitmap.Config.HARDWARE
                     } else {
                         if (options.outConfig == Bitmap.Config.RGBA_F16) {
@@ -272,6 +271,10 @@ private inline operator fun <K: Any, V: Any> LruCache<K, V>.set(key: K, value: V
 @Suppress("NOTHING_TO_INLINE")
 private inline fun Image.hasRequiredSize(minSize: Int, requiredSize: Int): Boolean =
     checkSize(width, height, minSize, requiredSize)
+
+@Suppress("NOTHING_TO_INLINE")
+private inline fun Image.isHardwareBitmap(): Boolean =
+    this is BitmapImage && bitmap.config == Bitmap.Config.HARDWARE
 
 @Suppress("NOTHING_TO_INLINE")
 private inline fun checkSize(width: Int, height: Int, minSize: Int, requiredSize: Int): Boolean =
