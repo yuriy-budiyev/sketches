@@ -63,7 +63,7 @@ import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.size.Scale
 import com.github.yuriybudiyev.sketches.R
-import com.github.yuriybudiyev.sketches.core.imageloader.cache.allowLocalCacheIntercept
+import com.github.yuriybudiyev.sketches.core.imageloader.cache.allowLocalDiskCache
 import com.github.yuriybudiyev.sketches.core.ui.animation.defaultAnimationSpec
 import com.github.yuriybudiyev.sketches.core.ui.components.SketchesZoomableBox
 import com.github.yuriybudiyev.sketches.core.ui.components.ZoomState
@@ -89,7 +89,7 @@ fun SketchesThumbnailAsyncImage(
             .data(uri)
             .size(sizeResolver)
             .scale(Scale.FILL)
-            .allowLocalCacheIntercept(true)
+            .allowLocalDiskCache(true)
             .build()
     }
     var painterState by remember {
@@ -160,7 +160,7 @@ fun SketchesPreviewAsyncImage(
             .Builder(context)
             .data(uri)
             .size(coil3.size.Size.ORIGINAL)
-            .allowLocalCacheIntercept(false)
+            .allowLocalDiskCache(false)
             .build()
     }
     var placeholderVisible by remember { mutableStateOf(true) }

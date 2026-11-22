@@ -52,12 +52,10 @@ import com.github.yuriybudiyev.sketches.core.math.floorEven
 import com.github.yuriybudiyev.sketches.core.math.toIntClamped
 import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
 
-fun ImageRequest.Builder.allowLocalCacheIntercept(allow: Boolean): ImageRequest.Builder {
-    extras[AllowLocalCacheInterceptKey] = allow
+fun ImageRequest.Builder.allowLocalDiskCache(allow: Boolean): ImageRequest.Builder {
+    extras[AllowLocalDiskCacheKey] = allow
     return this
 }
-
-private val AllowLocalCacheInterceptKey: Extras.Key<Boolean> = Extras.Key(default = false)
 
 class LocalCacheInterceptor(
     private val memoryCache: ImageMemoryCache,
@@ -66,7 +64,7 @@ class LocalCacheInterceptor(
 
     override suspend fun intercept(chain: Interceptor.Chain): ImageResult {
         val request = chain.request
-        if (request.extras[AllowLocalCacheInterceptKey] != true) {
+        if (request.extras[AllowLocalDiskCacheKey] != true) {
             return chain.proceed()
         }
         val uri = request.data as? String ?: return chain.proceed()
@@ -263,18 +261,20 @@ class ImageMemoryCache private constructor(maxSize: Int) {
     }
 }
 
+private val AllowLocalDiskCacheKey: Extras.Key<Boolean> = Extras.Key(default = false)
+
 @Suppress("NOTHING_TO_INLINE")
 private inline operator fun <K: Any, V: Any> LruCache<K, V>.set(key: K, value: V) {
     put(key, value)
 }
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun Image.hasRequiredSize(minSize: Int, requiredSize: Int): Boolean =
-    checkSize(width, height, minSize, requiredSize)
-
-@Suppress("NOTHING_TO_INLINE")
 private inline fun Image.isHardwareBitmap(): Boolean =
     this is BitmapImage && bitmap.config == Bitmap.Config.HARDWARE
+
+@Suppress("NOTHING_TO_INLINE")
+private inline fun Image.hasRequiredSize(minSize: Int, requiredSize: Int): Boolean =
+    checkSize(width, height, minSize, requiredSize)
 
 @Suppress("NOTHING_TO_INLINE")
 private inline fun checkSize(width: Int, height: Int, minSize: Int, requiredSize: Int): Boolean =
