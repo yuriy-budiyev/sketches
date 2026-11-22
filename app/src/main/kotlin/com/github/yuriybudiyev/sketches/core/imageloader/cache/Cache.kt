@@ -249,8 +249,8 @@ class ImageMemoryCache private constructor(maxSize: Int) {
 }
 
 @Suppress("NOTHING_TO_INLINE")
-private inline operator fun <K: Any, V: Any> LruCache<K, V>.set(key: K, image: V) {
-    put(key, image)
+private inline operator fun <K: Any, V: Any> LruCache<K, V>.set(key: K, value: V) {
+    put(key, value)
 }
 
 @Suppress("NOTHING_TO_INLINE")
