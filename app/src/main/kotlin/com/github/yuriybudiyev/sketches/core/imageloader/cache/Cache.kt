@@ -48,7 +48,6 @@ import coil3.target.ViewTarget
 import coil3.toBitmap
 import com.github.yuriybudiyev.sketches.core.math.floorEven
 import com.github.yuriybudiyev.sketches.core.math.toIntClamped
-import com.github.yuriybudiyev.sketches.core.platform.log.logDebug
 import com.github.yuriybudiyev.sketches.core.platform.memory.getMaxMemory
 
 fun ImageRequest.Builder.allowLocalCacheIntercept(allow: Boolean): ImageRequest.Builder {
@@ -84,7 +83,6 @@ class LocalCacheInterceptor(
         val hardwareAllowed = request.allowHardware && request.target.let { target ->
             target !is ViewTarget<*> || target.view.isHardwareAccelerated
         }
-        logDebug { "intercept: init $chainWidth $chainHeight" }
         val memoryImage = memoryCache[uri]
         if (
             memoryImage != null && memoryImage.hasRequiredSize(requiredSize) && memoryImage.let { image ->
@@ -108,7 +106,6 @@ class LocalCacheInterceptor(
                 BitmapFactory.decodeStream(peek().inputStream(), null, options)
                 val outWidth = options.outWidth
                 val outHeight = options.outHeight
-                logDebug { "intercept: disk $outWidth $outHeight" }
                 if (!checkRequiredSize(outWidth, outHeight, requiredSize)) {
                     return@read null
                 }
@@ -143,7 +140,6 @@ class LocalCacheInterceptor(
         val result = chain.proceed()
         if (result is SuccessResult) {
             val bitmap = result.image.toBitmap()
-            logDebug { "intercept: loaded new ${bitmap.width} ${bitmap.height}" }
             diskCache.openEditor(uri)?.let { editor ->
                 diskCache.fileSystem.write(editor.metadata, mustCreate = false) {
                     writeUtf8("$uri\n")
@@ -192,23 +188,12 @@ inline val Context.imageMemoryCache: ImageMemoryCache
 
 class ImageMemoryCache private constructor(maxSize: Int) {
 
-    operator fun set(
-        key: String,
-        image: Image,
-    ) {
-        imageCache[key] = image
+    operator fun set(uri: String, image: Image) {
+        imageCache[uri] = image
     }
 
-    operator fun get(key: String): Image? =
-        imageCache[key]
-
-    @Suppress("NOTHING_TO_INLINE")
-    private inline operator fun LruCache<String, Image>.set(
-        key: String,
-        image: Image,
-    ) {
-        put(key, image)
-    }
+    operator fun get(uri: String): Image? =
+        imageCache[uri]
 
     private val imageCache: LruCache<String, Image> = CacheImpl(maxSize)
     private val memoryCallbacks: ComponentCallbacks2 = CallbacksImpl()
@@ -260,6 +245,11 @@ class ImageMemoryCache private constructor(maxSize: Int) {
 
         private val _instanceLock: Any = Any()
     }
+}
+
+@Suppress("NOTHING_TO_INLINE")
+private inline operator fun <K: Any, V: Any> LruCache<K, V>.set(key: K, image: V) {
+    put(key, image)
 }
 
 @Suppress("NOTHING_TO_INLINE")
