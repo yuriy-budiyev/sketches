@@ -44,6 +44,7 @@ import coil3.request.ImageResult
 import coil3.request.SuccessResult
 import coil3.request.allowHardware
 import coil3.size.Dimension
+import coil3.size.Size
 import coil3.target.ViewTarget
 import coil3.toBitmap
 import com.github.yuriybudiyev.sketches.core.math.floorEven
@@ -137,7 +138,7 @@ class LocalCacheInterceptor(
                 )
             }
         }
-        val result = chain.proceed()
+        val result = chain.withSize(Size(requiredSize, requiredSize)).proceed()
         if (result is SuccessResult) {
             val bitmap = result.image.toBitmap()
             diskCache.openEditor(uri)?.let { editor ->
