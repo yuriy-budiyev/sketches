@@ -87,7 +87,7 @@ object ImageLoaderModule {
                 } else {
                     add(GifDecoder.Factory())
                 }
-                add(SvgDecoder.Factory())
+                add(SvgDecoder.Factory(renderToBitmap = true))
                 add(VideoFrameDecoder.Factory())
             }
             .build()

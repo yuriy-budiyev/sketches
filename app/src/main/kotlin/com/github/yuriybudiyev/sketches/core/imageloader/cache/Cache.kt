@@ -25,7 +25,6 @@
 package com.github.yuriybudiyev.sketches.core.imageloader.cache
 
 import kotlin.math.max
-import kotlin.math.min
 import android.content.ComponentCallbacks2
 import android.content.Context
 import android.content.res.Configuration
@@ -86,8 +85,9 @@ class LocalCacheInterceptor(
         val memoryEntry = memoryCache[uri]
         if (memoryEntry != null) {
             val memoryImage = memoryEntry.image
+            val sampled = memoryEntry.isSampled
             if (
-                memoryImage.hasRequiredSize(memoryEntry.minSize, requiredSize) &&
+                (!sampled || memoryImage.isSizeAtLeast(requiredSize)) &&
                 (hardwareBitmapsAllowed || !memoryImage.isHardwareBitmap())
             ) {
                 return SuccessResult(
@@ -96,15 +96,22 @@ class LocalCacheInterceptor(
                     dataSource = DataSource.MEMORY_CACHE,
                     memoryCacheKey = null,
                     diskCacheKey = null,
-                    isSampled = false,
+                    isSampled = sampled,
                     isPlaceholderCached = false,
                 )
             }
         }
         diskCache.openSnapshot(uri)?.use { snapshot ->
-            val minSize = diskCache.fileSystem.read(snapshot.metadata) {
+            val sampled = diskCache.fileSystem.read(snapshot.metadata) {
                 val lines = readString(Charsets.UTF_8).lines()
-                if (lines.size >= 3) min(lines[1].toInt(), lines[2].toInt()) else Int.MAX_VALUE
+                var sampled = true
+                if (lines.size >= 4) {
+                    val sampledLine = lines[3]
+                    if (sampledLine.isNotEmpty()) {
+                        sampled = sampledLine.toBoolean()
+                    }
+                }
+                return@read sampled
             }
             val bitmap = diskCache.fileSystem.read(snapshot.data) {
                 val options = BitmapFactory.Options()
@@ -112,7 +119,7 @@ class LocalCacheInterceptor(
                 BitmapFactory.decodeStream(peek().inputStream(), null, options)
                 val outWidth = options.outWidth
                 val outHeight = options.outHeight
-                if (!checkSize(outWidth, outHeight, minSize, requiredSize)) {
+                if (sampled && !checkSizeAtLeast(outWidth, outHeight, requiredSize)) {
                     return@read null
                 }
                 options.inJustDecodeBounds = false
@@ -131,14 +138,14 @@ class LocalCacheInterceptor(
             }
             if (bitmap != null) {
                 val diskImage = bitmap.asImage(shareable = !bitmap.isMutable)
-                memoryCache[uri] = ImageMemoryCache.Entry(diskImage, minSize)
+                memoryCache[uri] = ImageMemoryCache.Entry(diskImage, sampled)
                 return SuccessResult(
                     image = diskImage,
                     request = request,
                     dataSource = DataSource.DISK,
                     memoryCacheKey = null,
                     diskCacheKey = null,
-                    isSampled = false,
+                    isSampled = sampled,
                     isPlaceholderCached = false,
                 )
             }
@@ -148,11 +155,13 @@ class LocalCacheInterceptor(
             val bitmap = result.image.toBitmap()
             val width = bitmap.width
             val height = bitmap.height
+            val sampled = result.isSampled
             diskCache.openEditor(uri)?.let { editor ->
                 diskCache.fileSystem.write(editor.metadata, mustCreate = false) {
                     writeUtf8("$uri\n")
                     writeUtf8("$width\n")
                     writeUtf8("$height\n")
+                    writeUtf8("$sampled\n")
                 }
                 diskCache.fileSystem.write(editor.data, mustCreate = false) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -173,14 +182,14 @@ class LocalCacheInterceptor(
                 editor.commit()
             }
             val resultImage = bitmap.asImage(shareable = true)
-            memoryCache[uri] = ImageMemoryCache.Entry(resultImage, min(width, height))
+            memoryCache[uri] = ImageMemoryCache.Entry(resultImage, sampled)
             return SuccessResult(
                 image = resultImage,
                 request = request,
                 dataSource = DataSource.DISK,
                 memoryCacheKey = null,
                 diskCacheKey = null,
-                isSampled = false,
+                isSampled = sampled,
                 isPlaceholderCached = false,
             )
         }
@@ -232,7 +241,7 @@ class ImageMemoryCache private constructor(maxSize: Int) {
 
     data class Entry(
         val image: Image,
-        val minSize: Int,
+        val isSampled: Boolean,
     )
 
     companion {
@@ -273,9 +282,9 @@ private inline fun Image.isHardwareBitmap(): Boolean =
     this is BitmapImage && bitmap.config == Bitmap.Config.HARDWARE
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun Image.hasRequiredSize(minSize: Int, requiredSize: Int): Boolean =
-    checkSize(width, height, minSize, requiredSize)
+private inline fun Image.isSizeAtLeast(size: Int): Boolean =
+    checkSizeAtLeast(width, height, size)
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun checkSize(width: Int, height: Int, minSize: Int, requiredSize: Int): Boolean =
-    minSize < requiredSize || width >= requiredSize && height >= requiredSize
+private inline fun checkSizeAtLeast(width: Int, height: Int, size: Int): Boolean =
+    width >= size && height >= size
