@@ -45,7 +45,6 @@ import coil3.request.SuccessResult
 import coil3.request.allowHardware
 import coil3.size.Dimension
 import coil3.size.Size
-import coil3.target.ViewTarget
 import coil3.toBitmap
 import com.github.yuriybudiyev.sketches.core.math.floorEven
 import com.github.yuriybudiyev.sketches.core.math.toIntClamped
@@ -79,9 +78,7 @@ class LocalCacheInterceptor(
         val chainWidth = (chainSize.width as? Dimension.Pixels)?.px ?: return chain.proceed()
         val chainHeight = (chainSize.height as? Dimension.Pixels)?.px ?: return chain.proceed()
         val requiredSize = max(chainWidth, chainHeight)
-        val hardwareBitmapsAllowed = request.allowHardware && request.target.let { target ->
-            target !is ViewTarget<*> || target.view.isHardwareAccelerated
-        }
+        val hardwareBitmapsAllowed = request.allowHardware
         val memoryEntry = memoryCache[uri]
         if (memoryEntry != null) {
             val memoryImage = memoryEntry.image
