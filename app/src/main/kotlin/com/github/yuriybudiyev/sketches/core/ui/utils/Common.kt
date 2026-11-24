@@ -34,9 +34,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 
 enum class ScrollDirection {
-    None,
-    Backward,
     Forward,
+    Backward,
+    None,
 }
 
 fun Size.mainAxis(orientation: Orientation): Float =
