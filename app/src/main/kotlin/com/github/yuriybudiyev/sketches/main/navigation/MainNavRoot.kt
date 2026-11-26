@@ -99,7 +99,6 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.fastCoerceAtLeast
 import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
@@ -755,7 +754,8 @@ private fun checkCurrentlyInRootOrNavigatingBackToRoot(
  * Receiver should be [RandomAccess].
  */
 private fun <T> List<T>.fastDropLast(): List<T> {
-    val resultSize = (size - 1).fastCoerceAtLeast(0)
+    val sourceSize = this.size
+    val resultSize = if (sourceSize > 1) sourceSize - 1 else 0
     val result = ArrayList<T>(resultSize)
     for (index in 0..<resultSize) {
         result.add(this[index])
