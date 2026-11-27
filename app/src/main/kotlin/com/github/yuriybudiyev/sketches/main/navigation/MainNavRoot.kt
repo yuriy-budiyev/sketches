@@ -756,7 +756,7 @@ private fun checkCurrentlyInRootOrNavigatingBackToRoot(
 private fun <T> List<T>.fastDropLast(): List<T> {
     val source = this
     val sourceSize = source.size
-    val resultSize = if (sourceSize > 1) sourceSize - 1 else 0
+    val resultSize = if (sourceSize > 1) sourceSize - 1 else return emptyList()
     val result = ArrayList<T>(resultSize)
     for (index in 0..<resultSize) {
         result.add(source[index])
