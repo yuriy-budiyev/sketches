@@ -27,6 +27,7 @@ package com.github.yuriybudiyev.sketches.core.ui.graphics
 import android.graphics.LinearGradient
 import android.graphics.Shader
 import android.os.Build
+import androidx.annotation.FloatRange
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
@@ -73,7 +74,9 @@ fun Modifier.solidColorBackground(color: Color): Modifier {
 fun Modifier.verticalGradientBackground(
     topColor: Color,
     bottomColor: Color,
+    @FloatRange(from = 0.0, to = 1.0)
     start: Float = 0F,
+    @FloatRange(from = 0.0, to = 1.0)
     end: Float = 1F,
 ): Modifier {
     require(topColor.isSpecified) { "Top color should be specified" }
