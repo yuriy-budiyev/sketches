@@ -33,8 +33,6 @@ import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.component1
-import androidx.activity.result.component2
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -133,7 +131,7 @@ fun ImagesScreen(
     val mediaBatchState = rememberMediaBatchState()
     val deleteRequestLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
-        onResult = { [resultCode, _] ->
+        onResult = { (resultCode) ->
             coroutineScope.launch {
                 if (resultCode == Activity.RESULT_OK) {
                     selectedFiles.removeAll(mediaBatchState.currentBatch)
