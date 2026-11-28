@@ -129,8 +129,7 @@ private fun MediaPreviewPlaceholderImpl(
                 createBlurredBitmap(
                     context = context,
                     source = imageBitmap,
-                    radius = (min(imageBitmap.width, imageBitmap.height).toFloat() * 0.0625F)
-                        .coerceIn(1F, 25F),
+                    radius = (min(imageBitmap.width, imageBitmap.height).toFloat() * 0.0625F).coerceIn(1F, 25F),
                 ).apply {
                     prepareToDraw()
                 }
