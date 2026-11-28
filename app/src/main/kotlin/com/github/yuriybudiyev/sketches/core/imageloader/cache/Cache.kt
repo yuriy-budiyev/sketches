@@ -84,7 +84,7 @@ class LocalCacheInterceptor(
             val memoryImage = memoryEntry.image
             val sampled = memoryEntry.isSampled
             if (
-                (!sampled || memoryImage.isSizeAtLeast(requiredSize)) &&
+                (!sampled || memoryImage.isSizeFits(requiredSize)) &&
                 (hardwareBitmapsAllowed || !memoryImage.isHardwareBitmap())
             ) {
                 return SuccessResult(
@@ -116,7 +116,7 @@ class LocalCacheInterceptor(
                 BitmapFactory.decodeStream(peek().inputStream(), null, options)
                 val outWidth = options.outWidth
                 val outHeight = options.outHeight
-                if (sampled && !checkSizeAtLeast(outWidth, outHeight, requiredSize)) {
+                if (sampled && !checkSizeFits(outWidth, outHeight, requiredSize)) {
                     return@read null
                 }
                 options.inJustDecodeBounds = false
@@ -281,11 +281,11 @@ private inline fun Image.isHardwareBitmap(): Boolean =
     this is BitmapImage && bitmap.config == Bitmap.Config.HARDWARE
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun Image.isSizeAtLeast(size: Int): Boolean =
-    checkSizeAtLeast(width, height, size)
+private inline fun Image.isSizeFits(targetSize: Int): Boolean =
+    checkSizeFits(width, height, targetSize)
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun checkSizeAtLeast(width: Int, height: Int, size: Int): Boolean {
-    val threshold = size - 4 // Allow 4px inaccuracy, decoded image dimensions can differ from requested size.
+private inline fun checkSizeFits(width: Int, height: Int, targetSize: Int): Boolean {
+    val threshold = targetSize - 4 // Allow 4px inaccuracy, decoded image dimensions can differ from requested.
     return width >= threshold && height >= threshold
 }
