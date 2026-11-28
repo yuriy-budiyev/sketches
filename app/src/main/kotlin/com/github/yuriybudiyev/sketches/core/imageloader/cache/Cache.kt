@@ -286,6 +286,6 @@ private inline fun Image.isSizeFits(targetSize: Int): Boolean =
 
 @Suppress("NOTHING_TO_INLINE")
 private inline fun checkSizeFits(width: Int, height: Int, targetSize: Int): Boolean {
-    val threshold = targetSize - 4 // Allow 4px inaccuracy, decoded image dimensions can differ from requested.
+    val threshold = targetSize - 4 // Allow 4px inaccuracy, result image dimensions can differ from requested.
     return width >= threshold && height >= threshold
 }
