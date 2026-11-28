@@ -131,7 +131,9 @@ private fun MediaPreviewPlaceholderImpl(
                     source = imageBitmap,
                     radius = (min(imageBitmap.width, imageBitmap.height).toFloat() * 0.0625F)
                         .coerceIn(1F, 25F),
-                )
+                ).apply {
+                    prepareToDraw()
+                }
             }
             painter = BitmapPainter(blurred.asImageBitmap())
             bitmap = blurred
