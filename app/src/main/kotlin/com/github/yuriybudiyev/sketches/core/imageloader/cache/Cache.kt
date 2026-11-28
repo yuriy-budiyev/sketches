@@ -285,5 +285,7 @@ private inline fun Image.isSizeAtLeast(size: Int): Boolean =
     checkSizeAtLeast(width, height, size)
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun checkSizeAtLeast(width: Int, height: Int, size: Int): Boolean =
-    width >= size && height >= size
+private inline fun checkSizeAtLeast(width: Int, height: Int, size: Int): Boolean {
+    val threshold = size - 4 // Allow 4px inaccuracy, decoded image dimensions can differ from requested size.
+    return width >= threshold && height >= threshold
+}
