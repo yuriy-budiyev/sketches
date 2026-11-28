@@ -135,6 +135,7 @@ class LocalCacheInterceptor(
             }
             if (bitmap != null) {
                 val diskImage = bitmap.asImage(shareable = !bitmap.isMutable)
+                diskImage.bitmap.prepareToDraw()
                 memoryCache[uri] = ImageMemoryCache.Entry(diskImage, sampled)
                 return SuccessResult(
                     image = diskImage,
@@ -178,7 +179,8 @@ class LocalCacheInterceptor(
                 }
                 editor.commit()
             }
-            val resultImage = bitmap.asImage(shareable = true)
+            val resultImage = bitmap.asImage(shareable = !bitmap.isMutable)
+            resultImage.bitmap.prepareToDraw()
             memoryCache[uri] = ImageMemoryCache.Entry(resultImage, sampled)
             return SuccessResult(
                 image = resultImage,
